@@ -1,0 +1,19 @@
+<?php
+/**
+ * @var Magezon\ProductAttachments\Block\Order\Files $block
+ */
+
+$helper = $this->helper('\Magezon\ProductAttachments\Helper\Data');
+$files = $block->getFiles();
+?>
+<script>
+    require(['jquery'], function ($) {
+        <?php foreach ($files as $itemId => $file) { ?>
+            <?php if ($file) { ?>
+                <?php $html = $block->escapeJs($block->getListFileHtml($file)) ?>
+                var htmlAttach = '<p class="mpa-title-attachments-order"> <?= $helper->getTitleForOrder() ?> </p>' + '<?= $html ?>';
+                $('#order-item-row-' + <?= $itemId ?>).children('.name').append(htmlAttach);
+            <?php } ?>
+        <?php } ?>
+    })
+</script>

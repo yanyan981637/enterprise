@@ -1,0 +1,35 @@
+<?php
+/**
+ *
+ * Created by:  Milan Simek
+ * Company:     Plugin Company
+ *
+ * LICENSE: http://plugin.company/docs/magento-extensions/magento-extension-license-agreement
+ *
+ * YOU WILL ALSO FIND A PDF COPY OF THE LICENSE IN THE DOWNLOADED ZIP FILE
+ *
+ * FOR QUESTIONS AND SUPPORT
+ * PLEASE DON'T HESITATE TO CONTACT US AT:
+ *
+ * SUPPORT@PLUGIN.COMPANY
+ *
+ */
+?>
+<dfields></dfields>
+
+<script>
+    var DfieldsJson = <?php echo $block->getDfieldsJSON(); ?>;
+</script>
+<script>
+    require([
+            'PluginCompany_ContactForms/dfields/src/js/main'
+        ], function(Dfields) {
+            return {}
+        }
+    );
+    function updateDfieldInput(val){
+        require('uiRegistry')
+            .get('plugincompany_form_form.plugincompany_form_form.conditional_fields.dfields.dependent_fields')
+            .value(val);
+    }
+</script>

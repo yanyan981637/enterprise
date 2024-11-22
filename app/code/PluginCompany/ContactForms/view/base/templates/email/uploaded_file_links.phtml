@@ -1,0 +1,15 @@
+<?php if($this->getUploadedFileUrls()) { ?>
+    <h3 style="margin-top:30px"><?= __("Uploaded Files"); ?></h3>
+    <table cellpadding='4' width='400'>
+        <tbody>
+        <?php foreach($this->getUploadedFileUrls() as $link){ ?>
+            <tr>
+                <td>
+                    <a href="<?= $link['url']; ?>"><?= $link['title']; ?></a>
+                </td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+<?php } ?>
+

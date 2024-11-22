@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magefan\TranslationPlus\Api\TranslationIndexRepositoryInterface" type="Magefan\TranslationPlus\Model\TranslationIndexRepositoryTranslation"/>
+    <preference for="Magefan\TranslationPlus\Api\Data\TranslationIndexInterface" type="Magefan\TranslationPlus\Model\Data\TranslationIndex"/>
+    <preference for="Magefan\TranslationPlus\Api\Data\TranslationIndexSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <virtualType name="Magefan\TranslationPlus\Model\ResourceModel\TranslationIndex\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">mftranslation_index</argument>
+            <argument name="resourceModel" xsi:type="string">
+                Magefan\TranslationPlus\Model\ResourceModel\TranslationIndex\Collection
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="translationplus_translation_listing_data_source" xsi:type="string">
+                    Magefan\TranslationPlus\Model\ResourceModel\TranslationIndex\Grid\Collection
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Config\SchemaLocator">
+        <plugin name="Magefan_TranslationPlus_Config_SchemaLocator" type="Magefan\TranslationPlus\Plugin\Config\SchemaLocator" sortOrder="1"/>
+    </type>
+</config>

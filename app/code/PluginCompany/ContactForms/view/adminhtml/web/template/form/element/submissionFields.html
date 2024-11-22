@@ -1,0 +1,18 @@
+<div class="htmlBox" data-bind="visible: !value">
+    <!-- ko i18n: 'No fields submitted' --><!-- /ko -->
+</div>
+<table class="data-grid" afterRender="onElementRender" data-bind="if: value">
+    <thead>
+    <tr>
+        <th class="data-grid-th"><!-- ko i18n: 'Field ID' --><!-- /ko --></th>
+        <th class="data-grid-th"><!-- ko i18n: 'Value' --><!-- /ko --></th>
+    </tr>
+    </thead>
+    <tbody data-bind="foreach: value">
+    <tr class="data-row">
+        <td data-bind="text: key"></td>
+        <td data-bind="text: val"></td>
+    </tr>
+    </tbody>
+</table>
+

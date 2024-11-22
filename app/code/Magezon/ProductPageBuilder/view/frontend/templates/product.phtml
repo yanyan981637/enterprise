@@ -1,0 +1,48 @@
+<?= $this->getProfileHtml() ?>
+<script>
+	require(['jquery'], function($) {
+		var scrollToReviewForm = function(target) {
+			var scrollToSelector = target ? target : $('.ppbd-product-review');
+			$('html, body').animate({
+                scrollTop: scrollToSelector.offset().top - 50
+            }, 300);
+		}
+		$('.ppbd-reviews-summary .reviews-actions a').click(function (event) {
+            event.preventDefault();
+            anchor = $(this).attr('href').replace(/^.*?(#|$)/, '');
+            var productReviewForm = $('.ppbd-product-review');
+            var parentTab = productReviewForm.closest('.mgz-tabs-tab-content');
+            if (parentTab.length) {
+            	if (!parentTab.hasClass('mgz-active')) {
+            		var id = parentTab.attr('id');
+                    if (id) $('a[href="#' + id + '"]').trigger('click');
+                    scrollToReviewForm(parentTab);
+            	} else {
+            		scrollToReviewForm();
+            	}
+            } else {
+            	scrollToReviewForm();
+            }
+        });
+
+		$(document).ready(function() {
+			setTimeout(function() {
+				var elem = $('#' + window.location.hash.replace('#', ''));
+				if(elem.length) {
+					var parentTab = elem.closest('.mgz-tabs-tab-content');
+		            if (parentTab.length) {
+		            	if (!parentTab.hasClass('mgz-active')) {
+		            		var id = parentTab.attr('id');
+		                    if (id) $('a[href="#' + id + '"]').trigger('click');
+		                    scrollToReviewForm(parentTab);
+		            	} else {
+		            		scrollToReviewForm();
+		            	}
+		            } else {
+		            	scrollToReviewForm();
+		            }
+				}
+			}, 1000);
+		});
+	})
+</script>

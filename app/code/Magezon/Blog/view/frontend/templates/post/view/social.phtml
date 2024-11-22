@@ -1,0 +1,30 @@
+<?php /* @var $block Magezon\Blog\Block\Post\View */?>
+<?php
+$coreHelper = $this->helper('\Magezon\Core\Helper\Data');
+$dataHelper = $this->helper('\Magezon\Blog\Helper\Data');
+$post      = $this->getCurrentPost();
+$url       = $post->getUrl();
+$facebook  = true;
+$twitter   = true;
+$linkedin  = true;
+$pinterest = true;
+?>
+<?php if ($dataHelper->getConfig('post_page/social_box')) { ?>
+<div id="blog-post-social" class="blog-post-social">
+	<span><?= __('Share') ?></span>
+	<ul class="blog-flat-social">
+		<?php if ($facebook) { ?>
+			<li><a href="http://www.facebook.com/sharer.php?u=<?= $url ?>" class="social-facebook" rel="external" target="_blank"><i class="fab mgz-fa-facebook-f"></i> <span><?= __('Facebook') ?></span></a></li>
+		<?php } ?>
+		<?php if ($twitter) { ?>
+			<li><a href="https://twitter.com/intent/tweet?text=<?= $block->escapeHtml($post->getTitle()) ?>&url=<?= $url ?>" class="social-twitter" rel="external" target="_blank"><i class="fab mgz-fa-twitter"></i> <span><?= __( 'Twitter') ?></span></a></li>
+		<?php } ?>
+		<?php if ($linkedin) { ?>
+			<li><a href="http://www.linkedin.com/shareArticle?mini=true&url=<?= $url ?>&title=<?= $block->escapeHtml($post->getTitle()) ?>" class="social-linkedin" rel="external" target="_blank"><i class="fab mgz-fa-linkedin-in"></i> <span><?= __( 'LinkedIn') ?></span></a></li>
+		<?php } ?>
+		<?php if ($pinterest) { ?>
+			<li><a href="http://pinterest.com/pin/create/button/?url=<?= $url ?>&amp;description=<?= $block->escapeHtml($post->getTitle()) ?>&amp;media=<?= $post->getImageUrl() ?>" class="social-pinterest" rel="external" target="_blank"><i class="fab mgz-fa-pinterest-p"></i> <span><?= __( 'Pinterest') ?></span></a></li>
+		<?php } ?>
+	</ul>
+</div>
+<?php } ?>

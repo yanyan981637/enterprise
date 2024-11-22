@@ -1,0 +1,19 @@
+<?php /* @var $block Magezon\Blog\Block\Sidebar\SearchForm */?>
+<?php
+$dataHelper  = $this->helper('\Magezon\Blog\Helper\Data');
+$title       = $dataHelper->getConfig('sidebar/search_form/title');
+$searchRoute = $dataHelper->getSearchRoute();
+?>
+<?php if ($searchRoute) { ?>
+<div class="blog-block blog-searchform">
+	<?php if ($title) { ?>
+		<div class="block-block-title"><h3><span><?= $title ?></span></h3></div>
+	<?php } ?>
+	<div class="block-block-content">
+		<form action="<?= $this->getUrl($dataHelper->getRoute() .'/'. $searchRoute . '/result') ?>" method="GET">
+			<input type="text" name="s" placeholder="<?= __('Search posts here...') ?>" value="<?= $this->getRequest()->getParam('s') ?>"/>
+			<button type="submit"><?= __('Search') ?></button>
+		</form>
+	</div>
+</div>
+<?php } ?>

@@ -1,0 +1,46 @@
+<div class="admin__field mgz-filemanager" visible="visible" css="$data.additionalClasses" css="$data.additionalClasses">
+	<label class="admin__field-label" if="$data.label" attr="for: uid">
+        <span translate="label" attr="'data-config-scope': $data.scopeLabel"/>
+    </label>
+	<div class="admin__field-control" css="'_with-tooltip': $data.tooltip">
+		<table class="label-positions">
+		    <tbody>
+		        <tr>
+		        	<td colspan="3" class="one-column data" data-bind="click: function(data, event){ value(1)}, css: {selected: value() == 1}">TOP</td>
+		        </tr>
+		        <tr>
+		        	<td colspan="3" class="one-column data" data-bind="click: function(data, event){ value(2)}, css: {selected: value() == 2}">Before Image</td>
+		        </tr>
+		        <tr>
+		            <td  data-bind="click: function(data, event){ value('3')}, css: {selected: value() == 3}"></td>
+		            <td  data-bind="click: function(data, event){ value('4')}, css: {selected: value() == 4}"></td>
+		            <td  data-bind="click: function(data, event){ value('5')}, css: {selected: value() == 5}"></td>
+		        </tr>
+		        <tr>
+		            <td  data-bind="click: function(data, event){ value('6')}, css: {selected: value() == 6}"></td>
+		            <td  data-bind="click: function(data, event){ value('7')}, css: {selected: value() == 7}"></td>
+		            <td  data-bind="click: function(data, event){ value('8')}, css: {selected: value() == 8}"></td>
+		        </tr>
+		        <tr>
+		            <td  data-bind="click: function(data, event){ value('9')}, css: {selected: value() == 9}"></td>
+		            <td  data-bind="click: function(data, event){ value('10')}, css: {selected: value() == 10}"></td>
+		            <td  data-bind="click: function(data, event){ value('11')}, css: {selected: value() == 11}"></td>
+		        </tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(12)}, css: {selected: value() == 12}">After Image</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(13)}, css: {selected: value() == 13}">Before Title</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(14)}, css: {selected: value() == 14}">After Title</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(15)}, css: {selected: value() == 15}">Before Price</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(16)}, css: {selected: value() == 16}">After Price</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(17)}, css: {selected: value() == 17}">Before Review</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(18)}, css: {selected: value() == 18}">After Review</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(19)}, css: {selected: value() == 19}">Before Add To Cart</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(20)}, css: {selected: value() == 20}">After Add To Cart</td></tr>
+		        <tr><td colspan="3" class="one-column" data-bind="click: function(data, event){ value(21)}, css: {selected: value() == 21}">Bottom</td></tr>
+		    </tbody>
+		</table>
+	    <div if="value() >= 3 && value() <= 11" data-bind="attr: {id: uid + '-preview'}" class="position-preview"><div class="preview_wrapper"><div data-bind="attr: {id: uid + '-preview_inner'}, style: styles" class="preview-inner"><img attr="src: imgUrl" if="imgUrl"/></div></div></div>
+	    <span afterRender="loadImage"/>
+    </div>
+</div>
+
+

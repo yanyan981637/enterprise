@@ -1,0 +1,82 @@
+<?php /* @var $block Magezon\Blog\Block\Post\CommentForm */?>
+<?php
+use Magezon\Blog\Model\Comment;
+
+$dataHelper = $this->helper('\Magezon\Blog\Helper\Data');
+$type       = $dataHelper->getCommentType();
+$post       = $this->getCurrentPost();
+$url 		= $this->getUrl('blog/comment/post');
+$currentUrl = $post->getUrl();
+$gdprStatus = $dataHelper->getGdprStatus();
+$gdprPathLink = $dataHelper->getGdprPathLink();
+
+$commentListHtml = $this->getLayout()->createBlock(Magezon\Blog\Block\Post\Comments::class)->setTemplate('Magezon_Blog::post/view/comments.phtml')->toHtml();
+?>
+
+<?php if ($post->getAllowComment()) { ?>
+    <?php if ($block->getAllowPostCommentFlag()) { ?>
+		<?php if ($type == Comment::TYPE_NATIVE) { ?>
+		<div id="respond" class="blog-block blog-comment-form">
+			<div class="block-block-title"><h3><span><?= __('Leave a Reply') ?></span> <span class="cancel-comment-reply-link"><?= __('Cancel reply') ?></span></h3></div>
+			<div class="block-block-content">
+				<form class="form"
+				      action="<?= $this->getUrl('blog/comment/post') ?>"
+				      method="post"
+				      data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+				      data-mage-init='{"postComment":{}}'
+                      id="blog-comment"
+                      data-url="<?= $currentUrl ?>"
+                >
+				    <fieldset class="fieldset">
+				        <div class="field note no-label"><?= $block->escapeHtml(__('Your email address will not be published. Required fields are marked')) ?> <span class="blog-required">*</span></div>
+				        <div class="field comment required">
+				            <label class="label" for="ccontent"><span><?= $block->escapeHtml(__('Comment')) ?></span></label>
+				            <div class="control">
+				                <textarea name="content" id="ccontent" class="input-text" cols="45" rows="8" data-validate="{required:true}"><?= $block->escapeHtml($this->getPostValue('content')) ?></textarea>
+				            </div>
+				        </div>
+				        <div class="comment-information">
+                            <div class="field name required">
+                                <label class="label" for="cname"><span><?= $block->escapeHtml(__('Name')) ?></span></label>
+                                <div class="control">
+                                    <input name="author" id="cname" title="<?= $block->escapeHtmlAttr(__('Name')) ?>" value="<?= $block->escapeHtmlAttr($this->getPostValue('author') ?: $this->helper('Magento\Contact\Helper\Data')->getUserName()) ?>" class="input-text" type="text" data-validate="{required:true}"/>
+                                </div>
+                            </div>
+                            <div class="field email required">
+                                <label class="label" for="cemail"><span><?= $block->escapeHtml(__('Email')) ?></span></label>
+                                <div class="control">
+                                    <input name="author_email" id="cemail" title="<?= $block->escapeHtmlAttr(__('Email')) ?>" value="<?= $block->escapeHtmlAttr($this->getPostValue('author_email') ?: $this->helper('Magento\Contact\Helper\Data')->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}" pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}" />
+                                </div>
+                            </div>
+                        </div>
+                        <?php if($gdprStatus && $gdprPathLink):?>
+                            <div class="field email required">
+                                <div class="control">
+                                    <input type="checkbox" data-validate="{required:true}" value="1" name="custom_checkbox">
+                                    <span id="agree"><?= __('I agree to the <a target="_blank" href="%1">Privacy Policy</a>', $gdprPathLink) ?></span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <?= $this->getChildHtml('recaptcha') ?>
+				    </fieldset>
+				    <input type="hidden" name="post_id" value="<?= $post->getId() ?>"/>
+				    <input type="hidden" name="parent_id" value="0"/>
+				    <div class="actions-toolbar">
+				        <div class="primary">
+				            <button type="submit" id="submit" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>" class="action submit primary">
+				                <span><?= $block->escapeHtml(__('Submit')) ?></span>
+				            </button>
+				        </div>
+				    </div>
+				</form>
+			</div>
+		</div>
+		<?php } ?>
+	<?php } else { ?>
+		<div class="message info notlogged">
+			<div>
+			<?= $block->escapeHtml(__('Only registered users can post comments. Please <a href="%1">Sign in</a> or <a href="%2">create an account</a>', $block->getLoginLink(), $block->getRegisterUrl()), ['a']) ?>
+			</div>
+		</div>
+	<?php } ?>
+<?php } ?>

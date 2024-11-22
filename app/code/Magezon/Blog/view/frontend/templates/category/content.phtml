@@ -1,0 +1,9 @@
+<?php /* @var $block Magezon\Blog\Block\Category\View */?>
+<?php
+$category   = $this->getCurrentCategory();
+$coreHelper = $this->helper('Magezon\Core\Helper\Data');
+$content    = $category->getContent();
+?>
+<?php if ($content) { ?>
+	<div class="blog-top-section blog-category-description"><?= $coreHelper->filter($content) ?></div>
+<?php } ?>

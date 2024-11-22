@@ -1,0 +1,9 @@
+<?php
+$coreHelper  = $this->helper('\Magezon\Core\Helper\Data');
+$element     = $this->getElement();
+$text        = $this->getProduct()->getName();
+$headingType = $element->getData('heading_type');
+?>
+<?php if ($text) { ?>
+<<?= $headingType ?> class="ppbd-product-name"><?= $coreHelper->filter($text) ?></<?= $headingType ?>>
+<?php } ?>

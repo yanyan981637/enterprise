@@ -1,0 +1,19 @@
+<?php /* @var $block Magezon\Blog\Block\Sidebar\Tags */?>
+<?php
+$dataHelper       = $this->helper('\Magezon\Blog\Helper\Data');
+$title            = $dataHelper->getConfig('sidebar/tags/title');
+$showProductCount = $dataHelper->getConfig('sidebar/tags/show_post_count');
+$tags             = $block->getTags();
+?>
+<?php if ($tags) { ?>
+<div class="blog-block blog-tags">
+	<?php if ($title) { ?>
+		<div class="block-block-title"><h3><span><?= $title ?></span></h3></div>
+	<?php } ?>
+	<div class="block-block-content">
+		<?php foreach ($tags as $tag) { ?>
+			<a href="<?= $tag->getUrl() ?>"><spam><?= $tag->getTitle() ?></spam> <?php if ($showProductCount) { ?><span>(<?= $tag->getPostCount() ?>)</span><?php } ?></a>
+		<?php } ?>
+	</div>
+</div>
+<?php } ?>

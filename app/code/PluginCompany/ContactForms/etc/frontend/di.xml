@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\App\RouterList">
+        <arguments>
+            <argument name="routerList" xsi:type="array">
+                <item name="plugincompany_contactforms" xsi:type="array">
+                    <item name="class" xsi:type="string">PluginCompany\ContactForms\Controller\Router</item>
+                    <item name="disable" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="string">70</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Customer\CustomerData\SectionPoolInterface">
+        <arguments>
+            <argument name="sectionSourceMap" xsi:type="array">
+                <item name="pc-customer-data" xsi:type="string">PluginCompany\ContactForms\CustomerData\Customer</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Mail\MimeMessageInterfaceFactory">
+        <plugin name="mime_message_add_attachments" type="PluginCompany\ContactForms\Plugin\Mail\AddAttachments" sortOrder="1" />
+    </type>
+    <type name="Magento\Framework\Mail\TransportInterfaceFactory">
+        <plugin name="transport_interface_factory_add_attachments" type="PluginCompany\ContactForms\Plugin\Mail\AddAttachments" sortOrder="1" />
+    </type>
+</config>

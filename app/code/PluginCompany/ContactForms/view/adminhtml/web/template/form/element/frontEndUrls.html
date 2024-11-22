@@ -1,0 +1,32 @@
+<div data-bind="if: formId">
+    <div data-bind="if: formPageEnabled">
+        <div data-bind="if: (urlKey && formId)">
+            <div data-bind="foreach: value">
+                <div class="htmlBox" style="margin-bottom:10px;">
+                    <div data-bind="if: $parent.urlKeyUnchanged">
+                        <a data-bind="attr: { href: url}, text: url" target="_blank"></a>
+                    </div>
+                    <div data-bind="ifnot: $parent.urlKeyUnchanged">
+                        <a title="You need to save the form for the new links to become active" data-bind="text: url" style="color:#514943" target="_blank"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-bind="if: (!urlKey && formId)">
+            <div class="htmlBox">
+                Please add a URL key first to see the URLs
+            </div>
+        </div>
+    </div>
+    <div data-bind="ifnot: formPageEnabled">
+        <div class="htmlBox">
+            Front-end URLs not enabled
+        </div>
+    </div>
+</div>
+<div data-bind="ifnot: formId">
+    <div class="htmlBox">
+        Please save the form first to see the URLs
+    </div>
+</div>
+

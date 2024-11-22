@@ -1,0 +1,94 @@
+<?php
+/**
+ *
+ * Created by:  Milan Simek
+ * Company:     Plugin Company
+ *
+ * LICENSE: http://plugin.company/docs/magento-extensions/magento-extension-license-agreement
+ *
+ * YOU WILL ALSO FIND A PDF COPY OF THE LICENSE IN THE DOWNLOADED ZIP FILE
+ *
+ * FOR QUESTIONS AND SUPPORT
+ * PLEASE DON'T HESITATE TO CONTACT US AT:
+ *
+ * SUPPORT@PLUGIN.COMPANY
+ *
+ */
+
+/**
+ * Form view widget template
+ *
+ * @category    PluginCompany
+ * @package     PluginCompany_ContactForms
+ * @author      Milan Simek
+ */
+/**
+ * @var $this \PluginCompany\ContactForms\Block\Form\Widget\View
+ */
+$form = $this->getCurrentForm();
+if ($form) {
+    ?>
+<div class="<?= $this->getUniqueComponentClassName() ?>">
+    <div class="pccf-customer-data-scope" style="<?php echo $this->getWrapperStyles(); ?>" data-bind="scope: 'PCContactFormData'" >
+        <div id="pccf_form_<?php echo $form->getId() ?>"
+             class="<?php echo $this->getCssClasses(); ?> <?= $this->isCustomerLoggedIn() ? 'pc-customer-logged-in' : 'pc-customer-logged-out' ?>"
+             style="<?php echo $this->getStyles(); ?>;">
+            <img class="pccf_loader" src="<?php echo $this->getViewFileUrl('PluginCompany_ContactForms::img/gears-anim.gif'); ?>" style="position:absolute;left:50%;top:50%;margin-left:-90px;margin-top:-80px" />
+            <div class="form-view pccformwrapper <?php echo $form->getWrapClass(); ?> " style="position:relative;visibility:hidden;">
+                <?php if ($form->isPanel()) { ?>
+            <?php if ($form->getShowTitle() == '1') { ?>
+                <div class="panel-heading" style="text-align:center">
+                    <h3 class="panel-title"><?php if($f = $form->getFrontendTitle()){echo $f;}else{echo '&nbsp;';}; ?></h3>
+                </div>
+            <?php } ?>
+                <div class="panel-body" style="padding-top:14px">
+                    <?php }elseif ($form->getFormWrapper() == 'well' && $form->getShowTitle() == '1') {?>
+                        <legend style="text-align:center"><?php echo $form->getFrontendTitle();?></legend>
+                    <?php } ?>
+                    <div class="messages"></div>
+                    <div class="form-horizontal pccform" method="post" action="<?php echo $this->getSubmitUrl();?>" data-mage-init='{"validation":{}}' >
+                        <?php echo $this->getFormHtml(); ?>
+                    </div>
+                    <?php if ($form->isPanel()) { ?>
+                </div>
+            <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/x-magento-init">
+{
+    ".<?= $this->getUniqueComponentClassName() ?>": {
+        "PluginCompany_ContactForms/js/<?php echo $this->getShowFormAs(); ?>": <?php echo $this->getJsConfigJson(); ?>
+    }
+}
+</script>
+<?php if($this->isCustomerLoggedIn()) { ?>
+    <script type="text/x-magento-init">
+        {
+            ".pccf-customer-data-scope":  {
+                "Magento_Ui/js/core/app": {
+                    "components": {
+                        "PCContactFormData": {
+                            "component": "PluginCompany_ContactForms/js/data/customer"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+<?php } ?>
+
+<?php if(is_string($form->getCustomCss()) && trim($form->getCustomCss())){ ?>
+    <style type="text/css">
+        <?php echo $form->getCustomCss(); ?>
+    </style>
+<?php } ?>
+
+<script>
+    window.cssMinificationEnabled = <?= $this->isCssMinificationEnabled() ? 'true' : 'false' ?>;
+</script>
+<?php } ?>
+

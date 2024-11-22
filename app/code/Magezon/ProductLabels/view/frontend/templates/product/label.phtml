@@ -1,0 +1,211 @@
+<?php
+$product = $block->getProduct();
+$label   = $block->getProductLabel();
+$id      = 'product-label' . time()  . $product->getId() . $label->getId();
+$helper  = $this->helper('Magezon\ProductLabels\Helper\Product');
+$html    = $label->getProductpageHtml();
+if ((substr($html, 0, 3) === '<p>')) {
+	$html = substr($html, 3);
+}
+if ((substr($html, -4) === '</p>')) {
+	$html = substr($html, 0, -4);
+}
+$position = $label->getProductpagePosition();
+$target   = $action = $scripts = '';
+$styles = 'display: none;';
+if ($label->getProductpageColor()) {
+	$styles .= 'color: ' . $label->getProductpageColor() . ';';
+}
+if (trim($label->getProductpageWidth())) {
+	$styles .= 'width: ' . trim($label->getProductpageWidth()) . ';';
+}
+$styles .= $label->getProductpageStyle();
+$styles .= 'visibility: hidden;';
+$url = $label->getProductpageUrl();
+
+if ($position >=3 && $position<=11) {
+	$target = '.fotorama__stage';
+	$action = 'prependTo';
+}
+switch ($position) {
+	case 1:
+		$target = '.column.main';
+		$action = 'prependTo';
+	break;
+
+	case 2:
+		$target = '.product.media';
+		$action = 'insertBefore';
+	break;
+
+	case 3:
+		$scripts .= '$("#' . $id . '").css("top", "0");';
+		$scripts .= '$("#' . $id . '").css("right", "");';
+		$scripts .= '$("#' . $id . '").css("bottom", "");';
+		$scripts .= '$("#' . $id . '").css("left", "0");';
+	break;
+
+	case 4:
+		$scripts .= '$("#' . $id . '").css("top", "0");';
+        $scripts .= '$("#' . $id . '").css("right", (width-innerWidth)/2);';
+        $scripts .= '$("#' . $id . '").css("bottom", "");';
+        $scripts .= '$("#' . $id . '").css("left", "");';
+	break;
+
+	case 5:
+		$scripts .= '$("#' . $id . '").css("top", "0");';
+        $scripts .= '$("#' . $id . '").css("right", "0");';
+        $scripts .= '$("#' . $id . '").css("bottom", "");';
+        $scripts .= '$("#' . $id . '").css("left", "");';
+	break;
+
+	case 6:
+		$scripts .= '$("#' . $id . '").css("top", (height-innerHeight)/2);';
+        $scripts .= '$("#' . $id . '").css("right", "");';
+        $scripts .= '$("#' . $id . '").css("bottom", "");';
+        $scripts .= '$("#' . $id . '").css("left", "0");';
+	break;
+
+	case 7:
+		$scripts .= '$("#' . $id . '").css("top", (height-innerHeight)/2);';
+        $scripts .= '$("#' . $id . '").css("right", (width-innerWidth)/2);';
+        $scripts .= '$("#' . $id . '").css("bottom", "");';
+        $scripts .= '$("#' . $id . '").css("left", "");';
+	break;
+
+	case 8:
+		$scripts .= '$("#' . $id . '").css("top", (height-innerHeight)/2);';
+        $scripts .= '$("#' . $id . '").css("right", "0");';
+        $scripts .= '$("#' . $id . '").css("bottom", "");';
+        $scripts .= '$("#' . $id . '").css("left", "");';
+	break;
+
+	case 9:
+		$scripts .= '$("#' . $id . '").css("top", "");';
+        $scripts .= '$("#' . $id . '").css("right", "");';
+        $scripts .= '$("#' . $id . '").css("bottom", "0");';
+        $scripts .= '$("#' . $id . '").css("left", "0");';
+	break;
+
+	case 10:
+		$scripts .= '$("#' . $id . '").css("top", "");';
+        $scripts .= '$("#' . $id . '").css("right", (width-innerWidth)/2);';
+        $scripts .= '$("#' . $id . '").css("bottom", "0");';
+        $scripts .= '$("#' . $id . '").css("left", "");';
+	break;
+
+	case 11:
+		$scripts .= '$("#' . $id . '").css("top", "");';
+	    $scripts .= '$("#' . $id . '").css("right", "0");';
+	    $scripts .= '$("#' . $id . '").css("bottom", "0");';
+	    $scripts .= '$("#' . $id . '").css("left", "");';
+	break;
+
+	case 12:
+		$target = '.product.media';
+		$action = 'appendTo';
+	break;
+
+	case 13:
+		$target = '.product-info-main .page-title';
+		$action = 'insertBefore';
+	break;
+
+	case 14:
+		$target = '.product-info-main .page-title';
+		$action = 'insertAfter';
+	break;
+
+	case 15:
+		$target = '.product-info-main .product-info-price';
+		$action = 'insertBefore';
+		$scripts .= '$("#' . $id . '").css("overflow", "hidden");';
+	break;
+
+	case 16:
+		$target = '.product-info-main .product-info-price';
+		$action = 'insertAfter';
+	break;
+
+	case 17:
+		$target = '.product-info-main .product-reviews-summary';
+		$action = 'insertBefore';
+	break;
+
+	case 18:
+		$target = '.product-info-main .product-reviews-summary';
+		$action = 'insertAfter';
+	break;
+
+	case 19:
+		$target = '.product-info-main .box-tocart .actions';
+		$action = 'prependTo';
+	break;
+
+	case 20:
+		$target = '.product-info-main .box-tocart .actions';
+		$action = 'appendTo';
+	break;
+
+	case 21:
+		$target = '.product-info-main';
+		$action = 'appendTo';
+	break;
+}
+?>
+<div id="<?= $id ?>" class="mgz-productlabels" style="<?= $styles ?>">
+	<div class="mgz-productlabels_wrapper">
+		<?php $image = $label->getProductpageImage() ?>
+		<?php if ($url) { ?>
+			<a href="<?= $url ?>" class="mgz-productlabels-link" title="<?= $label->getName() ?>">
+		<?php } ?>
+		<?php if ($image) { ?>
+			<img <?= (strpos($label->getProductpageWidth(), 'px')!==false) ? 'width="' . str_replace(['px;', 'px', ';'], [''], $label->getProductpageWidth()) . '"' : '' ?> class="productlabels-image" src="<?= $image ?>" alt="<?= $label->getName() ?>">
+		<?php } ?>
+		<?php if ($html) { ?>
+			<div class="productlabels-conent" <?= !$image ? 'style="position: static;"' : '' ?>>
+				<?= $helper->filter($product, $html) ?>
+			</div>
+		<?php } ?>
+		<?php if ($url) { ?>
+			</a>
+		<?php } ?>
+	</div>
+</div>
+<script>
+	require(['jquery'], function($) {
+	var productGallery = $('div[data-gallery-role=gallery-placeholder]');
+	<?php if ($position >=3 && $position<=11) { ?>
+		$(productGallery).on('fotorama:ready', function (e, fotorama) {
+			var itemParent = $('.product.media');
+			var target = itemParent.find('<?= $target ?>');
+			var $gallery = $(productGallery).find('[data-gallery-role="gallery"]');
+				if (target.length) {
+					$('#<?= $id ?>').<?= $action ?>(target);
+					$('#<?= $id ?>').css('display','block');
+				} else {
+					$('#<?= $id ?>').remove();
+				}
+				$('#<?= $id ?>').css('visibility', 'visible');
+				var height      = $gallery.height();
+				var width       = $gallery.width();
+				var innerHeight = $("#<?= $id ?>").height();
+				var innerWidth  = $("#<?= $id ?>").width();
+				$('#<?= $id ?>').css('display','block');
+				<?= $scripts ?>
+				if ($("#<?= $id ?>").width() == width) {
+	                $("#<?= $id ?>").css("left", "0");
+	                $("#<?= $id ?>").css("right", "0");
+	            }
+		});
+	<?php } else { ?>
+		var target = $('<?= $target ?>');
+		if (target.length) {
+			$('#<?= $id ?>').<?= $action ?>(target);
+			$('#<?= $id ?>').css({'display':'block', 'visibility': 'visible', 'overflow': 'hidden'});
+		} else {
+			$('#<?= $id ?>').remove();
+		}
+	<?php } ?>
+	});
+</script>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="mftranslation">
+            <group id="general">
+                <field id="version_plus" translate="label comment" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <frontend_model>Magefan\TranslationPlus\Block\Adminhtml\Config\Form\Info</frontend_model>
+                </field>
+                <field id="date_time" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Last Static Content Deploy DateTime</label>
+                    <comment>DateTime example: "2022-10-21 05:00:00". Set this option only when the js-translation.json file is not writable or you use Magento Commerce on Cloud.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

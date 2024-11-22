@@ -1,0 +1,163 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+?>
+<?php
+if ($block->getRequest()->getParam('store')) {
+    return;
+}
+?>
+<script>
+    require(['jquery', 'domReady!'], function($){
+
+        function init() {
+            $('div.admin__field[data-index]').each(function () {
+                var $this = $(this);
+
+                if ($this.data('mftanslation')) {
+                    return;
+                }
+                $this.data('mftanslation', 1);
+
+                var $r = $this.find("[data-config-scope='[STORE VIEW]']");
+
+                if (!$r.length) {
+                    return;
+                }
+
+                var $fc = $this.find('.admin__field-control:first');
+
+                $a = $('<a href="#" style="margin-top:10px;display: inline-block;">' + $.mage.__("Translate") + '</a>').click(function(){
+                    var $field = $(this).parents('.admin__field:first').find('.admin__field-control').find('input,select,textarea');
+                    var attrCode = $field.parents('div.admin__field[data-index]').attr('data-index');
+
+                    if (attrCode == 'search') {
+                        return false;
+                    }
+
+                    $('body').trigger('processStart');
+                    $.ajax({
+                        'url' : '<?= $block->escapeHtml($block->getUrl('translationplus/product/translate')) ?>',
+                        'data' : {
+                            'attr_code' : attrCode,
+                            'id' : '<?= (int)$block->getRequest()->getParam('id') ?>',
+                        },
+                        'method' : 'get'
+                    }).done(function (data) {
+                        $('body').trigger('processStop');
+
+                        var $html = $(data);
+                        var $form = $html.find('#product_template_edit_form');
+
+                        $form.mage('form').mage('validation');
+                        $form.find('.fieldset-wrapper-title,.admin__legend').hide();
+
+                        if ($field.parents('.pagebuilder-wysiwyg-wrapper').length) {
+                            $form.find('#store-view-group-0 #'+attrCode).val(
+                                $field.parents('.pagebuilder-wysiwyg-wrapper').find('.placeholder-html-code').html()
+                            );
+                        } else {
+                            $form.find('#store-view-group-0 #'+attrCode).val($field.val());
+                        }
+
+                        //$form.find('.admin__field-label').hide();
+                        $form.find('.store-view-name').each(function(){
+                            $(this).parent().find('.admin__field-label span').html(
+                                $(this).html()
+                            );
+                        });
+
+                        require([
+                            'Magento_Ui/js/modal/alert',
+                        ], function( mageAlert) {
+                            mageAlert({
+                                modalClass : 'product_template_edit_modal',
+                                title: $.mage.__("Translate") + ' ' + attrCode,
+                                content: $form,
+                                actions: {
+                                    always: function () {
+                                    }
+                                },
+                                buttons: [
+                                    {
+                                        text: $.mage.__("Save"),
+                                        class: 'action-primary action-accept',
+                                        click: function () {
+
+                                            var self = this;
+                                            $('body').trigger('processStart');
+                                            var formData = $form.serializeArray();
+                                            $.ajax({
+                                                'url' : $form.attr('action'),
+                                                'method' : $form.attr('method'),
+                                                'data' : formData,
+                                                'dataType': "json"
+                                            }).done(function (data) {
+                                                $('body').trigger('processStop');
+                                                if (!data.success) {
+                                                    alert(data.message);
+                                                } else {
+
+                                                    for (var i = 0; i < formData.length; i++) {
+                                                        if (formData[i].name == '-1[' + attrCode + ']') {
+                                                            $field.val(formData[i].value).change();
+                                                            break;
+                                                        }
+                                                    }
+                                                    self.closeModal(true);
+
+                                                    mageAlert({
+                                                        title: data.message,
+                                                        actions: {
+                                                            always: function () {
+                                                            }
+                                                        },
+                                                        buttons: [
+                                                            {
+                                                                text: $.mage.__("OK"),
+                                                                class: 'action-primary action-accept',
+                                                                click: function () {
+                                                                    this.closeModal(true);
+                                                                }
+                                                            }
+                                                        ]
+                                                    });
+
+                                                }
+                                            }).fail(function (xhr, ajaxOptions, thrownError) {
+                                                alert(thrownError);
+                                                $('body').trigger('processStop');
+                                            });
+                                        }
+                                    }
+                                ]
+                            });
+
+                        });
+
+
+                    }).fail(function (xhr, ajaxOptions, thrownError) {
+                        alert(thrownError);
+                        $('body').trigger('processStop');
+                    });
+
+                })
+
+                $fc.append('<br>');
+                $fc.append($a);
+
+            });
+        }
+
+        setInterval(init, 1000);
+    });
+</script>
+
+
+<style>
+    .use-default {
+        padding-left: 15px;
+    }
+</style>

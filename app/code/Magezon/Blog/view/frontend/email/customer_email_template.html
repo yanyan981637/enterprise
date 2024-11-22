@@ -1,0 +1,20 @@
+<!--@subject {{trans "%store_name: A new review has been created" store_name=$store.getFrontendName()}} @-->
+<!--@vars {
+"var store.getFrontendName()":"Blog: Store Name",
+"var name":"Blog: Customer Name",
+"var email":"Blog: Customer Email"
+"var post_link":"Blog: Link Post"
+"var comment_detail":"Blog: Comment Detail"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<h3 class="greeting">{{trans "Hello %name," name=$name}}</h3>
+<h4 class="greeting">{{trans "A new reply review has been created"}}</h4>
+<p>{{trans "The user whose email was is %email responded to comments on your post." email=$customer_email|raw}}</p>
+<p>{{trans "Comment detail: %comment_detail" comment_detail=$comment_detail|raw}}</p>
+<p> {{trans "Link post:  <a href="%post_link">Link post</a>." post_link=$post_link|raw}} </p>
+
+<p>{{trans "Thank you}}</p>
+
+{{template config_path="design/email/footer_template"}}

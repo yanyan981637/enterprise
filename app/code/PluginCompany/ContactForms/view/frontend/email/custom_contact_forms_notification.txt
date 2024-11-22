@@ -1,0 +1,3 @@
+<!--@subject {{var email_subject|raw}} @-->
+
+{{var content_plain|raw}}

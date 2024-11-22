@@ -1,0 +1,97 @@
+.dependent_fields{
+    max-width:1200px;
+}
+.dependent_fields ul.dependent {
+    padding-left:5px;
+}
+.dependent_fields h4 {
+    margin-top:0px;
+    margin-left:5px;
+    margin-bottom:10px;
+}
+.dependent_fields li.field {
+    position:relative;
+    list-style: none;
+    padding-left:25px!important;
+}
+.dependent_parent li.field {
+    position:relative;
+    border: 1px solid #cddddd;
+    background: #FAFAFA;
+    padding: 10px;
+    margin:5px;
+
+}
+.dependent_child li.field {
+    border-radius: 3px;
+    padding:10px;
+    margin:5px;
+    /*max-width:500px;*/
+    box-shadow: 0 1px 1px rgba(48, 59, 77, 0.1), 0 1px 0 rgba(48, 59, 77, 0.1);
+    background: #ffffff;
+}
+.dependency {
+    position:relative;
+}
+.dependency .close {
+    position:absolute;
+    right:10px;
+    top:10px;
+    width:20px;
+    cursor:pointer;
+}
+.handle {
+    width:20px;
+    height:100%;
+    position:absolute;
+    left:0px;
+    top:0px;
+    background:#f5f5f5;
+    box-sizing:border-box;
+    padding:2px;
+    cursor:all-scroll;
+}
+.handle>div {
+    width:16px;
+    height:100%;
+    box-sizing:border-box;
+    position:relative;
+    background-image: -webkit-repeating-radial-gradient(center center, rgba(0,0,0,.2), rgba(0,0,0,.2) 2px, transparent 2px, transparent 100%);
+    background-image: -moz-repeating-radial-gradient(center center, rgba(0,0,0,.2), rgba(0,0,0,.2) 2px, transparent 2px, transparent 100%);
+    background-image: -ms-repeating-radial-gradient(center center, rgba(0,0,0,.2), rgba(0,0,0,.2) 2px, transparent 2px, transparent 100%);
+    background-image: repeating-radial-gradient(center center, rgba(0,0,0,.2), rgba(0,0,0,.2) 2px, transparent 2px, transparent 100%);
+    -webkit-background-size: 7px 7px;
+    -moz-background-size: 7px 7px;
+    background-size: 7px 7px;
+}
+.placeholder {
+    opacity:0.5;
+    padding: 10px;
+}
+
+.delete {
+    position: absolute;
+    right: 11px;
+    top: 11px;
+    color: #FF7272;
+    cursor:pointer;
+}
+.delete.fa-trash {
+    color:#ccc;
+    cursor:pointer;
+}
+
+.select2-container--bootstrap {
+    float:left;
+}
+
+.material-box {
+    padding: 10px;
+    margin: 5px;
+    background: #f8f8f8;
+    border: 1px solid #e3e3e3 ;
+}
+
+select option {
+    padding:5px;
+}

@@ -1,0 +1,12 @@
+<?php
+$html    = '';
+$labels  = $this->getLabels();
+$product = $this->getProduct();
+$product->setData('label_items', $labels);
+foreach ($labels as $_label) {
+	$html .= $this->getLayout()->createBlock('\Magento\Framework\View\Element\Template')
+	->setProduct($product)
+	->setProductLabel($_label)->setTemplate('Magezon_ProductLabels::product/label.phtml')->toHtml();
+}
+echo $html;
+?>

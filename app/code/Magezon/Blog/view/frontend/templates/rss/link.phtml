@@ -1,0 +1,7 @@
+<?php
+$dataHelper = $this->helper('\Magezon\Blog\Helper\Data');
+$text       = $dataHelper->getConfig('rss/text');
+?>
+<?php if ($text) { ?>
+	<a href="<?= $block->getLink() ?>" class="action link rss"><span><?= $text ?></span></a>
+<?php } ?>

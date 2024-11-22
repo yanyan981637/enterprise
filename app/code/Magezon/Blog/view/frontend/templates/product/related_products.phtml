@@ -1,0 +1,16 @@
+<?php /* @var $block Magezon\Blog\Block\Product\RelatedProducts */?>
+<?php
+$dataHelper = $this->helper('\Magezon\Blog\Helper\Data');
+$html       = $this->getPostListHtml();
+$title      = $dataHelper->getConfig('product_page/related_posts/title');
+?>
+<?php if ($html) { ?>
+<div class="blog-block blog-product-relatedposts">
+	<?php if ($title) { ?>
+		<div class="block-block-title"><h3><span><?= $title ?></span></h3></div>
+	<?php } ?>
+	<div class="block-block-content">
+		<?= $html ?>
+	</div>
+</div>
+<?php } ?>

@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+	<router id="admin">
+		<route frontName="contactforms" id="contactforms">
+			<module before="Magento_Backend" name="PluginCompany_ContactForms"/>
+		</route>
+		<route frontName="plugincompany_contactforms" id="plugincompany_contactforms">
+			<module before="Magento_Backend" name="PluginCompany_ContactForms"/>
+		</route>
+	</router>
+</config>

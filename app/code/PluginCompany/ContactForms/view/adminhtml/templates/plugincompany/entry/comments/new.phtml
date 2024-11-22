@@ -1,0 +1,56 @@
+<div id="newComment">
+    <button title="Add Comment" type="button" class="scalable add" onclick="addComment()" style="margin-bottom:10px">
+        <span><span><span>Add New Comment</span></span></span>
+    </button>
+</div>
+<div style="display:none;width:600px;margin-bottom:30px;" id="newCommentForm">
+    <textarea id="commentText" style="width:100%;height:100px;display:block;"></textarea>
+    <div class="notify">
+        <label for="notify_customer"><?php echo __("Send copy to customer"); ?></label>
+        <input type="checkbox" name="notify_customer" id="notify_customer" />
+    </div>
+    <button title="Add Comment" type="button" class="scalable add" onclick="submitComment()" style="margin-bottom:10px;margin-top:0px;float:right;clear:both;">
+        <span><span><span><?php echo __("Submit Comment"); ?></span></span></span>
+    </button>
+</div>
+
+
+<style type="text/css">
+    .notify {
+        margin-top:5px;
+        margin-bottom:5px;
+        float:right;
+    }
+    .messages {
+        clear:both;
+    }
+</style>
+
+<script type="text/javascript">
+require(["jquery", "prototype"], function(jQuery) {
+
+    function addComment(){
+        $('newComment').hide();
+        $('newCommentForm').show();
+    }
+
+    function submitComment(){
+        $('newCommentForm').hide();
+        new Ajax.Request('<?php echo \Magento\Framework\App\ObjectManager::getInstance()->get('Magento\Backend\Helper\Data')->getUrl('*/*/newComment',['_current'=>true]); ?>', {
+            method: 'post',
+            parameters: {
+                form_key:FORM_KEY,
+                content: $('commentText').value,
+                notify: $('notify_customer').checked
+            },
+            onSuccess: function() {
+                entryCommentGridJsObject.reload();
+                $('commentText').setValue('');
+                $('newComment').show();
+            }
+        });
+    }
+
+
+});
+</script>

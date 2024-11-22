@@ -1,0 +1,154 @@
+.mgz-productpagebuilder {
+	.mgz-element-inner {
+		.ppbd-product-gallery > .product.media,
+		.ppbd-product-info > .product-info-main {
+			width: 100%;
+		}
+	}
+
+	&.page-product-downloadable {
+		.product-add-form {
+			margin: 0;
+		}
+	}
+
+	.product-info-main {
+		width: 100% !important;
+	}
+
+	.ppbd-product-name {
+		margin: 0;
+	}
+
+	.ppbd-product-price {
+		> .prices-tier.items {
+			margin: 0;
+		}
+
+		.product-info-stock-sku {
+			display: none;
+		}
+	}
+
+	.ppbd-product-sku {
+		.product.sku {
+			.type {
+				font-weight: normal;
+				margin-right: 5px;
+
+				&:after {
+					content: '#:';
+				}
+			}
+
+			.value {
+				display: inline-block;
+			}
+		}
+
+		.stock.available {
+			display: none;
+		}
+
+		.product-info-stock-sku {
+			width: 100%;
+			padding: 0;
+			margin: 0;
+		}
+	}
+
+	.ppbd-product-stock {
+		.stock {
+			margin: 0;
+
+			&.available,
+			&.unavailable {
+				font-weight: 700;
+				text-transform: uppercase;
+			}
+		}
+	}
+
+	.ppbd-social-links {
+		> .product-social-links {
+			margin: 0;
+		}
+	}
+
+	.mgz-tabs-tab-title {
+		.counter {
+			&:before {
+				content: '(';
+			}
+
+			&:after {
+				content: ')';
+			}
+		}
+	}
+
+	.mgz-element {
+		&.product-info-main {
+			float: none;
+			width: 100% !important;
+		}
+	}
+
+	.mgz-element-inner {
+		.swatch-option {
+			box-sizing: unset;
+		}
+	}
+
+	.ppbd-product-addtocart {
+		.box-tocart {
+			margin-bottom: 0;
+
+			.action.tocart:not(:last-child) {
+				margin-bottom: 0;
+			}
+		}
+	}
+
+	.ppbd-sharing {
+		.ppbd-fb-like,
+		.ppbd-fb-share,
+		.ppbd-twitter-share,
+		.ppbd-pinterest,
+		.ppbd-googleplus {
+			float: left;
+			margin-right: 5px;
+		}
+
+		> div:last-child {
+			margin-right: 0;
+		}
+	}
+}
+
+//
+//  Desktop
+//  _____________________________________________
+
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m) {
+	.ppbd-product-gallery-right {
+		.fotorama__stage {
+			left: 0 !important;
+			right: auto !important;
+		}
+
+		.fotorama__nav-wrap {
+			right: 0 !important;
+			left: auto !important;
+		}
+	}
+
+	.mgz-productpagebuilder {
+		&.page-product-downloadable {
+			.product-options-wrapper,
+			.product-options-bottom {
+				width: 100%;
+			}
+		}
+	}
+}

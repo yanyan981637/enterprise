@@ -1,0 +1,7 @@
+<?php
+$product = $this->getProduct();
+?>
+<div class="ppbd-emailto">
+	<a href="<?= $block->escapeUrl($this->helper(Magento\Catalog\Helper\Product::class)->getEmailToFriendUrl($product)) ?>"
+       class="action mailto friend"><span><?= $block->escapeHtml(__('Email')) ?></span></a>
+</div>

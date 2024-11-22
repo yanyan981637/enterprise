@@ -1,0 +1,15 @@
+{
+    "name": "magefan/module-translation-plus",
+    "description": "This module allowed admin user to change translations in admin panel",
+    "type": "magento2-module",
+    "version": "2.2.0",
+    "require": {
+        "magefan/module-translation" : "2.2.0"
+    },
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "Magefan\\TranslationPlus\\": ""
+        }
+    }
+}

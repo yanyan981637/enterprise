@@ -1,0 +1,6 @@
+.page-main-actions {
+    display:none;
+}
+.page-main-actions._hidden {
+    display:block;
+}

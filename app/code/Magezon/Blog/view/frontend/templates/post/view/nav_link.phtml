@@ -1,0 +1,49 @@
+<?php /* @var $block Magezon\Blog\Block\Post\View */?>
+<?php
+$dataHelper = $this->helper('\Magezon\Blog\Helper\Data');
+$post       = $block->getCurrentPost();
+$navLinkEnable = $dataHelper->getNavLinkEnable();
+$navLinkOption = $dataHelper->getNavLinkOption();
+$navLinkPostsData = $post->getNextAndPrevPost($navLinkOption);
+?>
+
+<?php if($navLinkEnable) :?>
+    <div id="post-nav-link" class="post-nav-link">
+        <?php foreach ($navLinkPostsData as $key => $item) :?>
+            <?php $issetItemData = !$item->isEmpty(); ?>
+            <?php if($key == 'prev' && $issetItemData) :?>
+                <div class="nav-link-item post-prev">
+                    <?php if(!empty($item->getImageUrl())) :?>
+                        <div class="post-image-rating post-prev-image-wrap">
+                            <img src="<?= $block->escapeUrl($item->getImageUrl()) ?>" alt="<?= $block->escapeHtml($item->getTitle() ?? '') ?>">
+                        </div>
+                    <?php endif; ?>
+                    <div class="post-action-rating post-prev-action <?= empty($item->getImageUrl()) ? 'not-feature-image' : '' ?>">
+                        <a href="<?= $block->escapeUrl($item->getUrl()) ?>" class="nav-link-action nav-link-action-prev">
+                            <i class="fas mgz-fa-chevron-left nav-link-icon icon-prev" aria-hidden="true"></i>
+                            <span><?= $block->escapeHtml(__('Previous article')) ?></span>
+                        </a>
+                        <h4 class="post-nav-link-title"><?= $block->escapeHtml($item->getTitle() ?? '' )?></h4>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if($key == 'next' && $issetItemData) :?>
+                <div class="nav-link-item post-next">
+                    <div class="post-action-rating post-next-action <?= empty($item->getImageUrl()) ? 'not-feature-image' : '' ?>">
+                        <a href="<?= $block->escapeUrl($item->getUrl()) ?>" class="nav-link-action nav-link-action-next">
+                            <span><?= $block->escapeHtml(__('Next article')) ?></span>
+                            <i class="fas mgz-fa-chevron-right nav-link-icon icon-next" aria-hidden="true"></i>
+                        </a>
+                        <h4 class="post-nav-link-title"><?= $block->escapeHtml($item->getTitle() ?? '' )?></h4>
+                    </div>
+                    <?php if(!empty($item->getImageUrl())) :?>
+                        <div class="post-image-rating post-next-image-wrap">
+                            <img src="<?= $block->escapeUrl($item->getImageUrl()) ?>" alt="<?= $block->escapeHtml($item->getTitle() ?? '') ?>">
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

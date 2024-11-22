@@ -1,0 +1,372 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductPageBuilder
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+	<type name="Magezon\Builder\Data\Groups">
+		<arguments>
+			<argument name="groups" xsi:type="array">
+				<item name="product" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product</item>
+					<item name="sortOrder" xsi:type="number">40</item>
+				</item>
+			</argument>
+		</arguments>
+	</type>
+	<type name="Magezon\ProductPageBuilder\Model\CompositeConfigProvider">
+		<arguments>
+			<argument name="configProviders" xsi:type="array">
+				<item name="default" xsi:type="object">Magezon\ProductPageBuilder\Model\DefaultConfigProvider</item>
+			</argument>
+		</arguments>
+	</type>
+	<type name="Magezon\Builder\Data\Elements">
+		<arguments>
+			<argument name="elements" xsi:type="array">
+                <item name="tabs" xsi:type="array">
+                    <item name="disabled" xsi:type="boolean">false</item>
+                </item>
+				<item name="product_gallery" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Gallery</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element\Gallery</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/gallery.phtml</item>
+					<item name="sortOrder" xsi:type="number">500</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_name" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Name</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element\Name</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/name.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\Name</item>
+					<item name="sortOrder" xsi:type="number">502</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="builder_description" xsi:type="string">{{ element.heading_type ? 'Heading Type: ' + element.heading_type : '' }}</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_reviews_summary" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Reviews Summary</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/reviews_summary.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">504</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_price" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Price</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element\Price</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/price.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">506</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_sku" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product SKU</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/sku.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">508</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_stock_status" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Stock Status</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/stock_status.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">510</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_addtocart" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Add To Cart</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/addtocart.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">512</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_info" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Info</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/info.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">514</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_categories" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Categories</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/categories.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\Categories</item>
+					<item name="sortOrder" xsi:type="number">516</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_social_links" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Magento Social Links</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/social_links.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">518</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_sharing" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Sharing</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element\Sharing</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/sharing.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\Sharing</item>
+					<item name="sortOrder" xsi:type="number">520</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="builder_description" xsi:type="string">{{ (element.enable_facebook_like || element.enable_facebook_share || element.enable_twitter || element.enable_pinterest) ? 'Buttons: ' + (element.enable_facebook_like ? 'Facebook Like, ' : '') + (element.enable_facebook_share ? 'Facebook Share, ' : '') + (element.enable_twitter ? 'Twitter, ' : '') + (element.enable_pinterest ? 'Pinterest' : '') : '' }}</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_addtowishlist" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Add to Wish List</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/addtowishlist.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">522</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_addtocompare" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Add to Compare</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/addtocompare.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">524</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_emailto" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Mail to Friend</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/emailto.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">526</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_short_description" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Short Description</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/short_description.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\ShortDescription</item>
+					<item name="sortOrder" xsi:type="number">528</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_description" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Description</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/description.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\Description</item>
+					<item name="sortOrder" xsi:type="number">530</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_tabs" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Info Tabs</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/tabs.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">532</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_additional_information" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Additional Information</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/additional_information.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">534</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_review" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Review</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element\Review</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/review.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\Review</item>
+					<item name="sortOrder" xsi:type="number">536</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="builder_description" xsi:type="string">{{ element.display_counter ? 'Display Counter: Yes' : 'Display Counter: No' }}</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_upsell_products" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Upsell Products</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/upsell_products.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">538</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_releated_product" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Related Products</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element\RelatedProducts</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/related_products.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\RelatedProducts</item>
+					<item name="sortOrder" xsi:type="number">540</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_attribute" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Attribute</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element\Attribute</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/attribute.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\Attribute</item>
+					<item name="sortOrder" xsi:type="number">542</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="builder_description" xsi:type="string">{{ element.attribute ? 'Attribute: ' + element.attribute : '' }}</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="bundle_product_options" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Bundle Product Options</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/bundle_options.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\BundleOptions</item>
+					<item name="sortOrder" xsi:type="number">546</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_alert" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Alert</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/product_alert.phtml</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element</item>
+					<item name="sortOrder" xsi:type="number">550</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+				<item name="product_price_tier" xsi:type="array">
+					<item name="name" xsi:type="string" translate="true">Product Price Tier</item>
+					<item name="class" xsi:type="string">Magezon\ProductPageBuilder\Data\Element</item>
+					<item name="block" xsi:type="string">Magezon\ProductPageBuilder\Block\Product\Element\PriceTier</item>
+					<item name="template" xsi:type="string">Magezon_ProductPageBuilder::element/product_price_tier.phtml</item>
+					<item name="sortOrder" xsi:type="number">554</item>
+					<item name="icon" xsi:type="string">mgz-icon mgz-icon-product</item>
+					<item name="icon_styles" xsi:type="array">
+						<item name="background-color" xsi:type="string">#ff9900</item>
+					</item>
+					<item name="group" xsi:type="string">product</item>
+					<item name="area" xsi:type="string">product</item>
+				</item>
+			</argument>
+		</arguments>
+	</type>
+</config>

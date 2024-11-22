@@ -1,0 +1,40 @@
+<?php
+$param = $this->getRequest()->getParam('mgz');
+?>
+<script>
+    require(['jquery', 'Magento_Ui/js/modal/alert'], function ($) {
+        $('#productattachments_behavior').change(function () {
+            if ($(this).val() == 'append' && $('#entity').val() == 'magezon_product_attachments' ||
+                $(this).val() == 'replace' && $('#entity').val() == 'magezon_product_attachments') {
+                $('.mpa-wrapper').fadeIn();
+            } else {
+                $('.mpa-wrapper').fadeOut();
+            }
+        })
+
+        $('#entity').change(function () {
+            if ($(this).val() == 'magezon_product_attachments' && $('#productattachments_behavior').val() == 'append' ||
+                $(this).val() == 'magezon_product_attachments' && $('#productattachments_behavior').val() == 'replace') {
+                $('.mpa-wrapper').fadeIn();
+            } else {
+                $('.mpa-wrapper').fadeOut();
+            }
+        })
+
+        <?php if($param) { ?>
+        $('#entity').val("magezon_product_attachments");
+        varienImport.showBehavior("magezon_product_attachments");
+        varienImport.showSampleFile("magezon_product_attachments");
+        varienImport.showUploadFile(true);
+        <?php } ?>
+
+        $('#edit_form').on('submit', function () {
+            $('#import_post_target_frame').on('remove', function () {
+                if ($('.message-success.success').length) {
+                    $('.mpa-wrapper').remove();
+                }
+            });
+        })
+    });
+</script>
+

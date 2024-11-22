@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <virtualType name="Magezon\Blog\Ui\Post\Modifier\Pool" type="Magento\Ui\DataProvider\Modifier\Pool">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <item name="general" xsi:type="array">
+                    <item name="class" xsi:type="string">Magezon\Blog\Ui\DataProvider\Post\Form\Modifier\General</item>
+                    <item name="sortOrder" xsi:type="number">10</item>
+                </item>
+                <item name="comments" xsi:type="array">
+                    <item name="class" xsi:type="string">Magezon\Blog\Ui\DataProvider\Post\Form\Modifier\Comments</item>
+                    <item name="sortOrder" xsi:type="number">30</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magezon\Blog\Ui\DataProvider\Post\Form\DataProvider">
+        <arguments>
+            <argument name="pool" xsi:type="object">Magezon\Blog\Ui\Post\Modifier\Pool</argument>
+        </arguments>
+    </type>
+
+    <!-- PageBuilder-->
+    <virtualType name="AppearanceSourceBlogPosts" type="Magento\PageBuilder\Model\Source\VisualSelect">
+        <arguments>
+            <argument name="optionsSize" xsi:type="string">large</argument>
+            <argument name="optionsData" xsi:type="array">
+                <item name="0" xsi:type="array">
+                    <item name="value" xsi:type="string">grid</item>
+                    <item name="title" xsi:type="string" translate="true">Blog Posts</item>
+                    <item name="icon" xsi:type="string">Magento_PageBuilder::css/images/content-type/products/appearance/grid.svg</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\PageBuilder\Model\Stage\RendererPool">
+        <arguments>
+            <argument name="renderers" xsi:type="array">
+                <item name="blog_posts" xsi:type="object">Magento\PageBuilder\Model\Stage\Renderer\WidgetDirective</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

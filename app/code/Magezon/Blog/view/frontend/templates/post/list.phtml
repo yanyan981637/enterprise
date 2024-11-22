@@ -1,0 +1,94 @@
+<?php
+use Magezon\Blog\Model\Post;
+use Magezon\Blog\Model\Comment;
+
+$uid          = 'blog-' . time() . uniqid();
+$coreHelper   = $this->helper('Magezon\Core\Helper\Data');
+$dataHelper   = $this->helper('Magezon\Blog\Helper\Data');
+$commentType  = $dataHelper->getCommentType();
+$collection   = $this->getCollection();
+$count        = $collection->count();
+$showAuthor   = $this->getShowAuthor();
+$showDate     = $this->getShowDate();
+$showImage    = $this->getShowImage();
+$showCategory = $this->getShowCategory();
+$showComment  = $this->getShowComment();
+$showView     = $this->getShowView();
+$showReadTime = $this->getShowReadTime();
+$showExcerpt  = $this->getShowExcerpt();
+$layout       = $this->getListLayout() ? $this->getListLayout() : Post::LAYOUT_FIXED_THUMBNAIL;
+$col          = $this->getListColumn() ? $this->getListColumn() : 3;
+$column       = '';
+if ($layout == Post::LAYOUT_GRID || $layout == Post::LAYOUT_MASONRY) $column = $this->getListColumn() ? 'mgz-grid-col-xl-' . $col . ' mgz-grid-col-lg-' . $col . ' mgz-grid-col-md-' . $col : '';
+
+$noResultText = $this->getNoResultText() ? $this->getNoResultText() : __('We can\'t find posts matching the selection.');
+$width        = $height = null;
+if ($layout == Post::LAYOUT_GRID) {
+	$width  = 800;
+	$height = 400;
+}
+?>
+<div class="blog-post-list">
+	<div id="<?= $uid ?>" class="blog-post-listing blog-post-wrapper blog-post-list-layout-<?= $layout ?> <?= $column ?>">
+		<?php if ($count) { ?>
+			<?php foreach ($collection as $post) { ?>
+				<div class="blog-post-box blog-post-type-<?= $post->getType() ?>">
+					<div class="blog-post-box-inner">
+					<?php if (($layout == Post::LAYOUT_FULL_THUMBNAIL || $layout == Post::LAYOUT_GRID || $layout == Post::LAYOUT_MASONRY) && ($showImage && ($imageUrl = $post->getImageUrl($width, $height)))) { ?>
+					<div class="blog-post-image"><a href="<?= $post->getUrl() ?>" title="<?= $block->escapeHtml($post->getTitle()) ?>"><img src="<?= $imageUrl ?>" alt="<?= $block->escapeHtml($post->getTitle()) ?>"/><span class="blog-post-overlay"></span></a></div>
+					<?php } ?>
+					<h2 class="blog-post-box-title"><a href="<?= $post->getUrl() ?>" title="<?= $block->escapeHtml($post->getTitle()) ?>"><?= $post->getTitle() ?></a></h2>
+					<?php if ($dataHelper->getPostListing() && $dataHelper->isEnabled() && ($showAuthor || $showDate || $showCategory || $showComment || $showView)) { ?>
+					<div class="blog-post-meta">
+						<?php if ($showAuthor && ($author = $post->getAuthor())) { ?>
+						<span class="blog-post-meta-author"><i class="fas mgz-fa-user"></i><?php if ($author->getUrl()) { ?><a href="<?= $author->getUrl() ?>" title="<?= $block->escapeHtml($author->getPublicName()) ?>"><?php } ?><?= $author->getPublicName() ?><?php if ($author->getUrl()) { ?></a><?php } ?></span>
+						<?php } ?>
+						<?php if ($showDate) { ?>
+						<span class="blog-post-meta-date"><i class="far mgz-fa-clock"></i><?= $post->getCreatedAtFormatted() ?></span>
+						<?php } ?>
+						<?php if ($showCategory) { ?>
+						<?php $categories = $post->getCategoryList() ?>
+						<?php if ($categories) { ?>
+						<span class="blog-post-meta-cats"><i class="fas mgz-fa-folder"></i><?php foreach ($categories as $k => $category) { ?><a href="<?= $category->getUrl() ?>" data-id="<?= $k ?>"><?= $category->getTitle() ?></a><?= (isset($categories[$k+1]) && $categories[$k+1]) ? ', ' : '' ?><?php } ?></span>
+						<?php } ?>
+						<?php } ?>
+						<?php if ($showComment && $post->getAllowComment() && ($commentType !== Comment::TYPE_FACEBOOK)) { ?>
+						<span class="blog-post-meta-comments"><i class="fas mgz-fa-comments"></i><a href="<?= $post->getMetaCommentUrl() ?>"><?= (int)$post->getTotalComments() ?></a></span>
+						<?php } ?>
+						<?php if ($showView) { ?>
+						<span class="blog-post-meta-views"><i class="fas mgz-fa-eye"></i><?= number_format((int)$post->getTotalViews()) ?></span>
+						<?php } ?>
+                        <?php if ($showReadTime && !empty($post->getReadTime())) { ?>
+                            <span class="blog-post-meta-read-time"><i class="fas mgz-fa-book"></i><?= $block->escapeHtml($post->getReadTime()) ?> <?= __('Min read') ?></span>
+                        <?php } ?>
+					</div>
+					<?php } ?>
+					<?php if (($layout == Post::LAYOUT_FIXED_THUMBNAIL) && ($showImage && ($imageUrl = $post->getImageUrl($width, $height)))) { ?>
+					<div class="blog-post-image"><a href="<?= $post->getUrl() ?>" title="<?= $block->escapeHtml($post->getTitle()) ?>"><img src="<?= $imageUrl ?>" alt="<?= $block->escapeHtml($post->getTitle()) ?>"/><span class="blog-post-overlay"></span></a></div>
+					<?php } ?>
+					<?php if ($showExcerpt) { ?>
+					<div class="blog-post-excerpt-wrapper">
+						<?php if ($excerpt = $post->getPostExcerpt()) { ?>
+						<div class="blog-post-excerpt"><?= $excerpt ?></div>
+						<?php } ?>
+						<a class="blog-post-more-link" href="<?= $post->getUrl() ?>"><?= __('Read More »') ?></a>
+					</div>
+					<?php } ?>
+					</div>
+				</div>
+			<?php } ?>
+		<?php } else if ($noResultText) { ?>
+			<div class="blog-noresult"><?= $noResultText ?></div>
+		<?php } ?>
+	</div>
+	<?= $block->getPagerHtml() ?>
+</div>
+<?php if ($layout == Post::LAYOUT_MASONRY) { ?>
+<script>
+	require(['jquery', 'Magezon_Core/js/isotope.min'], function($, Isotope) {
+		var iso = new Isotope( '#<?= $uid ?>', {
+			itemSelector: '.blog-post-box'
+		});
+	})
+</script>
+<?php } ?>

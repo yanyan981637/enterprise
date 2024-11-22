@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="buttons" xsi:type="array">
+            <item name="search" xsi:type="array">
+                <item name="name" xsi:type="string">search</item>
+                <item name="label" xsi:type="string" translate="true">Search &amp; Translate</item>
+                <item name="class" xsi:type="string">secondary</item>
+                <item name="url" xsi:type="url" path="translationplus/translation/index"/>
+            </item>
+        </item>
+    </argument>
+</listing>

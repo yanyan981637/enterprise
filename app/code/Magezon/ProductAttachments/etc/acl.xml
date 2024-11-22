@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductAttachments
+ * @copyright Copyright (C) 2020 Magezon (https://www.magezon.com)
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magezon_Core::extensions" title="Magezon">
+                    <resource id="Magezon_ProductAttachments::product_attachments" title="Product Attachments"
+                              translate="title" sortOrder="140">
+                        <resource id="Magezon_ProductAttachments::file" title="File" translate="title" sortOrder="10">
+                            <resource id="Magezon_ProductAttachments::file_save" title="Save File" translate="title" sortOrder="10" />
+                            <resource id="Magezon_ProductAttachments::file_delete" title="Delete File" translate="title" sortOrder="20" />
+                        </resource>
+                        <resource id="Magezon_ProductAttachments::icon" title="Icon" translate="title" sortOrder="20">
+                            <resource id="Magezon_ProductAttachments::icon_save" title="Save Icon" translate="title" sortOrder="10" />
+                            <resource id="Magezon_ProductAttachments::icon_delete" title="Delete Icon" translate="title" sortOrder="20" />
+                        </resource>
+                        <resource id="Magezon_ProductAttachments::category" title="Category" translate="title" sortOrder="30">
+                            <resource id="Magezon_ProductAttachments::category_save" title="Save Category" translate="title" sortOrder="10" />
+                            <resource id="Magezon_ProductAttachments::category_delete" title="Delete Category" translate="title" sortOrder="20" />
+                        </resource>
+                        <resource id="Magezon_ProductAttachments::report" title="Report" translate="title" sortOrder="40">
+                            <resource id="Magezon_ProductAttachments::report_delete" title="Delete Report" translate="title" sortOrder="20" />
+                        </resource>
+                        <resource id="Magezon_ProductAttachments::import" title="Import" translate="title"
+                                  sortOrder="50"/>
+                    </resource>
+                </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Magezon_ProductAttachments::settings" title="Product Attachments Settings"
+                                      translate="title"/>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

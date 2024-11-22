@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductAttachments
+ * @copyright Copyright (C) 2020 Magezon (https://www.magezon.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <productattachments>
+            <general>
+                <enabled>1</enabled>
+                <extension>1</extension>
+                <email>1</email>
+                <extension>jpg,jpeg,gif,png,zip,text,pdf,mp4</extension>
+            </general>
+            <file_listing>
+                <file_icon>1</file_icon>
+                <file_size>1</file_size>
+                <downloaded>1</downloaded>
+                <description>1</description>
+            </file_listing>
+            <product_page>
+                <enabled>1</enabled>
+                <position>tab</position>
+                <list_display>1</list_display>
+                <show_max>3</show_max>
+                <title>Attachments</title>
+            </product_page>
+            <order_page>
+                <enabled>1</enabled>
+                <title>Attachments</title>
+            </order_page>
+        </productattachments>
+    </default>
+</config>

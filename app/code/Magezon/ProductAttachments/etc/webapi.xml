@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductAttachments
+ * @copyright Copyright (C) 2020 Magezon (https://www.magezon.com)
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/atmFile/:fileId" method="GET">
+        <service class="Magezon\ProductAttachments\Api\FileRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::file"/>
+        </resources>
+    </route>
+    <route url="/V1/atmFile/search" method="GET">
+        <service class="Magezon\ProductAttachments\Api\FileRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::file"/>
+        </resources>
+    </route>
+    <route url="/V1/atmFile" method="POST">
+        <service class="Magezon\ProductAttachments\Api\FileRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::file_save"/>
+        </resources>
+    </route>
+    <route url="/V1/atmFile/:id" method="PUT">
+        <service class="Magezon\ProductAttachments\Api\FileRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::file_save"/>
+        </resources>
+    </route>
+    <route url="/V1/atmFile/:fileId" method="DELETE">
+        <service class="Magezon\ProductAttachments\Api\FileRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::file_delete"/>
+        </resources>
+    </route>
+    <!--Category-->
+    <route url="/V1/atmCategory/:categoryId" method="GET">
+        <service class="Magezon\ProductAttachments\Api\CategoryRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::category"/>
+        </resources>
+    </route>
+    <route url="/V1/atmCategory/search" method="GET">
+        <service class="Magezon\ProductAttachments\Api\CategoryRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::category"/>
+        </resources>
+    </route>
+    <route url="/V1/atmCategory" method="POST">
+        <service class="Magezon\ProductAttachments\Api\CategoryRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::category_save"/>
+        </resources>
+    </route>
+    <route url="/V1/atmCategory/:id" method="PUT">
+        <service class="Magezon\ProductAttachments\Api\CategoryRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::category_save"/>
+        </resources>
+    </route>
+    <route url="/V1/atmCategory/:categoryId" method="DELETE">
+        <service class="Magezon\ProductAttachments\Api\CategoryRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::category_delete"/>
+        </resources>
+    </route>
+    <!--Icon-->
+    <route url="/V1/atmIcon/:iconId" method="GET">
+        <service class="Magezon\ProductAttachments\Api\IconRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::icon"/>
+        </resources>
+    </route>
+    <route url="/V1/atmIcon/search" method="GET">
+        <service class="Magezon\ProductAttachments\Api\IconRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::icon"/>
+        </resources>
+    </route>
+    <route url="/V1/atmIcon" method="POST">
+        <service class="Magezon\ProductAttachments\Api\IconRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::icon_save"/>
+        </resources>
+    </route>
+    <route url="/V1/atmIcon/:id" method="PUT">
+        <service class="Magezon\ProductAttachments\Api\IconRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::icon_save"/>
+        </resources>
+    </route>
+    <route url="/V1/atmIcon/:iconId" method="DELETE">
+        <service class="Magezon\ProductAttachments\Api\IconRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magezon_ProductAttachments::icon_delete"/>
+        </resources>
+    </route>
+</routes>

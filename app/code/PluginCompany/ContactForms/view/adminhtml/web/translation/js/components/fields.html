@@ -1,0 +1,295 @@
+<div class="translation">
+    {{#displayFields}}
+    <h4>{{0.id}}</h4>
+    <table class="field admin__control-table">
+        <tr>
+            <th style="width:300px;">ID</th>
+            <th style="width:400px">Default Value</th>
+            {{#storeViews}}
+            <th style="width:320px">{{name}}</th>
+            {{/storeViews}}
+            <th></th>
+        </tr>
+    {{#.}}
+        <tr>
+            <td>
+                <b>{{fieldTypeLabel}}</b>
+            </td>
+            <td>
+                <pre class="original-value {{fieldType}} {{inputType}}">{{formatValue(original, fieldType)}}</pre>
+            </td>
+            {{#translations:store}}
+            <td>
+                {{#isInput}}
+                <input style="max-width:300px" class="admin__control-text" placeholder="Enter text.." value="{{.}}">
+                {{/isInput}}
+                {{#isTextAreaSplit}}
+                <textarea style="max-width:300px;height:200px" class="admin__control-text" placeholder="Enter text.." value="{{.}}"></textarea>
+                {{/isTextAreaSplit}}
+                {{#isTextArea}}
+                <textarea style="max-width:300px;height:200px" class="admin__control-text" placeholder="Enter text.." value="{{.}}"></textarea>
+                {{/isTextArea}}
+            </td>
+            {{/translations}}
+            <td></td>
+        </tr>
+    {{/.}}
+    </table>
+    {{/displayFields}}
+</div>
+
+<div class="clearfix" />
+
+<style>
+    pre.original-value {
+        white-space: pre-wrap;
+        font-family: inherit;
+        font-size: inherit;
+        margin:0;
+    }
+    .original-value.textarea {
+        font-size:1.2rem;
+    }
+    h4 {
+        margin-top:30px;
+        font-size:1.7rem;
+    }
+    b {
+        font-weight:600;
+    }
+    .admin__control-table th {
+        font-weight: 700;
+    }
+</style>
+
+<script>
+    var $ = require('jquery');
+    component.exports = {
+        debug: true,
+        isolated:false,
+        data: function()
+        {
+            return {
+                fields: [ ],
+                formbuilderFields: [],
+                storeViews: window.StoreViews,
+                formatValue: function(value, fieldType) {
+                    if(Array.isArray(value)) {
+                        value = value.join("\n");
+                    }
+                    return value;
+                }
+            }
+        },
+        computed: {
+            displayFields: function() {
+                var groups = [];
+                var current = -1;
+                var lastId = '';
+                _.each(this.get('fields'), function(value) {
+                    if(value.id !== lastId) {
+                        current++;
+                        lastId = value.id;
+                    }
+                    if(typeof groups[current] == "undefined") {
+                        groups[current] = [];
+                    }
+                    groups[current].push(value);
+                })
+                return groups;
+            }
+        },
+        oninit: function()
+        {
+            var self = this;
+            self.set('fields', self.getTranslationJson());
+            self.updateFieldsFromBuilder();
+            window.addEventListener('formbuilderupdated', function(event) {
+                self.updateFieldsFromBuilder();
+            });
+            window.addEventListener('formfieldidchange', function(event) {
+                self.updateFieldId(event.detail);
+            })
+            window.addEventListener('formbuilderfieldremoved', function(event) {
+                self.removeFieldById(event.detail.id);
+            })
+            self.observe( 'fields fields.* displayFields.*.*.translations ', _.debounce(function ( newValue, oldValue, keypath ) {
+                self.updateTranslationFieldInForm();
+            },300));
+        },
+        getTranslationJson: function() {
+            var self = this;
+            window.TranslationJSON = _.map(window.TranslationJSON, function(field){
+                var translationObj = self.getEmptyStoreViewTranslationArray();
+                _.each(field.translations, function(value, key) {
+                    if(typeof translationObj[key] != "undefined") {
+                        translationObj[key] = value;
+                    }
+                });
+                field.translations = translationObj;
+                return field;
+            });
+            return window.TranslationJSON;
+        },
+        updateFieldsFromBuilder: _.debounce(function() {
+            var self = this;
+            var collection = window.formBuilder.builder.collection.models;
+            _.each(self.mapFormBuilderFields(collection), function(data, k) {
+                if(typeof data == "undefined" || !data) {
+                    return;
+                }
+                self.updateOrCreateFieldTranslationEntries(data, k);
+            })
+            self.sortFields();
+            self.updateTranslationFieldInForm();
+        }, 5000),
+        mapFormBuilderFields: function(collection) {
+            return _.mapObject(collection,function(field){
+                var attributes = field.attributes;
+                if(typeof attributes == "undefined"){
+                    attributes = field;
+                }
+                if(typeof attributes.fields == "undefined"){
+                    return '';
+                }
+                attributes.fields.title = attributes.title;
+                return attributes.fields;
+            });
+        },
+        updateOrCreateFieldTranslationEntries: function(data, sortKey) {
+            var self = this;
+
+            var parentFieldType = data.title;
+
+            var i = 0;
+            _.each(data, function(field) {
+                i++;
+                var sortIndex = sortKey + (i / 10000);
+                var allowedFields = [
+                    'label',
+                    'label_start',
+                    'label_end',
+                    'placeholder',
+                    'contents',
+                    'options',
+                    'defaultval',
+                    'buttonlabel',
+                    'helptext',
+                    'helptext_start',
+                    'helptext_end',
+                    'checkboxes',
+                    'radios',
+                    'content',
+                    'droptext',
+                    'pagetitle',
+                    'prevtext',
+                    'nexttext',
+                    'emptyoption',
+                    'notloggedintext'
+                ];
+
+                if(field.name == 'textarea') {
+                    field.name = 'placeholder';
+                }
+
+                if(allowedFields.indexOf(field.name) == -1) return;
+
+                var existingFieldIndex = _.findIndex(self.get('fields'), function(eField){
+                    return eField.id == self.getFieldId(data) && eField.fieldType == field.name;
+                });
+                if(existingFieldIndex != -1) {
+                    if(self.get('fields.' + existingFieldIndex + '.original') != self.getValueForField(field, data)) {
+                        self.set('fields.' + existingFieldIndex + '.original', self.getValueForField(field, data));
+                    }
+                    self.set('fields.' + existingFieldIndex + '.sortIndex', sortIndex);
+                    return;
+                }
+
+                var newFieldData = {
+                    id: self.getFieldId(data),
+                    original: self.getValueForField(field, data),
+                    parentFieldType: parentFieldType,
+                    inputType: field.type,
+                    fieldType: field.name,
+                    fieldTypeLabel: field.label,
+                    isInput: (field.type == 'input'),
+                    isTextArea: (field.type == 'textarea'),
+                    isTextAreaSplit: (field.type == 'textarea-split'),
+                    translations: self.getEmptyStoreViewTranslationArray(),
+                    sortIndex: sortIndex
+                };
+                self.push('fields', newFieldData);
+            });
+        },
+        getFieldId: function(data) {
+            if(typeof data.id != "undefined"){
+                return data.id.value;
+            }
+            if(typeof data.pagetitle != "undefined"){
+                return data.pagetitle.value;
+            }
+            try{
+                if(data.title == "Form Section") {
+                    return data.content.value;
+                }
+            } catch(err) {}
+            try{
+                return data.name.value;
+            }catch(err)  {}
+            try{
+                return data.title;
+            }catch(err)  {}
+            return;
+        },
+        getValueForField: function(field, parentField) {
+            //empty item for dropdown
+            var value = field.value;
+            if(field.type == 'textarea-split' && typeof parentField.empty != "undefined" && parentField.empty.value) {
+                if(value[0] !== parentField.empty.value) {
+                    value = value.slice();
+                    value.unshift(parentField.empty.value);
+                }
+            }
+            return value;
+        },
+        getEmptyStoreViewTranslationArray: function()
+        {
+            var storeViews = {};
+            _.each(this.get('storeViews'), function(store) {
+                storeViews['store_' + store.store_id] = "";
+            });
+            return storeViews;
+        },
+        getFieldsForSave: function() {
+            return this.get('fields');
+        },
+        sortFields: function() {
+            this.sort('fields', function(a, b) {
+                return a.sortIndex - b.sortIndex;
+            });
+            return this;
+        },
+        updateTranslationFieldInForm: _.debounce(function()
+        {
+            this.getDataSource().set('data.translation', JSON.stringify(this.get('fields')));
+        }, 200),
+        getDataSource: function() {
+            return requirejs('uiRegistry').get("plugincompany_form_form.form_form_data_source");
+        },
+        updateFieldId: function(data) {
+            var self = this;
+            _.each(self.get('fields'), function(value, key){
+                if(value.id == data.from) {
+                    self.set('fields.' + key + '.id', data.to);
+                }
+            });
+        },
+        removeFieldById: function(id) {
+            var self = this;
+            var newFields = _.reject(self.get('fields'), function(value){
+                return value.id == id;
+            });
+            self.set('fields', newFields);
+        }
+    };
+</script>

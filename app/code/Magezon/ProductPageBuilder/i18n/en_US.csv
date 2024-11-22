@@ -1,0 +1,147 @@
+Back,Back
+Delete,Delete
+"Are you sure you want to do this?","Are you sure you want to do this?"
+Preview,Preview
+Save,Save
+"Save & New","Save & New"
+"Save & Duplicate","Save & Duplicate"
+"Save & Close","Save & Close"
+"Add New Profile","Add New Profile"
+"Manage Profiles","Manage Profiles"
+Settings,Settings
+"User Guide","User Guide"
+"Change Log","Change Log"
+"Get Support","Get Support"
+"The profile has been deleted.","The profile has been deleted."
+"We can't find a profile to delete.","We can't find a profile to delete."
+"Product Page Builder","Product Page Builder"
+"This profile no longer exists.","This profile no longer exists."
+"Edit Profile","Edit Profile"
+"New Profile","New Profile"
+Profiles,Profiles
+"Product Page Builder Profiles","Product Page Builder Profiles"
+"A total of %1 record(s) have been deleted.","A total of %1 record(s) have been deleted."
+"A total of %1 record(s) have been disabled.","A total of %1 record(s) have been disabled."
+"A total of %1 record(s) have been enabled.","A total of %1 record(s) have been enabled."
+"You saved the profile.","You saved the profile."
+"You duplicated the profile","You duplicated the profile"
+"Something went wrong while saving the profile.","Something went wrong while saving the profile."
+"Enable Cache","Enable Cache"
+"Cache Lifetime (Seconds)","Cache Lifetime (Seconds)"
+"86400 by default, if not set. To refresh instantly, clear the Blocks HTML Output cache.","86400 by default, if not set. To refresh instantly, clear the Blocks HTML Output cache."
+Attribute,Attribute
+"Show Label","Show Label"
+"Gallery Options","Gallery Options"
+"Use Default Theme Settings","Use Default Theme Settings"
+"Nav Position","Nav Position"
+"Position of thumbnails. Default: Bottom","Position of thumbnails. Default: Bottom"
+Nav,Nav
+"Gallery navigation style. Default: Thumbs","Gallery navigation style. Default: Thumbs"
+Loop,Loop
+"Gallery navigation loop. Default: true","Gallery navigation loop. Default: true"
+Arrows,Arrows
+"Turn on/off arrows on the sides preview. Default: true","Turn on/off arrows on the sides preview. Default: true"
+Caption,Caption
+"Display alt text as image title. Default: false","Display alt text as image title. Default: false"
+"Allow Fullscreen","Allow Fullscreen"
+"Turn on/off fullscreen. Default: true","Turn on/off fullscreen. Default: true"
+"Nav Type","Nav Type"
+"Sliding type of thumbnails. Default: Slides","Sliding type of thumbnails. Default: Slides"
+"Transition Effect","Transition Effect"
+"Sets transition effect for slides changing Default: Slide","Sets transition effect for slides changing Default: Slide"
+"Transition Duration","Transition Duration"
+"Sets transition duration in ms Default: 500","Sets transition duration in ms Default: 500"
+"Heading Type","Heading Type"
+"Font size","Font size"
+"Text Color","Text Color"
+"Line height","Line height"
+"Font Weight","Font Weight"
+"Use Default Theme Layout","Use Default Theme Layout"
+"Widget Title","Widget Title"
+"Title Color","Title Color"
+"Title Alignment","Title Alignment"
+"Title Tag","Title Tag"
+"Show Line","Show Line"
+"Line Position","Line Position"
+"Line Color","Line Color"
+"Line Width","Line Width"
+"Widget Description","Widget Description"
+"Display Counter","Display Counter"
+"Only work when parent element type is tab","Only work when parent element type is tab"
+"Facebook Like","Facebook Like"
+"Facebook Share","Facebook Share"
+Twiter,Twiter
+Pinterest,Pinterest
+Enabled,Enabled
+Disabled,Disabled
+None,None
+Empty,Empty
+"1 column","1 column"
+"1 column Full Width","1 column Full Width"
+Edit,Edit
+"Delete %1","Delete %1"
+"Are you sure you want to delete a %1 record?","Are you sure you want to delete a %1 record?"
+"This function allows you to preview how your profile looks on product page. ","This function allows you to preview how your profile looks on product page. "
+"Categories: ","Categories: "
+"Add to Cart","Add to Cart"
+"In stock","In stock"
+"Out of stock","Out of stock"
+"Add to Wish List","Add to Wish List"
+"Add to Compare","Add to Compare"
+Tweet,Tweet
+Profile,Profile
+"General Settings","General Settings"
+"Current Version","Current Version"
+"Enable Product Page Builder","Enable Product Page Builder"
+"Default Profile","Default Profile"
+Product,Product
+"Product Gallery","Product Gallery"
+"Product Name","Product Name"
+"Product Reviews Summary","Product Reviews Summary"
+"Product Price","Product Price"
+"Product SKU","Product SKU"
+"Stock Status","Stock Status"
+"Product Add To Cart","Product Add To Cart"
+"Product Info","Product Info"
+"Product Categories","Product Categories"
+"Magento Social Links","Magento Social Links"
+"Product Sharing","Product Sharing"
+"Mail to Friend","Mail to Friend"
+"Product Short Description","Product Short Description"
+"Product Description","Product Description"
+"Product Info Tabs","Product Info Tabs"
+"Product Additional Information","Product Additional Information"
+Review,Review
+"Upsell Products","Upsell Products"
+"Related Products","Related Products"
+"Product Attribute","Product Attribute"
+"Bundle Product Options","Bundle Product Options"
+"Product Alert","Product Alert"
+"Profile Information","Profile Information"
+"Enable Profile","Enable Profile"
+From,From
+To,To
+Layout,Layout
+"Magezon Single Product Page Builder","Magezon Single Product Page Builder"
+"Delete items","Delete items"
+"Are you sure you wan't to delete selected items?","Are you sure you wan't to delete selected items?"
+Disable,Disable
+Enable,Enable
+ID,ID
+DESC,DESC
+Name,Name
+Status,Status
+"All Store Views","All Store Views"
+"Store View","Store View"
+"Delete selected items?","Delete selected items?"
+"Change status","Change status"
+"Update attributes","Update attributes"
+Thumbnail,Thumbnail
+Type,Type
+"Attribute Set","Attribute Set"
+SKU,SKU
+Price,Price
+Quantity,Quantity
+Visibility,Visibility
+Websites,Websites
+Cost,Cost

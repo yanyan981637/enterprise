@@ -1,0 +1,16 @@
+<?php /* @var $block Magezon\Blog\Block\Post\View */?>
+<?php
+$post     = $this->getCurrentPost();
+$imageUrl = $post->getImageUrl();
+$type     = $post->getType();
+$link     = $this->getVideoLink();
+?>
+<div class="blog-post-top <?= ($type == 'video' && $link) ? 'aspect-ratio-169' : '' ?>">
+	<?php if ($type == 'video' && $link) { ?>
+		<iframe width="1110" height="624" src="<?= $link ?>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	<?php } else { ?>
+		<?php if ($imageUrl) { ?>
+			<div class="blog-post-image"><img src="<?= $imageUrl ?>" alt="<?= $block->escapeHtml($post->getTitle()) ?>"/></div>
+		<?php } ?>
+	<?php } ?>
+</div>

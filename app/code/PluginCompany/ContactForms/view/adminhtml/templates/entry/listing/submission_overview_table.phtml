@@ -1,0 +1,21 @@
+<?php if($this->getSubmissionParams()) { ?>
+    <table cellpadding='0' width='100%' style='border: 1px solid grey;border-top: 1px solid #ccc;max-width:750px;'>
+        <tbody>
+        <?php foreach($this->getSubmissionParams() as $key => $param){ ?>
+            <tr>
+                <td><?php echo $key; ?></td>
+                <td><div style="max-width:750px"><?php echo $param; ?></div></td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+<?php }else { ?>
+    <table cellpadding='0' width='100%' style='border: 1px solid grey;border-top: 1px solid #ccc;max-width:750px;'>
+        <tbody>
+            <tr>
+                <td><?php echo __('No fields submitted'); ?></td>
+            </tr>
+        </tbody>
+    </table>
+<?php } ?>
+

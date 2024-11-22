@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <plugincompany_contactforms>
+            <form>
+                <breadcrumbs>1</breadcrumbs>
+                <frontendurl>1</frontendurl>
+                <url_prefix>contact</url_prefix>
+                <url_suffix>.html</url_suffix>
+                <recaptcha_position>bottomright</recaptcha_position>
+            </form>
+            <customer_notification>
+                <enable>1</enable>
+            </customer_notification>
+            <admin_notification>
+                <enable>1</enable>
+                <include_uploads>1</include_uploads>
+            </admin_notification>
+        </plugincompany_contactforms>
+    </default>
+</config>

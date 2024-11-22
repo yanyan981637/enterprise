@@ -1,0 +1,10 @@
+<?php
+$element = $this->getElement();
+$disableTierPrice = $element->getData('disable_tier_price');
+?>
+<div class="ppbd-product-price">
+	<?= $block->renderElement('product.info.price') ?>
+	<?php if (!$disableTierPrice) { ?>
+		<?= $block->renderElement('product.price.tier') ?>
+	<?php } ?>
+</div>

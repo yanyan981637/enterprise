@@ -1,0 +1,5 @@
+<?php
+$coreHelper = $this->helper('\Magezon\Core\Helper\Data');
+$post = $this->getCurrentPost();
+?>
+<div class="blog-post-content"><?= $coreHelper->filter($post->getContent()) ?></div>

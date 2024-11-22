@@ -1,0 +1,148 @@
+<div class="translation">
+    {{#displayFields:title}}
+    <h4>{{title}}</h4>
+    <table class="field admin__control-table">
+        <tr>
+            <th style="width:300px;">ID</th>
+            <th style="width:400px">Default Value</th>
+            {{#storeViews}}
+            <th style="width:320px">{{name}}</th>
+            {{/storeViews}}
+            <th></th>
+        </tr>
+        {{#.}}
+        <tr>
+            <td>
+                <b>{{label}}</b>
+            </td>
+            <td>
+                <pre class="original-value {{inputType}}">{{original}}</pre>
+            </td>
+            {{#translations:store}}
+            <td>
+                {{#if isInput(inputType)}}
+                <input style="max-width:300px" class="admin__control-text" placeholder="Enter text.." value="{{.}}">
+                {{/if}}
+                {{#if isTextarea(inputType)}}
+                <textarea style="max-width:300px;height:200px" class="admin__control-text" placeholder="Enter text.." value="{{.}}"></textarea>
+                {{/if}}
+            </td>
+            {{/translations}}
+            <td></td>
+        </tr>
+        {{/.}}
+    </table>
+    {{/displayFields}}
+</div>
+
+<div class="clearfix" />
+
+<style>
+    pre.original-value {
+        white-space: pre-wrap;
+        font-family: inherit;
+        font-size: inherit;
+        margin-top:0px;
+        margin-bottom:0px;
+    }
+    .original-value.textarea {
+        font-size:1.2rem;
+    }
+    h4 {
+        margin-top:30px;
+        font-size:1.7rem;
+    }
+    b {
+        font-weight:600;
+    }
+    .admin__control-table th {
+        font-weight: 700;
+    }
+</style>
+
+<script>
+    var $ = require('jquery');
+    var changeTracker = require("PluginCompany_ContactForms/translation/js/translatableFieldsLinker");
+    component.exports = {
+        debug: true,
+        isolated:false,
+        magic: true,
+        data: function()
+        {
+            return {
+                originalValues: new changeTracker().fields,
+                storeViews: window.StoreViews,
+                fields: this.getGeneralTranslationFromForm(),
+                formatValue: function(value, fieldType) {
+                    if(Array.isArray(value)) {
+                        value = value.join("\n");
+                    }
+                    return value;
+                },
+                isTextarea: function(type) {
+                    return type == 'textarea';
+                },
+                isInput: function(type) {
+                    return type == 'input';
+                }
+            }
+        },
+        computed: {
+            displayFields: function() {
+                return _.groupBy(this.get('fields'), 'group');
+            }
+        },
+        getGeneralTranslationFromForm: function() {
+            try{
+                return JSON.parse(this.getDataSource().data.general_translation);
+            }catch(e) {
+                return {}
+            }
+        },
+        getDataSource: function() {
+            return requirejs('uiRegistry').get("plugincompany_form_form.form_form_data_source");
+        },
+        oninit: function() {
+            var self = this;
+            this.observe( 'originalValues.*.original', function ( newValue, oldValue, keypath ) {
+                self.updateOrCreateField(keypath, newValue);
+            });
+            this.observe( 'fields.*.translations.* fields.*.original', function() {
+                this.getDataSource().set('data.general_translation', JSON.stringify(this.get('fields')));
+            })
+        },
+        updateOrCreateField: function(keypath, newValue) {
+            var self = this;
+            var id = keypath.split('.')[1];
+            if(typeof this.get('fields.' + id) != "undefined") {
+                return self.updateExistingFieldOriginalValue(id, newValue);
+            }
+            self.createNewFieldById(id);
+        },
+        updateExistingFieldOriginalValue: function(id, newValue) {
+            var field = this.get('fields.' + id);
+            var translationObj = this.getEmptyStoreViewTranslationArray();
+            _.each(field.translations, function(value, key) {
+                if(typeof translationObj[key] != "undefined") {
+                    translationObj[key] = value;
+                }
+            });
+            field.translations = translationObj;
+            field.original = newValue;
+        },
+        createNewFieldById: function(id) {
+            var original = this.get('originalValues.' + id);
+            original.translations = this.getEmptyStoreViewTranslationArray();
+            this.set('fields.' + id, original);
+        },
+        getEmptyStoreViewTranslationArray: function()
+        {
+            var storeViews = {};
+            _.each(this.get('storeViews'), function(store) {
+                storeViews['store_' + store.store_id] = "";
+            });
+            return storeViews;
+        },
+    };
+</script>
+

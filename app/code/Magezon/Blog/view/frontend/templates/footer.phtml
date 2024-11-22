@@ -1,0 +1,9 @@
+<?php
+use Magezon\Blog\Model\Comment;
+
+$dataHelper = $this->helper('\Magezon\Blog\Helper\Data');
+$type       = $dataHelper->getCommentType();
+?>
+<?php if ($type == Comment::TYPE_DISQUS) { ?>
+<script id="dsq-count-scr" src="//blog-m2-magezon-com.disqus.com/count.js" async></script>
+<?php } ?>

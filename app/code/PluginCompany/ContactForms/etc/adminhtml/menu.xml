@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+	<menu>
+		<add id="PluginCompany::cforms_top"
+             module="PluginCompany_ContactForms"
+             parent="Magento_Backend::content"
+             resource="PluginCompany_ContactForms::general"
+             sortOrder="10000"
+             title="Contact Forms"
+        />
+		<add action="plugincompany_contactforms/form/index"
+			 id="PluginCompany::plugincompany_form"
+			 module="PluginCompany_ContactForms"
+             parent="PluginCompany::cforms_top"
+			 resource="PluginCompany_ContactForms::manage_form"
+			 sortOrder="9999"
+			 title="Manage Forms"
+		/>
+		<add action="plugincompany_contactforms/entry/index"
+			 id="PluginCompany::plugincompany_entry"
+			 module="PluginCompany_ContactForms"
+			 parent="PluginCompany::cforms_top"
+			 resource="PluginCompany_ContactForms::manage_entry"
+			 sortOrder="10000"
+			 title="Form Submissions"
+		/>
+		<add action="adminhtml/system_config/edit/section/plugincompany_contactforms"
+             id="PluginCompany::plugincompany_config"
+             module="PluginCompany_ContactForms"
+             parent="PluginCompany::cforms_top"
+			 resource="PluginCompany_ContactForms::system_config"
+             sortOrder="10001"
+             title="Configuration"
+		/>
+	</menu>
+</config>

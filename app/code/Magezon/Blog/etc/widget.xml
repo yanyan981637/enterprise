@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="blog_post_list" class="Magezon\Blog\Block\Widget\PostList">
+        <label translate="true">Blog Post List</label>
+        <description translate="true"></description>
+        <parameters>
+            <parameter name="title" xsi:type="text" visible="true">
+                <label translate="true">Title</label>
+            </parameter>
+            <parameter name="list_layout" xsi:type="select" visible="true" source_model="Magezon\Blog\Model\Post\Source\WidgetLayoutList">
+                <label translate="true">List Layout</label>
+            </parameter>
+            <parameter name="grid_col" xsi:type="select" visible="true" source_model="Magezon\Blog\Model\Config\Source\GridCol">
+                <label translate="true">Grid Columns</label>
+            </parameter>
+            <parameter name="custom_class" xsi:type="text" visible="true">
+                <label translate="true">Custom Class</label>
+            </parameter>
+            <parameter name="categories" xsi:type="multiselect" visible="true" source_model="Magezon\Blog\Model\Category\Source\CategoryList">
+                <label translate="true">Categories</label>
+            </parameter>
+            <parameter name="post_ids" xsi:type="text" visible="true">
+                <label translate="true">Post IDs</label>
+                <description translate="true">Post Ids which you want to show. Example: 1, 5, 8, 10,etc</description>
+            </parameter>
+            <parameter name="featurepost" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Featured Post</label>
+            </parameter>
+            <parameter name="limit" xsi:type="text" visible="true">
+                <label translate="true">Number of Posts to Display</label>
+                <value>12</value>
+            </parameter>
+            <parameter name="padding" xsi:type="text" visible="true">
+                <label translate="true">Box Padding</label>
+                <value>20</value>
+            </parameter>
+            <parameter name="disable_box_shadow" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Disable Box Shadow</label>
+            </parameter>
+            <parameter name="disable_border" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Disable Border</label>
+            </parameter>
+            <parameter name="post_settings" xsi:type="conditions" visible="true" class="Magezon\Core\Block\Adminhtml\Widget\Field\Heading">
+                <label translate="true">Post Settings</label>
+            </parameter>
+            <parameter name="post_author" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Author Meta</label>
+            </parameter>
+            <parameter name="post_date" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Date Meta</label>
+            </parameter>
+            <parameter name="post_cats" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Categories Meta</label>
+            </parameter>
+            <parameter name="post_comments" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Comments Meta</label>
+            </parameter>
+            <parameter name="post_views" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Views Meta</label>
+            </parameter>
+            <parameter name="read_time" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Read Time Meta</label>
+            </parameter>
+            <parameter name="post_excerpt" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Excerpt</label>
+            </parameter>
+            <parameter name="owlcarousel_settings" xsi:type="conditions" visible="true" class="Magezon\Core\Block\Adminhtml\Widget\Field\Heading">
+                <label translate="true">OwlCarousel Settings</label>
+            </parameter>
+            <parameter name="owl_item_xl" xsi:type="text" visible="true">
+                <label translate="true">Large Devices, Wide Screens(>=1200px)</label>
+                <value>4</value>
+            </parameter>
+            <parameter name="owl_item_lg" xsi:type="text" visible="true">
+                <label translate="true"><![CDATA[Medium Devices, Desktops(<1200x)]]></label>
+                <value>4</value>
+            </parameter>
+            <parameter name="owl_item_md" xsi:type="text" visible="true">
+                <label translate="true"><![CDATA[Small Devices, Tablets(<992px)]]></label>
+                <value>3</value>
+            </parameter>
+            <parameter name="owl_item_sm" xsi:type="text" visible="true">
+                <label translate="true"><![CDATA[Extra Small Devices, Phones(<768px)]]></label>
+                <value>2</value>
+            </parameter>
+            <parameter name="owl_item_xs" xsi:type="text" visible="true">
+                <label translate="true"><![CDATA[Custom, iPhone Retina(<544px)]]></label>
+                <value>1</value>
+            </parameter>
+            <parameter name="owl_autoplay" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Auto Play</label>
+            </parameter>
+            <parameter name="owl_autoplay_hover_pause" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Auto Play Hover Pause</label>
+                <depends>
+                    <parameter name="owl_autoplay" value="1" />
+                </depends>
+            </parameter>
+            <parameter name="owl_autoplay_timeout" xsi:type="text" visible="true">
+                <label translate="true">Auto Play Timeout</label>
+                <depends>
+                    <parameter name="owl_autoplay" value="1" />
+                </depends>
+                <value>5000</value>
+            </parameter>
+            <parameter name="owl_nav" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Next/Prev Buttons</label>
+            </parameter>
+            <parameter name="owl_dots" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Dots Navigation</label>
+            </parameter>
+            <parameter name="owl_rtl" xsi:type="select" visible="true">
+                <label translate="true">Right To Left</label>
+                <options>
+                    <option name="yes" value="1">
+                        <label translate="true">Yes</label>
+                    </option>
+                    <option name="no" value="0" selected="true">
+                        <label translate="true">No</label>
+                    </option>
+                </options>
+            </parameter>
+            <parameter name="owl_loop" xsi:type="select" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Loop</label>
+            </parameter>
+            <parameter name="owl_margin" xsi:type="text" visible="true">
+                <label translate="true">Margin</label>
+                <value>15</value>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>

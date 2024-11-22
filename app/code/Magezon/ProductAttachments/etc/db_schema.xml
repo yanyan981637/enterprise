@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductAttachments
+ * @copyright Copyright (C) 2020 Magezon (https://www.magezon.com)
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="mgz_product_attachments_file" resource="default" engine="innodb" comment="Product Attachment file">
+        <column xsi:type="smallint" name="file_id" padding="6" unsigned="false" nullable="false" identity="true"
+                comment="File ID"/>
+        <column xsi:type="varchar" name="file_name" nullable="true" length="255" comment="file name"/>
+        <column xsi:type="varchar" name="file_label" nullable="false" length="255" comment="file label"/>
+        <column xsi:type="varchar" name="file_extension" nullable="false" length="50" comment="file extension"/>
+        <column xsi:type="text" name="description" nullable="true" comment="file description"/>
+        <column xsi:type="text" name="file_hash" nullable="true" comment="file hash"/>
+        <column xsi:type="smallint" name="category_id" padding="6" unsigned="false" nullable="false"
+                comment="File Category"/>
+        <column xsi:type="varchar" name="link" nullable="true" length="255" comment="link"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" comment="is active" default="1"/>
+        <column xsi:type="boolean" name="is_buyer" nullable="false" comment="is buyer" default="0"/>
+        <column xsi:type="varchar" name="download_name" nullable="true" length="255" comment="download name"/>
+        <column xsi:type="smallint" name="download_limit" nullable="true" default="null" padding="10" comment="download limit"/>
+        <column xsi:type="boolean" name="attach_email" nullable="false" comment="attach to email" default="1"/>
+        <column xsi:type="boolean" name="attach_order" nullable="false" comment="attach to order" default="1"/>
+        <column xsi:type="varchar" name="file_type" nullable="false" length="11" comment="file pload type" default="file"/>
+        <column xsi:type="smallint" name="download_type" padding="6" unsigned="false" nullable="true"
+                comment="Type Download"/>
+        <column xsi:type="varchar" name="priority" length="6" nullable="true" comment="Priority"/>
+        <column xsi:type="timestamp" name="creation_time" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="File created"/>
+        <column xsi:type="timestamp" name="update_time" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="File Modification Time"/>
+        <column xsi:type="mediumtext" name="conditions_serialized" nullable="true" comment="Conditions Serialized"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_FILE_CATEGORY"
+                    table="mgz_product_attachments_file"
+                    column="category_id" referenceTable="mgz_product_attachments_category"
+                    referenceColumn="category_id" onDelete="CASCADE"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="file_id"/>
+        </constraint>
+    </table>
+    <table name="mgz_product_attachments_store" resource="default" engine="innodb"
+           comment="Product Attachment File Store">
+        <column xsi:type="smallint" name="file_id" padding="6" nullable="false" comment="File ID"/>
+        <column xsi:type="smallint" name="store_id" padding="5" nullable="false" unsigned="true" comment="Store ID"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_STORE_FILE_ID"
+                    table="mgz_product_attachments_store"
+                    column="file_id" referenceTable="mgz_product_attachments_file" referenceColumn="file_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_STORE_STORE_ID"
+                    table="mgz_product_attachments_store"
+                    column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="file_id"/>
+            <column name="store_id"/>
+        </constraint>
+    </table>
+    <table name="mgz_product_attachments_product" resource="default" engine="innodb"
+           comment="Product Attachment File Product">
+        <column xsi:type="smallint" name="file_id" padding="6" nullable="false" comment="File ID"/>
+        <column xsi:type="smallint" name="store_id" padding="5" nullable="false" unsigned="true" comment="Store ID"/>
+        <column xsi:type="int" name="product_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Product ID"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_PRODUCT_ID"
+                    table="mgz_product_attachments_product"
+                    column="file_id" referenceTable="mgz_product_attachments_file" referenceColumn="file_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_STORE_PRODUCT_ID"
+                    table="mgz_product_attachments_product"
+                    column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_CATALOG_PRODUCT_ID"
+                    table="mgz_product_attachments_product"
+                    column="product_id" referenceTable="catalog_product_entity" referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="file_id"/>
+            <column name="store_id"/>
+            <column name="product_id"/>
+        </constraint>
+    </table>
+    <table name="mgz_product_attachments_icon" resource="default" engine="innodb" comment="Product Attachment file">
+        <column xsi:type="smallint" name="icon_id" padding="6" unsigned="false" nullable="false" identity="true"
+                comment="Icon ID"/>
+        <column xsi:type="text" name="name_type" nullable="false" comment="file type"/>
+        <column xsi:type="text" name="file_name" nullable="false" comment="icon name"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" comment="file status"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="icon_id"/>
+        </constraint>
+    </table>
+    <table name="mgz_product_attachments_category" resource="default" engine="innodb" comment="Product Attachment file">
+        <column xsi:type="smallint" name="category_id" padding="6" unsigned="false" nullable="false" identity="true"
+                comment="Category ID"/>
+        <column xsi:type="text" name="name" nullable="false" comment="category name"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" default="1" comment="category status"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="category_id"/>
+        </constraint>
+    </table>
+    <table name="mgz_product_attachments_customer_group" resource="default" engine="innodb"
+           comment="Product Attachment File Store">
+        <column xsi:type="smallint" name="file_id" padding="6" nullable="false" comment="File ID"/>
+        <column xsi:type="int" name="customer_group_id" padding="10" nullable="false" unsigned="true"
+                comment="Group ID"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_CUSTOMER_GROUP_FILE_ID"
+                    table="mgz_product_attachments_customer_group"
+                    column="file_id" referenceTable="mgz_product_attachments_file" referenceColumn="file_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_CUSTOMER_GROUP_ID"
+                    table="mgz_product_attachments_customer_group"
+                    column="customer_group_id" referenceTable="customer_group" referenceColumn="customer_group_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="file_id"/>
+            <column name="customer_group_id"/>
+        </constraint>
+    </table>
+    <table name="mgz_product_attachments_report" resource="default" engine="innodb"
+           comment="Product Attachment Report File Download">
+        <column xsi:type="smallint" name="report_id" padding="6" unsigned="false" nullable="false" identity="true"
+                comment="Report ID"/>
+        <column xsi:type="smallint" name="file_id" padding="6" unsigned="false" nullable="false"
+                comment="File ID"/>
+        <column xsi:type="varchar" name="file_name" nullable="true" length="255" comment="file name"/>
+        <column xsi:type="varchar" name="customer_id" nullable="true" length="255" comment="user name"/>
+        <column xsi:type="smallint" name="store_id" padding="5" nullable="false" unsigned="true" comment="Store ID"/>
+        <column xsi:type="timestamp" name="creation_time" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="report create"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_REPORT_STORE_STORE"
+                    table="mgz_product_attachments_report"
+                    column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PRODUCT_ATTACHMENTS_REPORT_FILE"
+                    table="mgz_product_attachments_report"
+                    column="file_id" referenceTable="mgz_product_attachments_file" referenceColumn="file_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="report_id"/>
+        </constraint>
+    </table>
+</schema>

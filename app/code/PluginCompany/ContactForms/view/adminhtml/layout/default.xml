@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="PluginCompany_ContactForms::iconfont/logo.css"/>
+        <css src="PluginCompany_ContactForms::css/menu.css"/>
+    </head>
+    <body>
+        <referenceContainer name="after.body.start">
+            <block class="PluginCompany\ContactForms\Block\Adminhtml\Head\Cssminification" name="is_css_minification_enabled" template="PluginCompany_ContactForms::head/cssminificationflag.phtml" />
+        </referenceContainer>
+    </body>
+</page>

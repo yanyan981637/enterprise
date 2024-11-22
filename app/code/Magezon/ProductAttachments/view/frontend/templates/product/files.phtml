@@ -1,0 +1,61 @@
+<?php
+/**
+ * @var Magezon\ProductAttachments\Block\Product\Files $block
+ */
+
+$helper = $this->helper('\Magezon\ProductAttachments\Helper\Data');
+$categoryCollection = $block->getCategoryCollection();
+$fileCollection = $block->getFileCollection();
+$blockType = $this->getData('block_type');
+$isCategory = $helper->isEnabledFileCategory();
+$maxAttach = $helper->getMaxAttach();
+?>
+<div class="mpa-block">
+    <?php if ($blockType == "button" && $helper->getTitle()) { ?>
+        <div class="mpa-block-title"><span><?= $helper->getTitle()?> (<?= $fileCollection->count() ?>)</span></div>
+    <?php } ?>
+    <div class="mpa-list">
+        <?php if ($isCategory) { ?>
+            <?php foreach ($categoryCollection as $category) { ?>
+                <div class="mpa-category">
+                    <div class="mpa-category-title">
+                        <h3><?= $category->getName() ?></h3>
+                    </div>
+                    <?= $block->getListFileHtml($fileCollection->getItemsByColumnValue('category_id', $category->getId()), $maxAttach) ?>
+                </div>
+            <?php } ?>
+        <?php } else { ?>
+            <?= $block->getListFileHtml($fileCollection, $maxAttach) ?>
+        <?php } ?>
+    </div>
+    <?php
+    if (($isCategory && $maxAttach && $categoryCollection->count()*$maxAttach < $fileCollection->count())
+        || (!$isCategory && $maxAttach && $maxAttach < $fileCollection->count()))
+    {?>
+    <a id="mpa-modal-button" data-mage-init='{"mpa-modal": {"target": "#mpa-modal"}}'>
+        <?= __('See More') ?>
+    </a>
+    <?php } ?>
+</div>
+
+<?php
+if (($isCategory && $maxAttach && $categoryCollection->count()*$maxAttach < $fileCollection->count())
+    || (!$isCategory && $maxAttach && $maxAttach < $fileCollection->count()))
+{?>
+<div id="mpa-modal">
+    <div class="mpa-list">
+        <?php if ($isCategory) { ?>
+            <?php foreach ($categoryCollection as $category) { ?>
+                <div class="mpa-category">
+                    <div class="mpa-category-title">
+                        <h3><?= $category->getName() ?></h3>
+                    </div>
+                    <?= $block->getListFileHtml($fileCollection->getItemsByColumnValue('category_id', $category->getId())) ?>
+                </div>
+            <?php } ?>
+        <?php } else { ?>
+            <?= $block->getListFileHtml($fileCollection) ?>
+        <?php } ?>
+    </div>
+</div>
+<?php } ?>

@@ -1,0 +1,24 @@
+<?php /* @var $block Magezon\Blog\Block\Sidebar\RecentComments */?>
+<?php
+use Magezon\Blog\Model\Comment;
+
+$dataHelper  = $this->helper('Magezon\Blog\Helper\Data');
+$commentType = $dataHelper->getCommentType();
+$collection  = $this->getCollection();
+$count       = $collection->count();
+?>
+<?php if ($count && $commentType == Comment::TYPE_NATIVE) { ?>
+<div class="blog-recentcomments">
+	<?php foreach ($collection as $comment) { ?>
+		<?php $post = $comment->getPost() ?>
+		<div class="blog-recomments-item">
+			<div class="blog-comment-avatar">
+				<img src="<?= $comment->getImageUrl() ?>" width="55" height="55"/>
+			</div>
+			<a href="<?= $post->getUrl() ?>#comment-<?= $comment->getId() ?>">
+				<strong><?= $this->escapeHtml($comment->getAuthor()) ?></strong>: <?= $this->getCommentContent($comment) ?>
+			</a>
+		</div>
+	<?php } ?>
+</div>
+<?php } ?>

@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <!-- Post -->
+    <route url="/V1/blogPost/:postId" method="GET">
+        <service class="Magezon\Blog\Api\PostRepositoryInterface" method="get"/>
+        <resources>
+            <resource ref="Magezon_Blog::post"/>
+        </resources>
+    </route>
+    <route url="/V1/blogPost/search" method="GET">
+        <service class="Magezon\Blog\Api\PostRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magezon_Blog::post"/>
+        </resources>
+    </route>
+    <route url="/V1/blogPost" method="POST">
+        <service class="Magezon\Blog\Api\PostRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::post"/>
+        </resources>
+    </route>
+    <route url="/V1/blogPost/:id" method="PUT">
+        <service class="Magezon\Blog\Api\PostRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::post"/>
+        </resources>
+    </route>
+    <route url="/V1/blogPost/:postId" method="DELETE">
+        <service class="Magezon\Blog\Api\PostRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magezon_Blog::post"/>
+        </resources>
+    </route>
+    <!-- Category -->
+    <route url="/V1/blogCategory/:categoryId" method="GET">
+        <service class="Magezon\Blog\Api\CategoryRepositoryInterface" method="get"/>
+        <resources>
+            <resource ref="Magezon_Blog::category"/>
+        </resources>
+    </route>
+    <route url="/V1/blogCategory/search" method="GET">
+        <service class="Magezon\Blog\Api\CategoryRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magezon_Blog::category"/>
+        </resources>
+    </route>
+    <route url="/V1/blogCategory" method="POST">
+        <service class="Magezon\Blog\Api\CategoryRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::category"/>
+        </resources>
+    </route>
+    <route url="/V1/blogCategory/:id" method="PUT">
+        <service class="Magezon\Blog\Api\CategoryRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::category"/>
+        </resources>
+    </route>
+    <route url="/V1/blogCategory/:categoryId" method="DELETE">
+        <service class="Magezon\Blog\Api\CategoryRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magezon_Blog::category"/>
+        </resources>
+    </route>
+    <!-- Tag -->
+    <route url="/V1/blogTag/:tagId" method="GET">
+        <service class="Magezon\Blog\Api\TagRepositoryInterface" method="get"/>
+        <resources>
+            <resource ref="Magezon_Blog::tag"/>
+        </resources>
+    </route>
+    <route url="/V1/blogTag/search" method="GET">
+        <service class="Magezon\Blog\Api\TagRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magezon_Blog::tag"/>
+        </resources>
+    </route>
+    <route url="/V1/blogTag" method="POST">
+        <service class="Magezon\Blog\Api\TagRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::tag"/>
+        </resources>
+    </route>
+    <route url="/V1/blogTag/:id" method="PUT">
+        <service class="Magezon\Blog\Api\TagRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::tag"/>
+        </resources>
+    </route>
+    <route url="/V1/blogTag/:tagId" method="DELETE">
+        <service class="Magezon\Blog\Api\TagRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magezon_Blog::tag"/>
+        </resources>
+    </route>
+    <!-- Author -->
+    <route url="/V1/blogAuthor/:authorId" method="GET">
+        <service class="Magezon\Blog\Api\AuthorRepositoryInterface" method="get"/>
+        <resources>
+            <resource ref="Magezon_Blog::author"/>
+        </resources>
+    </route>
+    <route url="/V1/blogAuthor/search" method="GET">
+        <service class="Magezon\Blog\Api\AuthorRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magezon_Blog::author"/>
+        </resources>
+    </route>
+    <route url="/V1/blogAuthor" method="POST">
+        <service class="Magezon\Blog\Api\AuthorRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::author"/>
+        </resources>
+    </route>
+    <route url="/V1/blogAuthor/:id" method="PUT">
+        <service class="Magezon\Blog\Api\AuthorRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::author"/>
+        </resources>
+    </route>
+    <route url="/V1/blogAuthor/:authorId" method="DELETE">
+        <service class="Magezon\Blog\Api\AuthorRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magezon_Blog::author"/>
+        </resources>
+    </route>
+    <!-- Comment -->
+    <route url="/V1/blogComment/:commentId" method="GET">
+        <service class="Magezon\Blog\Api\CommentRepositoryInterface" method="get"/>
+        <resources>
+            <resource ref="Magezon_Blog::comment"/>
+        </resources>
+    </route>
+    <route url="/V1/blogComment/search" method="GET">
+        <service class="Magezon\Blog\Api\CommentRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magezon_Blog::comment"/>
+        </resources>
+    </route>
+    <route url="/V1/blogComment" method="POST">
+        <service class="Magezon\Blog\Api\CommentRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::comment"/>
+        </resources>
+    </route>
+    <route url="/V1/blogComment/:id" method="PUT">
+        <service class="Magezon\Blog\Api\CommentRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magezon_Blog::comment"/>
+        </resources>
+    </route>
+    <route url="/V1/blogComment/:commentId" method="DELETE">
+        <service class="Magezon\Blog\Api\CommentRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Magezon_Blog::comment"/>
+        </resources>
+    </route>
+</routes>

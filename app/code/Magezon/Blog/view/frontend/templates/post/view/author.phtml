@@ -1,0 +1,45 @@
+<?php /* @var $block Magezon\Blog\Block\Post\View */?>
+<?php
+$coreHelper = $this->helper('\Magezon\Core\Helper\Data');
+$dataHelper = $this->helper('\Magezon\Blog\Helper\Data');
+$post       = $this->getCurrentPost();
+$author     = $post->getAuthor();
+?>
+<?php if ($dataHelper->getConfig('post_page/author_box') && $author) { ?>
+<?php $imageUrl = $author->getImageUrl(); ?>
+<div class="blog-block blog-post-author">
+	<div id="blog-author-bio" class="block-block-content blog-author-bio">
+		<div class="blog-author-avatar"><img alt="<?= $author->getPublicName() ?>" src="<?= $imageUrl ?>" height="100" width="100"></div>
+		<h3 class="blog-author-name"><?php if ($author->getUrl()) { ?><a href="<?= $author->getUrl() ?>" ><?php } ?><?= $author->getPublicName() ?><?php if ($author->getUrl()) { ?></a><?php } ?></h3>
+		<?php if ($authorShortContent = $author->getShortContent()) { ?>
+			<div class="author-description"><?= $coreHelper->filter($authorShortContent) ?></div>
+		<?php } ?>
+		<div class="blog-author-social flat-social">
+			<?php if ($facebook = $author->getFacebook()) { ?>
+				<a class="social-facebook" target="_blank" href="<?= $facebook ?>"><i class="fab mgz-fa-facebook-f"></i></a>
+			<?php } ?>
+			<?php if ($twitter = $author->getTwitter()) { ?>
+				<a class="social-twitter" target="_blank" href="http://twitter.com/<?= $twitter ?>"><i class="fab mgz-fa-twitter"></i></a>
+			<?php } ?>
+			<?php if ($linkedin = $author->getLinkedin()) { ?>
+				<a class="social-linkedin" target="_blank" href="<?= $linkedin ?>"><i class="fab mgz-fa-linkedin-in"></i></a>
+			<?php } ?>
+			<?php if ($flickr = $author->getFlickr()) { ?>
+				<a class="social-flickr" target="_blank" href="<?= $flickr ?>"><i class="fab mgz-fa-flickr"></i></a>
+			<?php } ?>
+			<?php if ($youtube = $author->getYoutube()) { ?>
+				<a class="social-youtube" target="_blank" href="<?= $youtube ?>"><i class="fab mgz-fa-youtube"></i></a>
+			<?php } ?>
+			<?php if ($pinterest = $author->getPinterest()) { ?>
+				<a class="social-pinterest" target="_blank" href="<?= $pinterest ?>"><i class="fab mgz-fa-pinterest-p"></i></a>
+			<?php } ?>
+			<?php if ($behance = $author->getBehance()) { ?>
+				<a class="social-behance" target="_blank" href="<?= $behance ?>"><i class="fab mgz-fa-behance"></i></a>
+			<?php } ?>
+			<?php if ($instagram = $author->getInstagram()) { ?>
+				<a class="social-instagram" target="_blank" href="<?= $instagram ?>"><i class="fab mgz-fa-instagram"></i></a>
+			<?php } ?>
+		</div>
+	</div>
+</div>
+<?php } ?>

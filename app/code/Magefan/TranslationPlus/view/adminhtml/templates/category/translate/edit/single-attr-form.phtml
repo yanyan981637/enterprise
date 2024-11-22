@@ -1,0 +1,45 @@
+<?php/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+?>
+
+<?php
+/**
+ * @var $block \Magefan\TranslationPlus\Block\Adminhtml\Product\Translate\Index
+ * @var $secureRenderer \Magento\Framework\View\Helper\SecureHtmlRenderer
+ */
+?>
+
+<?php
+$id = (int)$block->getRequest()->getParam('id');
+$attrCode = $block->getRequest()->getParam('attr_code');
+$html = $block->getGroupsHtml($attrCode);
+?>
+<form class='form' action='<?= $block->getUrl('translationplus/category/save') ?>' method='post' id='category_template_edit_form'>
+    <?php
+    $keys = array_keys($html);
+    $stores = [];
+
+    foreach ($block->getStores() as $store) {
+        $stores[] = $store;
+    }
+    ?>
+    <?php for ($i=0; $i < count($html); $i++) { ?>
+        <table style="width:100%">
+            <tbody>
+            <tr>
+                <td id="store-view-group-<?= (int)$stores[$i]->getId() ?: '0' ?>">
+                    <span style="display: none" class="store-view-name">
+                        <?= $block->escapeHtml($stores[$i]->getName()) . '<br>' . $block->escapeHtml($stores[$i]->getWebsite()->getName()) ?><br>
+                    </span>
+                    <?= $html[$keys[$i]][0] ?>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    <?php } ?>
+    <input type='hidden' name='redirect' value=1 />
+    <input type='hidden' name='id' value=<?= $block->escapeHtml($id) ?> />
+    <input type='hidden' name='form_key' value=<?= $block->escapeHtml($block->getFormKey()) ?> />
+</form>

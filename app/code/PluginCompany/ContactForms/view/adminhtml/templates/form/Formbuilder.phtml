@@ -1,0 +1,90 @@
+<?php
+/**
+ *
+ * Created by:  Milan Simek
+ * Company:     Plugin Company
+ *
+ * LICENSE: http://plugin.company/docs/magento-extensions/magento-extension-license-agreement
+ *
+ * YOU WILL ALSO FIND A PDF COPY OF THE LICENSE IN THE DOWNLOADED ZIP FILE
+ *
+ * FOR QUESTIONS AND SUPPORT
+ * PLEASE DON'T HESITATE TO CONTACT US AT:
+ *
+ * SUPPORT@PLUGIN.COMPANY
+ *
+ */
+?>
+<div class="container pccf" style="margin:auto;width:100%;max-width:1400px">
+    <div id="formBuilderRow" class="row formbuilderrow">
+        <!-- Building Form. -->
+        <div class="col-md-6" id="renderedForm">
+            <div class="clearfix">
+                <h2 class="header">Contact Form</h2>
+                <p class="header">Build up your contact form below using the form components on the right.</p>
+                <hr>
+                <div id="build">
+                    <form id="target" class="form-horizontal">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- / Building Form. -->
+
+        <!-- Components -->
+        <div id="builderComponents" class="col-md-6 builderComponents">
+
+            <h2 class="header">Form Components</h2>
+            <p class="header">Drag and drop selected form components into the Contact Form area.</p>
+            <hr>
+            <div class="tabbable">
+                <ul class="nav nav-tabs" id="formtabs">
+                    <!-- Tab nav -->
+                </ul>
+                <form id="components" class="form-horizontal">
+                    <fieldset>
+                        <div class="tab-content">
+                            <!-- Tabs of snippets go here -->
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <!-- / Components -->
+    </div>
+
+    <input id="render" style="display:none"/>
+
+</div> <!-- /container -->
+<script type="text/javascript">
+    var formcontents = <?php echo $block->getFormContentsJSON();?>
+</script>
+
+<script>
+    require([
+        'PluginCompany_ContactForms/bfb/assets/js/main-built',
+        'underscore'
+    ], function(formbuilder, _) {
+        setTimeout(function(){
+            updateFormBuilderInputs();
+        },100);
+        return {};
+    }
+    );
+
+    function updateFormBuilderInputs()
+    {
+        var jsons = window.formBuilder.builder.collection;
+        var html = window.formBuilder.builder.renderForm({
+            text: _.map(window.formBuilder.builder.collection.renderAllClean(), function(e){return e.html()}).join("\n")
+        })
+        jQuery('#render').val(html);
+        require('uiRegistry')
+            .get('plugincompany_form_form.plugincompany_form_form.form_builder.contact_form_html')
+            .value(jQuery('#render').val());
+        require('uiRegistry')
+            .get('plugincompany_form_form.plugincompany_form_form.form_builder.contact_form_json')
+            .value(JSON.stringify(jsons));
+    }
+</script>
+

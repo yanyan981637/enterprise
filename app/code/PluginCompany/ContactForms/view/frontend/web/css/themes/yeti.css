@@ -1,0 +1,865 @@
+@import url("//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700");
+/*!
+ * bootswatch v3.2.0
+ * Homepage: http://bootswatch.com
+ * Copyright 2012-2014 Thomas Park
+ * Licensed under MIT
+ * Based on Bootstrap
+*/
+/*! normalize.css v3.0.1 | MIT License | git.io/normalize */
+.pccf.yeti  {
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+.pccf.yeti  {
+  margin: 0;
+}
+.pccf.yeti h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+.pccf.yeti button,
+.pccf.yeti input,
+.pccf.yeti select,
+.pccf.yeti textarea {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+.pccf.yeti button {
+  overflow: visible;
+}
+.pccf.yeti button,
+.pccf.yeti select {
+  text-transform: none;
+}
+.pccf.yeti button {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+.pccf.yeti button::-moz-focus-inner,
+.pccf.yeti input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+.pccf.yeti input {
+  line-height: normal;
+}
+.pccf.yeti input[type="checkbox"],
+.pccf.yeti input[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+.pccf.yeti input[type="number"]::-webkit-inner-spin-button,
+.pccf.yeti input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+.pccf.yeti input[type="search"]::-webkit-search-cancel-button,
+.pccf.yeti input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+.pccf.yeti fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+.pccf.yeti legend {
+  border: 0;
+  padding: 0;
+}
+.pccf.yeti textarea {
+  overflow: auto;
+}
+@media print {
+  .pccf.yeti * {
+    text-shadow: none !important;
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .pccf.yeti p,
+  .pccf.yeti h2,
+  .pccf.yeti h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  .pccf.yeti h2,
+  .pccf.yeti h3 {
+    page-break-after: avoid;
+  }
+  .pccf.yeti select {
+    background: #fff !important;
+  }
+}
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../fonts/glyphicons-halflings-regular.eot');
+  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+.pccf.yeti * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.pccf.yeti *:before,
+.pccf.yeti *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.pccf.yeti  {
+  font-size: 10px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.pccf.yeti  {
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #222222;
+  background-color: #ffffff;
+}
+.pccf.yeti input,
+.pccf.yeti button,
+.pccf.yeti select,
+.pccf.yeti textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+.pccf.yeti h1,
+.pccf.yeti h2,
+.pccf.yeti h3,
+.pccf.yeti h4,
+.pccf.yeti h5,
+.pccf.yeti h6 {
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  line-height: 1.1;
+  color: inherit;
+}
+.pccf.yeti h1,
+.pccf.yeti h2,
+.pccf.yeti h3 {
+  margin-top: 21px;
+  margin-bottom: 10.5px;
+}
+.pccf.yeti h4,
+.pccf.yeti h5,
+.pccf.yeti h6 {
+  margin-top: 10.5px;
+  margin-bottom: 10.5px;
+}
+.pccf.yeti h1 {
+  font-size: 39px;
+}
+.pccf.yeti h2 {
+  font-size: 32px;
+}
+.pccf.yeti h3 {
+  font-size: 26px;
+}
+.pccf.yeti h4 {
+  font-size: 19px;
+}
+.pccf.yeti h5 {
+  font-size: 15px;
+}
+.pccf.yeti h6 {
+  font-size: 13px;
+}
+.pccf.yeti p {
+  margin: 0 0 10.5px;
+}
+.pccf.yeti .text-center {
+  text-align: center;
+}
+@media (min-width: 768px) {
+}
+.pccf.yeti .row {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+.pccf.yeti .col-md-2,
+.pccf.yeti .col-md-3,
+.pccf.yeti .col-md-4,
+.pccf.yeti .col-md-5,
+.pccf.yeti .col-md-6,
+.pccf.yeti .col-lg-6,
+.pccf.yeti .col-md-8,
+.pccf.yeti .col-lg-8 {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 992px) {
+  .pccf.yeti .col-md-2,
+  .pccf.yeti .col-md-3,
+  .pccf.yeti .col-md-4,
+  .pccf.yeti .col-md-5,
+  .pccf.yeti .col-md-6,
+  .pccf.yeti .col-md-8 {
+    float: left;
+  }
+  .pccf.yeti .col-md-8 {
+    width: 66.66666667%;
+  }
+  .pccf.yeti .col-md-6 {
+    width: 50%;
+  }
+  .pccf.yeti .col-md-5 {
+    width: 41.66666667%;
+  }
+  .pccf.yeti .col-md-4 {
+    width: 33.33333333%;
+  }
+  .pccf.yeti .col-md-3 {
+    width: 25%;
+  }
+  .pccf.yeti .col-md-2 {
+    width: 16.66666667%;
+  }
+}
+@media (min-width: 1200px) {
+  .pccf.yeti .col-lg-6,
+  .pccf.yeti .col-lg-8 {
+    float: left;
+  }
+  .pccf.yeti .col-lg-8 {
+    width: 66.66666667%;
+  }
+  .pccf.yeti .col-lg-6 {
+    width: 50%;
+  }
+}
+@media screen and (max-width: 767px) {
+}
+.pccf.yeti fieldset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+}
+.pccf.yeti legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 21px;
+  font-size: 22.5px;
+  line-height: inherit;
+  color: #333333;
+  border: 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+.pccf.yeti label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+.pccf.yeti input[type="radio"],
+.pccf.yeti input[type="checkbox"] {
+  margin: 4px 0 0;
+  margin-top: 1px \9;
+  line-height: normal;
+}
+.pccf.yeti select[multiple] {
+  height: auto;
+}
+.pccf.yeti input[type="radio"]:focus,
+.pccf.yeti input[type="checkbox"]:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.pccf.yeti .form-control {
+  display: block;
+  width: 100%;
+  height: 39px;
+  padding: 8px 12px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #6f6f6f;
+  background-color: #ffffff;
+  /*background-image: none;*/
+  border: 1px solid #cccccc;
+  border-radius: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+.pccf.yeti .form-control:focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+.pccf.yeti .form-control::-moz-placeholder {
+  color: #999999;
+  opacity: 1;
+}
+.pccf.yeti .form-control:-ms-input-placeholder {
+  color: #999999;
+}
+.pccf.yeti .form-control::-webkit-input-placeholder {
+  color: #999999;
+}
+.pccf.yeti textarea.form-control {
+  height: auto;
+}
+.pccf.yeti .form-group {
+  margin-bottom: 15px;
+}
+.pccf.yeti .radio,
+.pccf.yeti .checkbox {
+  position: relative;
+  display: block;
+  min-height: 21px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.pccf.yeti .radio label,
+.pccf.yeti .checkbox label {
+  padding-left: 20px;
+  margin-bottom: 0;
+  font-weight: normal;
+  cursor: pointer;
+}
+.pccf.yeti .radio input[type="radio"],
+.pccf.yeti .radio-inline input[type="radio"],
+.pccf.yeti .checkbox input[type="checkbox"],
+.pccf.yeti .checkbox-inline input[type="checkbox"] {
+  position: absolute;
+  margin-left: -20px;
+  margin-top: 4px \9;
+}
+.pccf.yeti .radio + .radio,
+.pccf.yeti .checkbox + .checkbox {
+  margin-top: -5px;
+}
+.pccf.yeti .radio-inline,
+.pccf.yeti .checkbox-inline {
+  display: inline-block;
+  padding-left: 20px;
+  margin-bottom: 0;
+  vertical-align: middle;
+  font-weight: normal;
+  cursor: pointer;
+}
+.pccf.yeti .radio-inline + .radio-inline,
+.pccf.yeti .checkbox-inline + .checkbox-inline {
+  margin-top: 0;
+  margin-left: 10px;
+}
+.pccf.yeti .input-sm {
+  height: 36px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 0;
+}
+.pccf.yeti select.input-sm {
+  height: 36px;
+  line-height: 36px;
+}
+.pccf.yeti textarea.input-sm,
+.pccf.yeti select[multiple].input-sm {
+  height: auto;
+}
+.pccf.yeti .input-lg {
+  height: 60px;
+  padding: 16px 20px;
+  font-size: 19px;
+  line-height: 1.33;
+  border-radius: 0;
+}
+.pccf.yeti select.input-lg {
+  height: 60px;
+  line-height: 60px;
+}
+.pccf.yeti textarea.input-lg,
+.pccf.yeti select[multiple].input-lg {
+  height: auto;
+}
+.pccf.yeti .help-block {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  color: #626262;
+}
+@media (min-width: 768px) {
+}
+.pccf.yeti .form-horizontal .radio,
+.pccf.yeti .form-horizontal .checkbox,
+.pccf.yeti .form-horizontal .radio-inline,
+.pccf.yeti .form-horizontal .checkbox-inline {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 9px;
+}
+.pccf.yeti .form-horizontal .radio,
+.pccf.yeti .form-horizontal .checkbox {
+  min-height: 30px;
+}
+.pccf.yeti .form-horizontal .form-group {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+@media (min-width: 768px) {
+  .pccf.yeti .form-horizontal .control-label {
+    text-align: right;
+    margin-bottom: 0;
+    padding-top: 9px;
+  }
+}
+.pccf.yeti .btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 8px 12px;
+  font-size: 15px;
+  line-height: 1.4;
+  border-radius: 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.pccf.yeti .btn:focus,
+.pccf.yeti .btn:active:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.pccf.yeti .btn:hover,
+.pccf.yeti .btn:focus {
+  color: #333333;
+  text-decoration: none;
+}
+.pccf.yeti .btn:active {
+  outline: 0;
+  background-image: none;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.pccf.yeti .btn-default {
+  color: #333333;
+  background-color: #e7e7e7;
+  border-color: #cccccc;
+}
+.pccf.yeti .btn-default:hover,
+.pccf.yeti .btn-default:focus,
+.pccf.yeti .btn-default:active {
+  color: #333333;
+  background-color: #cecece;
+  border-color: #adadad;
+}
+.pccf.yeti .btn-default:active {
+  background-image: none;
+}
+.pccf.yeti .btn-primary {
+  color: #ffffff;
+  background-color: #008cba;
+  border-color: #0079a1;
+}
+.pccf.yeti .btn-primary:hover,
+.pccf.yeti .btn-primary:focus,
+.pccf.yeti .btn-primary:active {
+  color: #ffffff;
+  background-color: #006687;
+  border-color: #004b63;
+}
+.pccf.yeti .btn-primary:active {
+  background-image: none;
+}
+.pccf.yeti .btn-success {
+  color: #ffffff;
+  background-color: #43ac6a;
+  border-color: #3c9a5f;
+}
+.pccf.yeti .btn-success:hover,
+.pccf.yeti .btn-success:focus,
+.pccf.yeti .btn-success:active {
+  color: #ffffff;
+  background-color: #358753;
+  border-color: #2b6e44;
+}
+.pccf.yeti .btn-success:active {
+  background-image: none;
+}
+.pccf.yeti .btn-info {
+  color: #ffffff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.pccf.yeti .btn-info:hover,
+.pccf.yeti .btn-info:focus,
+.pccf.yeti .btn-info:active {
+  color: #ffffff;
+  background-color: #31b0d5;
+  border-color: #269abc;
+}
+.pccf.yeti .btn-info:active {
+  background-image: none;
+}
+.pccf.yeti .btn-warning {
+  color: #ffffff;
+  background-color: #e99002;
+  border-color: #d08002;
+}
+.pccf.yeti .btn-warning:hover,
+.pccf.yeti .btn-warning:focus,
+.pccf.yeti .btn-warning:active {
+  color: #ffffff;
+  background-color: #b67102;
+  border-color: #935b01;
+}
+.pccf.yeti .btn-warning:active {
+  background-image: none;
+}
+.pccf.yeti .btn-danger {
+  color: #ffffff;
+  background-color: #f04124;
+  border-color: #ea2f10;
+}
+.pccf.yeti .btn-danger:hover,
+.pccf.yeti .btn-danger:focus,
+.pccf.yeti .btn-danger:active {
+  color: #ffffff;
+  background-color: #d32a0e;
+  border-color: #b1240c;
+}
+.pccf.yeti .btn-danger:active {
+  background-image: none;
+}
+@media (min-width: 768px) {
+}
+.pccf.yeti .input-group {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+}
+.pccf.yeti .input-group .form-control {
+  position: relative;
+  z-index: 2;
+  float: left;
+  width: 100%;
+  margin-bottom: 0;
+}
+.pccf.yeti .input-group-addon,
+.pccf.yeti .input-group .form-control {
+  display: table-cell;
+}
+.pccf.yeti .input-group-addon {
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.pccf.yeti .input-group-addon {
+  padding: 8px 12px;
+  font-size: 15px;
+  font-weight: normal;
+  line-height: 1;
+  color: #6f6f6f;
+  text-align: center;
+  background-color: #eeeeee;
+  border: 1px solid #cccccc;
+  border-radius: 0;
+}
+.pccf.yeti .input-group-addon input[type="checkbox"] {
+  margin-top: 0;
+}
+.pccf.yeti .input-group .form-control:first-child,
+.pccf.yeti .input-group-addon:first-child {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.pccf.yeti .input-group-addon:first-child {
+  border-right: 0;
+}
+.pccf.yeti .input-group .form-control:last-child,
+.pccf.yeti .input-group-addon:last-child {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+.pccf.yeti .input-group-addon:last-child {
+  border-left: 0;
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (max-width: 767px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (max-width: 767px) {
+}
+@media (max-width: 767px) {
+}
+@media screen and (min-width: 768px) {
+}
+.pccf.yeti .alert {
+  padding: 15px;
+  margin-bottom: 21px;
+  border: 1px solid transparent;
+  border-radius: 0;
+}
+.pccf.yeti .alert-success {
+  background-color: #43ac6a;
+  border-color: #3c9a5f;
+  color: #ffffff;
+}
+.pccf.yeti .alert-info {
+  background-color: #5bc0de;
+  border-color: #3db5d8;
+  color: #ffffff;
+}
+.pccf.yeti .alert-warning {
+  background-color: #e99002;
+  border-color: #d08002;
+  color: #ffffff;
+}
+.pccf.yeti .alert-danger {
+  background-color: #f04124;
+  border-color: #ea2f10;
+  color: #ffffff;
+}
+@-webkit-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+.pccf.yeti .panel {
+  margin-bottom: 21px;
+  background-color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 0;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.pccf.yeti .panel-heading {
+  padding: 10px 15px;
+  border-bottom: 1px solid transparent;
+  border-top-right-radius: -1;
+  border-top-left-radius: -1;
+}
+.pccf.yeti .panel-title {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 17px;
+  color: inherit;
+}
+.pccf.yeti .panel-default {
+  border-color: #dddddd;
+}
+.pccf.yeti .panel-default > .panel-heading {
+  color: #333333;
+  background-color: #f5f5f5;
+  border-color: #dddddd;
+}
+.pccf.yeti .panel-primary {
+  border-color: #008cba;
+}
+.pccf.yeti .panel-primary > .panel-heading {
+  color: #ffffff;
+  background-color: #008cba;
+  border-color: #008cba;
+}
+.pccf.yeti .panel-success {
+  border-color: #3c9a5f;
+}
+.pccf.yeti .panel-success > .panel-heading {
+  color: #ffffff;
+  background-color: #43ac6a;
+  border-color: #3c9a5f;
+}
+.pccf.yeti .panel-info {
+  border-color: #3db5d8;
+}
+.pccf.yeti .panel-info > .panel-heading {
+  color: #ffffff;
+  background-color: #5bc0de;
+  border-color: #3db5d8;
+}
+.pccf.yeti .panel-warning {
+  border-color: #d08002;
+}
+.pccf.yeti .panel-warning > .panel-heading {
+  color: #ffffff;
+  background-color: #e99002;
+  border-color: #d08002;
+}
+.pccf.yeti .well {
+  min-height: 20px;
+  padding: 19px;
+  margin-bottom: 20px;
+  background-color: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+@media (min-width: 768px) {
+}
+@media screen and (min-width: 768px) {
+}
+.pccf.yeti .row:before,
+.pccf.yeti .row:after,
+.pccf.yeti .form-horizontal .form-group:before,
+.pccf.yeti .form-horizontal .form-group:after {
+  content: " ";
+  display: table;
+}
+.pccf.yeti .row:after,
+.pccf.yeti .form-horizontal .form-group:after {
+  clear: both;
+}
+@-ms-viewport {
+  width: device-width;
+}
+.pccf.yeti .btn {
+  padding: 8px 12px;
+}
+.pccf.yeti label,
+.pccf.yeti .control-label,
+.pccf.yeti .help-block,
+.pccf.yeti .checkbox,
+.pccf.yeti .radio {
+  font-size: 12px;
+  font-weight: normal;
+}
+.pccf.yeti .alert {
+  font-size: 12px;
+  font-weight: 300;
+}
+.pccf.yeti .panel-heading {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+@media (max-width: 992px) {
+    .pccf fieldset {
+        padding:10px!important;
+    }
+}
+
+.pccf .col-lg-8>p {
+    clear: both;
+}
+.pccf .validation-advice {color:inherit}
+.pccf .required-control .control-label:after {
+    content: " *";
+    color: #fc4c5e;
+}
+.pccf label {font-size:inherit!important;}
+.pccf {background:none!important;}
+
+.pccf .input-group-addon {
+    padding-top: 0px!important;
+    padding-bottom: 0px!important;
+}
+.pccf .form-horizontal.pccform fieldset {padding:10px!important}
+.pccf textarea {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* RTL FIX */
+.pccf.yeti.rtl .input-group-addon:last-child {
+    border-right: 0!important;
+    border-left: 1px solid #ccc!important;
+}
+
+.pccf.yeti.rtl .input-group-addon:first-child {
+    border-left: 0!important;
+    border-right: 1px solid #ccc!important;
+}
+
+/* navigation inactive item */
+
+.pccf.yeti .nav-wizard > li > a {
+    color: #008cba;
+    background-color: #e7e7e7;
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.pccf.yeti .nav-wizard > li:not(:last-child) > a:after {
+    border-left: 20px solid #e7e7e7;
+}
+
+/* navigation active item */
+
+.pccf.yeti .nav-wizard > li.active > a:after {
+    border-left-color: #008cba;
+}
+.pccf.yeti .nav-wizard > li.active > a, .pccf.yeti .nav-wizard > li.active > a:hover, .pccf.yeti .nav-wizard > li.active > a:focus {
+    color: #fff;
+    background-color: #008cba;
+}
+
+/* navigation background */
+
+.pccf.yeti .well .nav-wizard > li:not(:first-child) > a:before {
+    border-left: 20px solid #FAFAFA;
+}
+.pccf.yeti .panel .nav-wizard > li:not(:first-child) > a:before {
+    border-left: 20px solid #fff;
+}
+
+/* small navigation inactive tab */
+
+.pccf.smallnav.yeti .nav-wizard > li:before {
+    color: #008cba;
+    background-color: #e7e7e7;
+    border-color: #e7e7e7;
+}
+
+/* small navigation active tab */
+
+.pccf.smallnav.yeti .nav-wizard > li.active:before {
+    color: #fff;
+    background-color: #008cba;
+    border-color: #008cba;
+}
+
+/* small navigation background */
+
+.pccf.smallnav.yeti ul.nav-wizard:before {
+    background: #e7e7e7;
+}

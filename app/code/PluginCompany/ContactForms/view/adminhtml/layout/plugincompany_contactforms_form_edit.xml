@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<update handle="styles"/>
+	<update handle="editor"/>
+	<head>
+		<css src="PluginCompany_ContactForms::css/lib/bootstrap-3.0.0/dist/css/bootstrap.css"/>
+		<css src="PluginCompany_ContactForms::css/shared.css"/>
+		<css src="PluginCompany_ContactForms::bfb/assets/css/custom.css"/>
+		<css src="PluginCompany_ContactForms::dfields/src/styles-wrapped.css"/>
+        <css src="PluginCompany_ContactForms::css/fix-listing-massaction-checkbox.css"/>
+	</head>
+	<body>
+		<referenceContainer name="content">
+			<uiComponent name="plugincompany_form_form"/>
+		</referenceContainer>
+	</body>
+</page>

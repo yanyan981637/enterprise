@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:PluginCompany_ContactForms:etc/widget.xsd">
+  <widget id="contactforms_form_view" class="PluginCompany\ContactForms\Block\Form\Widget\View" is_email_compatible="true">
+    <label translate="true">Custom Contact Form</label>
+    <description translate="true">Form view widget</description>
+    <parameters>
+      <parameter name="form_id" xsi:type="block" required="true" visible="true">
+        <label translate="true">Widget form</label>
+        <block class="PluginCompany\ContactForms\Block\Adminhtml\Form\Widget\Chooser">
+          <data>
+            <item xsi:type="array" name="button">
+              <item xsi:type="string" translate="true" name="open">Select Form</item>
+            </item>
+          </data>
+        </block>
+      </parameter>
+      <parameter name="show_form_as" xsi:type="select" required="true" visible="true">
+        <label translate="true">Display form as</label>
+        <description translate="true">Display a regular form, a pop-up or a slide-out form.</description>
+        <options>
+          <option name="form" value="form">
+            <label translate="true">Regular Form</label>
+          </option>
+          <option name="popup" value="popup">
+            <label translate="true">Pop-up Widget</label>
+          </option>
+          <option name="slideout" value="slideout">
+            <label translate="true">Slide-out Widget</label>
+          </option>
+        </options>
+      </parameter>
+      <parameter name="popup_max_width" xsi:type="text" visible="true">
+        <label translate="true">Pop-up width</label>
+        <description translate="true">Maximum width of the pop-up form in pixels, for example 600px. Leave empty to use the default width.</description>
+        <depends>
+          <parameter name="show_form_as" value="popup"/>
+        </depends>
+      </parameter>
+      <parameter name="display_as_button" xsi:type="select" required="true" visible="true">
+        <label translate="true">Pop-up link/button</label>
+        <depends>
+          <parameter name="show_form_as" value="popup"/>
+        </depends>
+        <options>
+          <option name="no" value="0">
+            <label translate="true">Link</label>
+          </option>
+          <option name="yes" value="1">
+            <label translate="true">Button</label>
+          </option>
+        </options>
+      </parameter>
+      <parameter name="link_title" xsi:type="text" required="true" visible="true">
+        <label translate="true">Link/button text</label>
+        <depends>
+          <parameter name="show_form_as" value="popup"/>
+        </depends>
+      </parameter>
+      <parameter name="wrap_in_block" xsi:type="select" required="true" visible="true">
+        <label translate="true">Create sidebar block</label>
+        <description translate="true">Show the pop-up link/button as a sidebar content block.</description>
+        <depends>
+          <parameter name="show_form_as" value="popup"/>
+        </depends>
+        <options>
+          <option name="no" value="0">
+            <label translate="true">No</label>
+          </option>
+          <option name="yes" value="1">
+            <label translate="true">Yes</label>
+          </option>
+        </options>
+      </parameter>
+      <parameter name="auto_hide" xsi:type="select" required="true" visible="true">
+        <label translate="true">Auto hide</label>
+        <description translate="true">Auto hide pop-up after succesful submission.</description>
+        <depends>
+          <parameter name="show_form_as" value="popup"/>
+        </depends>
+        <options>
+          <option name="no" value="0">
+            <label translate="true">No</label>
+          </option>
+          <option name="yes" value="1">
+            <label translate="true">Yes</label>
+          </option>
+        </options>
+      </parameter>
+      <parameter name="widget_title" xsi:type="text" required="true" visible="true">
+        <label translate="true">Sidebar block title</label>
+        <depends>
+          <parameter name="wrap_in_block" value="1"/>
+          <parameter name="show_form_as" value="popup"/>
+        </depends>
+      </parameter>
+      <parameter name="link_text" xsi:type="text" required="false" visible="true">
+        <label translate="true">Sidebar block text</label>
+        <depends>
+          <parameter name="wrap_in_block" value="1"/>
+          <parameter name="show_form_as" value="popup"/>
+        </depends>
+      </parameter>
+      <parameter name="slideout_position" xsi:type="select" required="true" visible="true">
+        <label translate="true">Slide-out widget position</label>
+        <description translate="true">The page position of the slide-out widget button and contact form.</description>
+        <depends>
+          <parameter name="show_form_as" value="slideout"/>
+        </depends>
+        <options>
+          <option name="left" value="left">
+            <label translate="true">Left</label>
+          </option>
+          <option name="right" value="right">
+            <label translate="true">Right</label>
+          </option>
+          <option name="bottomleft" value="bottom_left">
+            <label translate="true">Bottom-left</label>
+          </option>
+          <option name="bottomright" value="bottom_right">
+            <label translate="true">Bottom-right</label>
+          </option>
+        </options>
+      </parameter>
+      <parameter name="title" xsi:type="text" required="false" visible="true">
+        <label translate="true">Widget button text</label>
+        <description translate="true">Text shown in the slide-out widget button. Leave empty to show the default envelope icon.</description>
+        <depends>
+          <parameter name="show_form_as" value="slideout"/>
+        </depends>
+      </parameter>
+      <parameter name="title_color" xsi:type="block" required="true" visible="true">
+        <label translate="true">Button text / icon color</label>
+        <depends>
+          <parameter name="show_form_as" value="slideout"/>
+        </depends>
+        <block class="PluginCompany\ContactForms\Block\Adminhtml\Form\Widget\Colorpicker">
+          <data>
+            <item xsi:type="string" name="default_value">#FFFFFF</item>
+          </data>
+        </block>
+      </parameter>
+      <parameter name="button_color" xsi:type="block" required="true" visible="true">
+        <label translate="true">Button background color</label>
+        <depends>
+          <parameter name="show_form_as" value="slideout"/>
+        </depends>
+        <block class="PluginCompany\ContactForms\Block\Adminhtml\Form\Widget\Colorpicker">
+          <data>
+            <item xsi:type="string" name="default_value">#EE6E73</item>
+          </data>
+        </block>
+      </parameter>
+      <parameter name="auto_hide" xsi:type="select" required="true" visible="true">
+        <label translate="true">Auto hide</label>
+        <description translate="true">Auto hide form after succesful submission.</description>
+        <depends>
+          <parameter name="show_form_as" value="slideout"/>
+        </depends>
+        <options>
+          <option name="no" value="0">
+            <label translate="true">No</label>
+          </option>
+          <option name="yes" value="1">
+            <label translate="true">Yes</label>
+          </option>
+        </options>
+      </parameter>
+      <parameter name="auto_hide_popup" xsi:type="select" required="true" visible="true">
+        <label translate="true">Auto hide</label>
+        <description translate="true">Auto hide form after succesful submission.</description>
+        <depends>
+          <parameter name="show_form_as" value="popup"/>
+        </depends>
+        <options>
+          <option name="no" value="0">
+            <label translate="true">No</label>
+          </option>
+          <option name="yes" value="1">
+            <label translate="true">Yes</label>
+          </option>
+        </options>
+      </parameter>
+    </parameters>
+  </widget>
+</widgets>

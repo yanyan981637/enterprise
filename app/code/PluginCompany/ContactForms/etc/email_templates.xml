@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="custom_contact_forms_notification" label="Custom Contact Forms Notification" file="custom_contact_forms_notification.html" type="html" module="PluginCompany_ContactForms" area="frontend"/>
+    <template id="custom_contact_forms_notification_plain" label="Custom Contact Forms Notification (Plain Text)" file="custom_contact_forms_notification.txt" type="text" module="PluginCompany_ContactForms" area="frontend"/>
+</config>

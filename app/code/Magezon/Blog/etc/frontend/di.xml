@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+	<type name="Magento\Framework\App\RouterList">
+		<arguments>
+			<argument name="routerList" xsi:type="array">
+				<item name="blog" xsi:type="array">
+					<item name="class" xsi:type="string">Magezon\Blog\Controller\Router</item>
+					<item name="disable" xsi:type="boolean">false</item>
+					<item name="sortOrder" xsi:type="string">0</item>
+				</item>
+			</argument>
+		</arguments>
+	</type>
+	<type name="Magezon\Blog\Controller\Post\View">
+		<plugin name="reportPostView" type="\Magezon\Blog\Plugin\Controller\Post\View" />
+	</type>
+	<type name="Magento\Theme\Block\Html\Topmenu">
+		<plugin name="blogTopMenu" type="Magezon\Blog\Plugin\Block\TopMenu"/>
+	</type>
+</config>

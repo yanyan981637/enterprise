@@ -1,0 +1,101 @@
+{
+    "mgz_product_attachments_file": {
+        "column": {
+            "file_id": true,
+            "file_name": true,
+            "file_label": true,
+            "file_extension": true,
+            "description": true,
+            "file_hash": true,
+            "category_id": true,
+            "icon_id": true,
+            "url_link": true,
+            "is_active": true,
+            "limit_download": true,
+            "attach_email": true,
+            "attach_order": true,
+            "file_type": true,
+            "type_download_id": true,
+            "priority": true,
+            "creation_time": true,
+            "update_time": true,
+            "conditions_serialized": true
+        },
+        "constraint": {
+            "FK_604D6BFEDA9DEA8B7F959C474CBE3DDD": true,
+            "FK_1824CD2338FDC2B980F5A1192A0F1A5D": true,
+            "PRIMARY": true
+        }
+    },
+    "mgz_product_attachments_store": {
+        "column": {
+            "file_id": true,
+            "store_id": true
+        },
+        "constraint": {
+            "FK_C9A956DFDB252B2562B4C5CB1961839E": true,
+            "MGZ_PRODUCT_ATTACHMENTS_STORE_STORE_ID_STORE_STORE_ID": true,
+            "PRIMARY": true
+        }
+    },
+    "mgz_product_attachments_product": {
+        "column": {
+            "file_id": true,
+            "store_id": true,
+            "product_id": true
+        },
+        "constraint": {
+            "MGZ_PRD_ATTACHMENTS_PRD_FILE_ID_MGZ_PRD_ATTACHMENTS_FILE_FILE_ID": true,
+            "MGZ_PRODUCT_ATTACHMENTS_PRODUCT_STORE_ID_STORE_STORE_ID": true,
+            "MGZ_PRD_ATTACHMENTS_PRD_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true,
+            "PRIMARY": true
+        }
+    },
+    "mgz_product_attachments_icon": {
+        "column": {
+            "icon_id": true,
+            "name_type": true,
+            "file_name": true,
+            "is_active": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "mgz_product_attachments_category": {
+        "column": {
+            "category_id": true,
+            "name": true,
+            "is_active": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "mgz_product_attachments_customer_group": {
+        "column": {
+            "file_id": true,
+            "customer_group_id": true
+        },
+        "constraint": {
+            "FK_3013C2C70A412A00060D1A18C592EDB9": true,
+            "FK_946F4EA9727176DDC98FA32C2C6A25F2": true,
+            "PRIMARY": true
+        }
+    },
+    "mgz_product_attachments_report": {
+        "column": {
+            "report_id": true,
+            "file_id": true,
+            "file_name": true,
+            "customer_id": true,
+            "store_id": true,
+            "creation_time": true
+        },
+        "constraint": {
+            "MGZ_PRODUCT_ATTACHMENTS_REPORT_STORE_ID_STORE_STORE_ID": true,
+            "FK_7A725C2FE4B9F2DFD438544A94405377": true,
+            "PRIMARY": true
+        }
+    }
+}

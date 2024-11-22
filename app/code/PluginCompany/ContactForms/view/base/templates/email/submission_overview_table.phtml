@@ -1,0 +1,12 @@
+<?php if($this->getSubmissionParams()) { ?>
+    <table cellpadding='4' width='500'>
+        <tbody>
+        <?php foreach($this->getSubmissionParams() as $param){ ?>
+            <tr>
+                <td width='150'><?php echo $param['label']; ?></td>
+                <td><?php echo $param['value']; ?></td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+<?php } ?>

@@ -1,0 +1,200 @@
+<?xml version="1.0" ?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+	<argument name="data" xsi:type="array">
+		<item name="js_config" xsi:type="array">
+			<item name="provider" xsi:type="string">plugincompany_form_entries.plugincompany_entry_grid_data_source</item>
+			<item name="deps" xsi:type="string">plugincompany_form_entries.plugincompany_entry_grid_data_source</item>
+		</item>
+		<item name="spinner" xsi:type="string">plugincompany_entry_columns</item>
+		<item name="buttons" xsi:type="array">
+			<item name="add" xsi:type="array">
+				<item name="name" xsi:type="string">add</item>
+				<item name="label" translate="true" xsi:type="string">Hidden Button Workaround</item>
+				<item name="class" xsi:type="string">hidden primary</item>
+				<item name="url" xsi:type="string">*/*/new</item>
+			</item>
+		</item>
+	</argument>
+	<dataSource name="plugincompany_entry_grid_data_source">
+		<argument name="dataProvider" xsi:type="configurableObject">
+			<argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
+			<argument name="name" xsi:type="string">plugincompany_entry_grid_data_source</argument>
+			<argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+			<argument name="requestFieldName" xsi:type="string">id</argument>
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default_sort" xsi:type="string">entity_id</item>
+					<item name="default_dir" xsi:type="string">DESC</item>
+					<item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
+					<item name="update_url" path="mui/index/render" xsi:type="url"/>
+					<item name="storageConfig" xsi:type="array">
+						<item name="indexField" xsi:type="string">entity_id</item>
+					</item>
+					<item name="filter_url_params" xsi:type="array">
+						<item name="form_id" xsi:type="string">*</item>
+					</item>
+				</item>
+			</argument>
+		</argument>
+	</dataSource>
+	<listingToolbar name="listing_top">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="sticky" xsi:type="boolean">false</item>
+			</item>
+		</argument>
+		<bookmark name="bookmark"/>
+		<columnsControls name="columns_controls"/>
+		<exportButton name="export_button">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="additionalParams" xsi:type="array">
+                        <item name="form_id" xsi:type="string">*</item>
+                    </item>
+                </item>
+            </argument>
+        </exportButton>
+		<filters name="entry_listing_filters" />
+		<paging name="listing_paging"/>
+		<massaction name="listing_massaction">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="selectProvider" xsi:type="string">plugincompany_form_entries.plugincompany_form_entries.plugincompany_entry_columns.ids</item>
+					<item name="indexField" xsi:type="string">entity_id</item>
+				</item>
+			</argument>
+			<action name="delete">
+				<argument name="data" xsi:type="array">
+					<item name="config" xsi:type="array">
+						<item name="type" xsi:type="string">delete</item>
+						<item name="label" xsi:type="string" translate="true">Delete</item>
+						<item name="url" xsi:type="url" path="plugincompany_contactforms/entry/massDelete">
+                            <param name="_current">1</param>
+                        </item>
+						<item name="confirm" xsi:type="array">
+							<item name="title" xsi:type="string" translate="true">Delete items</item>
+							<item name="message" xsi:type="string" translate="true">Are you sure you want to delete selected items?</item>
+						</item>
+					</item>
+				</argument>
+			</action>
+		</massaction>
+	</listingToolbar>
+	<columns name="plugincompany_entry_columns">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="editorConfig" xsi:type="array">
+					<item name="selectProvider" xsi:type="string">plugincompany_form_entries.plugincompany_form_entries.plugincompany_entry_columns.ids</item>
+					<item name="enabled" xsi:type="boolean">false</item>
+					<item name="indexField" xsi:type="string">entity_id</item>
+					<item name="clientConfig" xsi:type="array">
+						<item name="saveUrl" path="plugincompany_contactforms/Entry/inlineEdit" xsi:type="url"/>
+						<item name="validateBeforeSave" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</item>
+		</argument>
+		<selectionsColumn name="ids">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="indexField" xsi:type="string">entity_id</item>
+				</item>
+			</argument>
+		</selectionsColumn>
+		<column name="entity_id">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="filter" xsi:type="string">textRange</item>
+					<item name="sorting" xsi:type="string">desc</item>
+					<item name="label" translate="true" xsi:type="string">ID</item>
+					<item name="hidden" xsi:type="boolean">true</item>
+				</item>
+			</argument>
+		</column>
+		<column name="increment_text">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="filter" xsi:type="string">textRange</item>
+					<item name="label" translate="true" xsi:type="string">Reference</item>
+					<item name="dataScope" xsi:type="string">increment_text</item>
+				</item>
+			</argument>
+		</column>
+		<column name="form_id" class="PluginCompany\ContactForms\Block\Adminhtml\Entry\Listing\Renderer\ParentFormLink">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+					<item name="label" translate="true" xsi:type="string">Contact Form</item>
+				</item>
+			</argument>
+		</column>
+		<column name="store_id" class="Magento\Store\Ui\Component\Listing\Column\Store">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+					<item name="sortable" xsi:type="boolean">false</item>
+					<item name="label" xsi:type="string" translate="true">Store View</item>
+					<item name="dataScope" xsi:type="string">store_id</item>
+				</item>
+			</argument>
+		</column>
+		<column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="filter" xsi:type="string">dateRange</item>
+					<item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
+					<item name="dataType" xsi:type="string">date</item>
+					<item name="label" xsi:type="string" translate="true">Created At</item>
+					<item name="dataScope" xsi:type="string">created_at</item>
+				</item>
+			</argument>
+		</column>
+		<column name="status">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="object">PluginCompany\ContactForms\Model\Entry\Source\Status</item>
+				<item name="config" xsi:type="array">
+					<item name="filter" xsi:type="string">select</item>
+					<item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+					<item name="editor" xsi:type="string">select</item>
+					<item name="dataType" xsi:type="string">select</item>
+					<item name="label" xsi:type="string" translate="true">Status</item>
+					<item name="dataScope" xsi:type="string">status</item>
+				</item>
+			</argument>
+		</column>
+		<column name="customer_name">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="filter" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Customer Name</item>
+				</item>
+			</argument>
+		</column>
+		<column name="customer_email">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="filter" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Customer E-mail</item>
+					<item name="dataScope" xsi:type="string">customer_email</item>
+				</item>
+			</argument>
+		</column>
+		<column name="fields" class="PluginCompany\ContactForms\Block\Adminhtml\Entry\Listing\Renderer\Fields">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+						<item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                        <item name="label" translate="true" xsi:type="string">Form Submission</item>
+                        <item name="dataScope" xsi:type="string">fields</item>
+						<item name="fit" xsi:type="boolean">true</item>
+                    </item>
+                </argument>
+		</column>
+		<actionsColumn class="PluginCompany\ContactForms\Ui\Component\Listing\Column\EntryActions" name="actions">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="indexField" xsi:type="string">entity_id</item>
+				</item>
+			</argument>
+		</actionsColumn>
+	</columns>
+</listing>

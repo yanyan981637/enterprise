@@ -1,0 +1,9 @@
+<?php
+$element        = $block->getElement();
+$showLabel      = $element->getData('show_label');
+$attributeValue = $block->getAttributeValue();
+$attributelabel = $block->getAttributeLabel();
+?>
+<div class="ppbd-product-attribute">
+	<?php if ($showLabel) { ?><strong><?= $attributelabel ?></strong>: <?php } ?><?= $attributeValue ?>
+</div>

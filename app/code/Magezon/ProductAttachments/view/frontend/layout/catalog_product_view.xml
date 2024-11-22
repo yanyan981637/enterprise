@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductAttachments
+ * @copyright Copyright (C) 2020 Magezon (https://www.magezon.com)
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="product.info.details">
+            <block
+                    ifconfig="productattachments/product_page/enabled"
+                    class="Magezon\ProductAttachments\Block\Product\Files"
+                    name="file.tab"
+                    as="files"
+                    group="detailed_info">
+                <arguments>
+                    <argument translate="true" name="title" xsi:type="string">Files</argument>
+                    <argument name="sort_order" xsi:type="string">40</argument>
+                    <argument name="block_type" xsi:type="string">tab</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+        <referenceContainer name="product.info.main">
+            <block
+                    ifconfig="productattachments/product_page/enabled"
+                    class="Magezon\ProductAttachments\Block\Product\Files"
+                    name="attach.button.title"
+                    after="-">
+                <arguments>
+                    <argument name="block_type" xsi:type="string">button</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

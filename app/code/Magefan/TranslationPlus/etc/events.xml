@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="magefan_translation_save_after">
+        <observer name="magefan_translation_plus_observer_magefan_translation_save_after" instance="Magefan\TranslationPlus\Observer\Magefan\TranslationSaveAfter"/>
+    </event>
+    <event name="magefan_translation_save_before">
+        <observer name="magefan_translation_plus_observer_magefan_translation_save_before" instance="Magefan\TranslationPlus\Observer\Magefan\TranslationSaveBefore"/>
+    </event>
+    <event name="magefan_translation_save_import_entity_before">
+        <observer name="magefan_translation_observer_save_import_entity_before" instance="Magefan\TranslationPlus\Observer\Magefan\TranslationSaveImportBefore"  disabled="false" />
+    </event>
+</config>

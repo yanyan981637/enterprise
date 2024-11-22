@@ -1,0 +1,30 @@
+<?php
+/**
+ * @var Magezon\Blog\Block\Adminhtml\Author\Validate $block
+ */
+$authorUrlKeys = $block->getAllAuthorUrlKey();
+?>
+<script>
+    require(
+        [
+            'Magento_Ui/js/lib/validation/validator',
+            'jquery',
+            'mage/translate',
+            'uiRegistry'
+        ],
+        function (validator, $, $t, uiRegistry) {
+            validator.addRule(
+                'validation-url-exist',
+                function (value) {
+                    var authorUrlKeys = <?= json_encode($authorUrlKeys); ?>;
+                    if($.inArray(value, authorUrlKeys) >= 0) {
+                        return false;
+                    }
+                    return true;
+                }
+                ,
+                $.mage.__('URL Key exist.')
+            );
+        }
+    );
+</script>

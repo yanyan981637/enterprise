@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+    	<add id="Magezon_Blog::blog" title="Blog" translate="title" module="Magento_Backend" sortOrder="10"
+             parent="Magento_Backend::content" resource="Magezon_Blog::blog"/>
+        <add id="Magezon_Blog::post" title="Posts" translate="title" module="Magezon_Blog" sortOrder="0"
+             parent="Magezon_Blog::blog" action="blog/post" resource="Magezon_Blog::post"/>
+        <add id="Magezon_Blog::category" title="Categories" translate="title" module="Magezon_Blog" sortOrder="30"
+             parent="Magezon_Blog::blog" action="blog/category" resource="Magezon_Blog::category"/>
+        <add id="Magezon_Blog::tag" title="Tags" translate="title" module="Magezon_Blog" sortOrder="40"
+             parent="Magezon_Blog::blog" action="blog/tag" resource="Magezon_Blog::tag"/>
+        <add id="Magezon_Blog::comment" title="Comments" translate="title" module="Magezon_Blog" sortOrder="50"
+             parent="Magezon_Blog::blog" action="blog/comment" resource="Magezon_Blog::comment"/>
+        <add id="Magezon_Blog::author" title="Authors" translate="title" module="Magezon_Blog" sortOrder="60"
+             parent="Magezon_Blog::blog" action="blog/author" resource="Magezon_Blog::author"/>
+        <add id="Magezon_Blog::profile" title="My Profile" translate="title" module="Magezon_Blog" sortOrder="70"
+             parent="Magezon_Blog::blog" action="blog/profile" resource="Magezon_Blog::profile"/>
+        <add id="Magezon_Blog::import" title="Import" translate="title" module="Magezon_Blog" sortOrder="80"
+             parent="Magezon_Blog::blog" action="blog/import" resource="Magezon_Blog::import"/>
+        <add id="Magezon_Blog::settings" title="Settings" translate="title" module="Magezon_Blog" sortOrder="1000"
+             parent="Magezon_Blog::blog" action="adminhtml/system_config/edit/section/mgzblog" resource="Magezon_Blog::settings"/>
+    </menu>
+</config>

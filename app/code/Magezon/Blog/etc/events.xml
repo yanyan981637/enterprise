@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="magezon_blog_api_data_postinterface_save_before">
+        <observer name="blog_post_save_before" instance="Magento\Framework\EntityManager\Observer\BeforeEntitySave" />
+    </event>
+    <event name="magezon_blog_api_data_postinterface_save_after">
+        <observer name="blog_post_save_after" instance="Magento\Framework\EntityManager\Observer\AfterEntitySave" />
+    </event>
+    <event name="magezon_blog_api_data_postinterface_delete_before">
+        <observer name="blog_post_delete_before" instance="Magento\Framework\EntityManager\Observer\BeforeEntityDelete" />
+    </event>
+    <event name="magezon_blog_api_data_postinterface_delete_after">
+        <observer name="blog_post_delete_after" instance="Magento\Framework\EntityManager\Observer\AfterEntityDelete" />
+    </event>
+    <event name="magezon_blog_api_data_postinterface_load_after">
+        <observer name="blog_post_load_after" instance="Magento\Framework\EntityManager\Observer\AfterEntityLoad" />
+    </event>
+    <event name="magezon_blog_api_data_categoryinterface_save_before">
+        <observer name="blog_category_save_before" instance="Magento\Framework\EntityManager\Observer\BeforeEntitySave" />
+    </event>
+    <event name="magezon_blog_api_data_categoryinterface_save_after">
+        <observer name="blog_category_save_after" instance="Magento\Framework\EntityManager\Observer\AfterEntitySave" />
+    </event>
+    <event name="magezon_blog_api_data_categoryinterface_delete_before">
+        <observer name="blog_category_delete_before" instance="Magento\Framework\EntityManager\Observer\BeforeEntityDelete" />
+    </event>
+    <event name="magezon_blog_api_data_categoryinterface_delete_after">
+        <observer name="blog_category_delete_after" instance="Magento\Framework\EntityManager\Observer\AfterEntityDelete" />
+    </event>
+    <event name="magezon_blog_api_data_categoryinterface_load_after">
+        <observer name="blog_category_load_after" instance="Magento\Framework\EntityManager\Observer\AfterEntityLoad" />
+    </event>
+    <event name="magezon_blog_api_data_taginterface_save_before">
+        <observer name="blog_tag_save_before" instance="Magento\Framework\EntityManager\Observer\BeforeEntitySave" />
+    </event>
+    <event name="magezon_blog_api_data_taginterface_save_after">
+        <observer name="blog_tag_save_after" instance="Magento\Framework\EntityManager\Observer\AfterEntitySave" />
+    </event>
+    <event name="magezon_blog_api_data_taginterface_delete_before">
+        <observer name="blog_tag_delete_before" instance="Magento\Framework\EntityManager\Observer\BeforeEntityDelete" />
+    </event>
+    <event name="magezon_blog_api_data_taginterface_delete_after">
+        <observer name="blog_tag_delete_after" instance="Magento\Framework\EntityManager\Observer\AfterEntityDelete" />
+    </event>
+    <event name="magezon_blog_api_data_taginterface_load_after">
+        <observer name="blog_tag_load_after" instance="Magento\Framework\EntityManager\Observer\AfterEntityLoad" />
+    </event>
+    <event name="magezon_blog_api_data_authorinterface_save_before">
+        <observer name="blog_author_save_before" instance="Magento\Framework\EntityManager\Observer\BeforeEntitySave" />
+    </event>
+    <event name="magezon_blog_api_data_authorinterface_save_after">
+        <observer name="blog_author_save_after" instance="Magento\Framework\EntityManager\Observer\AfterEntitySave" />
+    </event>
+    <event name="magezon_blog_api_data_authorinterface_delete_before">
+        <observer name="blog_author_delete_before" instance="Magento\Framework\EntityManager\Observer\BeforeEntityDelete" />
+    </event>
+    <event name="magezon_blog_api_data_authorinterface_delete_after">
+        <observer name="blog_author_delete_after" instance="Magento\Framework\EntityManager\Observer\AfterEntityDelete" />
+    </event>
+    <event name="magezon_blog_api_data_authorinterface_load_after">
+        <observer name="blog_author_load_after" instance="Magento\Framework\EntityManager\Observer\AfterEntityLoad" />
+    </event>
+    <event name="controller_action_predispatch_blog_comment_post">
+        <observer name="recaptcha_post_comment_form" instance="Magezon\Blog\Observer\RecaptchaFormObserver"/>
+    </event>
+    <event name="admin_system_config_changed_section_mgzblog">
+        <observer name="admin_system_config_changed_section_mgzblog" instance="Magezon\Blog\Observer\UpdateRecaptchaConfig"/>
+    </event>
+    <event name="admin_system_config_changed_section_recaptcha_frontend">
+        <observer name="admin_system_config_changed_section_recaptcha_frontend" instance="Magezon\Blog\Observer\UpdateRecaptchaConfig"/>
+    </event>
+</config>

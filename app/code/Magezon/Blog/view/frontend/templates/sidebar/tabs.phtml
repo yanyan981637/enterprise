@@ -1,0 +1,74 @@
+<?php /* @var $block Magezon\Blog\Block\Sidebar\Tabs */?>
+<?php
+$dataHelper  = $this->helper('\Magezon\Blog\Helper\Data');
+$layout      = $this->getLayout();
+$name        = $this->getNameInLayout();
+$childBlocks = $layout->getChildNames($name);
+?>
+<?php if ($childBlocks) { ?>
+<div class="blog-tabs">
+	<div data-mage-init='{"tabs":{"openedState":"active"}}'>
+		<?php foreach ($layout->getChildNames($name) as $key => $child) { ?>
+			<?php
+			if (!$dataHelper->getConfig('sidebar/tabs/' . $child . '/enabled')) continue;
+			$_block = $block->getChildBlock($child);
+			$label  = $dataHelper->getConfig('sidebar/tabs/' . $child . '/title') ? $dataHelper->getConfig('sidebar/tabs/' . $child . '/title') : $_block->getData('title');
+			$html   = $_block->toHtml();
+			?>
+			<?php if (!$html) continue ?>
+			<div class="blog-tab-item" data-role="collapsible" id="tab-label-<?= $child ?>">
+		        <a class="data switch"
+		           tabindex="-1"
+		           data-toggle="trigger"
+		           href="#<?= $child ?>"
+		           id="tab-label-<?= $child ?>-title">
+		            <?= $label ?>
+		        </a>
+		    </div>
+		    <div class="blog-tab-content <?= $key == 0 ? 'blog-tab-first' : '' ?>" aria-labelledby="tab-label-<?= $child ?>-title" id="<?= $child ?>" data-role="content">
+                <?= $html ?>
+			</div>
+		<?php } ?>
+	</div>
+    <script>
+        require(['jquery', 'domReady!'], function($) {
+            setTimeout(()=>{
+                $('.blog-tabs .blog-tab-content').css('opacity', '1');
+            }, 1000)
+        })
+    </script>
+	<?php if ($dataHelper->getConfig('sidebar/tabs/sticky')) { ?>
+	<script>
+		require(['jquery', 'Magezon_Core/js/jquery-scrolltofixed-min'], function($) {
+			var offsetTop = $('.sidebar-main').offset().top + $('.sidebar-main').height();
+			if ($('.sidebar-additional').length) offsetTop = $('.sidebar-additional').offset().top + $('.sidebar-additional').height();
+			var element = $('.blog-tabs');
+			var length  = element.find('.blog-tab-item').length;
+			var width   = (100 / length);
+			width += ((length * 2) / width);
+			element.find('.blog-tab-item').css('width', width + '%');
+			var postListing = $('.column');
+            element.scrollToFixed({
+            	marginTop: 10,
+            	offsetTop: offsetTop,
+            	limit: postListing.offset().top + postListing.height() - element.height() - $('.pager').height()
+            });
+            element.css('z-index', '');
+            $(window).resize(function () {
+                if ($(this).width() >= 768) {
+                    element.addClass('blog-scrolltofixed');
+                    element.removeClass('blog-unscrolltofixed');
+                } else {
+                    element.trigger('detach.ScrollToFixed');
+                    element.css('z-index', '');
+                    element.css('position', '');
+                    element.css('top', '');
+                    element.addClass('blog-unscrolltofixed');
+                    element.removeClass('blog-scrolltofixed');
+                }
+            }).resize();
+		})
+	</script>
+	<?php } ?>
+</div>
+<?php } ?>

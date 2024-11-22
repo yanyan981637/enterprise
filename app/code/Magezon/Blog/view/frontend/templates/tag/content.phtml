@@ -1,0 +1,9 @@
+<?php /* @var $block Magezon\Blog\Block\Tag\View */?>
+<?php
+$coreHelper = $this->helper('Magezon\Core\Helper\Data');
+$tag        = $this->getCurrentTag();
+$content    = $coreHelper->filter($tag->getContent());
+?>
+<?php if ($content) { ?>
+<div class="blog-top-section blog-tag-content"><?= $content ?></div>
+<?php } ?>

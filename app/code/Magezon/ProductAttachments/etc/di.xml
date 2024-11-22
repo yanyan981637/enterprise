@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductAttachments
+ * @copyright Copyright (C) 2020 Magezon (https://www.magezon.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magezon\ProductAttachments\Api\Data\FileSearchResultsInterface" type="Magento\Framework\Api\SearchResults" />
+    <preference for="Magezon\ProductAttachments\Api\Data\CategorySearchResultsInterface" type="Magento\Framework\Api\SearchResults" />
+    <preference for="Magezon\ProductAttachments\Api\Data\IconSearchResultsInterface" type="Magento\Framework\Api\SearchResults" />
+    <preference for="Magezon\ProductAttachments\Api\Data\FileInterface" type="Magezon\ProductAttachments\Model\File"/>
+    <preference for="Magezon\ProductAttachments\Api\Data\IconInterface" type="Magezon\ProductAttachments\Model\Icon"/>
+    <preference for="Magezon\ProductAttachments\Api\Data\CategoryInterface"
+                type="Magezon\ProductAttachments\Model\Category"/>
+    <preference for="Magezon\ProductAttachments\Api\Data\ReportInterface"
+                type="Magezon\ProductAttachments\Model\Report"/>
+    <preference for="Magezon\ProductAttachments\Api\FileRepositoryInterface"
+                type="Magezon\ProductAttachments\Model\FileRepository"/>
+    <preference for="Magezon\ProductAttachments\Api\CategoryRepositoryInterface"
+                type="Magezon\ProductAttachments\Model\CategoryRepository"/>
+    <preference for="Magezon\ProductAttachments\Api\IconRepositoryInterface"
+                type="Magezon\ProductAttachments\Model\IconRepository"/>
+    <type name="Magento\Framework\Mail\TransportInterface">
+        <plugin name="productAttachmetsTransport" type="Magezon\ProductAttachments\Plugin\Model\Transport"/>
+    </type>
+    <type name="Magento\Sales\Model\Order\Email\Sender\OrderSender">
+        <plugin name="pdfAttachEmail" type="Magezon\ProductAttachments\Plugin\Model\Order\Email\Sender\OrderSender"/>
+    </type>
+    <type name="Magento\ImportExport\Model\Import\SampleFileProvider">
+        <arguments>
+            <argument name="samples" xsi:type="array">
+                <item name="magezon_product_attachments" xsi:type="string">Magezon_ProductAttachments</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\EntityManager\HydratorPool">
+        <arguments>
+            <argument name="hydrators" xsi:type="array">
+                <item name="Magezon\ProductAttachments\Api\Data\FileInterface" xsi:type="string">Magento\Framework\EntityManager\AbstractModelHydrator</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\EntityManager\Operation\ExtensionPool">
+        <arguments>
+            <argument name="extensionActions" xsi:type="array">
+                <item name="Magezon\ProductAttachments\Api\Data\FileInterface" xsi:type="array">
+                    <item name="read" xsi:type="array">
+                        <item name="customerGroup" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\File\Relation\CustomerGroup\ReadHandler</item>
+                        <item name="store" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\File\Relation\Store\ReadHandler</item>
+                    </item>
+                    <item name="create" xsi:type="array">
+                        <item name="customerGroup" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\File\Relation\CustomerGroup\SaveHandler</item>
+                        <item name="store" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\File\Relation\Store\SaveHandler</item>
+                    </item>
+                    <item name="update" xsi:type="array">
+                        <item name="customerGroup" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\File\Relation\CustomerGroup\SaveHandler</item>
+                        <item name="store" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\File\Relation\Store\SaveHandler</item>
+                    </item>
+                    <item name="delete" xsi:type="array">
+                        <item name="file_delete" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\File\Relation\DeleteHandler</item>
+                    </item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Model\Entity\RepositoryFactory">
+        <arguments>
+            <argument name="entities" xsi:type="array">
+                <item name="Magezon\ProductAttachments\Api\Data\FileInterface" xsi:type="string">
+                    Magezon\ProductAttachments\Api\FileRepositoryInterface</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\EntityManager\MetadataPool">
+        <arguments>
+            <argument name="metadata" xsi:type="array">
+                <item name="Magezon\ProductAttachments\Api\Data\FileInterface" xsi:type="array">
+                    <item name="entityTableName" xsi:type="string">mgz_product_attachments_file</item>
+                    <item name="identifierField" xsi:type="string">file_id</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="productattachments_report_listing_data_source" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\Report\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magezon\ProductAttachments\Model\ResourceModel\Report\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">mgz_product_attachments_report</argument>
+            <argument name="eventPrefix" xsi:type="string">productattachments_report_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">report_grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Magezon\ProductAttachments\Model\ResourceModel\Report</argument>
+        </arguments>
+    </type>
+</config>

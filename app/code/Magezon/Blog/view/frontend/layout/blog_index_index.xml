@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<update handle="blog_layout"/>
+	<body>
+        <referenceBlock name="page.main.title">
+            <block class="Magezon\Blog\Block\Rss\Link\LatestPosts" name="rss.link" template="Magezon_Blog::rss/link.phtml" ifconfig="mgzblog/rss/enabled"/>
+        </referenceBlock>
+		<referenceContainer name="content">
+			<block class="Magezon\Blog\Block\LatestPosts" name="latest.products" template="Magezon_Blog::latest_posts.phtml"/>
+		</referenceContainer>
+        <block class="Magento\ReCaptchaUi\Block\ReCaptcha"
+               name="recaptcha"
+               after="-"
+               template="Magento_ReCaptchaFrontendUi::recaptcha.phtml">
+            <arguments>
+                <argument name="recaptcha_for" xsi:type="string">blog_post</argument>
+                <argument name="jsLayout" xsi:type="array">
+                    <item name="components" xsi:type="array">
+                        <item name="recaptcha" xsi:type="array">
+                            <item name="component" xsi:type="string">Magento_ReCaptchaFrontendUi/js/reCaptcha</item>
+                        </item>
+                    </item>
+                </argument>
+            </arguments>
+        </block>
+	</body>
+</page>

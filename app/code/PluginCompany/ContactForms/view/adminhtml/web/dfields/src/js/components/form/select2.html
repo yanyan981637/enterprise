@@ -1,0 +1,12 @@
+<select value='{{selected}}' class="form-control" multiple="{{multiple}}" style="width:100%">
+    {{#options}}
+        <option value='{{.}}'>{{.}}</option>
+    {{/options}}
+</select>
+
+<script>
+    component.exports = {
+        debug: true,
+        isolated:false
+    };
+</script>

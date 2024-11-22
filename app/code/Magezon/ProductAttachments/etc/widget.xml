@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://magezon.com/license/.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductAttachments
+ * @copyright Copyright (C) 2020 Magezon (https://magezon.com)
+ */
+-->
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="product_attachments__files_list" class="Magezon\ProductAttachments\Block\Widget\Files">
+        <label translate="true">Files List</label>
+        <description translate="true"></description>
+        <parameters>
+            <parameter name="title" xsi:type="text" visible="true">
+                <label translate="true">Title</label>
+            </parameter>
+            <parameter name="page_size" xsi:type="text" visible="true">
+                <label translate="true">Number Of Attachments</label>
+            </parameter>
+            <parameter name="option" xsi:type="select" visible="true" source_model="Magezon\ProductAttachments\Model\File\Source\FileList">
+                <label translate="true">Option</label>
+            </parameter>
+            <parameter name="category_file" xsi:type="multiselect" visible="true" source_model="Magezon\ProductAttachments\Model\File\Source\CategoryOptions">
+                <label translate="true">Category</label>
+            </parameter>
+            <parameter name="list_display" xsi:type="select" visible="true" required="true" sort_order="20">
+                <label translate="true">List Display</label>
+                <options>
+                    <option name="group" value="group">
+                        <label>Group By Category</label>
+                    </option>
+                    <option name="list" value="list">
+                        <label>List</label>
+                    </option>
+                </options>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>

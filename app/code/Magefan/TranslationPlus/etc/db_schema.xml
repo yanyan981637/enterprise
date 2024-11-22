@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="translation">
+        <column xsi:type="text" name="string" nullable="false" comment="Translation String"/>
+        <column xsi:type="text" name="translate" nullable="false" comment="Translate"/>
+        <constraint xsi:type="unique" referenceId="TRANSLATION_STORE_ID_LOCALE_CRC_STRING_STRING" disabled="true" />
+        <constraint xsi:type="unique" referenceId="TRANSLATION_STORE_ID_LOCALE_CRC_STRING_STRING_CUSTOM">
+            <column name="store_id"/>
+            <column name="locale"/>
+            <column name="crc_string"/>
+        </constraint>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="false" default="0"
+                comment="Updated At"/>
+    </table>
+</schema>

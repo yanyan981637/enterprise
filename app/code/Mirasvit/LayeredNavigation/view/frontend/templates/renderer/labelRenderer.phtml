@@ -1,0 +1,114 @@
+<?php
+/**
+ * @var $block \Mirasvit\LayeredNavigation\Block\Renderer\LabelRenderer
+ * @var $escaper \Magento\Framework\Escaper
+ */
+
+$attributeCode  = $block->getAttributeCode();
+$cacheKey       = rand(100000, 1000000);
+$filterAccessor = $attributeCode . 'A' . $cacheKey . 'A';
+$filter         = $block->getFilter();
+
+$useAlphabeticalIndex = strpos(get_class($filter), 'AttributeFilter') !== false && $filter->isUseAlphabeticalIndex();
+
+$checkedItemsCount = 0;
+
+$letter  = '';
+?>
+
+<div data-mst-nav-filter="<?= $filterAccessor ?>" class="mst-nav__label" data-mst-nav-cache-key="<?= $cacheKey ?>">
+    <?= $block->getSearchBoxElement($filterAccessor) ?>
+    <div data-holder="alphabetical"></div>
+
+    <ol class="items">
+        <?php foreach ($block->getFilterItems() as $key => $filterItem):
+            $label = $filterItem->getData('label');
+            $numberOfResults = $filterItem->getData('count');
+
+            $isItemChecked = $block->isFilterItemChecked($filterItem, true);
+
+            if ($isItemChecked) {
+                $checkedItemsCount++;
+            }
+
+            $imageUrl         = $block->getImageUrl($filterItem);
+            $isFullWidthImage = $block->isFullWidthImage($filterItem);
+
+            $cssClass = [
+                'item',
+                'mst-nav__label-item',
+                '_mode-' . $block->getFilterItemDisplayMode($attributeCode),
+                $isItemChecked ? '_checked' : '',
+                $isItemChecked && $block->isHighlightEnabled() ? '_highlight' : '',
+                $imageUrl ? '_image' : '',
+                $imageUrl && $isFullWidthImage ? '_full-width' : '',
+            ];
+            ?>
+
+            <?php if(
+                $useAlphabeticalIndex
+                && $filter->isSortByLabel()
+                && $letter !== $block->getFirstLetter($label)
+            ):
+                $letter = $block->getFirstLetter($label);
+            ?>
+            <li class="mst-nav__letter mst-nav__label-item" data-letter="<?= $letter ?>" data-element = filter>
+                <b><?= $letter ?></b>
+            </li>
+            <?php endif ?>
+
+            <li
+                data-element="filter"
+                data-hidden="false"
+                data-search-hidden="false"
+                data-letter-hidden="false"
+                class="<?= implode(' ', $cssClass) ?>"
+                data-value="<?= $filterItem->getValueString() ?>"
+                <?= $useAlphabeticalIndex ? 'data-letter="' .  $block->getFirstLetter($label) . '"' : '' ?>
+            >
+                <?php if ($numberOfResults >= 0): ?>
+                    <?php
+                    $url = $isItemChecked ? $filterItem->getRemoveUrl() : $filterItem->getUrl();
+                    $id  = $block->getItemId($filterItem);
+                    ?>
+                    <a href="<?= $escaper->escapeUrl($url) ?>" rel="<?= $block->getRelAttributeValue() ?>">
+                        <?php if ($imageUrl): ?>
+                            <div class="swatch-option image" style="background: url(<?= $imageUrl ?>) no-repeat center;  background-size: auto 100%;"></div>
+                        <?php endif ?>
+
+                        <input id="<?= $id ?>" type="checkbox" <?= $isItemChecked ? 'checked' : '' ?> />
+
+                        <label for="<?= $id ?>">
+                            <?= $label ?>
+                            <?= $block->getCountElement($filterItem) ?>
+                        </label>
+                    </a>
+                <?php else: ?>
+                    <?= $label ?>
+                    <?= $block->getCountElement($filterItem) ?>
+                <?php endif ?>
+            </li>
+        <?php endforeach ?>
+
+        <?= $block->getSizeLimiterElement($filterAccessor) ?>
+    </ol>
+</div>
+
+<script type="text/x-magento-init"><?= \Mirasvit\Core\Service\SerializeService::encode([
+        '[data-mst-nav-filter=' . $filterAccessor . ']' => [
+            'Mirasvit_LayeredNavigation/js/renderer/label-renderer' => [],
+            'Mirasvit_LayeredNavigation/js/helper/checked-items' => [
+                'count'    => $checkedItemsCount,
+                'clearUrl' => $block->getAttributeClearUrl($attributeCode)
+            ],
+            'Mirasvit_LayeredNavigation/js/helper/tooltip' => [
+                'tooltip' => $block->getTooltip(),
+            ],
+            'Mirasvit_LayeredNavigation/js/renderer/element/alphabetical' => [
+                'shouldDisplay' => $useAlphabeticalIndex && $filter->isAlphabeticalIndexAllowedByLimit(),
+                'limit'         => $filter->getAlphabeticalLimit()
+            ],
+        ],
+    ]) ?></script>
+
+

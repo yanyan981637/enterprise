@@ -1,0 +1,47 @@
+<?php
+$helper = $this->helper('\Magezon\ProductAttachments\Helper\Data');
+$extensions = json_encode($helper->getFileExtension());
+?>
+<script>
+    require(
+        [
+            'Magento_Ui/js/lib/validation/validator',
+            'jquery',
+            'mage/translate',
+            'uiRegistry'
+        ],
+        function (validator, $, $t, uiRegistry) {
+            validator.addRule(
+                'validation-url-exist',
+                function (value) {
+                    var status = true;
+                    var request = new XMLHttpRequest();
+                    request.open('GET', value, false);
+                    request.send();
+                    if (request.status === 404) {
+                        status = false;
+                    }
+                    if (status) {
+                        var extension = value.substr(value.lastIndexOf('.') + 1);
+                        uiRegistry.get('productattachments_file_form.productattachments_file_form.general.general.container_file.extension').value(extension);
+                    }
+                    return status;
+                }
+                ,
+                $.mage.__('File URL does not exist.')
+            );
+            <?php if ($extensions) { ?>
+            validator.addRule(
+                'validation-url-extension',
+                function (value) {
+                    var extension = value.substr(value.lastIndexOf('.') + 1);
+                    var extensions = <?=$extensions?>;
+                    return extensions.includes(extension);
+                }
+                ,
+                $.mage.__('File URL does not Allowed.')
+            );
+            <?php } ?>
+        }
+    );
+</script>

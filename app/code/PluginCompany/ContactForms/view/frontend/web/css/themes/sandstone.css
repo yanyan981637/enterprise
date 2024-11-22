@@ -1,0 +1,874 @@
+@import url("//fonts.googleapis.com/css?family=Roboto:400,500");
+/*!
+ * bootswatch v3.2.0
+ * Homepage: http://bootswatch.com
+ * Copyright 2012-2014 Thomas Park
+ * Licensed under MIT
+ * Based on Bootstrap
+*/
+/*! normalize.css v3.0.1 | MIT License | git.io/normalize */
+.pccf.sandstone  {
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+.pccf.sandstone  {
+  margin: 0;
+}
+.pccf.sandstone h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+.pccf.sandstone button,
+.pccf.sandstone input,
+.pccf.sandstone select,
+.pccf.sandstone textarea {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+.pccf.sandstone button {
+  overflow: visible;
+}
+.pccf.sandstone button,
+.pccf.sandstone select {
+  text-transform: none;
+}
+.pccf.sandstone button {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+.pccf.sandstone button::-moz-focus-inner,
+.pccf.sandstone input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+.pccf.sandstone input {
+  line-height: normal;
+}
+.pccf.sandstone input[type="checkbox"],
+.pccf.sandstone input[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+.pccf.sandstone input[type="number"]::-webkit-inner-spin-button,
+.pccf.sandstone input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+.pccf.sandstone input[type="search"]::-webkit-search-cancel-button,
+.pccf.sandstone input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+.pccf.sandstone fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+.pccf.sandstone legend {
+  border: 0;
+  padding: 0;
+}
+.pccf.sandstone textarea {
+  overflow: auto;
+}
+@media print {
+  .pccf.sandstone * {
+    text-shadow: none !important;
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .pccf.sandstone p,
+  .pccf.sandstone h2,
+  .pccf.sandstone h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  .pccf.sandstone h2,
+  .pccf.sandstone h3 {
+    page-break-after: avoid;
+  }
+  .pccf.sandstone select {
+    background: #fff !important;
+  }
+}
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../fonts/glyphicons-halflings-regular.eot');
+  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+.pccf.sandstone * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.pccf.sandstone *:before,
+.pccf.sandstone *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.pccf.sandstone  {
+  font-size: 10px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.pccf.sandstone  {
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #3e3f3a;
+  background-color: #ffffff;
+}
+.pccf.sandstone input,
+.pccf.sandstone button,
+.pccf.sandstone select,
+.pccf.sandstone textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+.pccf.sandstone h1,
+.pccf.sandstone h2,
+.pccf.sandstone h3,
+.pccf.sandstone h4,
+.pccf.sandstone h5,
+.pccf.sandstone h6 {
+  font-family: inherit;
+  font-weight: 400;
+  line-height: 1.1;
+  color: inherit;
+}
+.pccf.sandstone h1,
+.pccf.sandstone h2,
+.pccf.sandstone h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+.pccf.sandstone h4,
+.pccf.sandstone h5,
+.pccf.sandstone h6 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.pccf.sandstone h1 {
+  font-size: 36px;
+}
+.pccf.sandstone h2 {
+  font-size: 30px;
+}
+.pccf.sandstone h3 {
+  font-size: 24px;
+}
+.pccf.sandstone h4 {
+  font-size: 18px;
+}
+.pccf.sandstone h5 {
+  font-size: 14px;
+}
+.pccf.sandstone h6 {
+  font-size: 12px;
+}
+.pccf.sandstone p {
+  margin: 0 0 10px;
+}
+.pccf.sandstone .text-center {
+  text-align: center;
+}
+@media (min-width: 768px) {
+}
+.pccf.sandstone .row {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+.pccf.sandstone .col-md-2,
+.pccf.sandstone .col-md-3,
+.pccf.sandstone .col-md-4,
+.pccf.sandstone .col-md-5,
+.pccf.sandstone .col-md-6,
+.pccf.sandstone .col-lg-6,
+.pccf.sandstone .col-md-8,
+.pccf.sandstone .col-lg-8 {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 992px) {
+  .pccf.sandstone .col-md-2,
+  .pccf.sandstone .col-md-3,
+  .pccf.sandstone .col-md-4,
+  .pccf.sandstone .col-md-5,
+  .pccf.sandstone .col-md-6,
+  .pccf.sandstone .col-md-8 {
+    float: left;
+  }
+  .pccf.sandstone .col-md-8 {
+    width: 66.66666667%;
+  }
+  .pccf.sandstone .col-md-6 {
+    width: 50%;
+  }
+  .pccf.sandstone .col-md-5 {
+    width: 41.66666667%;
+  }
+  .pccf.sandstone .col-md-4 {
+    width: 33.33333333%;
+  }
+  .pccf.sandstone .col-md-3 {
+    width: 25%;
+  }
+  .pccf.sandstone .col-md-2 {
+    width: 16.66666667%;
+  }
+}
+@media (min-width: 1200px) {
+  .pccf.sandstone .col-lg-6,
+  .pccf.sandstone .col-lg-8 {
+    float: left;
+  }
+  .pccf.sandstone .col-lg-8 {
+    width: 66.66666667%;
+  }
+  .pccf.sandstone .col-lg-6 {
+    width: 50%;
+  }
+}
+@media screen and (max-width: 767px) {
+}
+.pccf.sandstone fieldset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+}
+.pccf.sandstone legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 20px;
+  font-size: 21px;
+  line-height: inherit;
+  color: inherit;
+  border: 0;
+  border-bottom: 1px solid transparent;
+}
+.pccf.sandstone label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+.pccf.sandstone input[type="radio"],
+.pccf.sandstone input[type="checkbox"] {
+  margin: 4px 0 0;
+  margin-top: 1px \9;
+  line-height: normal;
+}
+.pccf.sandstone select[multiple] {
+  height: auto;
+}
+.pccf.sandstone input[type="radio"]:focus,
+.pccf.sandstone input[type="checkbox"]:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.pccf.sandstone .form-control {
+  display: block;
+  width: 100%;
+  height: 46px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #3e3f3a;
+  background-color: #ffffff;
+  /*background-image: none;*/
+  border: 1px solid #dfd7ca;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+.pccf.sandstone .form-control:focus {
+  border-color: transparent;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.6);
+}
+.pccf.sandstone .form-control::-moz-placeholder {
+  color: #dfd7ca;
+  opacity: 1;
+}
+.pccf.sandstone .form-control:-ms-input-placeholder {
+  color: #dfd7ca;
+}
+.pccf.sandstone .form-control::-webkit-input-placeholder {
+  color: #dfd7ca;
+}
+.pccf.sandstone textarea.form-control {
+  height: auto;
+}
+.pccf.sandstone .form-group {
+  margin-bottom: 15px;
+}
+.pccf.sandstone .radio,
+.pccf.sandstone .checkbox {
+  position: relative;
+  display: block;
+  min-height: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.pccf.sandstone .radio label,
+.pccf.sandstone .checkbox label {
+  padding-left: 20px;
+  margin-bottom: 0;
+  font-weight: normal;
+  cursor: pointer;
+}
+.pccf.sandstone .radio input[type="radio"],
+.pccf.sandstone .radio-inline input[type="radio"],
+.pccf.sandstone .checkbox input[type="checkbox"],
+.pccf.sandstone .checkbox-inline input[type="checkbox"] {
+  position: absolute;
+  margin-left: -20px;
+  margin-top: 4px \9;
+}
+.pccf.sandstone .radio + .radio,
+.pccf.sandstone .checkbox + .checkbox {
+  margin-top: -5px;
+}
+.pccf.sandstone .radio-inline,
+.pccf.sandstone .checkbox-inline {
+  display: inline-block;
+  padding-left: 20px;
+  margin-bottom: 0;
+  vertical-align: middle;
+  font-weight: normal;
+  cursor: pointer;
+}
+.pccf.sandstone .radio-inline + .radio-inline,
+.pccf.sandstone .checkbox-inline + .checkbox-inline {
+  margin-top: 0;
+  margin-left: 10px;
+}
+.pccf.sandstone .input-sm {
+  height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+.pccf.sandstone select.input-sm {
+  height: 30px;
+  line-height: 30px;
+}
+.pccf.sandstone textarea.input-sm,
+.pccf.sandstone select[multiple].input-sm {
+  height: auto;
+}
+.pccf.sandstone .input-lg {
+  height: 66px;
+  padding: 20px 30px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 6px;
+}
+.pccf.sandstone select.input-lg {
+  height: 66px;
+  line-height: 66px;
+}
+.pccf.sandstone textarea.input-lg,
+.pccf.sandstone select[multiple].input-lg {
+  height: auto;
+}
+.pccf.sandstone .help-block {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  color: #7f8177;
+}
+@media (min-width: 768px) {
+}
+.pccf.sandstone .form-horizontal .radio,
+.pccf.sandstone .form-horizontal .checkbox,
+.pccf.sandstone .form-horizontal .radio-inline,
+.pccf.sandstone .form-horizontal .checkbox-inline {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 13px;
+}
+.pccf.sandstone .form-horizontal .radio,
+.pccf.sandstone .form-horizontal .checkbox {
+  min-height: 33px;
+}
+.pccf.sandstone .form-horizontal .form-group {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+@media (min-width: 768px) {
+  .pccf.sandstone .form-horizontal .control-label {
+    text-align: right;
+    margin-bottom: 0;
+    padding-top: 13px;
+  }
+}
+.pccf.sandstone .btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.pccf.sandstone .btn:focus,
+.pccf.sandstone .btn:active:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.pccf.sandstone .btn:hover,
+.pccf.sandstone .btn:focus {
+  color: #ffffff;
+  text-decoration: none;
+}
+.pccf.sandstone .btn:active {
+  outline: 0;
+  background-image: none;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.pccf.sandstone .btn-primary {
+  color: #ffffff;
+  background-color: #325d88;
+  border-color: transparent;
+}
+.pccf.sandstone .btn-primary:hover,
+.pccf.sandstone .btn-primary:focus,
+.pccf.sandstone .btn-primary:active {
+  color: #ffffff;
+  background-color: #244363;
+  border-color: rgba(0, 0, 0, 0);
+}
+.pccf.sandstone .btn-primary:active {
+  background-image: none;
+}
+.pccf.sandstone .btn-success {
+  color: #ffffff;
+  background-color: #93c54b;
+  border-color: transparent;
+}
+.pccf.sandstone .btn-success:hover,
+.pccf.sandstone .btn-success:focus,
+.pccf.sandstone .btn-success:active {
+  color: #ffffff;
+  background-color: #79a736;
+  border-color: rgba(0, 0, 0, 0);
+}
+.pccf.sandstone .btn-success:active {
+  background-image: none;
+}
+.pccf.sandstone .btn-info {
+  color: #ffffff;
+  background-color: #29abe0;
+  border-color: transparent;
+}
+.pccf.sandstone .btn-info:hover,
+.pccf.sandstone .btn-info:focus,
+.pccf.sandstone .btn-info:active {
+  color: #ffffff;
+  background-color: #1b8dbb;
+  border-color: rgba(0, 0, 0, 0);
+}
+.pccf.sandstone .btn-info:active {
+  background-image: none;
+}
+.pccf.sandstone .btn-warning {
+  color: #ffffff;
+  background-color: #f47c3c;
+  border-color: transparent;
+}
+.pccf.sandstone .btn-warning:hover,
+.pccf.sandstone .btn-warning:focus,
+.pccf.sandstone .btn-warning:active {
+  color: #ffffff;
+  background-color: #ef5c0e;
+  border-color: rgba(0, 0, 0, 0);
+}
+.pccf.sandstone .btn-warning:active {
+  background-image: none;
+}
+.pccf.sandstone .btn-danger {
+  color: #ffffff;
+  background-color: #d9534f;
+  border-color: transparent;
+}
+.pccf.sandstone .btn-danger:hover,
+.pccf.sandstone .btn-danger:focus,
+.pccf.sandstone .btn-danger:active {
+  color: #ffffff;
+  background-color: #c9302c;
+  border-color: rgba(0, 0, 0, 0);
+}
+.pccf.sandstone .btn-danger:active {
+  background-image: none;
+}
+@media (min-width: 768px) {
+}
+.pccf.sandstone .input-group {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+}
+.pccf.sandstone .input-group .form-control {
+  position: relative;
+  z-index: 2;
+  float: left;
+  width: 100%;
+  margin-bottom: 0;
+}
+.pccf.sandstone .input-group-addon,
+.pccf.sandstone .input-group .form-control {
+  display: table-cell;
+}
+.pccf.sandstone .input-group-addon {
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.pccf.sandstone .input-group-addon {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1;
+  color: #3e3f3a;
+  text-align: center;
+  background-color: #f8f5f0;
+  border: 1px solid #dfd7ca;
+  border-radius: 4px;
+}
+.pccf.sandstone .input-group-addon input[type="checkbox"] {
+  margin-top: 0;
+}
+.pccf.sandstone .input-group .form-control:first-child,
+.pccf.sandstone .input-group-addon:first-child {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.pccf.sandstone .input-group-addon:first-child {
+  border-right: 0;
+}
+.pccf.sandstone .input-group .form-control:last-child,
+.pccf.sandstone .input-group-addon:last-child {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+.pccf.sandstone .input-group-addon:last-child {
+  border-left: 0;
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (max-width: 767px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 768px) {
+}
+@media (max-width: 767px) {
+}
+@media (max-width: 767px) {
+}
+@media screen and (min-width: 768px) {
+}
+.pccf.sandstone .alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.pccf.sandstone .alert-success {
+  background-color: #93c54b;
+  border-color: transparent;
+  color: #ffffff;
+}
+.pccf.sandstone .alert-info {
+  background-color: #29abe0;
+  border-color: transparent;
+  color: #ffffff;
+}
+.pccf.sandstone .alert-warning {
+  background-color: #f47c3c;
+  border-color: transparent;
+  color: #ffffff;
+}
+.pccf.sandstone .alert-danger {
+  background-color: #d9534f;
+  border-color: transparent;
+  color: #ffffff;
+}
+@-webkit-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+.pccf.sandstone .panel {
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.pccf.sandstone .panel-heading {
+  padding: 10px 15px;
+  border-bottom: 1px solid transparent;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+.pccf.sandstone .panel-title {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 16px;
+  color: inherit;
+}
+.pccf.sandstone .panel-primary {
+  border-color: #325d88;
+}
+.pccf.sandstone .panel-primary > .panel-heading {
+  color: #ffffff;
+  background-color: #325d88;
+  border-color: #325d88;
+}
+.pccf.sandstone .panel-success {
+  border-color: #d6e9c6;
+}
+.pccf.sandstone .panel-success > .panel-heading {
+  color: #93c54b;
+  background-color: #93c54b;
+  border-color: #d6e9c6;
+}
+.pccf.sandstone .panel-info {
+  border-color: #bce8f1;
+}
+.pccf.sandstone .panel-info > .panel-heading {
+  color: #29abe0;
+  background-color: #29abe0;
+  border-color: #bce8f1;
+}
+.pccf.sandstone .panel-warning {
+  border-color: #faebcc;
+}
+.pccf.sandstone .panel-warning > .panel-heading {
+  color: #f47c3c;
+  background-color: #f47c3c;
+  border-color: #faebcc;
+}
+.pccf.sandstone .well {
+  min-height: 20px;
+  padding: 19px;
+  margin-bottom: 20px;
+  background-color: #f8f5f0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+@media (min-width: 768px) {
+}
+@media screen and (min-width: 768px) {
+}
+.pccf.sandstone .row:before,
+.pccf.sandstone .row:after,
+.pccf.sandstone .form-horizontal .form-group:before,
+.pccf.sandstone .form-horizontal .form-group:after {
+  content: " ";
+  display: table;
+}
+.pccf.sandstone .row:after,
+.pccf.sandstone .form-horizontal .form-group:after {
+  clear: both;
+}
+@-ms-viewport {
+  width: device-width;
+}
+@media (max-width: 767px) {
+}
+@media (min-width: 768px) and (max-width: 991px) {
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+}
+@media (min-width: 1200px) {
+}
+@media print {
+}
+.pccf.sandstone .btn {
+  border: none;
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.pccf.sandstone .btn:hover {
+  border-color: transparent;
+}
+.pccf.sandstone input,
+.pccf.sandstone .form-control {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.pccf.sandstone input:focus,
+.pccf.sandstone .form-control:focus {
+  border-color: #dfd7ca;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.pccf.sandstone .input-sm {
+  padding: 15px 10px;
+}
+.pccf.sandstone .well {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.pccf.sandstone .panel {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.pccf.sandstone .panel-heading,
+.pccf.sandstone .panel-title {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+@media (max-width: 992px) {
+    .pccf fieldset {
+        padding:10px!important;
+    }
+}
+
+.pccf .col-lg-8>p {
+    clear: both;
+}
+.pccf .validation-advice {color:inherit}
+.pccf .required-control .control-label:after {
+content: " *";
+    color: #fc4c5e;
+}
+.pccf label {font-size:inherit!important;}
+.pccf {background:none!important;}
+
+.pccf .input-group-addon {
+padding-top: 0px!important;
+    padding-bottom: 0px!important;
+}
+.pccf .form-horizontal.pccform fieldset {padding:10px!important}
+.pccf textarea {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* RTL FIX */
+.pccf.sandstone.rtl .input-group-addon:last-child {
+    border-right: 0!important;
+    border-left: 1px solid #dfd7ca!important;
+}
+
+.pccf.sandstone.rtl .input-group-addon:first-child {
+    border-left: 0!important;
+    border-right: 1px solid #dfd7ca!important;
+}
+
+
+/* navigation inactive item */
+
+.pccf.sandstone .nav-wizard > li > a {
+    color: #98978b;
+    background-color: #ddd;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.pccf.sandstone .nav-wizard > li:not(:last-child) > a:after {
+    border-left: 20px solid #ddd;
+}
+
+/* navigation active item */
+
+.pccf.sandstone .nav-wizard > li.active > a:after {
+    border-left-color: #DFD7CA;
+}
+.pccf.sandstone .nav-wizard > li.active > a, .pccf.sandstone .nav-wizard > li.active > a:hover, .pccf.sandstone.pccf .nav-wizard > li.active > a:focus {
+    color: #98978b;
+    background-color: #DFD7CA;
+}
+
+/* navigation background */
+
+.pccf.sandstone .well .nav-wizard > li:not(:first-child) > a:before {
+    border-left: 20px solid #F8F5F0;
+}
+.pccf.sandstone .panel .nav-wizard > li:not(:first-child) > a:before {
+    border-left: 20px solid #fff;
+}
+
+/* small navigation inactive tab */
+
+.pccf.smallnav.sandstone .nav-wizard > li:before {
+    color: #98978b;
+    background-color: #ddd;
+    border-color: #ddd;
+}
+
+/* small navigation active tab */
+
+.pccf.smallnav.sandstone .nav-wizard > li.active:before {
+    color: #98978b;
+    background-color: #DFD7CA;
+    border-color: #DFD7CA;
+}
+
+/* small navigation background */
+
+.pccf.smallnav.sandstone ul.nav-wizard:before {
+    background: #ddd;
+}

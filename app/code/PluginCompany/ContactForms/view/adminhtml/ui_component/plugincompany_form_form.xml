@@ -1,0 +1,1201 @@
+<?xml version="1.0" ?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+	<argument name="data" xsi:type="array">
+		<item name="js_config" xsi:type="array">
+			<item name="provider" xsi:type="string">plugincompany_form_form.form_form_data_source</item>
+			<item name="deps" xsi:type="string">plugincompany_form_form.form_form_data_source</item>
+		</item>
+		<item name="label" translate="true" xsi:type="string">General Information</item>
+		<item name="config" xsi:type="array">
+			<item name="dataScope" xsi:type="string">data</item>
+			<item name="namespace" xsi:type="string">plugincompany_form_form</item>
+		</item>
+		<item name="template" xsi:type="string">templates/form/collapsible</item>
+		<item name="buttons" xsi:type="array">
+			<item name="copy" xsi:type="string">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\CopyButton</item>
+			<item name="back" xsi:type="string">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\BackButton</item>
+			<item name="delete" xsi:type="string">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\DeleteButton</item>
+			<item name="save" xsi:type="string">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\SaveButton</item>
+			<item name="save_and_continue" xsi:type="string">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\SaveAndContinueButton</item>
+		</item>
+	</argument>
+	<dataSource name="form_form_data_source">
+		<argument name="dataProvider" xsi:type="configurableObject">
+			<argument name="class" xsi:type="string">PluginCompany\ContactForms\Model\Form\AdminEditDataProvider</argument>
+			<argument name="name" xsi:type="string">form_form_data_source</argument>
+			<argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+			<argument name="requestFieldName" xsi:type="string">form_id</argument>
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="submit_url" path="*/*/save" xsi:type="url"/>
+				</item>
+			</argument>
+		</argument>
+		<argument name="data" xsi:type="array">
+			<item name="js_config" xsi:type="array">
+				<item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+			</item>
+		</argument>
+	</dataSource>
+	<fieldset name="form_builder">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Form Builder</item>
+				<item name="collapsible" xsi:type="boolean">false</item>
+			</item>
+		</argument>
+		<field name="contact_form_html">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Contact form html</item>
+					<item name="notice" xsi:type="string" translate="true">notice</item>
+					<item name="formElement" xsi:type="string">hidden</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">contact_form_html</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="contact_form_json">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Contact form json</item>
+					<item name="notice" xsi:type="string" translate="true">notice</item>
+					<item name="formElement" xsi:type="string">hidden</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">contact_form_json</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<container name="form_builder" >
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array"></item>
+			</argument>
+			<htmlContent name="html_content">
+				<argument name="block" xsi:type="object">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\Tab\Formbuilder</argument>
+			</htmlContent>
+		</container>
+	</fieldset>
+	<fieldset name="conditional_fields">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Conditional Form Fields</item>
+				<item name="collapsible" xsi:type="boolean">false</item>
+			</item>
+		</argument>
+		<container name="dfields">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array"></item>
+			</argument>
+			<field name="dependent_fields">
+				<argument name="data" xsi:type="array">
+					<item name="config" xsi:type="array">
+						<item name="dataType" xsi:type="string">text</item>
+						<item name="label" translate="true" xsi:type="string">Dependent Fields</item>
+						<item name="notice" xsi:type="string" translate="true">notice</item>
+						<item name="formElement" xsi:type="string">hidden</item>
+						<item name="source" xsi:type="string">Form</item>
+						<item name="dataScope" xsi:type="string">dependent_fields</item>
+						<item name="validation" xsi:type="array">
+							<item name="required-entry" xsi:type="boolean">false</item>
+						</item>
+					</item>
+				</argument>
+			</field>
+			<htmlContent name="html_content">
+				<argument name="block" xsi:type="object">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\Tab\Dependentfields</argument>
+			</htmlContent>
+		</container>
+	</fieldset>
+	<fieldset name="form_settings">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Form Settings</item>
+				<item name="collapsible" xsi:type="boolean">false</item>
+			</item>
+		</argument>
+		<field name="title">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Form Name</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">title</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+					<item name="notice" xsi:type="string" translate="true">Name shown in breadcrumbs navigation and page title.</item>
+				</item>
+			</argument>
+		</field>
+        <field name="status">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="array">
+                    <item name="yes" xsi:type="array">
+                        <item name="label" xsi:type="string">Yes</item>
+                        <item name="value" xsi:type="number">1</item>
+                    </item>
+                    <item name="no" xsi:type="array">
+                        <item name="label" xsi:type="string">No</item>
+                        <item name="value" xsi:type="number">0</item>
+                    </item>
+                </item>
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Enabled</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">Form</item>
+                    <item name="dataScope" xsi:type="string">status</item>
+                    <item name="default" xsi:type="string">1</item>
+                </item>
+            </argument>
+        </field>
+		<field name="frontend_page">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+					<item name="storeconfig" xsi:type="array">
+						<item name="label" xsi:type="string">Use Store Config</item>
+						<item name="value" xsi:type="number">2</item>
+					</item>
+					<item name="yes" xsi:type="array">
+						<item name="label" xsi:type="string">Yes</item>
+						<item name="value" xsi:type="number">1</item>
+					</item>
+					<item name="no" xsi:type="array">
+						<item name="label" xsi:type="string">No</item>
+						<item name="value" xsi:type="number">0</item>
+					</item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">2</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Create front-end URL</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">frontend_page</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+					<item name="notice" xsi:type="string" translate="true">Create a new front-end page for the contact form.</item>
+				</item>
+			</argument>
+		</field>
+		<field name="url_key">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">URL key</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">url_key</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+					<item name="notice" xsi:type="string" translate="true">URL key of the contact form page. Example: http://www.domain.com/{prefix}/{urlkey}{suffix}</item>
+				</item>
+			</argument>
+		</field>
+		<field name="enable_entries">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+					<item name="yes" xsi:type="array">
+						<item name="label" xsi:type="string">Yes</item>
+						<item name="value" xsi:type="number">1</item>
+					</item>
+					<item name="no" xsi:type="array">
+						<item name="label" xsi:type="string">No</item>
+						<item name="value" xsi:type="number">0</item>
+					</item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">1</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Save form submissions</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">enable_entries</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+					<item name="notice" xsi:type="string" translate="true">Form submissions are saved in the back-end.</item>
+				</item>
+			</argument>
+		</field>
+		<field name="entry_increment_prefix">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Form submission ID prefix</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">entry_increment_prefix</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+					<item name="notice" xsi:type="string" translate="true">Custom prefix used for form submission reference IDs, for example RMA. Leave empty to use the form ID.</item>
+				</item>
+			</argument>
+		</field>
+		<field name="form_urls">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/element/frontEndUrls</item>
+					<item name="template" xsi:type="string">ui/form/field</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Front-end URLs</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+				</item>
+			</argument>
+		</field>
+	</fieldset>
+	<fieldset name="front_end_style">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Front-end Style</item>
+				<item name="collapsible" xsi:type="boolean">true</item>
+			</item>
+		</argument>
+		<field name="theme">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+                    <item name="notheme" xsi:type="array">
+                        <item name="value" xsi:type="string">notheme</item>
+                        <item name="label" xsi:type="string">Use default store theme</item>
+                    </item>
+                    <item name="default" xsi:type="array">
+						<item name="label" xsi:type="string">Bootstrap default</item>
+						<item name="value" xsi:type="string">default</item>
+					</item>
+                    <item name="amelia" xsi:type="array">
+						<item name="value" xsi:type="string">amelia</item>
+                        <item name="label" xsi:type="string">Amelia</item>
+					</item>
+                    <item name="cerulean" xsi:type="array">
+						<item name="value" xsi:type="string">cerulean</item>
+                        <item name="label" xsi:type="string">Cerulean</item>
+					</item>
+                    <item name="cosmo" xsi:type="array">
+						<item name="value" xsi:type="string">cosmo</item>
+                        <item name="label" xsi:type="string">Cosmo</item>
+					</item>
+                    <item name="cyborg" xsi:type="array">
+						<item name="value" xsi:type="string">cyborg</item>
+                        <item name="label" xsi:type="string">Cyborg</item>
+					</item>
+                    <item name="darkly" xsi:type="array">
+						<item name="value" xsi:type="string">darkly</item>
+                        <item name="label" xsi:type="string">Darkly</item>
+					</item>
+                    <item name="flatly" xsi:type="array">
+						<item name="value" xsi:type="string">flatly</item>
+                        <item name="label" xsi:type="string">Flatly</item>
+					</item>
+                    <item name="journal" xsi:type="array">
+						<item name="value" xsi:type="string">journal</item>
+                        <item name="label" xsi:type="string">Journal</item>
+					</item>
+                    <item name="lumen" xsi:type="array">
+						<item name="value" xsi:type="string">lumen</item>
+                        <item name="label" xsi:type="string">Lumen</item>
+					</item>
+                    <item name="paper" xsi:type="array">
+						<item name="value" xsi:type="string">paper</item>
+                        <item name="label" xsi:type="string">Paper</item>
+					</item>
+                    <item name="readable" xsi:type="array">
+                        <item name="value" xsi:type="string">readable</item>
+                        <item name="label" xsi:type="string">Readable</item>
+                    </item>
+                    <item name="sandstone" xsi:type="array">
+						<item name="value" xsi:type="string">sandstone</item>
+                        <item name="label" xsi:type="string">Sandstone</item>
+					</item>
+                    <item name="simplex" xsi:type="array">
+						<item name="value" xsi:type="string">simplex</item>
+                        <item name="label" xsi:type="string">Simplex</item>
+					</item>
+                    <item name="slate" xsi:type="array">
+                        <item name="value" xsi:type="string">slate</item>
+                        <item name="label" xsi:type="string">Slate</item>
+                    </item>
+                    <item name="spacelab" xsi:type="array">
+                        <item name="value" xsi:type="string">spacelab</item>
+                        <item name="label" xsi:type="string">Spacelab</item>
+                    </item>
+                    <item name="superhero" xsi:type="array">
+						<item name="value" xsi:type="string">superhero</item>
+                        <item name="label" xsi:type="string">Superhero</item>
+					</item>
+                    <item name="united" xsi:type="array">
+						<item name="value" xsi:type="string">united</item>
+                        <item name="label" xsi:type="string">United</item>
+					</item>
+                    <item name="yeti" xsi:type="array">
+                        <item name="value" xsi:type="string">yeti</item>
+                        <item name="label" xsi:type="string">Yeti</item>
+                    </item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">default</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Front-end theme</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">theme</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="form_wrapper">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+                    <item name="well" xsi:type="array">
+						<item name="value" xsi:type="string">well</item>
+                        <item name="label" xsi:type="string">Well</item>
+					</item>
+					<item name="panel_default" xsi:type="array">
+						<item name="value" xsi:type="string">panel_default</item>
+                        <item name="label" xsi:type="string">Default Panel</item>
+					</item>
+                    <item name="panel_primary" xsi:type="array">
+                        <item name="value" xsi:type="string">panel_primary</item>
+                        <item name="label" xsi:type="string">Primary Panel</item>
+                    </item>
+                    <item name="panel_success" xsi:type="array">
+						<item name="value" xsi:type="string">panel_success</item>
+                        <item name="label" xsi:type="string">Success Panel</item>
+					</item>
+                    <item name="panel_info" xsi:type="array">
+						<item name="value" xsi:type="string">panel_info</item>
+                        <item name="label" xsi:type="string">Info Panel</item>
+					</item>
+					<item name="panel_warning" xsi:type="array">
+						<item name="value" xsi:type="string">panel_warning</item>
+                        <item name="label" xsi:type="string">Warning Panel</item>
+					</item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">well</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Form Wrapper</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">form_wrapper</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="show_title">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+					<item name="yes" xsi:type="array">
+						<item name="label" xsi:type="string">Yes</item>
+						<item name="value" xsi:type="number">1</item>
+					</item>
+					<item name="no" xsi:type="array">
+						<item name="label" xsi:type="string">No</item>
+						<item name="value" xsi:type="number">0</item>
+					</item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Enable title bar</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">show_title</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="frontend_title">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">Contact Us</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Form Title</item>
+					<item name="notice" xsi:type="string" translate="true">Text shown in the form title bar.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">frontend_title</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="max_width">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">800px</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Max width</item>
+					<item name="notice" xsi:type="string" translate="true">Maximum form width in pixels.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">max_width</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="label_style">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+					<item name="beside_input" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">Next to input</item>
+						<item name="value" xsi:type="number">1</item>
+					</item>
+					<item name="above_input" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">Above input</item>
+						<item name="value" xsi:type="number">2</item>
+					</item>
+					<item name="hide" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">Hide Labels</item>
+						<item name="value" xsi:type="number">3</item>
+					</item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Label Style</item>
+					<item name="notice" xsi:type="string" translate="true">Position of the form field labels.</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">label_style</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="rtl">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+					<item name="yes" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">Yes</item>
+						<item name="value" xsi:type="number">1</item>
+					</item>
+					<item name="no" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">No</item>
+						<item name="value" xsi:type="number">0</item>
+					</item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="default" xsi:type="string">0</item>
+					<item name="label" translate="true" xsi:type="string">Enable RTL</item>
+					<item name="notice" xsi:type="string" translate="true">Use Right-To-Left text direction.</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">rtl</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="frontend_success_message">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string"><![CDATA[<h3>Thank you for contacting us!</h3>
+<p>We have received your message and will get in touch with you shortly.</p>]]></item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Success message</item>
+					<item name="notice" xsi:type="string" translate="true">Message shown when the form has been successfully submitted.</item>
+					<item name="formElement" xsi:type="string">wysiwyg</item>
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/element/wysiwygfix</item>
+					<item name="template" xsi:type="string">ui/form/field</item>
+					<item name="wysiwyg" xsi:type="boolean">true</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">frontend_success_message</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                        <item name="pagebuilder_button" xsi:type="boolean">false</item>
+                        <item name="add_widgets" xsi:type="boolean">false</item>
+                    </item>
+				</item>
+			</argument>
+		</field>
+		<field name="css_classes">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Custom CSS Class(es)</item>
+					<item name="notice" xsi:type="string" translate="true">Custom form wrapper CSS classes.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">css_classes</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="custom_css">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<!-- codemirror config -->
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/element/codemirror</item>
+					<item name="template" xsi:type="string">ui/form/field</item>
+					<item name="elementTmpl" xsi:type="string">PluginCompany_ContactForms/form/element/codemirror</item>
+					<item name="language" xsi:type="string">css</item>
+					<!-- codemirror config -->
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Custom CSS</item>
+					<item name="notice" xsi:type="string" translate="true">Custom CSS rules (excluding style HTML tags).</item>
+					<item name="formElement" xsi:type="string">textarea</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">custom_css</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+	</fieldset>
+	<fieldset name="custom_javascript">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Custom Javascript</item>
+				<item name="collapsible" xsi:type="boolean">true</item>
+			</item>
+		</argument>
+		<field name="pageload_js">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">//enter javascript here
+
+
+
+
+</item>
+                    <!-- codemirror config -->
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/element/codemirror</item>
+					<item name="template" xsi:type="string">ui/form/field</item>
+					<item name="elementTmpl" xsi:type="string">PluginCompany_ContactForms/form/element/codemirror</item>
+					<item name="language" xsi:type="string">javascript</item>
+					<!-- codemirror config -->
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Arbitrary JS - on page load</item>
+					<item name="notice" xsi:type="string" translate="true">Javascript to be executed on page load.</item>
+					<item name="formElement" xsi:type="string">textarea</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">pageload_js</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="beforesubmit_js">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">//enter javascript here
+
+
+
+
+</item>
+					<!-- codemirror config -->
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/element/codemirror</item>
+					<item name="template" xsi:type="string">ui/form/field</item>
+					<item name="elementTmpl" xsi:type="string">PluginCompany_ContactForms/form/element/codemirror</item>
+					<item name="language" xsi:type="string">javascript</item>
+					<!-- codemirror config -->
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Arbitrary JS - before submit</item>
+					<item name="notice" xsi:type="string" translate="true">Javascript to be executed before form submission, for example manipulating some input field values.</item>
+					<item name="formElement" xsi:type="string">textarea</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">beforesubmit_js</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="arbitrary_js">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">//enter javascript here
+
+
+
+
+</item>
+					<!-- codemirror config -->
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/element/codemirror</item>
+					<item name="template" xsi:type="string">ui/form/field</item>
+					<item name="elementTmpl" xsi:type="string">PluginCompany_ContactForms/form/element/codemirror</item>
+					<item name="language" xsi:type="string">javascript</item>
+					<!-- codemirror config -->
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Arbitrary JS - after form submit</item>
+					<item name="notice" xsi:type="string" translate="true">Javascript to be executed on form submission, for example a Google Analytics tracking event.</item>
+					<item name="formElement" xsi:type="string">textarea</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">arbitrary_js</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+	</fieldset>
+	<fieldset name="customer_notification">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Customer Notification</item>
+				<item name="collapsible" xsi:type="boolean">true</item>
+			</item>
+		</argument>
+		<field name="notify_customer">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+					<item name="store_config" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">Use Store Config</item>
+						<item name="value" xsi:type="number">2</item>
+					</item>
+					<item name="yes" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">Yes</item>
+						<item name="value" xsi:type="number">1</item>
+					</item>
+					<item name="no" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">No</item>
+						<item name="value" xsi:type="number">0</item>
+					</item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">2</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" translate="true" xsi:type="string">Enable customer notification</item>
+                    <item name="notice" xsi:type="string" translate="true">Notify customers per e-mail when their form is submitted.</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">notify_customer</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="customer_to_name">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Recipient name</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the form submission value from the input fields with ID "name" or "firstname" + "lastname" (if available).</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">customer_to_name</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="customer_to_email">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Recipient e-mail address</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the form submission value from the input field with ID "email" (if available).</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">customer_to_email</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="customer_mail_bcc">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">BCC recipient(s)</item>
+					<item name="notice" xsi:type="string" translate="true">Send a copy of the customer notification to this e-mail address / comma-separated list.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">customer_mail_bcc</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="customer_from_name">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Sender name</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the default configuration.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">customer_from_name</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="customer_from_email">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Sender e-mail address</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the default configuration.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">customer_from_email</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="customer_mail_subject">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Notification subject</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the default configuration.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">customer_mail_subject</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="customer_mail_content">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string"><![CDATA[<p>Dear {{var name}},</p>
+<p>Thank you for contacting us!<br>We have received your message and will get in touch with you shortly.</p>
+<h3>Request details</h3>
+<hr>
+<p>{{var submission_overview}}</p>
+<hr>
+<p>If you have any other questions in the mean time, feel free to contact us by phone on {{config path="general/store_information/phone"}} or by e-mail at {{config path="trans_email/ident_general/email"}}.</p>
+<p>Best regards,<br>{{config path="trans_email/ident_general/name"}}</p>]]></item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="formElement" xsi:type="string">wysiwyg</item>
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/element/wysiwygfix</item>
+					<item name="template" xsi:type="string">ui/form/field</item>
+					<item name="wysiwyg" xsi:type="boolean">true</item>
+					<item name="label" translate="true" xsi:type="string">Notification content</item>
+					<item name="notice" xsi:type="string" translate="true">The content of the customer notification e-mail.</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">customer_mail_content</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                        <item name="pagebuilder_button" xsi:type="boolean">false</item>
+                        <item name="add_widgets" xsi:type="boolean">false</item>
+                    </item>
+				</item>
+			</argument>
+		</field>
+        <field name="customer_notification_template">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">PluginCompany\ContactForms\Model\Email\Source\Templates</item>
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">custom_contact_forms_notification</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Notification Template</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">Form</item>
+                    <item name="dataScope" xsi:type="string">customer_notification_template</item>
+                </item>
+            </argument>
+        </field>
+	</fieldset>
+	<fieldset name="admin_notification">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Admin Notification</item>
+				<item name="collapsible" xsi:type="boolean">true</item>
+			</item>
+		</argument>
+		<field name="notify_admin">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="array">
+					<item name="store_config" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">Use Store Config</item>
+						<item name="value" xsi:type="number">2</item>
+					</item>
+					<item name="yes" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">Yes</item>
+						<item name="value" xsi:type="number">1</item>
+					</item>
+					<item name="no" xsi:type="array">
+						<item name="label" xsi:type="string" translate="true">No</item>
+						<item name="value" xsi:type="number">0</item>
+					</item>
+				</item>
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string">2</item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Enable admin notification</item>
+					<item name="notice" xsi:type="string" translate="true">Notify admins per e-mail when a form is submitted.</item>
+					<item name="formElement" xsi:type="string">select</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">notify_admin</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="admin_to_email">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Notification recipient</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the default configuration.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">admin_to_email</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="admin_mail_bcc">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">BCC recipient(s)</item>
+					<item name="notice" xsi:type="string" translate="true">Send a copy of the admin notification to this e-mail address / comma-separated list.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">admin_mail_bcc</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<dynamicRows name="condit_to_email">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="sortOrder" xsi:type="number">2</item>
+					<item name="label" xsi:type="string" translate="true">Conditional Recipients</item>
+					<item name="componentType" xsi:type="string">dynamicRows</item>
+					<item name="addButtonLabel" xsi:type="string" translate="true">Add Value</item>
+				</item>
+			</argument>
+			<container name="record">
+				<argument name="data" xsi:type="array">
+					<item name="config" xsi:type="array">
+						<item name="isTemplate" xsi:type="boolean">true</item>
+						<item name="is_collection" xsi:type="boolean">true</item>
+						<item name="component" xsi:type="string">Magento_Ui/js/dynamic-rows/record</item>
+						<item name="componentType" xsi:type="string">container</item>
+						<item name="positionProvider" xsi:type="string">attribute_options.position</item>
+					</item>
+				</argument>
+				<field name="field_id">
+					<argument name="data" xsi:type="array">
+						<item name="config" xsi:type="array">
+							<item name="dataType" xsi:type="string">text</item>
+							<item name="label" translate="true" xsi:type="string">Field ID</item>
+							<item name="formElement" xsi:type="string">input</item>
+							<item name="validation" xsi:type="array">
+								<item name="required-entry" xsi:type="boolean">true</item>
+							</item>
+						</item>
+					</argument>
+				</field>
+				<field name="value">
+					<argument name="data" xsi:type="array">
+						<item name="config" xsi:type="array">
+							<item name="dataType" xsi:type="string">text</item>
+							<item name="label" translate="true" xsi:type="string">Value</item>
+							<item name="formElement" xsi:type="string">input</item>
+							<item name="validation" xsi:type="array">
+								<item name="required-entry" xsi:type="boolean">true</item>
+							</item>
+						</item>
+					</argument>
+				</field>
+				<field name="match_type">
+					<argument name="data" xsi:type="array">
+						<item name="options" xsi:type="array">
+							<item name="exact" xsi:type="array">
+								<item name="label" xsi:type="string" translate="true">Exact Match</item>
+								<item name="value" xsi:type="string">exact</item>
+							</item>
+							<item name="partial" xsi:type="array">
+								<item name="label" xsi:type="string" translate="true">Partial Match</item>
+								<item name="value" xsi:type="string">partial</item>
+							</item>
+						</item>
+						<item name="config" xsi:type="array">
+							<item name="dataType" xsi:type="string">text</item>
+							<item name="label" translate="true" xsi:type="string">Match Type</item>
+							<item name="notice" xsi:type="string" translate="true"></item>
+							<item name="formElement" xsi:type="string">select</item>
+							<item name="validation" xsi:type="array">
+								<item name="required-entry" xsi:type="boolean">true</item>
+							</item>
+							<item name="fit" xsi:type="boolean">true</item>
+						</item>
+					</argument>
+				</field>
+				<field name="email">
+					<argument name="data" xsi:type="array">
+						<item name="config" xsi:type="array">
+							<item name="dataType" xsi:type="string">text</item>
+							<item name="label" translate="true" xsi:type="string">E-Mail</item>
+							<item name="addbefore" translate="true" xsi:type="string"></item>
+							<item name="formElement" xsi:type="string">input</item>
+							<item name="validation" xsi:type="array">
+								<item name="required-entry" xsi:type="boolean">true</item>
+								<item name="validate-email" xsi:type="boolean">true</item>
+							</item>
+						</item>
+					</argument>
+				</field>
+                <actionDelete name="actionDelete" />
+			</container>
+		</dynamicRows>
+		<field name="admin_from_name">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Sender name</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the default configuration.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">admin_from_name</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="admin_from_email">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Sender e-mail address</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the default configuration.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">admin_from_email</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="admin_reply_to_email">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Reply to e-mail address</item>
+					<item name="notice" xsi:type="string" translate="true">The recipient of replies to admin notifications. To directly reply to customers, use the ID of the e-mail address input field, for example {{var email}}.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">admin_reply_to_email</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="admin_mail_subject">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="label" translate="true" xsi:type="string">Notification subject</item>
+					<item name="notice" xsi:type="string" translate="true">Leave empty to use the default configuration.</item>
+					<item name="formElement" xsi:type="string">input</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">admin_mail_subject</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+		<field name="admin_notification_content">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="default" xsi:type="string"><![CDATA[<h1 style="margin-top: 0px;">New contact request</h1>
+<h3 style="margin-top: 30px;">Request details</h3>
+<hr>
+<p>{{var submission_overview}}</p>
+<hr>
+<p>{{var uploaded_file_links}}</p>]]></item>
+					<item name="dataType" xsi:type="string">text</item>
+					<item name="formElement" xsi:type="string">wysiwyg</item>
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/element/wysiwygfix</item>
+					<item name="template" xsi:type="string">ui/form/field</item>
+					<item name="wysiwyg" xsi:type="boolean">true</item>
+					<item name="label" translate="true" xsi:type="string">Notification content</item>
+					<item name="notice" xsi:type="string" translate="true">The content of the admin notification e-mail.</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">admin_notification_content</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">false</item>
+					</item>
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                        <item name="pagebuilder_button" xsi:type="boolean">false</item>
+                        <item name="add_widgets" xsi:type="boolean">false</item>
+                    </item>
+				</item>
+			</argument>
+		</field>
+        <field name="admin_notification_template">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">PluginCompany\ContactForms\Model\Email\Source\Templates</item>
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">custom_contact_forms_notification</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Notification Template</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">Form</item>
+                    <item name="dataScope" xsi:type="string">admin_notification_template</item>
+                </item>
+            </argument>
+        </field>
+	</fieldset>
+	<fieldset name="store_views">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Store Views</item>
+				<item name="collapsible" xsi:type="boolean">true</item>
+			</item>
+		</argument>
+		<field name="storeviews">
+			<argument name="data" xsi:type="array">
+				<item name="options" xsi:type="object">Magento\Cms\Ui\Component\Listing\Column\Cms\Options</item>
+				<item name="config" xsi:type="array">
+					<item name="dataType" xsi:type="string">int</item>
+					<item name="label" xsi:type="string" translate="true">Store View</item>
+					<item name="formElement" xsi:type="string">multiselect</item>
+					<item name="source" xsi:type="string">Form</item>
+					<item name="dataScope" xsi:type="string">store_id</item>
+					<item name="default" xsi:type="string">0</item>
+					<item name="validation" xsi:type="array">
+						<item name="required-entry" xsi:type="boolean">true</item>
+					</item>
+				</item>
+			</argument>
+		</field>
+	</fieldset>
+    <fieldset name="general_translation">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string">General Translations</item>
+                <item name="collapsible" xsi:type="boolean">true</item>
+                <item name="template" xsi:type="string">PluginCompany_ContactForms/form/component/preloadFieldset</item>
+            </item>
+        </argument>
+        <container name="translation_container">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array"></item>
+            </argument>
+            <field name="translation">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="dataType" xsi:type="string">text</item>
+                        <item name="label" translate="true" xsi:type="string">General Translations</item>
+                        <item name="notice" xsi:type="string" translate="true">notice</item>
+                        <item name="formElement" xsi:type="string">hidden</item>
+                        <item name="source" xsi:type="string">Form</item>
+                        <item name="dataScope" xsi:type="string">general_translation</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">false</item>
+                        </item>
+                    </item>
+                </argument>
+            </field>
+            <htmlContent name="html_content">
+                <argument name="block" xsi:type="object">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\Tab\GeneralTranslation</argument>
+            </htmlContent>
+        </container>
+    </fieldset>
+	<fieldset name="fields_translation">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Form Field Translations</item>
+				<item name="collapsible" xsi:type="boolean">true</item>
+                <item name="template" xsi:type="string">PluginCompany_ContactForms/form/component/preloadFieldset</item>
+			</item>
+		</argument>
+		<container name="translation_container">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array"></item>
+			</argument>
+			<field name="translation">
+				<argument name="data" xsi:type="array">
+					<item name="config" xsi:type="array">
+						<item name="dataType" xsi:type="string">text</item>
+						<item name="label" translate="true" xsi:type="string">Form Field Translations</item>
+						<item name="notice" xsi:type="string" translate="true">notice</item>
+						<item name="formElement" xsi:type="string">hidden</item>
+						<item name="source" xsi:type="string">Form</item>
+						<item name="dataScope" xsi:type="string">translation</item>
+						<item name="validation" xsi:type="array">
+							<item name="required-entry" xsi:type="boolean">false</item>
+						</item>
+					</item>
+				</argument>
+			</field>
+			<htmlContent name="html_content">
+				<argument name="block" xsi:type="object">PluginCompany\ContactForms\Block\Adminhtml\Form\Edit\Tab\Translation</argument>
+			</htmlContent>
+		</container>
+	</fieldset>
+	<fieldset name="form_submissions">
+		<argument name="data" xsi:type="array">
+			<item name="config" xsi:type="array">
+				<item name="label" xsi:type="string">Form Submissions</item>
+				<item name="collapsible" xsi:type="boolean">true</item>
+			</item>
+		</argument>
+		<insertListing name="formEntryListing">
+			<argument name="data" xsi:type="array">
+				<item name="config" xsi:type="array">
+					<item name="component" xsi:type="string">PluginCompany_ContactForms/js/form/components/insertEntryListing</item>
+					<item name="autoRender" xsi:type="boolean">true</item>
+					<item name="behaviourType" xsi:type="string">simple</item>
+					<item name="ns" xsi:type="string">plugincompany_form_entries</item>
+                    <item name="imports" xsi:type="array">
+						<item name="form_id" xsi:type="string">${ $.provider }:data.entity_id</item>
+					</item>
+					<item name="exports" xsi:type="array">
+						<item name="form_id" xsi:type="string">${ $.provider }:data.entity_id</item>
+					</item>
+				</item>
+			</argument>
+		</insertListing>
+	</fieldset>
+</form>

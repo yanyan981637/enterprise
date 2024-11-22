@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">translationplus_translation_listing.translationplus_translation_listing_data_source</item>
+            <item name="deps" xsi:type="string">translationplus_translation_listing.translationplus_translation_listing_data_source</item>
+        </item>
+        <item name="spinner" xsi:type="string">translationplus_translation_columns</item>
+    </argument>
+    <dataSource name="translationplus_translation_listing_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
+            <argument name="name" xsi:type="string">translationplus_translation_listing_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">id</argument>
+            <argument name="requestFieldName" xsi:type="string">id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
+                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="indexField" xsi:type="string">id</item>
+                    </item>
+                </item>
+            </argument>
+        </argument>
+        <aclResource>Magefan_Translation::search</aclResource>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <exportButton name="export_button"/>
+        <filterSearch name="fulltext"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="translationplus_translation_columns" class="Magefan\TranslationPlus\Ui\Component\Listing\Columns">
+        <settings>
+            <editorConfig>
+                <param name="templates" xsi:type="array">
+                    <item name="record" xsi:type="array">
+                        <item name="templates" xsi:type="array">
+                            <item name="fields" xsi:type="array">
+                                <item name="textarea" xsi:type="array">
+                                    <item name="component" xsi:type="string">Magefan_TranslationPlus/js/form/element/mftextarea</item>
+                                    <item name="template" xsi:type="string">Magefan_TranslationPlus/form/element/mftextarea</item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </param>
+                <param name="clientConfig" xsi:type="array">
+                    <item name="saveUrl" xsi:type="url" path="translationplus/action/inlineEdit"/>
+                    <item name="validateBeforeSave" xsi:type="boolean">false</item>
+                </param>
+                <param name="indexField" xsi:type="string">id</param>
+                <param name="enabled" xsi:type="boolean">true</param>
+                <param name="selectProvider" xsi:type="string">translationplus_translation_listing.translationplus_translation_listing.translationplus_translation_columns.ids</param>
+            </editorConfig>
+            <childDefaults>
+                <param name="fieldAction" xsi:type="array">
+                    <item name="provider" xsi:type="string">translationplus_translation_listing.translationplus_translation_listing.translationplus_translation_columns_editor</item>
+                    <item name="target" xsi:type="string">startEdit</item>
+                    <item name="params" xsi:type="array">
+                        <item name="0" xsi:type="string">${ $.$data.rowIndex }</item>
+                        <item name="1" xsi:type="boolean">true</item>
+                    </item>
+                </param>
+            </childDefaults>
+        </settings>
+        <selectionsColumn name="ids" sortOrder="10">
+            <settings>
+                <indexField>id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="id"  sortOrder="20">
+            <settings>
+                <filter>text</filter>
+                <sorting>asc</sorting>
+                <label translate="true">ID</label>
+            </settings>
+        </column>
+        <column name="string"  sortOrder="30">
+            <settings>
+                <filter>text</filter>
+                <sorting>asc</sorting>
+                <label translate="true">Original String</label>
+                <fieldClass>
+                    <class name="grid-column-string">true</class>
+                </fieldClass>
+            </settings>
+        </column>
+        <column name="source" sortOrder="50">
+            <settings>
+                <filter>text</filter>
+                <sorting>asc</sorting>
+                <label translate="true">Source</label>
+                <fieldClass>
+                    <class name="grid-column-source">true</class>
+                </fieldClass>
+            </settings>
+        </column>
+    </columns>
+</listing>

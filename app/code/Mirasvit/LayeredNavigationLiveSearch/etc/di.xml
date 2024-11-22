@@ -1,0 +1,29 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Magento\DataExporter\Model\Indexer\FeedIndexProcessorCreateUpdate">
+        <plugin name="mstNavLivesearchExtraFiltersExporter" type="Mirasvit\LayeredNavigationLiveSearch\Plugin\LiveSearch\AddExtraFiltersMetadataPlugin" />
+    </type>
+
+    <type name="Mirasvit\LayeredNavigationLiveSearch\Plugin\LiveSearch\AddExtraFiltersMetadataPlugin">
+        <arguments>
+            <argument name="additionalFilters" xsi:type="array">
+                <item name="new" xsi:type="string">Mirasvit\LayeredNavigation\Model\Layer\Filter\NewFilter</item>
+                <item name="on_sale" xsi:type="string">Mirasvit\LayeredNavigation\Model\Layer\Filter\OnSaleFilter</item>
+                <item name="stock" xsi:type="string">Mirasvit\LayeredNavigation\Model\Layer\Filter\StockFilter</item>
+                <item name="rating" xsi:type="string">Mirasvit\LayeredNavigation\Model\Layer\Filter\RatingFilter</item>
+                <item name="search" xsi:type="string">Mirasvit\LayeredNavigation\Model\Layer\Filter\SearchFilter</item>
+            </argument>
+            <argument name="dataMappers" xsi:type="array">
+                <item name="new" xsi:type="string">Mirasvit\LayeredNavigation\Model\DataMapper\NewDataMapper</item>
+                <item name="on_sale" xsi:type="string">Mirasvit\LayeredNavigation\Model\DataMapper\OnSaleDataMapper</item>
+                <item name="stock" xsi:type="string">Mirasvit\LayeredNavigation\Model\DataMapper\StockDataMapper</item>
+                <item name="rating" xsi:type="string">Mirasvit\LayeredNavigation\Model\DataMapper\RatingDataMapper</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\LiveSearchAdapter\Model\AttributeMetadata">
+        <plugin name="mstNavLivesearchExtraFiltersMetadata" type="Mirasvit\LayeredNavigationLiveSearch\Plugin\LiveSearch\ModifyAttributeMetadataPlugin" />
+    </type>
+</config>

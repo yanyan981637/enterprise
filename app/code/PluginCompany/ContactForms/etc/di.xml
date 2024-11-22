@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+	<preference for="PluginCompany\ContactForms\Api\FormRepositoryInterface" type="PluginCompany\ContactForms\Model\FormRepository"/>
+	<preference for="PluginCompany\ContactForms\Api\Data\FormInterface" type="PluginCompany\ContactForms\Model\Form"/>
+	<preference for="PluginCompany\ContactForms\Api\Data\FormSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+	<virtualType name="PluginCompany\ContactForms\Model\ResourceModel\Form\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+		<arguments>
+			<argument name="mainTable" xsi:type="string">plugincompany_contactforms_form</argument>
+			<argument name="resourceModel" xsi:type="string">PluginCompany\ContactForms\Model\ResourceModel\Form\Collection</argument>
+		</arguments>
+	</virtualType>
+	<type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+		<arguments>
+			<argument name="collections" xsi:type="array">
+				<item name="plugincompany_form_grid_data_source" xsi:type="string">PluginCompany\ContactForms\Model\ResourceModel\Form\Grid\Collection</item>
+				<item name="plugincompany_entry_grid_data_source" xsi:type="string">PluginCompany\ContactForms\Model\ResourceModel\Entry\Grid\Collection</item>
+			</argument>
+		</arguments>
+	</type>
+	<virtualType name="PluginCompany\ContactForms\Model\ResourceModel\Entry\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+		<arguments>
+			<argument name="mainTable" xsi:type="string">plugincompany_contactforms_entry</argument>
+			<argument name="resourceModel" xsi:type="string">PluginCompany\ContactForms\Model\ResourceModel\Entry\Collection</argument>
+		</arguments>
+	</virtualType>
+    <type name="Magento\Widget\Model\Config\SchemaLocator">
+        <plugin name="rewrite_widget_xsd" type="PluginCompany\ContactForms\Model\Widget\SchemaLocatorPlugin" sortOrder="1" />
+    </type>
+</config>

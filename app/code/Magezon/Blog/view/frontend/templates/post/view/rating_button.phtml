@@ -1,0 +1,144 @@
+<?php /* @var $block Magezon\Blog\Block\Post\View */?>
+<?php
+$dataHelper = $this->helper('\Magezon\Blog\Helper\Data');
+$post       = $block->getCurrentPost();
+$ratingBtnEnable = $dataHelper->getRatingBtnEnable();
+$ratingBtnLikeEnable = $dataHelper->getRatingBtnLikeEnable();
+$ratingBtnDislikeEnable = $dataHelper->getRatingBtnDislikeEnable();
+?>
+
+<?php if($ratingBtnEnable) :?>
+    <div id="rating-button" class="rating-button <?= $post->getId() ?>">
+        <?php if($ratingBtnEnable && ($ratingBtnLikeEnable || $ratingBtnDislikeEnable)) :?>
+            <p><?= __("Your feelings about the post?") ?></p>
+        <?php endif; ?>
+        <div>
+            <button class="btn-secondary like-review <?= $ratingBtnLikeEnable ? '' : 'display-none' ?>">
+                <i class="fas mgz-fa-heart" aria-hidden="true"></i> <?= __('Like') ?>
+                <span class="rating-total"><?= $post->getLikeTotal() ?></span>
+            </button>
+            <button class="btn-secondary dislike-review <?= $ratingBtnDislikeEnable ? '' : 'display-none' ?>">
+                <i class="fas mgz-fa-heart-broken" aria-hidden="true"></i> <?= __('Dislike') ?>
+                <span class="rating-total"><?= $post->getDislikeTotal() ?></span>
+            </button>
+        </div>
+        <div class="rating-error"></div>
+    </div>
+<?php endif; ?>
+<script>
+    require(['jquery', 'mage/url', 'domReady!'], function($, urlBuilder){
+        var ratingTotalJson = localStorage.getItem('ratingTotal');
+        var ratingTotal = ratingTotalJson ? JSON.parse(ratingTotalJson) : [];
+        var postIdCurrent = <?= $post->getId() ?>;
+
+        window.addEventListener('beforeunload', function() {
+            $('#rating-button button').prop("disabled", true);
+        });
+
+        // load localStorage rating status
+        ratingTotal.forEach(function(item, index) {
+            if(item.postId === postIdCurrent){
+                if(item.liked === 'active'){
+                    $('.like-review').addClass('liked');
+                }
+                if(item.disliked === 'active'){
+                    $('.dislike-review').addClass('disliked');
+                }
+            }
+        });
+
+        //update Rating Ajax function and update localStorage rating status
+        function updateRatingAjax(data, state) {
+            $.ajax({
+                url: urlBuilder.build('blog/post/updaterating'),
+                method: 'POST',
+                data: data,
+                async:false,
+                dataType: 'json',
+                success: function(response) {
+                    if(response.code === 200) {
+                        //check postId current
+                        var postExists = ratingTotal.find(item => item.postId === data.postId);
+
+                        if (postExists) {
+                            //update rating status into localStorage
+                            ratingTotal.forEach(function(item, index) {
+                                if(item.postId === data.postId){
+                                    ratingTotal[index] = {
+                                        'postId': data.postId,
+                                        'liked': response.data.isLiked === '0' ? 'active'  : 'not',
+                                        'disliked': response.data.isDisliked === '0' ? 'active'  : 'not',
+                                    }
+                                }
+                            });
+                        } else {
+                            ratingTotal.push({
+                                'postId': data.postId,
+                                'liked': response.data.isLiked === '0' ? 'active'  : 'not',
+                                'disliked': response.data.isDisliked === '0' ? 'active'  : 'not',
+                            })
+                        }
+
+                        var ratingTotalString = JSON.stringify(ratingTotal);
+                        localStorage.setItem('ratingTotal', ratingTotalString);
+
+                        if(response.data.isLikeClick){
+                            if(response.data.isLiked === '0') {
+                                $('.like-review').addClass('liked');
+                                $('.like-review').find('.rating-total').html(response.data.likeTotal);
+                                if(Boolean(response.data.isDisliked)) {
+                                    $('.dislike-review').removeClass('disliked');
+                                    $('.dislike-review').find('.rating-total').html(response.data.disLikeTotal);
+                                }
+                            }else{
+                                $('.like-review').removeClass('liked');
+                                $('.like-review').find('.rating-total').html(response.data.likeTotal);
+                            }
+                        }
+
+                        if(response.data.isDislikeClick){
+                            if(response.data.isDisliked === '0') {
+                                $('.dislike-review').addClass('disliked');
+                                $('.dislike-review').find('.rating-total').html(response.data.disLikeTotal);
+                                if(Boolean(response.data.isLiked)) {
+                                    $('.like-review').removeClass('liked');
+                                    $('.like-review').find('.rating-total').html(response.data.likeTotal);
+                                }
+                            }else{
+                                $('.dislike-review').removeClass('disliked');
+                                $('.dislike-review').find('.rating-total').html(response.data.disLikeTotal);
+                            }
+                        }
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('.rating-error').prepend('<span class="message-error error message">An error occurred. Please try again !</span>');
+                    setTimeout(function(){
+                        $(".message-error").remove();
+                    },2000);
+                }
+
+            });
+        }
+
+        $(document).on('click', '.like-review', function() {
+            var data = {
+                'postId': <?= $post->getId() ?>,
+                'isDisliked': $(this).siblings().hasClass('disliked'),
+                'isLiked': $(this).hasClass('liked') ? 1 : 0,
+                'isLikeClick': 1
+            }
+            updateRatingAjax(data);
+        });
+
+        $(document).on('click', '.dislike-review', function() {
+            var data = {
+                'postId': postIdCurrent,
+                'isLiked': $(this).prev().hasClass('liked'),
+                'isDisliked': $(this).hasClass('disliked') ? 1 : 0,
+                'isDislikeClick': 1
+            }
+            updateRatingAjax(data);
+        });
+    });
+</script>

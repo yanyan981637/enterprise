@@ -1,0 +1,9 @@
+<?php
+$coreHelper  = $this->helper('\Magezon\Core\Helper\Data');
+$description = $this->getProduct()->getDescription();
+?>
+<?php if($description) { ?>
+	<div class="ppbd-product-description">
+		<?= $coreHelper->filter($description) ?>
+	</div>
+<?php } ?>

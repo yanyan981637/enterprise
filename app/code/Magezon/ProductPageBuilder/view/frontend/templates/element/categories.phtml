@@ -1,0 +1,15 @@
+<?php
+$product    = $this->getProduct();
+$collection = $this->getCollection();
+$count      = $collection->count();
+?>
+<?php if ($count) { ?>
+	<div class="ppbd-product-categories">
+		<label><?= __('Categories: ') ?></label>
+		<?php $k = 0; ?>
+		<?php foreach ($collection->getItems() as $category) { ?>
+			<a href="<?= $category->getUrl() ?>"><?= $category->getName() ?></a><?= ($k!=($count-1)) ? ', ' : '' ?>
+			<?php $k++ ?>
+		<?php } ?>
+	</div>
+<?php } ?>

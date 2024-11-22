@@ -1,0 +1,164 @@
+Delete,Delete
+"Are you sure you want to delete this?","Are you sure you want to delete this?"
+Save,Save
+"Save & New","Save & New"
+"Save & Close","Save & Close"
+"Save and Apply","Save and Apply"
+Conditions,Conditions
+"Apply the rule only if the following conditions are met (leave blank for all products).","Apply the rule only if the following conditions are met (leave blank for all products)."
+ID,ID
+Title,Title
+SKU,SKU
+Status,Status
+Visibility,Visibility
+"Add New Files","Add New Files"
+"Manage Files","Manage Files"
+"Add New Icon","Add New Icon"
+"Manage Icons","Manage Icons"
+"Add New Category","Add New Category"
+"Manage Categories","Manage Categories"
+Reports,Reports
+Import,Import
+Settings,Settings
+"User Guide","User Guide"
+"Change Log","Change Log"
+"Get Support","Get Support"
+Attachments,Attachments
+"You deleted the item.","You deleted the item."
+"We can't find a category to delete.","We can't find a category to delete."
+"This category no longer exists.","This category no longer exists."
+"Edit Category","Edit Category"
+"New Category","New Category"
+Category,Category
+Categories,Categories
+"A total of %1 record(s) have been deleted.","A total of %1 record(s) have been deleted."
+"A total of %1 record(s) have been disabled.","A total of %1 record(s) have been disabled."
+"A total of %1 record(s) have been enabled.","A total of %1 record(s) have been enabled."
+"You saved the category.","You saved the category."
+"Something went wrong while saving the category.","Something went wrong while saving the category."
+"We can't find a file to delete.","We can't find a file to delete."
+"This file no longer exists.","This file no longer exists."
+"Edit File","Edit File"
+"New File","New File"
+File,File
+Files,Files
+"You saved the File.","You saved the File."
+"Something went wrong while saving the file.","Something went wrong while saving the file."
+"We can't find a icon to delete.","We can't find a icon to delete."
+"This icon no longer exists.","This icon no longer exists."
+"Edit Icon","Edit Icon"
+"New Icon","New Icon"
+Icons,Icons
+"You saved the icon.","You saved the icon."
+"Something went wrong while saving the icon.","Something went wrong while saving the icon."
+"We can't find a report to delete.","We can't find a report to delete."
+"Manage Reports","Manage Reports"
+"We can't find the file you download.","We can't find the file you download."
+"Something went wrong while getting the requested content.","Something went wrong while getting the requested content."
+"The file has expired.","The file has expired."
+"Make sure your file isn't more than %1.","Make sure your file isn't more than %1."
+"Something went wrong while saving the file(s).","Something went wrong while saving the file(s)."
+"File can not be saved to the destination folder.","File can not be saved to the destination folder."
+"Select Category","Select Category"
+"Product Tab","Product Tab"
+Button,Button
+"Group By Category","Group By Category"
+List,List
+"The CMS File with the ""%1"" ID doesn't exist.","The CMS File with the ""%1"" ID doesn't exist."
+Add/Replace,Add/Replace
+"'Something went wrong while saving the file(s) Row:' .","'Something went wrong while saving the file(s) Row:' ."
+Edit,Edit
+"Delete %1","Delete %1"
+"Are you sure you want to delete a %1 record?","Are you sure you want to delete a %1 record?"
+Yes,Yes
+No,No
+file_label,file_label
+"Delete Download Report ID %1","Delete Download Report ID %1"
+"Are you sure you want to delete a download report id %1 record?","Are you sure you want to delete a download report id %1 record?"
+Downloads,Downloads
+"See More","See More"
+"File URL does not exist.","File URL does not exist."
+"File URL does not Allowed.","File URL does not Allowed."
+"Product Attachments","Product Attachments"
+"Save File","Save File"
+"Delete File","Delete File"
+Icon,Icon
+"Save Icon","Save Icon"
+"Delete Icon","Delete Icon"
+"Save Category","Save Category"
+"Delete Category","Delete Category"
+Report,Report
+"Delete Report","Delete Report"
+"Product Attachments Settings","Product Attachments Settings"
+"General Settings","General Settings"
+"Current Version","Current Version"
+"Enable Module","Enable Module"
+"Allowed File Types","Allowed File Types"
+"Attach Files To Email","Attach Files To Email"
+"File Listing","File Listing"
+"Show File Icon","Show File Icon"
+"Show File Size","Show File Size"
+"Show Number Of Downloads","Show Number Of Downloads"
+"Show Description","Show Description"
+"Product Page","Product Page"
+Enabled,Enabled
+"Display Position","Display Position"
+"List Display","List Display"
+"Max File Displayed","Max File Displayed"
+"Block Title","Block Title"
+"Order Page","Order Page"
+Back,Back
+Enable,Enable
+"Category Name","Category Name"
+"Are you sure you want to delete selected items?","Are you sure you want to delete selected items?"
+"Delete items","Delete items"
+"Are you sure you want to enable selected items?","Are you sure you want to enable selected items?"
+"Are you sure you want to disable selected items?","Are you sure you want to disable selected items?"
+Disable,Disable
+"Category ID","Category ID"
+"Product Attachments Info","Product Attachments Info"
+"Select Attachment Type","Select Attachment Type"
+"File Upload","File Upload"
+"Url File","Url File"
+"Leave blank if you want to use file's default name","Leave blank if you want to use file's default name"
+"File Name","File Name"
+"It will be displayed as name on download link","It will be displayed as name on download link"
+"File Label","File Label"
+Description,Description
+text,text
+"Store View","Store View"
+"Customer Groups","Customer Groups"
+"Unlimited if leave blank","Unlimited if leave blank"
+"Download Limit","Download Limit"
+"File Display Priority Order","File Display Priority Order"
+Priority,Priority
+"Attach To Email","Attach To Email"
+"Show Order Page","Show Order Page"
+"Add New File","Add New File"
+Apply,Apply
+Select...,Select...
+"Are you sure you want to enable attach to email selected items?
+                        ","Are you sure you want to enable attach to email selected items?
+                        "
+AttachEmail,AttachEmail
+"Are you sure you want to disable attach to email selected items?
+                        ","Are you sure you want to disable attach to email selected items?
+                        "
+DisableAttachEmail,DisableAttachEmail
+"Disable Attach To Email","Disable Attach To Email"
+Thumbnail,Thumbnail
+Name,Name
+Label,Label
+"Link File","Link File"
+"Total Downloads","Total Downloads"
+"Update Time","Update Time"
+"Upload Icon","Upload Icon"
+"Allowed file types: jpg, jpeg, gif, png, svg","Allowed file types: jpg, jpeg, gif, png, svg"
+"Add Extension","Add Extension"
+"Icon ID","Icon ID"
+"File Type","File Type"
+"Report ID","Report ID"
+"File ID","File ID"
+"Customer Name","Customer Name"
+"Download Time","Download Time"
+"Upload File Import","Upload File Import"

@@ -1,0 +1,23 @@
+<?php
+$product = $this->getProduct();
+?>
+<div class="ppbd-product-addtocart">
+	<?php if ($product->getTypeId() == \Magento\Bundle\Model\Product\Type::TYPE_CODE) { ?>
+		<?= $block->renderElement('customize.button') ?>
+	<?php } else { ?>
+		<?= $block->renderElement('product.info') ?>
+	<?php } ?>
+</div>
+<script>
+	require(['jquery'], function($) {
+		var addToCartParents = $('.mgz-element-product_addtocart').parents('.mgz-element-inner');
+		var priceParents     = $('.mgz-element-product_price').parents('.mgz-element-inner');
+		var parent;
+		for (var i = 0; i < addToCartParents.length; i++) {
+			if ($.inArray(addToCartParents[i], priceParents) !== -1 && !parent) {
+				parent = $(addToCartParents[i]);
+			}
+		}
+		if (parent && !$('.magezon-builder .product-info-main').length) parent.addClass('product-info-main');
+	});
+</script>

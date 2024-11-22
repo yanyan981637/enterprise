@@ -1,0 +1,29 @@
+<?php
+/**
+ * @var Magezon\ProductAttachments\Block\View\ListAttachment $block
+ */
+
+$helper = $this->helper('\Magezon\ProductAttachments\Helper\Data');
+$iconCollection = $block->getIconCollection();
+$files = $block->getFiles();
+?>
+<?php foreach ($files as $file) { ?>
+    <div class="mpa-item">
+        <?php if ($helper->isEnableFileIcon()) { ?>
+            <?php $icon = $helper->getIcon($iconCollection, $file) ?>
+            <img src="<?= $icon->getUrlIcon() ?>" alt="<?= $block->escapeHtml($icon->getFileName()) ?>">
+        <?php } ?>
+        <a href="<?= $file->getDownloadUrl() ?>" title="<?= $block->escapeHtml($file->getLabel()) ?>" target="_blank">
+            <?= $file->getLabel() ?>
+            <?php if ($helper->isShowDescription() && $description = $file->getDescription()) { ?>
+                <span class="mpa-item-description"><?= $description ?></span>
+            <?php } ?>
+            <?php if ($helper->isEnableFileSize() && $size = $file->getFileSize()) { ?>
+                <span>(<?= $size ?>)</span>
+            <?php } ?>
+            <?php if ($helper->isEnableDownloaded()) { ?>
+                <span>(<?= (int)$file->getTotalDownloads() ?> <?= __('Downloads')?>)</span>
+            <?php } ?>
+        </a>
+    </div>
+<?php } ?>

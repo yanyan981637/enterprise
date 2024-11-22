@@ -1,0 +1,8 @@
+<?php
+$product = $this->getProduct();
+?>
+<div class="ppbd-bundle-product-options">
+	<?php if ($product->getTypeId() == \Magento\Bundle\Model\Product\Type::TYPE_CODE) { ?>
+		<?= $block->renderElement('bundle.options.container') ?>
+	<?php } ?>
+</div>

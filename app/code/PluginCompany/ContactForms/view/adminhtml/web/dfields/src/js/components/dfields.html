@@ -1,0 +1,349 @@
+<div class="dependent_fields">
+    <ul class='dependent_parent dependent'>
+        {{#list}}
+        <li class="field" decorator="sortable">
+            <div class="handle"><div></div></div>
+            <h4>{{name}}</h4>
+            <p>Should be shown if the following conditions are true:</p>
+            <dependencies dependencies="{{dependencies}}" />
+            <i on-click="deleteDependentParent:{{@key}}" class="fa fa-2x fa-trash delete"></i>
+        </li>
+        {{/list}}
+    </ul>
+    <div class="addParentField material-box col-md-12">
+        {{#if remainingFields}}
+            <div class="col-md-3">
+                Add a new conditional field:
+            </div>
+            <div class="col-md-4">
+                <select2 selected="{{fieldToAdd}}" options="{{remainingFields}}" />
+           </div>
+            <div class="col-md-2">
+                <button on-click="addDependentParent:{{fieldToAdd}}" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> Add Field</button>
+            </div>
+        {{/if}}
+        {{#unless remainingFields}}
+            <div class="col-md-12">
+                <div class="alert alert-info" role="alert">No more fields available! You can add more fields in the form builder tab, or add more conditions to your existing conditional fields.</div>
+            </div>
+        {{/unless}}
+    </div>
+</div>
+<script>
+        var select2 = require('rvc!PluginCompany_ContactForms/dfields/src/js/components/form/select2');
+        var dependencies = require('rvc!PluginCompany_ContactForms/dfields/src/js/components/dependencies');
+        var $ = require('jquery');
+        component.exports = {
+            debug: true,
+            data: function() {
+                return {
+                    list: [],
+                    conditions: [
+                        {
+                            label: 'Equals the following value(s)',
+                            value: 'values'
+                        },
+                        {
+                            label: 'Does not equal the following value(s)',
+                            value: 'not'
+                        },
+                        {
+                            label: 'Includes all of the following value(s)',
+                            value: 'contains'
+                        },
+                        {
+                            label: 'Includes at least one of the following value(s)',
+                            value: 'oneof'
+                        },
+                        {
+                            label: 'Matches the following regular expression',
+                            value: 'match'
+                        }
+                    ],
+                    fields: {},
+                    fieldToAdd: null,
+                    initialized: false
+                };
+            },
+            computed: {
+                fieldList: function(){
+                    return _.keys(this.get('fields'));
+                },
+                fieldListDependencies: function(){
+                    var fieldList = [];
+                    $.each(this.get('fields'),function(key,item){
+                        if(
+                                item.type == 'paragraphtext'
+                                || item.type == 'heading'
+                                || item.type == 'upload'
+                                || item.type == 'newsletter'
+                        ){
+                            return;
+                        }
+                        fieldList.push(key)
+                    });
+                    return fieldList;
+                },
+                remainingFields: function(){
+                    var fields = this.get('fieldList');
+                    var usedFields = _.map(this.get('list'),function(item){
+                        return item.name;
+                    });
+                    var remainingFields = _.difference(fields,usedFields);
+                    return remainingFields;
+                }
+            },
+            components: {
+                dependencies: dependencies,
+                select2: select2
+            },
+            oninit: function () {
+                var dfields = this;
+                window.dfields = this;
+
+
+                //set default value for fieldToAdd after adding field
+                this.observe( 'remainingFields', function ( newValue, oldValue, keypath ) {
+                    this.set('fieldToAdd',this.get('remainingFields')[0])
+                });
+
+                //observe changes in dependent fields
+                // add field type to object
+                // + set default value
+                // this.observe( 'fields', function ( newValue, oldValue, keypath ) {
+                //     console.log('fields changed');
+                //     console.log('newvalue', newValue);
+                //     console.log('oldvalue', oldValue);
+                // });
+                this.observe( 'list.*.dependencies.*.field', function ( newValue, oldValue, keypath ) {
+                    if(typeof oldValue !== 'undefined' && typeof this.get('fields.' + oldValue) === 'undefined'){
+                        //remove dependency since field is removed
+                        var dependencyKeyPath = keypath.slice(0, -8);
+                        var keyPathIndex = keypath.slice(-7, -6);
+                        this.splice(dependencyKeyPath, keyPathIndex, 1);
+                        return;
+                    }
+                    if(typeof newValue == "undefined") return;
+                    var dep = this.get(keypath.substr(0,keypath.length-6));
+                    if(typeof dep.field != "undefined"){
+                        dep.fieldType = this.get('fields')[dep.field].type;
+                        if(dep.fieldType == 'dropdown' || dep.fieldType == 'radios'){
+                            if(typeof dep.value === "undefined" || !dep.value || dep.value.toString() === ''){
+                                dep.value = this.get('fields')[dep.field].options[0];
+                            }
+                        }
+                    }
+                });
+
+                //add depenency to dependent field
+                this.on( 'dependencies.addDependency', function (event) {
+                    var items = event.component.get('dependencies');
+                    items.push({
+                        field: this.get('fieldListDependencies')[0],
+                        condition: 'values',
+                        value: []
+                    });
+                });
+
+                //delete dependency from depended field
+                this.on( 'dependencies.deleteDependency', function (event,key) {
+                    event.component.get('dependencies').splice(key,1);
+                });
+
+                //delete dependent field
+                this.on( 'deleteDependentParent', function (event,key) {
+                    this.get('list').splice(key,1);
+                });
+
+                //add dependent field
+                this.on( 'addDependentParent', function (event,field) {
+                    if(!field){
+                        return;
+                    }
+                    this.get('list').push(
+                            {
+                                name: field,
+                                dependencies: []
+                            }
+                    );
+                });
+            },
+            //init
+            onrender: function(){
+                var dfields = this;
+                dfields
+                        .setFormData(formcontents) //set form data
+                        .then(dfields.set('list',DfieldsJson)) //set saved dependencies
+                ;
+                setTimeout(function(){
+                    dfields.updateFieldsFromBuilder();
+                },300);
+
+                //update input element
+                this.observe('list',function(){
+                    // $('#save, #save_and_continue').prop('disabled', true);
+                    setTimeout(function(){
+                        updateDfieldInput(JSON.stringify(dfields.get('list')));
+                    },10);
+                    // setTimeout(function() {
+                    // $('#save, #save_and_continue').prop('disabled', false);
+                    // }, 300)
+                });
+            },
+            updateFieldsFromBuilder: function() {
+                var jsons = window.formBuilder.builder.collection;
+                this.setFormData(jsons);
+            },
+            //set form data, retrieved from form builder
+            setFormData: function(data){
+                var dfields = this;
+                //map object important data
+                return new Ractive.Promise(function(fulfil,reject) {
+                    var models = data;
+                    if(typeof data.models != "undefined"){
+                        models = data.models;
+                    }
+
+                    var fields = _.mapObject(models,function(field){
+                        var attributes = field.attributes;
+                        if(typeof attributes == "undefined"){
+                            attributes = field;
+                        }
+                        var f = attributes.fields;
+                        if(typeof f == "undefined"){
+                            return '';
+                        }
+                        f.title = attributes.title;
+                        return attributes.fields;
+                    });
+
+                    //delete form placeholder name
+                    delete fields[0];
+
+                    fields = _.mapObject(fields,function(field){
+                        var name, options, type;
+
+                        //set name
+                        if(typeof field.id != "undefined"){
+                            name = field.id.value;
+                        }else if(typeof field.name != "undefined"){
+                            name = field.name.value;
+                        }
+
+                        //### get type
+                        switch(field.title){
+                            case "Text Input":
+                            case "Text Area":
+                            case "Prepended Checkbox":
+                            case "Appended Checkbox":
+                            case "Prepended Text":
+                            case "Appended Text":
+                            case "Date & time":
+                            case "Date range":
+                            case "Time":
+                                type = 'text';
+                                options = '';
+                                break;
+                            case "Multiple Checkboxes Inline":
+                            case "Multiple Checkboxes":
+                                type = 'checkboxes';
+                                // options = dfields.cleanArray(field.checkboxes.value);
+                                options = field.checkboxes.value;
+                                break;
+                            case "Multiple Radios":
+                            case "Multiple Radios Inline":
+                                type = 'radios';
+                                options = dfields.cleanArray(field.radios.value);
+                                break;
+                            case "Select Basic":
+                                type = 'dropdown';
+                                options = dfields.cleanArray(field.options.value);
+                                break;
+                            case "Select Multiple":
+                                type = 'multiple';
+                                options = dfields.cleanArray(field.options.value);
+                                break;
+                            case "Paragraph text":
+                                type = 'paragraphtext';
+                                options = '';
+                                break;
+                            case "Heading":
+                                type = 'heading';
+                                options = '';
+                                break;
+                            case "Newsletter":
+                                type = 'newsletter';
+                                options = '';
+                                break;
+                            case "Upload":
+                                type = 'upload';
+                                options = '';
+                                break;
+                            default:
+                                return false;
+                        }
+
+                        return [name,{options:options,type:type}];
+                    });
+
+
+                    var filteredFields = {};
+
+                    _.each(fields,function(value){
+                        if(value[0])
+                            filteredFields[value[0]] = value[1];
+                    })
+
+                    var promise = dfields.set('fields',filteredFields)
+                            .then(dfields.cleanFields())
+                            .then(dfields.cleanDependencies())
+                            .then(function(){
+                                dfields.set('initialized',true);
+                                fulfil();
+                            })
+                    ;
+                });
+            },
+            cleanArray: function(arr) {
+                return _.values(JSON.parse(JSON.stringify(arr)));
+            },
+            //clean removed fields from list
+            cleanFields: function() {
+                var dfields = this;
+                return new Ractive.Promise(function(fulfil,reject) {
+                    var cleanList = _.filter(dfields.get('list'),function(listItem){
+                        var exists = _.find(dfields.get('fieldList'),function(fieldName){
+                            return listItem.name == fieldName;
+                        });
+                        if(typeof exists === "undefined"){
+                            return false;
+                        }
+                        return listItem;
+                    });
+                    dfields.set('list',cleanList)
+                            .then(fulfil());
+                });
+            },
+            //clean removed fields from dependencie
+            cleanDependencies: function(){
+                var dfields = this;
+                return new Ractive.Promise(function(fulfil,reject){
+                    _.each(dfields.get('list'),function(v,k){
+                        _.each(v.dependencies,function(dependency,key){
+                            // console.log(dependency);
+                            var exists = _.find(dfields.get('fields'),function(data,fname){
+                                return fname === dependency.field;
+                            });
+                            // console.log('exists', exists);
+                            if(typeof exists === "undefined"){
+                                dfields.get('list.' + k + '.dependencies').splice(key,1);
+                            }
+                        });
+                    });
+                    setTimeout(function() {
+                        fulfil();
+                    },10);
+                })
+            }
+        };
+</script>

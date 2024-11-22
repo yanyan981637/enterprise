@@ -1,0 +1,45 @@
+<ul class='dependent_child dependent'>
+    {{#dependencies}}
+    <li class="field" decorator="sortable">
+        <div class="handle"><div></div></div>
+
+        <div style="float:left;width:calc(100% - 25px)">
+
+            <div class="col-md-4">
+                <select2 selected="{{field}}" options="{{fieldListDependencies}}"  />
+            </div>
+
+            <div class="col-md-4">
+                <select2label selected="{{condition}}" options="{{conditions}}" />
+            </div>
+
+            <div class="col-md-4">
+                <dependentFields value="{{value}}" field="{{field}}" condition="{{condition}}" fields="{{fields}}"/>
+            </div>
+        </div>
+
+        <i on-click="deleteDependency:{{@key}}" class="fa fa-2x fa-times delete"></i>
+        <div class="clearfix" />
+    </li>
+    {{/dependencies}}
+</ul>
+
+<button style="margin-left:20px;" class="btn btn-default pull-right clearfix" type="button" on-click="addDependency"><i class="fa fa-plus"></i> Add condition</button>
+
+<div class="clearfix" />
+
+<script>
+    require('select2');
+    var select2 = require('rvc!PluginCompany_ContactForms/dfields/src/js/components/form/select2');
+    var select2label = require('rvc!PluginCompany_ContactForms/dfields/src/js/components/form/select2label');
+    var dependentFields = require('rvc!PluginCompany_ContactForms/dfields/src/js/components/form/dependentFields');
+    component.exports = {
+        debug: true,
+        isolated:false,
+        components: {
+            select2: select2,
+            select2label: select2label,
+            dependentFields: dependentFields
+        }
+    };
+</script>

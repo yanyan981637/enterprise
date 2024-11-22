@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<update handle="blog_layout"/>
+	<head>
+		<attribute name="prefix" value="og: http://ogp.me/ns#" />
+	</head>
+	<body>
+		<referenceBlock name="head.additional">
+			<block class="Magezon\Blog\Block\Post\View" name="opengraph.general"
+				   template="Magezon_Blog::post/view/opengraph/general.phtml"/>
+		</referenceBlock>
+		<referenceBlock name="page.main.title" remove="true"/>
+		<referenceContainer name="content">
+			<block class="Magezon\Blog\Block\Post\View" name="post.details" template="Magezon_Blog::post/view.phtml">
+				<container name="post.top" as="post_top">
+					<block class="Magezon\Blog\Block\Post\View" name="post_image" as="image"
+						   template="Magezon_Blog::post/view/image.phtml"/>
+				</container>
+				<container name="post.content" as="post_content">
+					<block class="Magezon\Blog\Block\Post\View" name="post_title" as="title"
+						   template="Magezon_Blog::post/view/title.phtml"/>
+					<block class="Magezon\Blog\Block\Post\View" name="post_meta" as="meta"
+						   template="Magezon_Blog::post/view/meta.phtml"/>
+					<block class="Magezon\Blog\Block\Post\View" name="post_content" as="content"
+						   template="Magezon_Blog::post/view/content.phtml"/>
+					<block class="Magezon\Blog\Block\Post\View" name="post_social" as="social"
+						   template="Magezon_Blog::post/view/social.phtml"/>
+				</container>
+				<container name="post.bottom" as="post_bottom">
+					<block class="Magezon\Blog\Block\Post\View" name="post_tag" as="tag"
+						   template="Magezon_Blog::post/view/tag.phtml"/>
+                    <block class="Magezon\Blog\Block\Post\View" name="post_rating" as="rating"
+						   template="Magezon_Blog::post/view/rating_button.phtml"/>
+					<block class="Magezon\Blog\Block\Post\View" name="post_author" as="author"
+						   template="Magezon_Blog::post/view/author.phtml"/>
+                    <block class="Magezon\Blog\Block\Post\View" name="post_nav_link" as="nav_link"
+						   template="Magezon_Blog::post/view/nav_link.phtml"/>
+					<block class="Magezon\Blog\Block\Post\RelatedPosts" name="post_related_posts" as="related_posts"
+						   template="Magezon_Blog::post/view/related_posts.phtml"/>
+					<block class="Magezon\Blog\Block\Post\RelatedProducts" name="post_related_products"
+						   as="related_products" template="Magezon_Blog::post/view/related_products.phtml"/>
+					<block class="Magezon\Blog\Block\Post\Comments" name="post_comments" as="comments"
+						   template="Magezon_Blog::post/view/comments.phtml"/>
+					<block class="Magezon\Blog\Block\Post\CommentForm" name="post_comment_form" as="comment_form"
+						   template="Magezon_Blog::post/view/comment_form.phtml">
+                        <block class="Magento\ReCaptchaUi\Block\ReCaptcha"
+                               name="recaptcha"
+                               after="-"
+                               template="Magento_ReCaptchaFrontendUi::recaptcha.phtml"
+                               ifconfig="mgzblog/post_page/comments/recaptcha/recaptcha_type">
+                            <arguments>
+                                <argument name="recaptcha_for" xsi:type="string">blog_comment_form</argument>
+                                <argument name="jsLayout" xsi:type="array">
+                                    <item name="components" xsi:type="array">
+                                        <item name="recaptcha" xsi:type="array">
+                                            <item name="component" xsi:type="string">Magento_ReCaptchaFrontendUi/js/reCaptcha</item>
+                                        </item>
+                                    </item>
+                                </argument>
+                            </arguments>
+                        </block>
+                    </block>
+				</container>
+			</block>
+		</referenceContainer>
+	</body>
+</page>

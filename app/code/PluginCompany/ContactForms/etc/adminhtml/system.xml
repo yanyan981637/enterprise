@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="plugincompany" translate="label" sortOrder="20000" class="plugin-company-config-tab">
+            <label>Plugin Company</label>
+        </tab>
+        <section id="plugincompany_contactforms" translate="label" sortOrder="100" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Contact Forms</label>
+            <class>separator-top</class>
+            <tab>plugincompany</tab>
+            <resource>PluginCompany_ContactForms::system_config</resource>
+            <group id="form" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+                <field id="breadcrumbs" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable breadcrumbs</label>
+                    <comment>Show breadcrumbs navigation on contact form pages.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="frontendurl" translate="label" sortOrder="20" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Create front-end URLs</label>
+                    <comment>Create a new front-end page for each contact form.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="url_prefix" translate="label comment" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default URL prefix</label>
+                    <comment>Optional URL prefix for contact form pages. Example: http://www.domain.com/{prefix}/{urlkey}{suffix}</comment>
+                </field>
+                <field id="url_suffix" translate="label comment" sortOrder="40" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default URL suffix</label>
+                    <comment>Optional URL suffix for contact form pages. Example: http://www.domain.com/{prefix}/{urlkey}{suffix}</comment>
+                </field>
+                <field id="recaptcha_key" translate="label" sortOrder="60" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>ReCaptcha site key</label>
+                    <comment>Your Google ReCaptcha V2 site key, which can be obtained &lt;a target="_blank" href="https://www.google.com/recaptcha/admin"&gt;here&lt;/a&gt;.</comment>
+                </field>
+                <field id="recaptcha_private_key" translate="label" sortOrder="70" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>ReCaptcha secret key</label>
+                    <comment>Your Google ReCaptcha V2 secret key, which can be obtained &lt;a target="_blank" href="https://www.google.com/recaptcha/admin"&gt;here&lt;/a&gt;.</comment>
+                </field>
+                <field id="invisible_recaptcha" translate="label" sortOrder="80" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use invisible ReCaptcha</label>
+                    <comment>When enabling this, please make sure that the API key you're using is configured to use invisble ReCaptcha V2</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="recaptcha_position" translate="label" sortOrder="80" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Invisible ReCaptcha Position</label>
+                    <source_model>PluginCompany\ContactForms\Model\Config\Source\ReCaptchaPosition</source_model>
+                    <depends>
+                        <field id="invisible_recaptcha">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="customer_notification" translate="label" sortOrder="1" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Default Customer Notification Settings</label>
+                <field id="enable" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable customer notifications</label>
+                    <comment>Notify customers per e-mail when their form is submitted.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="bcc" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>BCC recipient(s)</label>
+                    <comment>Send a copy of the customer notification to this e-mail address / comma-separated list.</comment>
+                </field>
+                <field id="from_name" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sender name</label>
+                    <comment>Leave empty to use the default store name.</comment>
+                </field>
+                <field id="from_email" translate="label" sortOrder="40" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sender e-mail address</label>
+                    <comment>Leave empty to use the default store e-mail address.</comment>
+                </field>
+                <field id="subject" translate="label" sortOrder="50" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notification subject</label>
+                    <comment>Subject of the customer notification e-mail.</comment>
+                </field>
+            </group>
+            <group id="admin_notification" translate="label" sortOrder="2" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Default Admin Notification Settings</label>
+                <field id="enable" translate="label" sortOrder="10" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable admin notifications</label>
+                    <comment>Notify the admin per e-mail when a form is submitted.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="to_email" translate="label" sortOrder="20" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notification recipient</label>
+                    <comment>Leave empty to use the default store e-mail address.</comment>
+                </field>
+                <field id="bcc" translate="label" sortOrder="30" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>BCC recipient(s)</label>
+                    <comment>Send a copy of the admin notification to this e-mail address / comma-separated list.</comment>
+                </field>
+                <field id="from_name" translate="label" sortOrder="40" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sender name</label>
+                    <comment>Leave empty to use the default store name.</comment>
+                </field>
+                <field id="from_email" translate="label" sortOrder="50" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sender e-mail address</label>
+                    <comment>Leave empty to use the default store e-mail address.</comment>
+                </field>
+                <field id="subject" translate="label" sortOrder="60" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notification subject</label>
+                    <comment>Subject of the admin notification e-mail.</comment>
+                </field>
+                <field id="include_uploads" translate="label" sortOrder="70" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Include uploaded files as attachments</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, uploaded files will be attached to the admin notification e-mail. </comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

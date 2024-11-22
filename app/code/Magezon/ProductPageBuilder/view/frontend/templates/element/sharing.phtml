@@ -1,0 +1,44 @@
+<?php
+$product       = $this->getProduct();
+$element       = $this->getElement();
+$facebookLike  = $element->getEnableFacebookLike();
+$facebookShare = $element->getEnableFacebookShare();
+$twitter       = $element->getEnableTwitter();
+$pinterest     = $element->getEnablePinterest();
+$facebookCount = true;
+$twiterCount   = true;
+?>
+<div class="ppbd-sharing">
+	<?php if ($facebookLike) { ?>
+		<div class="ppbd-fb-like fb-like" data-href="<?= $product->getUrl() ?>" data-layout="button<?= ($facebookCount > 0) ? '_count' : '' ?>" data-action="like" data-show-faces="true"></div>
+	<?php } ?>
+	<?php if ($facebookShare) { ?>
+		<div class="ppbd-fb-share fb-share-button" data-href="<?= $product->getUrl() ?>" data-layout="button<?= ($facebookCount > 0) ? '_count' : '' ?>" data-action="like" data-show-faces="true"></div>
+	<?php } ?>
+	<?php if ($facebookLike || $facebookShare) { ?>
+	<script>(function(d, s, id) {
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) return;
+	js = d.createElement(s); js.id = id;
+	js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<?php } ?>
+	<?php if ($twitter) { ?>
+		<div class="ppbd-twitter-share">
+			<a class="twitter-share-button" href="https://twitter.com/share" data-show-count="<?= $twiterCount ? 'true' : 'false' ?>"><?= __('Tweet') ?></a>
+		</div>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+	<?php } ?>
+	<?php if ($pinterest) { ?>
+		<div class="ppbd-pinterest pinterest">
+			<a data-pin-do="buttonBookmark" href="https://www.pinterest.com/pin/create/button/"> </a>
+		</div>
+		<!-- PINTEREST -->
+		<script
+		    type="text/javascript"
+		    async defer
+		    src="//assets.pinterest.com/js/pinit.js"
+		></script>
+	<?php } ?>
+</div>

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductAttachments
+ * @copyright Copyright (C) 2020 Magezon (https://www.magezon.com)
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add
+                id="Magezon_ProductAttachments::attachments_menus"
+                title="Product Attachments"
+                translate="title"
+                module="Magezon_ProductAttachments"
+                parent="Magezon_Core::extensions"
+                resource="Magezon_ProductAttachments::product_attachments"/>
+        <add
+                id="Magezon_ProductAttachments::file"
+                title="Manage Files"
+                translate="title"
+                module="Magezon_ProductAttachments"
+                parent="Magezon_ProductAttachments::attachments_menus"
+                resource="Magezon_ProductAttachments::file"
+                sortOrder="10"
+                action="productattachments/file"
+        />
+        <add
+                id="Magezon_ProductAttachments::icon"
+                title="Manage Icons"
+                translate="title"
+                module="Magezon_ProductAttachments"
+                parent="Magezon_ProductAttachments::attachments_menus"
+                resource="Magezon_ProductAttachments::icon"
+                sortOrder="20"
+                action="productattachments/icon"
+        />
+        <add
+                id="Magezon_ProductAttachments::category"
+                title="Manage Categories"
+                translate="title"
+                module="Magezon_ProductAttachments"
+                parent="Magezon_ProductAttachments::attachments_menus"
+                resource="Magezon_ProductAttachments::category"
+                sortOrder="30"
+                action="productattachments/category"
+        />
+        <add
+                id="Magezon_ProductAttachments::reports"
+                title="Reports"
+                translate="title"
+                module="Magezon_ProductAttachments"
+                parent="Magezon_ProductAttachments::attachments_menus"
+                resource="Magezon_ProductAttachments::report"
+                sortOrder="40"
+                action="productattachments/report"
+        />
+        <add
+                id="Magezon_ProductAttachments::import"
+                title="Import"
+                translate="title"
+                module="Magezon_ProductAttachments"
+                sortOrder="50"
+                parent="Magezon_ProductAttachments::attachments_menus"
+                action="adminhtml/import/index/mgz/true"
+                resource="Magezon_ProductAttachments::import"
+        />
+        <add
+                id="Magezon_ProductAttachments::settings"
+                title="Settings"
+                translate="title"
+                module="Magezon_ProductAttachments"
+                sortOrder="100"
+                parent="Magezon_ProductAttachments::attachments_menus"
+                action="adminhtml/system_config/edit/section/productattachments"
+                resource="Magezon_ProductAttachments::settings"
+        />
+
+    </menu>
+</config>

@@ -1,0 +1,16 @@
+<?php
+$element     = $this->getElement();
+$mediaBlock  = $block->getLayout()->getBlock('product.info.media.image');
+if ($mediaBlock) {
+	$mediaBlock->setProductPageBuilderElement($element);
+}
+$mediaBlock  = $block->getLayout()->getBlock('product.info.media');
+$navPosition = $element->getGalleryNavposition();
+if ($navPosition == 'top' || $navPosition == 'bottom') {
+	$element->setGalleryNavdir('horizontal');
+}
+if ($navPosition == 'left' || $navPosition == 'right') {
+	$element->setGalleryNavdir('vertical');
+}
+?>
+<div class="ppbd-product-gallery ppbd-product-gallery-<?= $navPosition ?>"><?= $block->renderElement('product.info.media') ?></div>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at http://magezon.com/license/.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to http://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_Blog
+ * @copyright Copyright (C) 2021 Magezon (http://magezon.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+	<template id="mgzblog_post_page_comments_admin_email_template" label="Admin Email template"
+			  file="admin_email_template.html" type="html" module="Magezon_Blog" area="frontend"/>
+	<template id="mgzblog_post_page_comments_customer_email_template" label="Customer Email template"
+			  file="customer_email_template.html" type="html" module="Magezon_Blog" area="frontend"/>
+	<template id="mgzblog_post_page_comments_reply_email_template" label="Reply Email template"
+			  file="reply_email_template.html" type="html" module="Magezon_Blog" area="frontend"/>
+</config>

@@ -1,0 +1,49 @@
+<?php
+$element = $this->getElement();
+$html    = str_replace('<div id="product-review-container" data-role="product-review"></div>', '', $block->renderElement('reviews.tab'));
+?>
+<div id="product-review-container<?= $element->getId() ?>" data-role="product-review"></div>
+<div class="ppbd-product-review">
+	<?= $html ?>
+	<script>
+		require(['jquery'], function($) {
+			var tabElement   = $('#product-review-container<?= $element->getId() ?>').parents('.mgz-element-tabs');
+			var tabContent   = $('#product-review-container<?= $element->getId() ?>').parents('.mgz-tabs-tab-content');
+			var tabContentId = tabContent.attr('id');
+			<?php if ($element->getDisplayCounter() && ($size = $this->getCollectionSize())) { ?>
+				tabElement.find('.mgz-tabs-tab-title[data-id=' + tabContentId + '-title]').children('a').append(' <span class="counter"><?= $size ?></span>');
+			<?php } ?>
+			var loaded = false;
+			var url = '<?= $this->getProductReviewUrl() ?>';
+			var processReviews = function(url) {
+				if (loaded) return;
+				var valid = true;
+				if (tabContent.length) {
+					if (!tabContent.hasClass('mgz-active')) {
+						valid = false;
+					}
+				}
+				if (valid) {
+					$.ajax({
+						url: url,
+						cache: true,
+						dataType: 'html',
+						showLoader: false,
+					}).done(function (data) {
+						$('#product-review-container<?= $element->getId() ?>').html(data).trigger('contentUpdated');
+						$('.<?= $element->getId() ?> .pages a').each(function (index, element) {
+			                $(element).click(function (event) { //eslint-disable-line max-nested-callbacks
+			                	processReviews($(element).attr('href'), true);
+			                	event.preventDefault();
+			                });
+			            });
+					});
+				}
+			}
+			processReviews(url);
+			tabElement.on('mgz:change', function() {
+				processReviews(url);
+			});
+		})
+	</script>
+</div>

@@ -1,0 +1,110 @@
+"Save and Apply","Save and Apply"
+"Save and Continue Edit","Save and Continue Edit"
+"Delete Label","Delete Label"
+"Edit Label '%1'","Edit Label '%1'"
+"New Label","New Label"
+"Apply the rule only if the following conditions are met (leave blank for all products).","Apply the rule only if the following conditions are met (leave blank for all products)."
+Conditions,Conditions
+"Product Type","Product Type"
+Type,Type
+"Stock Status","Stock Status"
+Status,Status
+"Does not matter","Does not matter"
+"Out of Stock","Out of Stock"
+"In Stock","In Stock"
+"Product Page","Product Page"
+Image,Image
+"Label Position","Label Position"
+"Label Content","Label Content"
+"Text Color","Text Color"
+Width,Width
+Style,Style
+Url,Url
+"Product List","Product List"
+Design,Design
+Name,Name
+"From Date","From Date"
+"To Date","To Date"
+"Use for Parent","Use for Parent"
+No,No
+Yes,Yes
+"<p>Apply for configurable and grouped products child items</p>","<p>Apply for configurable and grouped products child items</p>"
+"Discard Subsequent Labels","Discard Subsequent Labels"
+"Store View","Store View"
+"Customer Groups","Customer Groups"
+Priority,Priority
+General,General
+"General Information","General Information"
+"Add New Label","Add New Label"
+"Manage Labels","Manage Labels"
+Settings,Settings
+"User Guide","User Guide"
+"Change Log","Change Log"
+"Get Support","Get Support"
+"The label has been deleted.","The label has been deleted."
+"We can't find a label to delete.","We can't find a label to delete."
+ProductLabels,ProductLabels
+"This label no longer exists.","This label no longer exists."
+"Edit Label","Edit Label"
+Labels,Labels
+"A total of %1 record(s) have been deleted.","A total of %1 record(s) have been deleted."
+"A total of %1 record(s) have been disabled.","A total of %1 record(s) have been disabled."
+"A total of %1 record(s) have been enabled.","A total of %1 record(s) have been enabled."
+"You saved the label.","You saved the label."
+"Something went wrong while saving the label.","Something went wrong while saving the label."
+N/A,N/A
+None,None
+Latest,Latest
+"New Arrival","New Arrival"
+"Best Sellers","Best Sellers"
+"On Sale","On Sale"
+"Most Viewed","Most Viewed"
+"Wishlist Top","Wishlist Top"
+"Top Rated","Top Rated"
+Featured,Featured
+Free,Free
+Sale,Sale
+Normal,Normal
+"Rounding Down","Rounding Down"
+"Rounding Up","Rounding Up"
+Enabled,Enabled
+Disabled,Disabled
+Top,Top
+"Before Image","Before Image"
+"After Left","After Left"
+"Image Top Left","Image Top Left"
+"Image Top Center","Image Top Center"
+"Image Top Right","Image Top Right"
+"Image Middle Left","Image Middle Left"
+"Image Middle Center","Image Middle Center"
+"Image Middel Right","Image Middel Right"
+"Image Bottom Left","Image Bottom Left"
+"Image Bottom Center","Image Bottom Center"
+"Image Bottom Right","Image Bottom Right"
+"Before Title","Before Title"
+"After Title","After Title"
+"Before Price","Before Price"
+"After Price","After Price"
+"Before Review","Before Review"
+"After Review","After Review"
+"Before Add To Cart","Before Add To Cart"
+"After Add To Cart","After Add To Cart"
+Bottom,Bottom
+Edit,Edit
+"Product Labels","Product Labels"
+"Save Label","Save Label"
+Magezon,Magezon
+"General Settings","General Settings"
+"Rounding Method","Rounding Method"
+Delete,Delete
+"Delete items","Delete items"
+"Are you sure you wan't to delete selected items?","Are you sure you wan't to delete selected items?"
+Disable,Disable
+Enable,Enable
+ID,ID
+"Product Page Label","Product Page Label"
+"Product Page Text","Product Page Text"
+"Product List Label","Product List Label"
+"Product List Text","Product List Text"
+Created,Created
+Modified,Modified

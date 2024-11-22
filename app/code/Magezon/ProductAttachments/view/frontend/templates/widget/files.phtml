@@ -1,0 +1,25 @@
+<?php
+/**
+ * @var Magezon\ProductAttachments\Block\Widget\Files $block
+ */
+
+$categoryCollection = $block->getCategoryCollection();
+$fileCollection = $block->getFileCollection();
+?>
+<div class="mpa-block">
+    <div class="mpa-list">
+        <div class="mpa-block-title"><span><?= $block->getData('title')?></span></div>
+        <?php if ($block->isCategory()) { ?>
+            <?php foreach ($categoryCollection as $category) { ?>
+                <div class="mpa-category">
+                    <div class="mpa-category-title">
+                        <h3><?= $category->getName() ?></h3>
+                    </div>
+                    <?= $block->getListFileHtml($fileCollection->getItemsByColumnValue('category_id', $category->getId())) ?>
+                </div>
+            <?php } ?>
+        <?php } else { ?>
+            <?= $block->getListFileHtml($fileCollection) ?>
+        <?php } ?>
+    </div>
+</div>

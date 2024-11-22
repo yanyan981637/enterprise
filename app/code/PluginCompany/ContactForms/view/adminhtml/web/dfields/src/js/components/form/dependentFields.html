@@ -1,0 +1,69 @@
+{{#if isSelect}}
+    {{#if multiple}}
+        <select value='{{value}}' class="form-control" multiple style="width:100%">
+            {{#options}}
+            <option value='{{.}}'>{{.}}</option>
+            {{/options}}
+        </select>
+    {{else}}
+        <select value='{{value}}' class="form-control" style="width:100%">
+            {{#options}}
+            <option value='{{.}}'>{{.}}</option>
+            {{/options}}
+        </select>
+    {{/if}}
+{{else}}
+    <input class="form-control" placeholder='Enter text..' value='{{value}}'>
+{{/if}}
+
+<script>
+    component.exports = {
+        debug: true,
+        isolated:false,
+        computed:{
+            multiple:function(){
+                var condition = this.get('condition');
+
+                var type = this.get('fieldType');
+
+                if(type == 'text') return false;
+
+                if(condition == 'oneof') return 'multiple';
+
+                if(
+                    ['values','not','contains'].indexOf(condition) != -1
+                    && ['multiple','checkboxes'].indexOf(type) != -1
+                ){
+                    return 'multiple';
+                }
+            },
+            isSelect: function(){
+                var condition = this.get('condition');
+                var type = this.get('fieldType');
+
+                if(type == 'text'){
+                    return false;
+                }
+
+                if(condition == 'match'){
+                    return false;
+                }
+
+                return true;
+            },
+            options: function(){
+                var field = this.get('field');
+                var options = this.get('fields.' + field + '.options');
+                if(typeof options != "undefined"){
+                    return options;
+                }
+            },
+            fieldType: function(){
+                if(typeof this.get('fields')[this.get('field')] != "undefined"){
+                    return this.get('fields')[this.get('field')].type;
+                }
+            }
+
+        }
+    };
+</script>

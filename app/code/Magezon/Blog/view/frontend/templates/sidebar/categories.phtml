@@ -1,0 +1,35 @@
+<?php /* @var $block Magezon\Blog\Block\Sidebar\Categories */?>
+<?php
+$dataHelper       = $this->helper('\Magezon\Blog\Helper\Data');
+$title            = $dataHelper->getConfig('sidebar/categories/title');
+$html             = $block->getCategoriesHtml();
+?>
+<?php if ($html) { ?>
+<div class="blog-block blog-categories">
+	<?php if ($title) { ?>
+		<div class="block-block-title"><h3><span><?= $title ?></span></h3></div>
+	<?php } ?>
+	<div class="block-block-content">
+		<ul><?= $html ?></ul>
+		<script>
+			require(['jquery'], function($) {
+				$('.blog-category-caret').click(function(e) {
+					e.preventDefault();
+					var self = this;
+					$(this).closest('li').toggleClass('active');
+					$(this).closest('li').children('ul').stop().slideToggle(400, 'swing', function() {
+						$(self).closest('li').children('ul').css('height', '');
+					});
+				});
+				if ($('body').hasClass('blog-category-view')) {
+					var currentUrl = window.location.href.split('?')[0];
+					if(currentUrl.substr(-1) === '/') currentUrl = currentUrl.substr(0, currentUrl.length - 1);
+					var link = $('.blog-categories').find('a[href="' + currentUrl + '"]');
+					link.closest('li').addClass('current');
+					link.parents('li').children('a').children('.blog-category-caret').trigger('click');
+				}
+			});
+		</script>
+	</div>
+</div>
+<?php } ?>
