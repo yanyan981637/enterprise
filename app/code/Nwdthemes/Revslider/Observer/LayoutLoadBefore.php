@@ -16,6 +16,8 @@ class LayoutLoadBefore implements ObserverInterface
     protected $_frameworkHelper;
     private $_optionFactory;
     private $_pageRepository;
+    private $_request;
+    private $_status;
 
     public function __construct(
         PageRepositoryInterface $pageRepository,
