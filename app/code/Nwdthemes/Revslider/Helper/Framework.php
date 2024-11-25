@@ -62,7 +62,7 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
     protected $_pluginHelper;
     protected $_productsHelper;
     protected $_queryHelper;
-    protected $_registerHelper;
+    private $_registerHelper;
 
     protected $_areaCode;
     protected $_request;
