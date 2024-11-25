@@ -114,6 +114,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_flatElements = [];
 
     private $client;
+    private $parameterFactory;
 
     /**
      * @param ClientInterface                                                 $client                    
