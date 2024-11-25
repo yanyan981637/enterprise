@@ -115,6 +115,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     private $client;
     private $parameterFactory;
+    private PageCollectionFactory $pageCollectionFactory;
 
     /**
      * @param ClientInterface                                                 $client                    
