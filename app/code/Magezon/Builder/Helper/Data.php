@@ -117,7 +117,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $parameterFactory;
     private $pageCollectionFactory;
     private $categoryCollectionFactory;
-    
+    private $productCollectionFactory;
+
     /**
      * @param ClientInterface                                                 $client                    
      * @param \Magento\Framework\App\Helper\Context                           $context                   
