@@ -113,6 +113,8 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
 	 */
 
 	private $_appState;
+	private $_pageFactory;
+
 	public function __construct(
         \Magento\Framework\App\Helper\Context $context,
 		\Magento\Framework\App\State $appState,
