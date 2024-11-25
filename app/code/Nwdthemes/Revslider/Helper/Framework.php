@@ -111,6 +111,8 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
 	/**
 	 *	Constructor
 	 */
+
+	private $_appState;
 	public function __construct(
         \Magento\Framework\App\Helper\Context $context,
 		\Magento\Framework\App\State $appState,
