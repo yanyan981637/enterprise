@@ -34,6 +34,8 @@ class TemplateDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
      */
     protected $dataPersistor;
 
+    private $registry;
+
     /**
      * @param string                      $name                    
      * @param string                      $primaryFieldName        
