@@ -113,6 +113,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_flatElements = [];
 
+    private $client;
+
     /**
      * @param ClientInterface                                                 $client                    
      * @param \Magento\Framework\App\Helper\Context                           $context                   
