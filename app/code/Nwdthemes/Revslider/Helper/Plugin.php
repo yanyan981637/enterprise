@@ -27,6 +27,7 @@ class Plugin extends \Magento\Framework\App\Helper\AbstractHelper {
     private $_plugins = null;
     private $_pluginsLoaded = false;
     private $_activePlugins = null;
+    private $_registerHelper;
 
 	/**
 	 *	Constructor
