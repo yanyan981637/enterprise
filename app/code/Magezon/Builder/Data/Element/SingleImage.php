@@ -145,7 +145,7 @@ class SingleImage extends AbstractElement
 						'sortOrder'       => 20,
 						'key'             => 'tablet_image',
 						'templateOptions' => [
-							'label' => __('Tablet(<1024)')
+							'label' => __('Tablet(>=1024)')
 		                ]
 		            ]
 		        );
@@ -157,7 +157,7 @@ class SingleImage extends AbstractElement
 						'sortOrder'       => 30,
 						'key'             => 'landscape_phone_image',
 						'templateOptions' => [
-							'label' => __('Landscape Phone(<768px)')
+							'label' => __('Landscape Phone(>=768px)')
 		                ]
 		            ]
 		        );
@@ -169,7 +169,7 @@ class SingleImage extends AbstractElement
 						'sortOrder'       => 40,
 						'key'             => 'portrait_phone_image',
 						'templateOptions' => [
-							'label' => __('Portrait Phone(<576px)')
+							'label' => __('Portrait Phone(>=576px)')
 		                ]
 		            ]
 		        );
@@ -763,10 +763,6 @@ class SingleImage extends AbstractElement
             [
                 'label' => __('Open Video or Map'),
                 'value' => 'video_map'
-            ],
-            [
-                'label' => __('Open Media File'),
-                'value' => 'pdf'
             ]
         ];
     }

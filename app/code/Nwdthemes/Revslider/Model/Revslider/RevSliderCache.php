@@ -83,7 +83,7 @@ class RevSliderCache extends RevSliderFunctions {
 	 * replace HTML placeholders with their corresponding value
 	 **/
 	public function do_html_changes($html){
-		//$html = str_replace('##NONCE##', wp_create_nonce('RevSlider_Front'), $html);
+		//$html = str_replace('##NONCE##', FA::wp_create_nonce('RevSlider_Front'), $html);
 
 		return $html;
 	}
@@ -159,7 +159,7 @@ class RevSliderCache extends RevSliderFunctions {
 		if(is_array($html)){
 			if(!empty($html)){
 				usort($html, array($this, 'sort_by_priority'));
-				echo (FA::current_filter() === 'wp_print_footer_scripts') ? '<script type="text/javascript">'."\n" : '';
+				echo (FA::current_filter() === 'wp_print_footer_scripts') ? '<script>'."\n" : '';
 				foreach($html as $echo){
 					echo $this->get_val($echo, 'html');
 				}

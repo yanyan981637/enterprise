@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+  <table name="mgz_productlabels_label" resource="default" engine="innodb" comment="ProductLabels Label Table">
+    <column xsi:type="smallint" name="label_id" padding="6" unsigned="false" nullable="false" identity="true" comment="Tab ID"/>
+    <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Tab Name"/>
+    <column xsi:type="int" name="priority" padding="11" unsigned="false" nullable="true" identity="false" comment="Priority"/>
+    <column xsi:type="timestamp" name="creation_time" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Tab Creation Time"/>
+    <column xsi:type="timestamp" name="update_time" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Tab Modification Time"/>
+    <column xsi:type="timestamp" name="from_date" on_update="false" nullable="true" comment="Label From Date"/>
+    <column xsi:type="varchar" name="productpage_image" nullable="true" length="255" comment="ProductPage Image"/>
+    <column xsi:type="mediumtext" name="productpage_html" nullable="true" comment="ProductPage HTML"/>
+    <column xsi:type="varchar" name="productpage_position" nullable="true" length="255" comment="ProductPage Position"/>
+    <column xsi:type="varchar" name="productpage_color" nullable="true" length="255" comment="ProductPage Color"/>
+    <column xsi:type="varchar" name="productpage_width" nullable="true" length="255" comment="ProductPage Width"/>
+    <column xsi:type="mediumtext" name="productpage_style" nullable="true" comment="ProductPage Style"/>
+    <column xsi:type="varchar" name="productpage_url" nullable="true" length="255" comment="ProductPage Url"/>
+    <column xsi:type="varchar" name="productlist_image" nullable="true" length="255" comment="ProductList Image"/>
+    <column xsi:type="mediumtext" name="productlist_html" nullable="true" comment="ProductList HTML"/>
+    <column xsi:type="varchar" name="productlist_position" nullable="true" length="255" comment="ProductList Position"/>
+    <column xsi:type="varchar" name="productlist_color" nullable="true" length="255" comment="ProductList Color"/>
+    <column xsi:type="varchar" name="productlist_width" nullable="true" length="255" comment="ProductList Width"/>
+    <column xsi:type="mediumtext" name="productlist_style" nullable="true" comment="ProductList Style"/>
+    <column xsi:type="varchar" name="productlist_url" nullable="true" length="255" comment="ProductList Url"/>
+    <column xsi:type="varchar" name="product_type" nullable="true" length="255" comment="Ptoduct Type"/>
+    <column xsi:type="timestamp" name="to_date" on_update="false" nullable="true" comment="Label To Date"/>
+    <column xsi:type="smallint" name="use_for_parent" padding="6" unsigned="false" nullable="true" identity="false" default="1" comment="Use for parent"/>
+    <column xsi:type="smallint" name="is_active" padding="6" unsigned="false" nullable="true" identity="false" default="1" comment="Is Tab Active"/>
+    <column xsi:type="mediumtext" name="conditions_serialized" nullable="true" comment="Conditions Serialized"/>
+    <column xsi:type="mediumtext" name="actions_serialized" nullable="true" comment="Actions Serialized"/>
+    <column xsi:type="varchar" name="stock_status" nullable="true" length="255" comment="Stock Status"/>
+    <column xsi:type="smallint" name="hide_lower_priority" padding="6" unsigned="false" nullable="true" identity="false" comment="Hide labels with lower priority"/>
+    <column xsi:type="smallint" name="product_stock_enabled" padding="6" unsigned="false" nullable="true" identity="false" default="1" comment="Use Stock Range"/>
+    <column xsi:type="varchar" name="rule_stock_higher" nullable="true" length="255" comment="Display if stock is higher than"/>
+    <column xsi:type="varchar" name="rule_stock_lower" nullable="true" length="255" comment="Display if stock is lower than"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="label_id"/>
+    </constraint>
+    <index referenceId="MGZ_PRODUCTLABELS_LABEL_NAME" indexType="fulltext">
+      <column name="name"/>
+    </index>
+  </table>
+  <table name="mgz_productlabels_label_store" resource="default" engine="innodb" comment="Tab Store">
+    <column xsi:type="smallint" name="label_id" padding="6" unsigned="false" nullable="false" identity="false" comment="Tab Id"/>
+    <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" comment="Store ID"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="label_id"/>
+      <column name="store_id"/>
+    </constraint>
+    <constraint xsi:type="foreign" referenceId="MGZ_PRDLBLS_LBL_STORE_LBL_ID_MGZ_PRDLBLS_LBL_LBL_ID" table="mgz_productlabels_label_store" column="label_id" referenceTable="mgz_productlabels_label" referenceColumn="label_id" onDelete="CASCADE"/>
+    <constraint xsi:type="foreign" referenceId="MGZ_PRODUCTLABELS_LABEL_STORE_STORE_ID_STORE_STORE_ID" table="mgz_productlabels_label_store" column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+    <index referenceId="MGZ_PRODUCTLABELS_LABEL_STORE_STORE_ID" indexType="btree">
+      <column name="store_id"/>
+    </index>
+  </table>
+  <table name="mgz_productlabels_label_customergroup" resource="default" engine="innodb" comment="Label Custom Group">
+    <column xsi:type="smallint" name="label_id" padding="6" unsigned="false" nullable="false" identity="false" comment="Label Id"/>
+    <column xsi:type="int" name="customer_group_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Customer Group ID"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="label_id"/>
+      <column name="customer_group_id"/>
+    </constraint>
+    <constraint xsi:type="foreign" referenceId="MGZ_PRDLBLS_LBL_CSTRGROUP_LBL_ID_MGZ_PRDLBLS_LBL_LBL_ID" table="mgz_productlabels_label_customergroup" column="label_id" referenceTable="mgz_productlabels_label" referenceColumn="label_id" onDelete="CASCADE"/>
+    <constraint xsi:type="foreign" referenceId="MGZ_PRDLBLS_LBL_CSTRGROUP_CSTR_GROUP_ID_CSTR_GROUP_CSTR_GROUP_ID" table="mgz_productlabels_label_customergroup" column="customer_group_id" referenceTable="customer_group" referenceColumn="customer_group_id" onDelete="CASCADE"/>
+    <index referenceId="MGZ_PRODUCTLABELS_LABEL_CUSTOMERGROUP_CUSTOMER_GROUP_ID" indexType="btree">
+      <column name="customer_group_id"/>
+    </index>
+  </table>
+  <table name="mgz_productlabels_label_product" resource="default" engine="innodb" comment="Label Product">
+    <column xsi:type="smallint" name="label_id" padding="6" unsigned="false" nullable="false" identity="false" comment="Tab ID"/>
+    <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" comment="Store ID"/>
+    <column xsi:type="int" name="product_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Product Id"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="label_id"/>
+      <column name="store_id"/>
+      <column name="product_id"/>
+    </constraint>
+    <constraint xsi:type="foreign" referenceId="MGZ_PRDLBLS_LBL_PRD_LBL_ID_MGZ_PRDLBLS_LBL_LBL_ID" table="mgz_productlabels_label_product" column="label_id" referenceTable="mgz_productlabels_label" referenceColumn="label_id" onDelete="CASCADE"/>
+    <constraint xsi:type="foreign" referenceId="MGZ_PRDLBLS_LBL_PRD_PRD_ID_CAT_PRD_ENTT_ENTT_ID" table="mgz_productlabels_label_product" column="product_id" referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+    <constraint xsi:type="foreign" referenceId="MGZ_PRODUCTLABELS_LABEL_PRODUCT_STORE_ID_STORE_STORE_ID" table="mgz_productlabels_label_product" column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+    <index referenceId="MGZ_PRODUCTLABELS_LABEL_PRODUCT_PRODUCT_ID" indexType="btree">
+      <column name="product_id"/>
+    </index>
+    <index referenceId="MGZ_PRODUCTLABELS_LABEL_PRODUCT_STORE_ID" indexType="btree">
+      <column name="store_id"/>
+    </index>
+  </table>
+</schema>

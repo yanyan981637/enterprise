@@ -1,3 +1,5 @@
+!function(t){"use strict";function e(){var e=this;e.reads=[],e.writes=[],e.raf=u.bind(t)}function n(t){t.scheduled||(t.scheduled=!0,t.raf(i.bind(null,t)))}function i(t){var e,i=t.writes,o=t.reads;try{o.length,r(o),i.length,r(i)}catch(t){e=t}if(t.scheduled=!1,(o.length||i.length)&&n(t),e){if(e.message,!t.catch)throw e;t.catch(e)}}function r(t){for(var e;e=t.shift();)e()}function o(t,e){var n=t.indexOf(e);return!!~n&&!!t.splice(n,1)}function s(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])}var u=t.requestAnimationFrame||t.webkitRequestAnimationFrame||t.mozRequestAnimationFrame||t.msRequestAnimationFrame||function(t){return setTimeout(t,16)};e.prototype={constructor:e,measure:function(t,e){var i=e?t.bind(e):t;return this.reads.push(i),n(this),i},mutate:function(t,e){var i=e?t.bind(e):t;return this.writes.push(i),n(this),i},clear:function(t){return o(this.reads,t)||o(this.writes,t)},extend:function(t){if("object"!=typeof t)throw new Error("expected object");var e=Object.create(this);return s(e,t),e.fastdom=this,e.initialize&&e.initialize(),e},catch:null};var exports=t.fastdom=t.fastdom||new e;"NOfunction"==typeof define?define(function(){return exports}):"object"==typeof module&&(module.exports=exports)}("undefined"!=typeof window?window:this);
+
 /*!
  * REVOLUTION 6.0.0 EDITOR LAYERTOOLS JS
  * @version: 1.0 (01.07.2019)
@@ -35,22 +37,23 @@
 	ADD THE LAYER IN THE RIGHT ORDER TO THE PARENT ELEMENT (ROWS IN ZONES, COLUMNS IN ROWS, ELEMENTS IN COLUMNS)
 	*/
 	function addLayerInOrder(_) {
-
 		var insertBehindUID = "start";
-
 		if (_.container!==undefined)
-			_.container.find(_.type).each(function() {
-				if (_.uid!==this.dataset.uid)
-					insertBehindUID = RVS.L[this.dataset.uid].group.groupOrder<=RVS.L[_.uid].group.groupOrder && RVS.H[this.dataset.uid]!==undefined ? this.dataset.uid : insertBehindUID;
-
+			_.container.find(">"+_.type).each(function() {
+				if (RVS.L[_.uid].group.puid!==undefined &&  RVS.L[this.dataset.uid].group.puid!==undefined && RVS.L[this.dataset.uid].group.puid==RVS.L[_.uid].group.puid && RVS.L[this.dataset.uid].group.puid!=_.uid) {
+					if (_.uid!==this.dataset.uid)
+						if (RVS.L[RVS.L[_.uid].group.puid]!==undefined && RVS.L[RVS.L[_.uid].group.puid].type==="group")
+							insertBehindUID = RVS.L[this.dataset.uid].group.groupOrder>RVS.L[_.uid].group.groupOrder && RVS.H[this.dataset.uid]!==undefined ? this.dataset.uid : insertBehindUID;
+						else
+							insertBehindUID = RVS.L[this.dataset.uid].group.groupOrder<=RVS.L[_.uid].group.groupOrder && RVS.H[this.dataset.uid]!==undefined ? this.dataset.uid : insertBehindUID;
+				}
 			});
 
-		if (insertBehindUID==="start")
+		if (insertBehindUID==="start" && _.container)
 			_.container[0].prepend(_.layer);
-		else
+		else if(RVS.H[insertBehindUID]){
 			RVS.F.insertAfter(_.layer,RVS.H[insertBehindUID].w[0]);
-
-
+		}
 	}
 
 	RVS.F.allSelectedHasHover = function() {
@@ -65,15 +68,16 @@
 	BUILD HTML LAYER
 	*/
 	RVS.F.buildHTMLLayer = function(_) {
+
 		// CREATE LAYER IF IT IS NOT CREATED YET, OR IF LAYER NEED TO BE RECREACTED BY FORCE
 		var l = RVS.L[_.uid],
 			oldelement = RVS.H!==undefined && RVS.H[_.uid]!==undefined && RVS.H[_.uid].w!==undefined ? RVS.H[_.uid].w[0] : document.getElementById('_lc_'+RVS.S.slideId+'_'+_.uid+'_');
+
 		RVS.H = RVS.H == undefined ? {} : RVS.H;
 
 		if (_.force==true || RVS.H==undefined || RVS.H[_.uid]===undefined || oldelement===null) {
 			if (_.force==true || RVS.H==undefined || RVS.H[_.uid]===undefined ) {
 				if (oldelement!==null) oldelement.parentNode.removeChild(oldelement);
-
 				var lc = RVS.F.cE({id:'_lc_'+RVS.S.slideId+'_'+_.uid+'_', cN:'_lc_ _lc_type_'+l.type,ds:{type:l.type,uid:_.uid,pid:l.group.puid,multiplemark:true}}),
 					lockedbg = RVS.F.cE({cN:"_lc_locked_bg_"}),
 					locked  = RVS.F.cE({cN: "_lc_locked_"}),
@@ -85,7 +89,7 @@
 					_loop = RVS.F.cE({cN:"_lc_loop_"}),
 					_mask = RVS.F.cE({cN:"_lc_mask_"}),
 					_iw = RVS.F.cE({cN:"_lc_iw_"}),
-					_content = RVS.F.cE({cN:"_lc_content_"});
+					_content = RVS.F.cE({t: 'div',cN:"_lc_content_"});
 
 				if (l.type==="column" || l.type==="row") {
 					var _topm_ = RVS.F.cE({t:"span",cN:"_c_margins _topm_"}),
@@ -102,6 +106,7 @@
 				_loop.appendChild(_mask);
 				_mask.appendChild(_iw);
 				_iw.appendChild(_content);
+
 
 				lc.appendChild(lockedbg);
 				lc.appendChild(locked);
@@ -123,7 +128,7 @@
 				}
 
 				if (l.group.puid===-1 || l.type==="row") {
-					if (l.type=="row")
+					if (l.type=="row" && RVS.C.rZone[l.group.puid])
 						addLayerInOrder({container: RVS.C.rZone[l.group.puid], layer:lc, uid:_.uid, type:"._lc_type_row"});
 					else
 						RVS.C.layergrid[0].appendChild(lc);
@@ -131,7 +136,11 @@
 				if (l.type==="column")
 					addLayerInOrder({container:RVS.H[l.group.puid].c, layer:lc, uid:_.uid, type:"._lc_type_column"});
 				else
-					addLayerInOrder({container:RVS.H[l.group.puid].c, layer:lc, uid:_.uid, type:"._lc_"});
+					if (RVS.H[l.group.puid]!==undefined)
+						addLayerInOrder({container:RVS.H[l.group.puid].c, layer:lc, uid:_.uid, type:"._lc_"});
+					else
+						l.group.puid = -1;
+
 
 
 				if (l.idle.style!==undefined && l.idle.style.length>0) lc.className += " "+l.idle.style;
@@ -139,8 +148,15 @@
 				RVS.H[_.uid] = {w:jQuery(lc), last_puid : l.group.puid,  last_groupOrder:l.group.groupOrder};
 				RVS.H[_.uid].m =_mask;
 				RVS.H[_.uid].lp = _loop;
+
 				RVS.H[_.uid].iw = _iw;
 				RVS.H[_.uid].c = jQuery(_content);
+
+				// EXTEND CONTENT WITH FURTHER ADDON BASED CONTENT
+				if (RVS.F.buildHTMLLayerSub!==undefined && RVS.F.buildHTMLLayerSub[l.subtype]!==undefined) {
+					RVS.H[_.uid].subc = RVS.F.buildHTMLLayerSub[l.subtype](l.subsubtype);
+					if (RVS.H[_.uid].subc!==undefined) for (var subcc in RVS.H[_.uid].subc.attach) _content.appendChild(RVS.H[_.uid].subc[RVS.H[_.uid].subc.attach[subcc]]);
+				}
 
 				if (l.type==="column" || l.type==="row") {
 					RVS.H[_.uid].margins =  {top: _topm_, bottom: _botm_,left: _lefm_,right: _rigm_};
@@ -214,8 +230,11 @@
 					if (RVS.H[_.uid].w[0].querySelector('._group_lock_')===null) RVS.H[_.uid].c[0].append(RVS.F.cE({cN:"_group_lock_",icon:{c:"layers"}}));
 
 					// HEAD CONTAINER
-					if (RVS.H[_.uid].w[0].querySelector('._group_head_')===null)
+					if (RVS.H[_.uid].w[0].querySelector('._group_head_')===null) {
 						RVS.H[_.uid].w.append('<div class="_group_head_"><span id="_group_head_title_'+RVS.S.slideId+'_'+_.uid+'" class="_group_head_title_">'+l.alias+'</span><div data-uid="'+_.uid+'" class="_group_lock_toggle_"><i class="group_lock_icon material-icons">layers_clear</i><i class="group_lockopen_icon material-icons">layers</i></div></div>');
+						RVS.H[_.uid].gpH = RVS.H[_.uid].w[0].getElementsByClassName('_group_head_')[0];
+						RVS.H[_.uid].gpHT = RVS.H[_.uid].w[0].getElementsByClassName('_group_head_title_')[0];
+					}
 				break;
 
 				case "row":
@@ -246,28 +265,37 @@
 				break;
 			}
 			if (l.linebreak) RVS.H[_.uid].w[0].classList.add("rs-linebreak");
+
 		}
 
 		//First make it Draggable when the Mouse enters. No need to create extra costs on Load
 		if (RVS.S.initDragAndResizeonHTMLLayers === undefined) {
 			RVS.S.initDragAndResizeonHTMLLayers = true;
-			RVS.DOC.on('mouseenter','._lc_',function() {
-				if (this.dataset.dragandresize===undefined) {
-					this.dataset.dragandresize = true;
-					if (this.dataset.type!=="column" && this.dataset.type!=="row") RVS.F.doDraggable({uid:this.dataset.uid, drag:true, resize:true});
-					if (jQuery.inArray(this.dataset.type,["text","button","svg","shape","group"])>=0)
-						if (RVS.H[this.dataset.uid].sclr===undefined || RVS.H[this.dataset.uid].w[0].querySelector(':scope >._lc_reScaler')===null) {
+			RVS.C.UL[0].addEventListener('mouseenter',function(e) {
+				if (!e.target || !e.target.classList || !e.target.classList.contains('_lc_')) return;
+				var lc = e.target;
+				/* Update Group Header in Case */
+				RVS.F.updateGroupHeader({uid:lc.dataset.uid,delay:0.1});
+
+				if (lc.dataset.dragandresize===undefined) {
+					lc.dataset.dragandresize = true;
+					if (lc.dataset.type!=="column" && lc.dataset.type!=="row") RVS.F.doDraggable({uid:lc.dataset.uid, drag:true, resize:true});
+					if (jQuery.inArray(lc.dataset.type,["text","button","svg","shape","group"])>=0)
+						if (RVS.H[lc.dataset.uid].sclr===undefined || RVS.H[lc.dataset.uid].w[0].querySelector(':scope >._lc_reScaler')===null) {
 							var sclr = RVS.F.cE({cN:"_lc_reScaler"}),
 								sclrpin = RVS.F.cE({cN:"_lc_reScaler_pin"}),
 								sclricon = RVS.F.cE({cN:"_lc_reScaler_icon"});
 							sclr.appendChild(sclrpin);
 							sclr.appendChild(sclricon);
-							RVS.H[this.dataset.uid].w[0].appendChild(sclr);
-							RVS.H[this.dataset.uid].sclr = jQuery(sclrpin);
-							prepareRescaler(RVS.H[this.dataset.uid].sclr);
+							RVS.H[lc.dataset.uid].w[0].appendChild(sclr);
+							RVS.H[lc.dataset.uid].sclr = jQuery(sclrpin);
+							prepareRescaler(RVS.H[lc.dataset.uid].sclr);
 						}
 				}
-			})
+			},true);
+			RVS.DOC.on('mouseleave','._lc_',function() {
+				RVS.F.updateGroupHeader({uid:this.dataset.pid});
+			});
 		}
 
 		//_.ignoreDrawLayers = false;
@@ -294,6 +322,7 @@
 		} else
 		if (l.type==="image") {
 			if (l.media.imageUrl!==undefined && l.media.imageUrl!==null && l.media.imageUrl.length>0 && l.media!==undefined && l.media.loaded!==true) {
+
 				tpGS.gsap.set(RVS.H[_.uid].w,{visibility:"hidden"});
 				RVS.F.preloadImage({
 					uid:_.uid,
@@ -311,7 +340,73 @@
 		} else
 				if (_.ignoreDrawLayers!==true) RVS.F.drawHTMLLayer({uid:_.uid})
 	};
+	/*
+	UPGRADE GROUP HEADER
+	*/
+	RVS.F.updateGroupHeader = function(_) {
+		let tgid = RVS.F.getTopParent({layer:_.uid}),
+			t = '',
+			level = 0;
+		if (tgid==-1 && _.uid==-1 && _.delay==undefined && RVS.L[RVS.S.lastHoveredLayer]!==undefined && RVS.L[RVS.S.lastHoveredLayer].type=="group" && RVS.H[RVS.S.lastHoveredLayer].w[0].classList.contains("hasSelectedChild")) {
+			if (RVS.H[RVS.S.lastHoveredLayer].w[0].dataset.selectedchild==="multiple") {
+				t = 'multiple';
+			} else {
+				tgid = RVS.S.lastHoveredLayer;
+				_.uid = RVS.H[RVS.S.lastHoveredLayer].w[0].dataset.selectedchild;
+			}
+		}
+		_.delay = _.delay==undefined ? 0 : _.delay;
+		if (t==="multiple") {
+			 tgid = RVS.S.lastHoveredLayer;
+			 level = 1;
+		} else {
+			if (tgid!==undefined  && RVS.L[tgid]!==undefined && RVS.L[tgid].type=="group" && RVS.H[tgid]!==undefined && RVS.L[_.uid]!==undefined) {
+				level += (tgid!=RVS.L[_.uid].group.puid ? 1 : 0) + (tgid!=_.uid ? 1 : 0);
+				t = RVS.L[tgid].alias+
+					(tgid!=RVS.L[_.uid].group.puid ? ' / '+ RVS.L[RVS.L[_.uid].group.puid].alias : "") +
+					(tgid!=_.uid ? ' / '+ RVS.L[_.uid].alias  : "");
+			} else
+			if (RVS.L[_.uid]!==undefined && RVS.L[_.uid].type=="group") {
+				tgid = _.uid;
+				t = RVS.L[_.uid].alias;
+			}
+		}
+		if (t!=='') {
+			if (_.delay>0) clearTimeout(RVS.S.updateHeaderTextTimer)
 
+			//if (RVS.F.isParent(_.uid,RVS.S.lastHoveredLayer)) return;
+
+			RVS.S.updateHeaderTextTimer = setTimeout(function() {
+				requestAnimationFrame(function(){
+
+					RVS.F.checkAndWriteGroupHeader({gid:tgid, t:t, level:level});
+				});
+			},_.delay);
+		}
+			RVS.S.lastHoveredLayer = _.uid;
+	}
+
+	RVS.F.checkAndWriteGroupHeader = function(_) {
+		if (_.t==="multiple") {
+			_.t = RVS_LANG.multiplechildrensel;
+		} else {
+			// Short Up the Text if Needed
+			if (_.level>0 && _.t.length*6.5 > RVS.H[_.gid].gpH.offsetWidth) {
+				_.t = '..' + _.t.substr(_.t.indexOf(' / '));
+				if (_.level>1 &&_.t.length*6.5 > RVS.H[_.gid].gpH.offsetWidth) {
+					_.t = '.. / .. ' + _.t.substr(_.t.lastIndexOf(' / '));
+				}
+			}
+
+			if (_.level>0) {
+				_.t = '<span class="sub_text_block">' + _.t;
+				_.t = _.t.substr(0,_.t.lastIndexOf(' / ')) + "</span>" + _.t.substr(_.t.lastIndexOf(' / '));
+			}
+		}
+		RVS.H[_.gid].gpHT.innerHTML = _.t;
+
+
+	}
 
 	/*
 	REORDER HTML LAYER
@@ -337,8 +432,10 @@
 		} else
 		if (l.type==="column")
 			addLayerInOrder({container:RVS.H[l.group.puid].c, layer:htmllayer[0], uid:_.uid, type:"._lc_type_column"});
-		else
+		else {
 			addLayerInOrder({container:RVS.H[l.group.puid].c, layer:htmllayer[0], uid:_.uid, type:"._lc_"});
+		}
+
 
 		if (!same) RVS.S.redrawHTMLLayersList.push(_.uid);
 
@@ -359,7 +456,6 @@
 					RVS.H[li].w.removeClass("nocontent");
 				else
 					RVS.H[li].w.addClass("nocontent");
-
 			}
 		}
 	};
@@ -382,7 +478,7 @@
 		var newLayer;
 		if (obj.layerobject!==undefined) {
 			newLayer = RVS.F.safeExtend(true,{},obj.layerobject);
-			newLayer.uid = obj.copyPaste==="copy" ? window.copyPasteLayers.amount : RVS.F.getUniqueid();
+			newLayer.uid = obj.copyPaste==="copy" ? "copy"+window.copyPasteLayers.amount : RVS.F.getUniqueid();
 			newLayer = RVS.F.addLayerObj(newLayer);
 			newLayer.alias = obj.prefix!==undefined ? obj.prefix+" "+newLayer.alias.replace(/Copy/g,'') : "Copy "+newLayer.alias.replace(/Copy/g,'');
 		} else {
@@ -390,13 +486,14 @@
 		}
 
 		if (obj.extension) newLayer = RVS.F.safeExtend(true,newLayer,obj.extension);
+		if (obj.subsubtype && obj.subextension) newLayer = RVS.F.safeExtend(true,newLayer,obj.subextension);
 
 		newLayer.group.puid = obj.puid!==undefined ? obj.puid : newLayer.group.puid;
 		if (obj.newGroupOrder && obj.copyPaste!=="copy")
 			newLayer.group.groupOrder = getHighestGroupOrderInRow({uid:newLayer.group.puid, type:newLayer.type});
 
 
-		newLayer.alias = obj.alias!==undefined ? obj.alias+"-"+newLayer.uid : newLayer.alias;
+		newLayer.alias = obj.extension!==undefined && obj.extension.alias!==undefined ? obj.extension.alias+"-"+newLayer.uid : obj.alias!==undefined ? obj.alias+"-"+newLayer.uid : newLayer.alias;
 		if (obj.copyPaste==="copy") {
 			window.copyPasteLayersSlideId = RVS.S.slideId;
 			window.copyPasteLayers.amount++;
@@ -422,7 +519,8 @@
 			RVS.S.extendedLayerTypes[obj.subtype] = {
 				type:obj.type,
 				subtype:obj.subtype,
-				extension:obj.extension
+				extension:obj.extension,
+				subextension:obj.subextension
 			};
 
 			var h;
@@ -437,7 +535,7 @@
 				if (obj.objectlibrary) h += '<div class="add_layer" data-type="'+obj.type+'" data-subtype="object_library" data-libevent="'+obj.libevent+'" data-extensiongroup="'+obj.subtype+'" data-libfilters="'+obj.libfilters+'"><i class="material-icons">style</i>Object Library</div>';
 				if (obj.emptyplaceholder) h+= '<div class="add_layer" data-type="'+obj.type+'" data-subtype="'+obj.subtype+'"><i class="material-icons">flip_to_back</i>Empty Placeholder</div>';
 				if (obj.subList) for (var i in obj.subList)
-						if (obj.subList.hasOwnProperty(i)) h+= '<div class="add_layer" data-evt="'+obj.subList[i].evt+'" data-type="'+obj.type+'" data-subtype="'+obj.subtype+'" data-subsubtype="'+i+'"><i class="material-icons">'+obj.subList[i].icon+'</i>'+obj.subList[i].name+'</div>';
+						if (obj.subList.hasOwnProperty(i)) h+= '<div class="add_layer" '+(obj.subList[i].fromobjlib ? 'data-fromobjlib="true"' : '')+(obj.subList[i].objLibInSubMenu ? 'data-subtype="object_library"' : '')+' '+(obj.subList[i].filter ? ' data-filter="'+obj.subList[i].filter+'"' : '')+' '+(obj.subList[i].selected ? ' data-selected="'+obj.subList[i].selected+'"' : '')+' data-evt="'+obj.subList[i].evt+'" data-libevent="'+obj.subList[i].libevent+'" data-libfilters="'+obj.subList[i].libfilters+'" obj.data-type="'+obj.type+'" data-subtype="'+obj.subtype+'" data-subsubtype="'+i+'"><i class="material-icons">'+obj.subList[i].icon+'</i>'+obj.subList[i].name+'</div>';
 
 
 				h +='</div>';
@@ -456,12 +554,14 @@
 	/*
 	ADD LAYER (OBJECT, LIST ELEMENT, FRAMES) ON DEMAND
 	*/
-	RVS.F.addLayer = function(obj) {
+	RVS.F.addLayer = function(obj,ignoreBackupGroup) {
 		RVS.DOC.trigger('changeToLayerMode');
-		if (!obj.ignoreBackupGroup) RVS.F.openBackupGroup({id:"addLayer",txt:"Create New "+obj.type+" Layer",icon:"layers",lastkey:"layer"});
+		if (!obj.ignoreBackupGroup && !ignoreBackupGroup) RVS.F.openBackupGroup({id:"addLayer",txt:"Create New "+obj.type+" Layer",icon:"layers",lastkey:"layer"});
 		var rowid,
 			newLayerID,
 			itemsInGroup,
+			subitemsInGroup,ii,gii,
+			groupid,subgroupid,
 			_SRC =  obj.copyPaste==="paste" ? window.copyPasteLayers.layers : RVS.L;
 		switch (obj.type) {
 			case "row":
@@ -478,9 +578,17 @@
 						var colid = RVS.F.addLayerToLayers({puid:rowid, layerobject:_SRC[columnsInRow[coi]],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix}),
 							itemsInColumn = RVS.F.getLayersFirstDepth({layerid:columnsInRow[coi],copyPaste:obj.copyPaste});
 
-						for (var ii in itemsInColumn) {
+						for (ii in itemsInColumn) {
 							if(!itemsInColumn.hasOwnProperty(ii)) continue;
-							RVS.F.addLayerToLayers({puid:colid, layerobject:_SRC[itemsInColumn[ii]],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix});
+							subgroupid = RVS.F.addLayerToLayers({puid:colid, layerobject:_SRC[itemsInColumn[ii]],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix});
+							if (_SRC[itemsInColumn[ii]].type=="group") {
+								subitemsInGroup = 	RVS.F.getLayersFirstDepth({layerid:itemsInColumn[ii],copyPaste:obj.copyPaste});
+								for (gii in subitemsInGroup) {
+									if(!subitemsInGroup.hasOwnProperty(gii)) continue;
+									RVS.F.addLayerToLayers({puid:subgroupid, layerobject:_SRC[subitemsInGroup[gii]],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix});
+								}
+							}
+
 						}
 					}
 				}
@@ -492,23 +600,29 @@
 					var columnid;
 					columnid = newLayerID = RVS.F.addLayerToLayers({layerobject:_SRC[obj.duplicateId],newGroupOrder:true,buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix});
 					itemsInGroup = RVS.F.getLayersFirstDepth({layerid:obj.duplicateId,copyPaste:obj.copyPaste});
-					for (var ii in itemsInGroup) {
+					for (ii in itemsInGroup) {
 						if(!itemsInGroup.hasOwnProperty(ii)) continue;
 						RVS.F.addLayerToLayers({puid:columnid, layerobject:_SRC[itemsInGroup[ii]],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix});
 					}
 				}
 			break;
 			case "group":
-
 				if (obj.duplicateId===undefined)
 					newLayerID = RVS.F.addLayerToLayers({type:"group",alias:"group",buildHTMLLayer:true});
 				else {
-					var groupid;
+
 					groupid = newLayerID = RVS.F.addLayerToLayers({layerobject:_SRC[obj.duplicateId],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix,newGroupOrder:true});
 					itemsInGroup = RVS.F.getLayersFirstDepth({layerid:obj.duplicateId,copyPaste:obj.copyPaste});
-					for (var ii in itemsInGroup) {
+					for (ii in itemsInGroup) {
 						if(!itemsInGroup.hasOwnProperty(ii)) continue;
-						RVS.F.addLayerToLayers({puid:groupid, layerobject:_SRC[itemsInGroup[ii]],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix});
+						subgroupid = RVS.F.addLayerToLayers({puid:groupid, layerobject:_SRC[itemsInGroup[ii]],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix});
+						if (_SRC[itemsInGroup[ii]].type=="group") {
+							subitemsInGroup = 	RVS.F.getLayersFirstDepth({layerid:itemsInGroup[ii],copyPaste:obj.copyPaste});
+							for (gii in subitemsInGroup) {
+								if(!subitemsInGroup.hasOwnProperty(gii)) continue;
+								RVS.F.addLayerToLayers({puid:subgroupid, layerobject:_SRC[subitemsInGroup[gii]],buildHTMLLayer:true,copyPaste:obj.copyPaste, prefix:obj.prefix});
+							}
+						}
 					}
 				}
 			break;
@@ -522,6 +636,7 @@
 						idle:{	backgroundColor:'transparent',
 								clear:{d:{v:"both"},n:{v:"both"}, t:{v:"both"}, m:{v:"both"}}
 							},
+						position:{position:'relative'},
 						linebreak:true
 					}
 				});
@@ -535,10 +650,11 @@
 					if ((RVS.S.extendedLayerTypes!==undefined && RVS.S.extendedLayerTypes[obj.subtype]!==undefined) ||
 						(RVS.S.extendedLayerTypes!==undefined && obj.extensiongroup!==undefined && RVS.S.extendedLayerTypes[obj.extensiongroup]!==undefined)) {
 							if (obj.extensiongroup!==undefined) {
-								newLayerID = RVS.F.addLayerToLayers({type:obj.type, alias:obj.type, extension: RVS.S.extendedLayerTypes[obj.extensiongroup].extension,  buildHTMLLayer:true});
+								newLayerID = RVS.F.addLayerToLayers({type:obj.type, alias:obj.type, subsubtype:obj.subsubtype, subextension: RVS.S.extendedLayerTypes[obj.subtype]!=undefined && RVS.S.extendedLayerTypes[obj.subtype].subextension!==undefined ? RVS.S.extendedLayerTypes[obj.subtype].subextension[obj.subsubtype] :undefined , extension: RVS.S.extendedLayerTypes[obj.extensiongroup].extension,  buildHTMLLayer:true});
 							}
 							else
-								newLayerID = RVS.F.addLayerToLayers({type:obj.type, alias:obj.type, extension: RVS.S.extendedLayerTypes[obj.subtype].extension,  buildHTMLLayer:true});
+								newLayerID = RVS.F.addLayerToLayers({type:obj.type, alias:obj.type, subsubtype:obj.subsubtype, subextension: RVS.S.extendedLayerTypes[obj.subtype]!=undefined && RVS.S.extendedLayerTypes[obj.subtype].subextension!==undefined ? RVS.S.extendedLayerTypes[obj.subtype].subextension[obj.subsubtype] :undefined , extension: RVS.S.extendedLayerTypes[obj.subtype].extension,  buildHTMLLayer:true});
+
 					} else
 						newLayerID = RVS.F.addLayerToLayers({type:obj.type, alias:obj.type,buildHTMLLayer:true});
 				}
@@ -569,7 +685,7 @@
 						else
 						if (obj.libfilters!==undefined) {
 							var filters = obj.libfilters.split(",");
-							RVS.F.openObjectLibrary({types:filters,filter:"all", selected:[filters[0]], success:{custom:obj.libevent}, extension:obj.extensiongroup});
+							RVS.F.openObjectLibrary({types:filters,filter:obj.filter=="undefined" || obj.filter==undefined ? "all" : obj.filter, selected:[obj.selected=="undefined" || obj.selected==undefined ? filters[0] : obj.selected], success:{custom:obj.libevent}, extension:obj.extensiongroup});
 						}
 					break;
 					case "headline":
@@ -577,7 +693,7 @@
 						RVS.F.openQuickStyle({bacupGroupOpen:"addLayer",list:["headlines","content"]});
 					break;
 					case "simple_content":
-					obj.ignoreBackupGroup = true;
+						obj.ignoreBackupGroup = true;
 						RVS.F.openQuickStyle({bacupGroupOpen:"addLayer",list:["content","headlines"]});
 					break;
 					case "button":
@@ -588,13 +704,14 @@
 
 					break;
 					default:
+						obj.ignoreBackupGroup = RVS.F.subOpenQuickStyle===undefined || 	RVS.F.subOpenQuickStyle[obj.subtype]===undefined ? false : 	RVS.F.subOpenQuickStyle[obj.subtype](obj.subsubtype);
 					break;
 				}
 			break;
 		}
 
 
-		if (!obj.ignoreBackupGroup) RVS.F.closeBackupGroup({id:"addLayer"});
+		if (!obj.ignoreBackupGroup && !ignoreBackupGroup) RVS.F.closeBackupGroup({id:"addLayer"});
 		if (!obj.ignoreLayerList) RVS.F.buildLayerLists({force:true, ignoreRebuildHTML:true});
 		if (!obj.ignoreOrderHTMLLayers) RVS.F.reOrderHTMLLayers();
 		if (RVS.eMode!==undefined && RVS.eMode.top==="layer" && RVS.eMode.mode==="animation") RVS.F.showForms("*slidelayout**mode__slidecontent*#form_layer_style",true);
@@ -603,73 +720,53 @@
 	};
 
 
-
+	RVS.F.deleteLayerSingle = function(obj) {
+		RVS.F.backup({path:obj.layerid,icon:"layers",txt:"Remove Layer",lastkey:"removelayer",force:true,slideid:RVS.S.slideId,val:{},old:RVS.F.safeExtend(true,{},RVS.SLIDER[RVS.S.slideId]).layers[obj.layerid],backupType:"layer",bckpGrType:"removelayer"});
+		delete RVS.SLIDER[RVS.S.slideId].layers[obj.layerid];
+		delete RVS.H[obj.layerid];
+		RVS.F.updateTriggeringActionRelations(obj.layerid); // Remove Actions from Triggering Dependencies
+		jQuery('#_lc_'+RVS.S.slideId+'_'+obj.layerid+'_').remove();
+	}
 	/*
 	DELETE LAYER STRUCTURES
 	*/
-	RVS.F.deleteLayerfromLayers = function(obj) {
-		RVS.DOC.trigger('changeToLayerMode');
+	RVS.F.deleteLayerfromLayers = function(obj,rekursiv) {
 		if (RVS.L[obj.layerid]===undefined) return;
-		var localBackupGroup = false;
-		if (obj.groupisopen===undefined && !RVS.S.bckpGrp) {
-			if (!RVS.S.bckpGrp) localBackupGroup = true;
-			RVS.F.openBackupGroup({id:"removeLayer",txt:"Remove "+RVS.L[obj.layerid].type+" Layer",icon:"delete",lastkey:"layer"});
+		if (!rekursiv) {
+			RVS.DOC.trigger('changeToLayerMode');
+			var localBackupGroup = false;
+			if (obj.groupisopen===undefined && !RVS.S.bckpGrp) {
+				if (!RVS.S.bckpGrp) localBackupGroup = true;
+				RVS.F.openBackupGroup({id:"removeLayer",txt:"Remove "+RVS.L[obj.layerid].type+" Layer",icon:"delete",lastkey:"layer"});
+			}
 		}
 
-		switch (RVS.L[obj.layerid].type) {
-			case "row":
-				var columnsInRow = RVS.F.getColumnsInRow({layerid:obj.layerid});
-				for (var coi in columnsInRow) {
-					if(!columnsInRow.hasOwnProperty(coi)) continue;
-					var itemsInGroup = RVS.F.getLayersFirstDepth({layerid:columnsInRow[coi]});
-					for (var ii in itemsInGroup) {
-						if(!itemsInGroup.hasOwnProperty(ii)) continue;
-						if (obj.newpuid!==undefined) {
-							/*var old = RVS.F.getDeepVal({path:RVS.S.slideId+'.layers.'+itemsInGroup[ii]+'.group.puid'});*/
-							RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+itemsInGroup[ii]+'.group.puid',val:obj.newpuid});
-						} else {
-							RVS.F.backup({path:itemsInGroup[ii],icon:"layers",txt:"Remove Layer",lastkey:"removelayer",slideid:RVS.S.slideId,force:true,val:{},old:RVS.F.safeExtend(true,{},RVS.SLIDER[RVS.S.slideId]).layers[itemsInGroup[ii]],backupType:"layer",bckpGrType:"removelayer"});
-							delete RVS.SLIDER[RVS.S.slideId].layers[itemsInGroup[ii]];
-							// DELETE RVS.H ROW
-							jQuery('#_lc_'+RVS.S.slideId+'_'+itemsInGroup[ii]+'_').remove();
-							delete RVS.H[itemsInGroup[ii]];
-
+		if (RVS.L[obj.layerid].type=="row" || RVS.L[obj.layerid].type=="column" || RVS.L[obj.layerid].type=="group") {
+			var itemsInGroup = RVS.F.getLayersFirstDepth({layerid:obj.layerid});
+			for (var ii in itemsInGroup) {
+				if(!itemsInGroup.hasOwnProperty(ii)) continue;
+				if (obj.newpuid!==undefined && !rekursiv) {
+					RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+itemsInGroup[ii]+'.group.puid',val:obj.newpuid});
+					// Fix Not Resizeable and Draggable Internal Elements issues
+					if (RVS.H[itemsInGroup[ii]]!==undefined && RVS.H[itemsInGroup[ii]].w!==undefined) {
+						delete RVS.H[itemsInGroup[ii]].w[0].dataset.dragandresize;
+						if (RVS.H[itemsInGroup[ii]].sclr!==undefined && RVS.H[itemsInGroup[ii]].sclr!==null) {
+							RVS.H[itemsInGroup[ii]].sclr.remove();
+							RVS.H[itemsInGroup[ii]].sclr=undefined;
 						}
 					}
-					RVS.F.backup({path:columnsInRow[coi],icon:"layers",txt:"Remove Layer",lastkey:"removelayer",slideid:RVS.S.slideId,force:true,val:{},old:RVS.F.safeExtend(true,{},RVS.SLIDER[RVS.S.slideId]).layers[columnsInRow[coi]],backupType:"layer",bckpGrType:"removelayer"});
-					delete RVS.SLIDER[RVS.S.slideId].layers[columnsInRow[coi]];
-					//DELETE RVS.H Columns in ROW
-					jQuery('#_lc_'+RVS.S.slideId+'_'+columnsInRow[coi]+'_').remove();
-					delete RVS.H[columnsInRow[coi]];
-
 				}
-			break;
-			case "column":
-			case "group":
-				var itemsInGroup = RVS.F.getLayersFirstDepth({layerid:obj.layerid});
-				for (var ii in itemsInGroup) {
-					if(!itemsInGroup.hasOwnProperty(ii)) continue;
-					if (obj.newpuid!==undefined) {
-						RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+itemsInGroup[ii]+'.group.puid',val:obj.newpuid});
-					} else {
-						RVS.F.backup({path:itemsInGroup[ii],icon:"layers",txt:"Remove Layer",lastkey:"removelayer",force:true,slideid:RVS.S.slideId,val:{},old:RVS.F.safeExtend(true,{},RVS.SLIDER[RVS.S.slideId]).layers[itemsInGroup[ii]],backupType:"layer",bckpGrType:"removelayer"});
-						delete RVS.SLIDER[RVS.S.slideId].layers[itemsInGroup[ii]];
-						//DELETE RVS.H GROUP AND COLUMN
-						jQuery('#_lc_'+RVS.S.slideId+'_'+itemsInGroup[ii]+'_').remove();
-						delete RVS.H[itemsInGroup[ii]];
-					}
-				}
-			break;
+				else
+					RVS.F.deleteLayerfromLayers({layerid:itemsInGroup[ii]},true);
+			}
 		}
-		RVS.F.backup({path:obj.layerid,icon:"layers",txt:"Remove Layer",lastkey:"removelayer",slideid:RVS.S.slideId,force:true,val:{},old:RVS.F.safeExtend(true,{},RVS.SLIDER[RVS.S.slideId]).layers[obj.layerid],backupType:"layer",bckpGrType:"removelayer"});
-		delete RVS.SLIDER[RVS.S.slideId].layers[obj.layerid];
-		delete RVS.H[obj.layerid];
-		jQuery('#_lc_'+RVS.S.slideId+'_'+obj.layerid+'_').remove();
+		RVS.F.deleteLayerSingle(obj);
+		if (rekursiv) return;
 		if (localBackupGroup) {
 			RVS.F.closeBackupGroup({id:"removeLayer"});
 			RVS.F.buildLayerLists({force:true});
 		}
-
+		return;
 	};
 
 	/*
@@ -677,6 +774,11 @@
 	*/
 	RVS.F.updateSelectedHtmlLayers = function(ignoreSelected,ignoreClasses) {
 		requestAnimationFrame(function() {
+			let hsh = document.querySelectorAll('.hasSelectedChild');
+			hsh.forEach(h=>{
+				h.classList.remove('hasSelectedChild');
+				delete h.dataset.selectedchild;
+			});
 			for (var i in RVS.L) {
 				if(!RVS.L.hasOwnProperty(i)) continue;
 				if (i!=="top" && i!=="bottom" && i!=="middle") {
@@ -684,6 +786,12 @@
 						RVS.H[i].w[0].classList.add("selected");
 						//RVS.H[i].w[0].classList.add("marked");
 						RVS.H[i].selected = true;
+						var gParent = RVS.F.getTopParent({layer:i});
+						if (gParent!==-1 && RVS.L[gParent].type=="group") {
+							RVS.H[gParent].w[0].classList.add('hasSelectedChild');
+							if (gParent!=RVS.L[i].group.puid) RVS.H[RVS.L[i].group.puid].w[0].classList.add('hasSelectedChild');
+							RVS.H[gParent].w[0].dataset.selectedchild = RVS.H[gParent].w[0].dataset.selectedchild===undefined ? i : "multiple";
+						}
 						RVS.F.setZindex({id:i,o:475});
 					} else {
 						if (RVS.H[i]!==undefined) {
@@ -721,22 +829,17 @@
 	*/
 	RVS.F.setZindex = function(_) {
 		_.o = _.o == undefined ? 0 : _.o;
-		tpGS.gsap.set(RVS.H[_.id].w,{zIndex:parseInt(RVS.L[_.id].position.zIndex,0) + parseInt(_.o,0)});
+		if (RVS.H[_.id]!==undefined && RVS.H[_.id].w!==undefined) tpGS.gsap.set(RVS.H[_.id].w,{zIndex:parseInt(RVS.L[_.id].position.zIndex,0) + parseInt(_.o,0)});
 	};
 
 	/*
 	UPDATE ALL LAYERS QUICK
 	*/
 	RVS.F.allLayersReDraw = function() {
-
 		for (var li in RVS.L) {
 			if(!RVS.L.hasOwnProperty(li)) continue;
 			RVS.F.drawHTMLLayer({uid:li});
 		}
-
-
-
-
 	}
 	/*
 	SELECTED LAYERS HANDLING
@@ -747,27 +850,38 @@
 
 		for (var t in RVS.S.selLayerTypes) {
 			if(!RVS.S.selLayerTypes.hasOwnProperty(t)) continue;
-			RVS.S.selLayerTypes[t] = false;
+			RVS.S.selLayerTypes[t] = false,
+			inset = false;
 		}
-		var inColumn = false,
+		var inPlace = false,
 			ncl = "";
 		for (var li in RVS.selLayers) {
 			if(!RVS.selLayers.hasOwnProperty(li)) continue;
 			jQuery('#tllayerlist_element_'+RVS.S.slideId+'_'+RVS.selLayers[li]).addClass("checked");
 			jQuery('#tllayerlist_element_selector_'+RVS.S.slideId+'_'+RVS.selLayers[li]).addClass("checked");
-			if (!inColumn && RVS.L[RVS.selLayers[li]].group.puid!=-1 && RVS.L[RVS.L[RVS.selLayers[li]].group.puid].type==="column") inColumn = true;
+			inset = inset==true || RVS.L[RVS.selLayers[li]].size.covermode=="fullinset" ? true : false;
+			if (!inPlace && RVS.L[RVS.selLayers[li]].group.puid!=-1) inPlace = RVS.L[RVS.L[RVS.selLayers[li]].group.puid].type==="column" ? "column" : RVS.L[RVS.L[RVS.selLayers[li]].group.puid].type==="group" ? "group" : "root";
 			RVS.S.selLayerTypes[RVS.L[RVS.selLayers[li]].type] = true;
+			if (RVS.L[RVS.selLayers[li]].subtype!==undefined && RVS.L[RVS.selLayers[li]].subtype!=="") {
+				RVS.S.selLayerTypes[RVS.L[RVS.selLayers[li]].subtype] = true;
+				if (RVS.L[RVS.selLayers[li]].subsubtype!==undefined && RVS.L[RVS.selLayers[li]].subsubtype!=="") RVS.S.selLayerTypes[RVS.L[RVS.selLayers[li]].subsubtype] = true;
+			}
 		}
+
 
 
 		for (var t in RVS.S.selLayerTypes) {
 			if(!RVS.S.selLayerTypes.hasOwnProperty(t)) continue;
 			if (RVS.S.selLayerTypes[t]) ncl=ncl+" _"+t+"_sel_";
-		}
-		ncl = inColumn===true ? ncl+" _layer_in_column_sel_" : ncl;
-		ncl = ncl==="" ? "no_layers_selected" : ncl;
-		ncl = RVS.selLayers.length>1 ? ncl + " multiple_layers_selected" : ncl;
 
+		}
+		if (ncl=="") {
+			ncl = "no_layers_selected";
+		} else {
+			ncl = ncl+" _layer_in_"+(inPlace==false ? "root" : inPlace)+"_sel_" + (inset ? " layer_is_inset" : "");
+		}
+
+		ncl = RVS.selLayers.length>1 ? ncl + " multiple_layers_selected" : ncl;
 		RVS.C.the_cont[0].className = ncl;
 	};
 
@@ -896,6 +1010,7 @@
 		RVS.F.updateEasyInputs({container:jQuery('#form_layer_style'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
 		RVS.F.updateEasyInputs({container:jQuery('#form_layer_advstyle'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
 		RVS.F.updateEasyInputs({container:jQuery('#form_layer_position'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
+		RVS.DOC.trigger('layerresized',{layerid:obj.layerid});
 	}
 
 
@@ -1003,9 +1118,11 @@
 			RVS.F.showHideLayerEditor({mode:"slidecontent",openSettings:false});
 		}
 
-		if (_.overwrite)
+		if (_.overwrite) {
+			RVS.F.redrawTextLayerInnerHTML(RVS.selLayers[0],undefined,true);
 			RVS.selLayers = [];
-		else
+
+		} else
 
 		if (RVS.selLayers.length>0 && !_.quickmode && RVS.eMode.top==="layer" && RVS.eMode.menu==="#form_layer_animation")
 			RVS.F.showInfo({content:RVS_LANG.noMultipleSelectionOfLayers, type:"info", showdelay:0.2, hidedelay:2, hideon:"", event:"" });
@@ -1025,17 +1142,19 @@
 			RVS.F.updateSelectedHtmlLayers();
 			if (RVS.eMode.mode!=="animation") RVS.F.updateAllLayerToIDLE();
 			RVS.F.updateSelectedLayersIdleHover();
+			if (RVS.C.toggledTextButton.className.indexOf('selected')>=0) RVS.F.redrawTextLayerInnerHTML(RVS.selLayers[0]);
 		}
 
 		if (_.ignoreFieldUpdates!==true && !_.quickmode) {
 			RVS.F.updateLayerInputFields({short:true});
-			RVS.C.slit.textContent = RVS.selLayers.length===1 ? RVS.F.getLayerIcon(RVS.L[RVS.selLayers[0]].type,RVS.L[RVS.selLayers[0]].subtype) : "layers";
+			RVS.C.slit.textContent = RVS.selLayers.length===1 ? RVS.F.getLayerIcon(RVS.L[RVS.selLayers[0]].linebreak ? 'linebreak' : RVS.L[RVS.selLayers[0]].type,RVS.L[RVS.selLayers[0]].subtype) : "layers";
 			RVS.DOC.trigger('selectLayersDone');
 			RVS.F.checkForAudioLayer();
 		} else
 		if (_.quickmode) RVS.F.updateSelectedHtmlLayers();
 		else
  		if (window.qstyle_library_open) RVS.F.updateAvailableLayerTypes();
+
 
 
 		//Go to SelectedKeyFrame
@@ -1218,7 +1337,7 @@
 				}
 			}
 		}
-		jQuery('#row_column_structure').val(RVS.F.sanitize_columns(newval)).change();
+		jQuery('#row_column_structure').val(RVS.F.sanitize_columns(newval)).trigger('change');
 	};
 
 	/*
@@ -1242,6 +1361,41 @@
 		return ret.id;
 	};
 
+	/*
+	GET THE DEPTH OF LAYER
+	*/
+	RVS.F.getLayerDepth = function(obj) {
+		obj.depth = obj.depth==undefined ? 0 : obj.depth;
+		if (RVS.L[obj.layer]==undefined) return obj.depth;
+		if (RVS.L[obj.layer].group.puid!=-1) {
+			obj.depth++;
+			obj.layer = RVS.L[obj.layer].group.puid;
+			return RVS.F.getLayerDepth(obj);
+		} else return obj.depth;
+	}
+
+	/*
+	Has the Group deeper levels than 1 ?
+	*/
+	RVS.F.isDeeperGroup = function(id) {
+		if (RVS.L[id]==undefined || RVS.L[id].type!=="group") return false;
+		var deeper = false;
+		for (var i in RVS.L) {
+			if (!RVS.L.hasOwnProperty(i) || deeper || i=="top" || i=="bottom" || i=="middle" || (""+RVS.L[i].group.puid!==""+id)) continue;
+			deeper =  RVS.L[i].type=="group";
+		}
+		return deeper;
+	}
+
+	RVS.F.getTopParent = function(obj) {
+		obj.par = obj.par==undefined ? -1 : obj.par;
+		if (RVS.L[obj.layer]==undefined) return obj.par;
+		if (RVS.L[obj.layer].group.puid!=-1) {
+			obj.par = RVS.L[obj.layer].group.puid;
+			obj.layer = RVS.L[obj.layer].group.puid;
+			return RVS.F.getTopParent(obj);
+		} else return obj.par;
+	}
 
 	/*
 	GET COLUMNS IDS IN A ROW
@@ -1356,6 +1510,8 @@
 	PUT LAYER IN RIGHT POSITION
 	*/
 	RVS.F.updateHTMLLayerPosition = function(_) {
+
+
 		var lh = RVS.H[_.uid],
 			l = RVS.L[_.uid];
 
@@ -1372,14 +1528,26 @@
 
 		tr.force3D=true;
 
-
-		if (l.type!=="row" && l.type!=="column" && (l.group.puid===-1 || (RVS.L[l.group.puid].type!=="column"))) {
+		if (l.type!=="row" && l.type!=="column" && (l.group.puid===-1 || ((RVS.L[l.group.puid].type!=="column" || l.position.position!=="relative") && (RVS.L[l.group.puid].type!=="group" || l.position.position!=="relative")))) {
 			var lhcw =  _.lhCwidth===undefined ? lh.c.outerWidth() : _.lhCwidth,
-				lhch =  _.lhCheight===undefined ? lh.c.outerHeight() : _.lhCheight,
-				parcontsize = l.group.puid===-1 ? {width:RVS.C.layergrid.width(), height:RVS.C.layergrid.height()} : {width:RVS.H[l.group.puid].w.width(), height:RVS.H[l.group.puid].w.height()},
-				cache = { x: lph==="center" ? parcontsize.width/2 - lhcw/2 : temp.x, y: lpv==="middle" ? parcontsize.height/2 - lhch/2 : temp.y};
+				lhch =  _.lhCheight===undefined ? l.type=="group" ? lh.w.outerHeight() : lh.c.outerHeight() : _.lhCheight;
 
-			if (_.snapToGrid && RVS.S.DaD.sameLevelNotColumn) {
+
+
+			//Make sure dimension is not 0 due some early triggered Position Request
+			if(lhcw==0 && lhch==0 && (_.firstDimCheckDone===undefined || _.firstDimCheckDone<5)) {
+				_.firstDimCheckDone = _.firstDimCheckDone===undefined ? 0 : _.firstDimCheckDone;
+				_.firstDimCheckDone++;
+				requestAnimationFrame(function() {
+					RVS.F.updateHTMLLayerPosition(_);
+				});
+				return;
+			}
+
+
+			var	parcontsize = l.group.puid===-1 ? {width:RVS.C.layergrid.width(), height:RVS.C.layergrid.height()} : {width:RVS.H[l.group.puid].w.width(), height:RVS.H[l.group.puid].w.height()},
+				cache = { x: lph==="center" ? parcontsize.width/2 - lhcw/2 : temp.x, y: lpv==="middle" ? parcontsize.height/2 - lhch/2 : temp.y};
+			if (_.snapToGrid && (RVS.S.DaD.sameLevelNotColumn)) {
 				var s = RVS.F.getSnapPoint(cache.x,cache.y),
 					so = RVS.F.getSnapPoint(o.x,o.y);
 				temp = RVS.F.getSnapPoint(temp.x,temp.y);
@@ -1390,26 +1558,31 @@
 				o  = so;
 			}
 
-			if (lph!=="right") {tr.right = "auto"; tr.left = cache.x + o.x; } else { tr.left="auto"; tr.right = cache.x - o.x}
-			if (lpv!=="bottom") {tr.bottom = "auto"; tr.top = cache.y + o.y; } else { tr.top="auto"; tr.bottom = cache.y - o.y}
+
+			if (l.size.covermode=="fullinset" && l.position.position=="absolute" && RVS.L[l.group.puid]!==undefined && RVS.L[l.group.puid].type=="group" && l.size.width[RVS.screen].v=="100%") {
+					tr.right = l.idle.margin[RVS.screen].v[1]+"px";
+					tr.left = l.idle.margin[RVS.screen].v[3]+"px";
+			} else if (lph!=="right") {tr.right = "auto"; tr.left = cache.x + o.x; } else { tr.left="auto"; tr.right = cache.x - o.x}
+			if (l.size.covermode=="fullinset" && l.position.position=="absolute" && RVS.L[l.group.puid]!==undefined && RVS.L[l.group.puid].type=="group" && l.size.height[RVS.screen].v=="100%") {
+				tr.top = l.idle.margin[RVS.screen].v[0]+"px";
+				tr.bottom = l.idle.margin[RVS.screen].v[2]+"px";
+			} else if (lpv!=="bottom") {tr.bottom = "auto"; tr.top = cache.y + o.y; } else { tr.top="auto"; tr.bottom = cache.y - o.y}
 
 			tr.x = lph==="center" ? temp.x : 0;
 			tr.y = lpv==="middle" ? temp.y : 0;
-
-
 
 			if (l.behavior.baseAlign==="slide" && l.group.puid===-1) {
 				tr.x = lph==="right" ? tr.x + (RVS.C.layergrid[0].offsetLeft) : lph==="left" ? tr.x - (RVS.C.layergrid[0].offsetLeft) : tr.x;
 				tr.y = lpv==="bottom" ? tr.y + (RVS.C.layergrid[0].offsetTop) : lpv==="top" ? tr.y - (RVS.C.layergrid[0].offsetTop) : tr.y;
 			}
 
+
 			if (_.updateValues) {
-				var updatePosTo = {x:(lph === "right" ? mem.x-o.x : mem.x+o.x),
-								   y: (lpv === "bottom" ? mem.y-o.y : mem.y+o.y)};
+				var updatePosTo = {x:Math.round(lph === "right" ? mem.x-o.x : mem.x+o.x),
+								   y: Math.round(lpv === "bottom" ? mem.y-o.y : mem.y+o.y)};
 
 
-
-				if (RVS.S.DaD.toContainerType==="column") {updatePosTo.x = 0;updatePosTo.y = 0; }
+				if (RVS.S.DaD.toContainerType==="column" && RVS.S.DaD.draggedPosType!=="absolute") {updatePosTo.x = 0;updatePosTo.y = 0; }
 				else if (_.snapToGrid && RVS.S.DaD.sameLevelNotColumn) updatePosTo  = RVS.F.getSnapPoint(updatePosTo.x,updatePosTo.y);
 				else if (_.snapToLayers && RVS.S.DaD.sameLevelNotColumn) {
 				 	if (RVS.S.DaD.snapHF.uid!==-1) {
@@ -1444,8 +1617,8 @@
 				RVS.S.updatePosToY = updatePosTo.y;
 			} else
 			if (_.mouseInfo) {
-				RVS.S.updatePosToX = RVS.S.DaD.toContainerType==="column" ? 0 : (lph === "right" ? mem.x-o.x : mem.x+o.x);
-				RVS.S.updatePosToY = RVS.S.DaD.toContainerType==="column" ? 0 : (lpv === "bottom" ? mem.y-o.y : mem.y+o.y);
+				RVS.S.updatePosToX = RVS.S.DaD.toContainerType==="column" && RVS.S.DaD.draggedPosType!=="absolute" ? 0 : (lph === "right" ? mem.x-o.x : mem.x+o.x);
+				RVS.S.updatePosToY = RVS.S.DaD.toContainerType==="column" && RVS.S.DaD.draggedPosType!=="absolute"? 0 : (lpv === "bottom" ? mem.y-o.y : mem.y+o.y);
 				if (_.snapToGrid && RVS.S.DaD.sameLevelNotColumn) {
 					var sp = RVS.F.getSnapPoint(RVS.S.updatePosToX,RVS.S.updatePosToY);
 					RVS.S.updatePosToX = sp.x;
@@ -1455,13 +1628,36 @@
 
 
 			tr.position="absolute";
-
+			lh.w[0].classList.add('_lc_i_abs');
+			lh.w[0].classList.remove('_lc_i_rel');
+			lh.chPosRel = undefined;
 			requestAnimationFrame(function() {
 				tpGS.gsap.set(lh.w,tr);
 			});
 		} else {
+
+			if (lh.chPosRel!=undefined) return;
+			 lh.chPosRel = true;
+			if (lh.fastDomProcess!==true) {
+				lh.fastDomProcess = true;
+				fastdom.measure(function() {
+					if(lh.w[0].style.position !== 'relative'){
+						fastdom.mutate(function() {
+							lh.w[0].style.position = 'relative';
+							lh.w[0].style.left = 'auto';
+							lh.w[0].style.right = 'auto';
+							lh.w[0].style.top = 'auto';
+							lh.w[0].style.bottom = 'auto';
+							lh.w[0].classList.add('_lc_i_rel');
+							lh.w[0].classList.remove('_lc_i_abs');
+						});
+					}
+				});
+			} else
 			requestAnimationFrame(function() {
-				if (lh.w[0].style.position!=="relative") tpGS.gsap.set(lh.w,{x:0,y:0,position:"relative",left:"auto",right:"auto",top:"auto",bottom:"auto"});
+				if (lh.w[0].style.position!=="relative") {
+					tpGS.gsap.set(lh.w,{x:0,y:0,position:"relative",left:"auto",right:"auto",top:"auto",bottom:"auto"});
+				}
 			});
 		}
 
@@ -1628,6 +1824,20 @@
 		}
 	}
 
+	RVS.F.updateDraggedWidth = function(draw) {
+
+		var w= RVS.S.DaD.CoveredDims!==undefined && RVS.S.DaD.CoveredDims.width!==undefined ? RVS.S.DaD.CoveredDims : RVS.L[RVS.S.DaD.currentLayerId].size.width[RVS.screen].v =="auto" ? RVS.S.DaD.originalWidth : RVS.L[RVS.S.DaD.currentLayerId].size.width[RVS.screen].v;
+		if (RVS.S.DaD.parentWidth==undefined || (RVS.S.DaD.toContainerID!==undefined && RVS.S.DaD.toContainerID!==RVS.S.DaD.parentID)) {
+			RVS.S.DaD.parentID = parseInt(RVS.S.DaD.toContainerID,0);
+			RVS.S.DaD.parentWidth = RVS.S.DaD.parentID!==-1 && RVS.H[RVS.S.DaD.parentID]!==undefined ? RVS.H[RVS.S.DaD.parentID].w[0].offsetWidth : 0;
+		}
+		if (RVS.S.DaD.parentID!==-1 && RVS.S.DaD.wpercent) {
+			w = RVS.S.DaD.parentWidth * (parseInt(w)/100);
+			if (draw) tpGS.gsap.set(RVS.S.DaD.uiHelper,{width:w});
+		}
+		return w;
+	}
+
 	/*
 	MAKE THE LAYERS DRAGGABLE
 	*/
@@ -1639,13 +1849,24 @@
 		if (_.drag) {
 			lh.w.draggable({
 				helper:"clone",
+				cancel:	"#the_container._layer_in_group_sel_.layer_is_inset .ui-draggable.selected",
 				appendTo:"#layer_grid_"+RVS.S.slideId,
 				start:function(event,ui) {
-
+					if (RVS.L[_.uid].size.covermode=="fullinset") {
+						RVS.F.showInfo({content:RVS_LANG.notduringinsetmode, type:"warning", showdelay:0, hidedelay:2, hideon:"", event:"" });
+						return;
+					}
+					RVS.S.dragging = true;
+					RVS.S.realDragHappen = false;
 					RVS.animationMode = (RVS.eMode.menu==="#form_layer_animation" && RVS.eMode.mode==="animation");
 					RVS.F.setRulers();
 					RVS.F.stopAndPauseAllLayerAnimation();
 					RVS.F.resetDragStates();
+
+					//We take his last known Group "position" attribute in case we want to drop in any group again.
+					if (RVS.L[_.uid].position.ingrouppositoin==="relative") RVS.L[_.uid].position.position = "relative";
+
+
 					RVS.S.DaD.touchPosition = {x : event.clientX - ui.originalPosition.left,  y: event.clientY - ui.originalPosition.top};
 
 					RVS.S.ulInner[0].classList.add("dropSensorActive");
@@ -1653,6 +1874,15 @@
 					RVS.F.updateContentDeltas();
 					RVS.S.DaD.dropSensor = RVS.animationMode!==true ? 1 : 0;
 					RVS.S.DaD.currentLayerId = _.uid;
+					// Parent Element Size and ID if Element % Sized
+					RVS.S.DaD.parentID = -1;
+					RVS.S.DaD.wpercent = (RVS.L[RVS.S.DaD.currentLayerId].size.width[RVS.screen].v+"").indexOf("%")>=0;
+					if (RVS.S.DaD.wpercent) {
+						RVS.S.DaD.parentID = parseInt(RVS.L[_.uid].group.puid,0);
+						RVS.S.DaD.parentID = RVS.S.DaD.parentID>=0 ? RVS.S.DaD.parentID : -1;
+						RVS.S.DaD.parentWidth = RVS.S.DaD.parentID>=0 ? RVS.H[RVS.S.DaD.parentID].w[0].offsetWidth : 0;
+					}
+					if (RVS.L[RVS.S.DaD.currentLayerId].position.position==="relative") RVS.C.slide[0].classList.add('rel_layer_in_drag'); else RVS.C.slide[0].classList.add('abs_layer_in_drag');
 					RVS.S.DaD.draggedPosType = lh.w[0].style.position;
 					RVS.S.click.y = event.clientY;
 					RVS.S.click.x = event.clientX;
@@ -1707,6 +1937,7 @@
 						}
 
 						RVS.S.DaD.originalWidth = lh.w.width()+1;
+						RVS.S.DaD.originalHeight = lh.w.height()+1;
 						ui.helper.css({zIndex:100000, width:RVS.S.DaD.originalWidth});
 						tpGS.gsap.set(lh.w,{opacity:0});
 						RVS.C.layergrid.addClass("layersInDragorResize");
@@ -1747,11 +1978,12 @@
 						ui.helper.css({opacity:0});
 					}
 
-					tpGS.gsap.set(ui.helper.find('._lc_content_')[0],{whiteSpace:"nowrap"});
+					tpGS.gsap.set(ui.helper.find('._lc_content_')[0],{whiteSpace:RVS.L[RVS.selLayers[0]].idle.whiteSpace[RVS.screen]}); // Was nowrap - solvesd dragging overflow issues maybe !?
 
 				},
 
 				drag:function(event,ui) {
+					if (RVS.L[_.uid].size.covermode=="fullinset") return;
 
 					// CALCULATE  THE SCROLL OFFSET TO THE POSITION
 					RVS.S.DaD.scrolldiff = { x: (RVS.S.rb_ScrollX - window.scrollMem.x), y:(RVS.S.rb_ScrollY - window.scrollMem.y)};
@@ -1782,7 +2014,7 @@
 						}
 
 						//REMOVING ELEMENTS FROM COLUMNS SHOULD BE DEPENDENT ON MOUSE POINTER
-						if (RVS.S.DaD.fromContainerType==="column" && !RVS.S.DaD.showInMini) {
+						if (RVS.S.DaD.fromContainerType==="column" && !RVS.S.DaD.showInMini && RVS.S.DaD.draggedPosType!=="absolute" ) {
 							RVS.S.DaD.dragdelta.x = RVS.S.DaD.dragdelta.x + RVS.S.DaD.touchPosition.x-RVS.S.layer_grid_offset.left;
 							RVS.S.DaD.dragdelta.y = RVS.S.DaD.dragdelta.y + RVS.S.DaD.touchPosition.y-RVS.S.layer_grid_offset.top;
 						}
@@ -1800,20 +2032,23 @@
 								left:((event.clientX-RVS.S.layer_grid_offset.left)/RVS.zoom),
 								top:((event.clientY-RVS.S.layer_grid_offset.top)/RVS.zoom),
 								transformOrigin:"0 0",opacity:0.75,scale:0.6,
-								width:RVS.S.DaD.originalWidth, display:RVS.L[RVS.S.DaD.currentLayerId].idle.display,
+								width:RVS.S.DaD.originalWidth,
+								display:RVS.L[RVS.S.DaD.currentLayerId].idle.display,
 								x:0+RVS.S.DaD.scrolldiff.x, y:0+RVS.S.DaD.scrolldiff.y
 						};
 
 						if (!RVS.S.DaD.showInMini) {
-							if (RVS.S.DaD.fromContainerType!=="column") {
+							if (RVS.S.DaD.fromContainerType!=="column" || RVS.S.DaD.draggedPosType==="absolute") {
 								posobj.left = ((event.clientX-RVS.S.DaD.touchPosition.x)/RVS.zoom);
 								posobj.top = ((event.clientY-RVS.S.DaD.touchPosition.y)/RVS.zoom);
 							}
 
-							posobj.width = RVS.S.DaD.CoveredDims!==undefined && RVS.S.DaD.CoveredDims.width!==undefined ? RVS.S.DaD.CoveredDims :  RVS.L[RVS.S.DaD.currentLayerId].size.width[RVS.screen].v;
+							posobj.width = RVS.F.updateDraggedWidth();
+							posobj.height =  RVS.L[RVS.S.DaD.currentLayerId].size.height[RVS.screen].v =="auto" ? RVS.S.DaD.originalHeight : RVS.L[RVS.S.DaD.currentLayerId].size.height[RVS.screen].v;
 							posobj.display = "block";
 							posobj.scale = 1;
 						}
+
 
 						if (RVS.S.DaD.snapToGrid && RVS.S.DaD.sameLevelNotColumn) {
 							posobj.left = posobj.left - RVS.S.updatePosToXDif;
@@ -1823,6 +2058,7 @@
 
 
 						tpGS.gsap.set(ui.helper,posobj);
+
 						RVS.S.DaD.startPos =  {x:posobj.left, y:posobj.top};
 
 
@@ -1844,53 +2080,76 @@
 
 				},
 				stop:function(event,ui) {
-
+					if (RVS.L[_.uid].size.covermode=="fullinset") return;
+					RVS.S.dragging = false;
 					if ((RVS.SLIDER.settings.snap.adjust!=="none")) RVS.F.clearSnapVisual();
-
+					//Remove the Top Class which would make transparent the elements which are not belongs to same position group
+					RVS.C.slide[0].classList.remove('rel_layer_in_drag');
+					RVS.C.slide[0].classList.remove('abs_layer_in_drag');
 
 					tpGS.gsap.set(ui.helper,{scale:1});
 					RVS.S.ulInner[0].classList.remove("dropSensorActive");
 					RVS.S.DaD.dropSensor = false;
+
 					clearHCoors();
 					requestAnimationFrame(function() {
 						RVS.F.hideMouseInfo();
 					});
-					var bgroupid = RVS.animationMode===true ? "frame" : RVS.S.DaD.fromContainerID==-1 && RVS.S.DaD.target!==undefined && RVS.S.DaD.target.into=="free" ? "layermovement" : "layersorting_layermovement";
 
+					if (RVS.S.realDragHappen) {
+						var bgroupid = RVS.animationMode===true ? "frame" : RVS.S.DaD.fromContainerID==-1 && RVS.S.DaD.target!==undefined && RVS.S.DaD.target.into=="free" ? "layermovement" : "layersorting_layermovement";
+						RVS.F.openBackupGroup({id:bgroupid,txt:RVS.animationMode!==true ? "Layer Position" : "Frame Position" ,icon:"open_with"});
 
-					RVS.F.openBackupGroup({id:bgroupid,txt:RVS.animationMode!==true ? "Layer Position" : "Frame Position" ,icon:"open_with"});
+						RVS.S.DaD.difh = 0;
+						RVS.S.DaD.difv = 0;
 
-					RVS.S.DaD.difh = 0;
-					RVS.S.DaD.difv = 0;
+						if (RVS.animationMode!==true) {
+							if (RVS.S.DaD.toContainerType==="group" && (RVS.S.DaD.toContainerID+"" !== RVS.S.DaD.fromContainerID+"") && RVS.L[RVS.S.DaD.parentID]!==undefined) {
+								var donotice = false;
+								for (var i in RVS.V.sizes) {
+									if(!RVS.V.sizes.hasOwnProperty(i) || RVS.screen== RVS.V.sizes[i] || RVS.SLIDER.settings.size.custom[RVS.V.sizes[i]]!==true || !RVS.L[RVS.S.DaD.currentLayerId].position.x[RVS.V.sizes[i]].e) continue;
+									RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.S.DaD.currentLayerId+'.position.x.'+RVS.V.sizes[i]+'.v',val:"0px", uid:RVS.S.DaD.currentLayerId});
+									RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.S.DaD.currentLayerId+'.position.y.'+RVS.V.sizes[i]+'.v',val:"0px", uid:RVS.S.DaD.currentLayerId});
+									RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.S.DaD.currentLayerId+'.position.x.'+RVS.V.sizes[i]+'.e',val:false, uid:RVS.S.DaD.currentLayerId});
+									RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.S.DaD.currentLayerId+'.position.y.'+RVS.V.sizes[i]+'.e',val:false, uid:RVS.S.DaD.currentLayerId});
+									donotice = true;
+									//Notice
 
+								}
+								if (donotice) RVS.F.showInfo({content:RVS_LANG.noticepositionreseted, type:"goodtoknow", showdelay:0, hidedelay:2, hideon:"", event:"" });
+							}
+							RVS.F.updateHTMLLayerPosition({ uid:RVS.S.DaD.currentLayerId,  o:RVS.S.DaD.dragdelta,updateValues:true,lhCwidth:RVS.H[RVS.S.DaD.currentLayerId].c_width, lhCheight:RVS.H[RVS.S.DaD.currentLayerId].c_height, snapToGrid:RVS.S.DaD.snapToGrid, snapToLayers:RVS.S.DaD.snapToLayers});
+							for (var si in RVS.selLayers) {
+								if(!RVS.selLayers.hasOwnProperty(si)) continue;
+								var i = RVS.selLayers[si];
+								if (i==RVS.S.DaD.currentLayerId) continue;
+								RVS.F.updateHTMLLayerPosition({ uid:i,  o:RVS.S.DaD.dragdelta,updateValues:true,lhCwidth:RVS.H[i].c_width, lhCheight:RVS.H[i].c_height, snapToGrid:RVS.S.DaD.snapToGrid, snapToLayers:RVS.S.DaD.snapToLayers});
+							}
 
-					if (RVS.animationMode!==true) {
-						RVS.F.updateHTMLLayerPosition({ uid:RVS.S.DaD.currentLayerId,  o:RVS.S.DaD.dragdelta,updateValues:true,lhCwidth:RVS.H[RVS.S.DaD.currentLayerId].c_width, lhCheight:RVS.H[RVS.S.DaD.currentLayerId].c_height, snapToGrid:RVS.S.DaD.snapToGrid, snapToLayers:RVS.S.DaD.snapToLayers});
-						for (var si in RVS.selLayers) {
-							if(!RVS.selLayers.hasOwnProperty(si)) continue;
-							var i = RVS.selLayers[si];
-							if (i==RVS.S.DaD.currentLayerId) continue;
-							RVS.F.updateHTMLLayerPosition({ uid:i,  o:RVS.S.DaD.dragdelta,updateValues:true,lhCwidth:RVS.H[i].c_width, lhCheight:RVS.H[i].c_height, snapToGrid:RVS.S.DaD.snapToGrid, snapToLayers:RVS.S.DaD.snapToLayers});
+						} else {
+
+							if (RVS.S.DaD.frameOX_N) RVS.F.backup({	path:RVS.S.slideId+".layers."+RVS.S.DaD.currentLayerId+".timeline.frames."+RVS.S.keyFrame+".transform.x.#size#.v",
+																	lastkey:"v",
+																	val:RVS.L[RVS.S.DaD.currentLayerId].timeline.frames[RVS.S.keyFrame].transform.x[RVS.screen].v,
+																	old:RVS.S.DaD.frameOX});
+
+							if (RVS.S.DaD.frameOY_N) RVS.F.backup({	path:RVS.S.slideId+".layers."+RVS.S.DaD.currentLayerId+".timeline.frames."+RVS.S.keyFrame+".transform.y.#size#.v",
+																	lastkey:"v",
+																	val:RVS.L[RVS.S.DaD.currentLayerId].timeline.frames[RVS.S.keyFrame].transform.y[RVS.screen].v,
+																	old:RVS.S.DaD.frameOY});
 						}
+						RVS.S.DaD.snapToGrid = false;
+						RVS.S.DaD.snapToLayers = false;
+
+						RVS.C.layergrid[0].classList.remove("layersInDragorResize");
+						if (RVS.animationMode!==true) dropLayerAfterMove();
+						RVS.L[_.uid].position.position = RVS.L[_.uid].group.puid==-1 ? "absolute" : RVS.L[_.uid].position.position;
+						tpGS.gsap.set(lh.w,{opacity:1});
+						RVS.F.closeBackupGroup({id:bgroupid});
 					} else {
-
-						if (RVS.S.DaD.frameOX_N) RVS.F.backup({	path:RVS.S.slideId+".layers."+RVS.S.DaD.currentLayerId+".timeline.frames."+RVS.S.keyFrame+".transform.x.#size#.v",
-																lastkey:"v",
-																val:RVS.L[RVS.S.DaD.currentLayerId].timeline.frames[RVS.S.keyFrame].transform.x[RVS.screen].v,
-																old:RVS.S.DaD.frameOX});
-
-						if (RVS.S.DaD.frameOY_N) RVS.F.backup({	path:RVS.S.slideId+".layers."+RVS.S.DaD.currentLayerId+".timeline.frames."+RVS.S.keyFrame+".transform.y.#size#.v",
-																lastkey:"v",
-																val:RVS.L[RVS.S.DaD.currentLayerId].timeline.frames[RVS.S.keyFrame].transform.y[RVS.screen].v,
-																old:RVS.S.DaD.frameOY});
+						RVS.C.layergrid[0].classList.remove("layersInDragorResize");
+						tpGS.gsap.set(lh.w,{opacity:1});
 					}
-					RVS.S.DaD.snapToGrid = false;
-					RVS.S.DaD.snapToLayers = false;
-
-					RVS.C.layergrid[0].classList.remove("layersInDragorResize");
-					if (RVS.animationMode!==true) dropLayerAfterMove();
-					tpGS.gsap.set(lh.w,{opacity:1});
-					RVS.F.closeBackupGroup({id:bgroupid});
 
 					RVS.F.selectedLayersVisualUpdate();
 
@@ -1902,6 +2161,11 @@
 						RVS.F.selectLayers({id:_.uid,overwrite:true, action:"add", keepSelectedFrame:RVS.animationMode===true});
 					}
 
+					RVS.F.updateLayerPositionClass(RVS.S.DaD.currentLayerId);
+
+					/*if (RVS.L[RVS.S.DaD.currentLayerId].type=="group") {
+						RVS.H[RVS.S.DaD.currentLayerId].gpH.style.display="block";
+					}*/
 				}
 			});
 		}
@@ -1911,6 +2175,7 @@
 			lh.w.resizable({
 				handles:"n,s,w,e",
 				start:function(event,ui) {
+
 					// STOP LAYER ANIMATION
 					RVS.F.stopAndPauseAllLayerAnimation();
 					RVS.F.showForms("*slidelayout**mode__slidecontent*#form_layer_position",true);
@@ -1938,17 +2203,18 @@
 
 				},
 				resize:function(event,ui) {
-					var dir = window.layerneww!=ui.size.width ? "horizontal" : "vertical";
 
-					window.layerneww = ui.size.width;
-					window.layernewh = ui.size.height;
+					var dir = window.layerneww!=Math.round(ui.size.width) ? "horizontal" : "vertical";
+
+					window.layerneww = Math.round(ui.size.width);
+					window.layernewh = Math.round(ui.size.height);
 
 
 					switch (RVS.S.WWL.type) {
 						case "text":
 						case "button":
-							tpGS.gsap.set([window.layercloneinside],{width:ui.size.width, height:"auto"});
-							if (RVS.S.WWL.size.height[RVS.screen].v==="auto" || window.layercloneinside.height() > ui.size.height) {
+							tpGS.gsap.set([window.layercloneinside],{width:Math.round(ui.size.width), height:"auto"});
+							if (RVS.S.WWL.size.height[RVS.screen].v==="auto" || window.layercloneinside.height() > Math.round(ui.size.height)) {
 								if (dir==="horizontal")
 									window.layernewh = ui.size.height = window.layercloneinside.outerHeight();
 								else
@@ -1963,7 +2229,6 @@
 					if (RVS.S.WWL.size.maxWidth[RVS.screen].v!=="none") window.layerneww = ui.size.width = Math.min(window.layerneww, parseInt(RVS.S.WWL.size.maxWidth[RVS.screen].v,0) || 0);
 					if (RVS.S.WWL.size.minHeight[RVS.screen].v!=="none") window.layernewh = ui.size.height = Math.max(window.layernewh, parseInt(RVS.S.WWL.size.minHeight[RVS.screen].v,0) || 0);
 					if (RVS.S.WWL.size.maxHeight[RVS.screen].v!=="none") window.layernewh = ui.size.height = Math.min(window.layernewh, parseInt(RVS.S.WWL.size.maxHeight[RVS.screen].v,0) || 0);
-
 
 
 					requestAnimationFrame(function() {
@@ -2084,48 +2349,77 @@
 		clearTimeout(RVS.S.DaD.timer);
 
 		var target = RVS.S.DaD.target !== undefined ? RVS.S.DaD.target.into : "free";
-		if (target==="column") {
+		if (target==="column" || target==="group") {
+
 			if (RVS.S.DaD.target!==undefined) {
+				if (RVS.S.DaD.target.columnID!==undefined && (RVS.S.DaD.target.columnType==="group" || RVS.S.DaD.target.elementID===undefined || (RVS.S.DaD.target.columnType=="column" && RVS.S.DaD.draggedPosType=="absolute"))) {
 
-				if (RVS.S.DaD.target.columnID!==undefined && (RVS.S.DaD.target.columnType==="group" || RVS.S.DaD.target.elementID===undefined)) {
-					if (RVS.S.DaD.target.columnTop) {
-						if (RVS.S.DaD.target.columnType!=="group" || RVS.S.DaD.fromContainerID != RVS.S.DaD.target.columnID) {
-							var rp = { //only if dropped into a Group
-										x:(RVS.S.DaD.clone.offset().left-RVS.S.DaD.dropParentPos.x)/RVS.zoom + RVS.S.DaD.scrolldiff.x,
-										y:(RVS.S.DaD.clone.offset().top-RVS.S.DaD.dropParentPos.y)/RVS.zoom + RVS.S.DaD.scrolldiff.y};
+					if (RVS.S.DaD.target.columnTop || RVS.S.DaD.draggedPosType=="absolute") {
 
-							// MODIFICATE SIZE OF TEXT LAYERS DROPPED INTO COLUMN
-							if (RVS.S.DaD.target.columnType==="column") {
-								for (var i in RVS.selLayers) {
-									if(!RVS.selLayers.hasOwnProperty(i)) continue;
-									if (RVS.L[RVS.selLayers[i]].type==="text") {
-										for (var _screens in RVS.V.sizes) {
-											if(!RVS.V.sizes.hasOwnProperty(_screens)) continue;
-											RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.selLayers[i]+'.idle.whiteSpace.'+RVS.V.sizes[_screens]+'.v',val:"full", uid:RVS.selLayers[i]});
-											if (RVS.L[RVS.selLayers[i]].size.width[RVS.V.sizes[_screens]].v.indexOf("%")==-1)
-												RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.selLayers[i]+'.size.width.'+RVS.V.sizes[_screens]+'.v',val:"auto", uid:RVS.selLayers[i]});
+						if (RVS.S.DaD.target.columnType!=="group" || RVS.S.DaD.fromContainerID != RVS.S.DaD.target.columnID ) {
+								var rp =
+									{ //only if dropped into a Group
+										x:Math.round((RVS.S.DaD.clone.offset().left-RVS.S.DaD.dropParentPos.x)/RVS.zoom + RVS.S.DaD.scrolldiff.x),
+										y:Math.round((RVS.S.DaD.clone.offset().top-RVS.S.DaD.dropParentPos.y)/RVS.zoom + RVS.S.DaD.scrolldiff.y)
+									};
+
+								// MODIFICATE SIZE OF TEXT LAYERS DROPPED INTO COLUMN
+								if (RVS.S.DaD.target.columnType==="column") {
+
+									for (var i in RVS.selLayers) {
+										if(!RVS.selLayers.hasOwnProperty(i)) continue;
+										//Only set to Relative if it was Relative Before in the Column
+
+										if (RVS.S.DaD.draggedPosType=="absolute" && RVS.S.DaD.fromContainerType!=="column") {
+											RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.selLayers[i]+'.position.position',val:"relative", uid:RVS.selLayers[i]});
+										}
+										if (RVS.L[RVS.selLayers[i]].type==="text") {
+
+											for (var _screens in RVS.V.sizes) {
+												if(!RVS.V.sizes.hasOwnProperty(_screens)) continue;
+												RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.selLayers[i]+'.idle.whiteSpace.'+RVS.V.sizes[_screens]+'.v',val:"full", uid:RVS.selLayers[i]});
+												if (RVS.L[RVS.selLayers[i]].size.width[RVS.V.sizes[_screens]].v.indexOf("%")==-1 && RVS.L[RVS.selLayers[i]].size.width[RVS.V.sizes[_screens]].v!=='auto')
+												if  ((RVS.S.DaD.target==undefined || RVS.S.DaD.fromContainerID!==RVS.S.DaD.target.columnID) && (RVS.H[RVS.S.DaD.target.columnID].w[0].offsetWidth<parseInt(RVS.L[RVS.selLayers[i]].size.width[RVS.V.sizes[_screens]].v,0)))
+														RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.selLayers[i]+'.size.width.'+RVS.V.sizes[_screens]+'.v',val:"auto", uid:RVS.selLayers[i]});
+											}
 										}
 									}
 								}
-							}
+								if (RVS.L[RVS.S.DaD.currentLayerId].position.position!=="relative") {
 
-							RVS.F.sortAllSelectedLayers({	layer:RVS.S.DaD.currentLayerId,
-												target:RVS.S.DaD.target.columnType,
-												env:RVS.S.DaD.target.columnID,
-												dropto:RVS.S.DaD.target.columnType,
-												resetPosition:rp
-											});
+									RVS.F.sortAllSelectedLayers({	layer:RVS.S.DaD.currentLayerId,
+																	target:RVS.S.DaD.target.columnType,
+																	env:RVS.S.DaD.target.columnID,
+																	dropto:RVS.S.DaD.target.columnType,
+																	pospos:RVS.S.DaD.draggedPosType,
+																	resetPosition:rp
+																});
+								} else {
+
+									RVS.F.sortAllSelectedLayers({layer:RVS.S.DaD.currentLayerId,
+																target:RVS.S.DaD.target.elementID==undefined ? "firstingroup" : RVS.S.DaD.target.elementBefore ? "before" : "after",
+																env:RVS.S.DaD.target.elementID!==undefined ? RVS.S.DaD.target.elementID : RVS.S.DaD.target.columnID,
+																dropto:RVS.S.DaD.target.columnType
+																});
+								}
+						} else {
+							if (RVS.L[RVS.S.DaD.currentLayerId].position.position==="relative") {
+
+								RVS.F.sortAllSelectedLayers({layer:RVS.S.DaD.currentLayerId,
+															target:RVS.S.DaD.target.elementID==undefined ? "firstingroup" : RVS.S.DaD.target.elementBefore ? "before" : "after",
+															env:RVS.S.DaD.target.elementID!==undefined ? RVS.S.DaD.target.elementID : RVS.S.DaD.target.columnID,
+															dropto:RVS.S.DaD.target.columnType
+															});
+							}
 						}
 					} else {
 						RVS.F.sortAllSelectedLayers({layer:RVS.S.DaD.currentLayerId, target:"columnend", env:RVS.S.DaD.target.columnID});
 					}
 				} else
-				if (RVS.S.DaD.target.elementID!==undefined)
-					if (RVS.S.DaD.target.elementBefore) {
-						RVS.F.sortAllSelectedLayers({layer:RVS.S.DaD.currentLayerId, target:"before", env:RVS.S.DaD.target.elementID});
-					} else {
-						RVS.F.sortAllSelectedLayers({layer:RVS.S.DaD.currentLayerId, target:"after", env:RVS.S.DaD.target.elementID});
-					}
+				if (RVS.S.DaD.target.elementID!==undefined) {
+					RVS.F.sortAllSelectedLayers({layer:RVS.S.DaD.currentLayerId, target:RVS.S.DaD.target.elementBefore ? "before" : "after", env:RVS.S.DaD.target.elementID});
+				}
+
 			}
 		} else {
 			if (RVS.L[RVS.S.DaD.currentLayerId].linebreak) {
@@ -2151,20 +2445,22 @@
 
 		var target = RVS.S.DaD.target !== undefined ? RVS.S.DaD.target.into : "free";
 
-		if (target==="column") {
+		if (target==="column" || target==="group") {
 			if (RVS.S.DaD.target!==undefined) {
+
 				RVS.C.layergrid[0].classList.remove('drop_in_root');
 				if (RVS.S.DaD.target.rowID!==undefined && RVS.S.DaD.target.rowID!=="group") RVS.H[RVS.S.DaD.target.rowID].w[0].className+=" dont_blur drop_over_layer";
 				if (RVS.S.DaD.target.columnID!==undefined) {
 					RVS.H[RVS.S.DaD.target.columnID].w[0].className+=" dont_blur drop_over_layer";
 					if ((RVS.SLIDER.settings.snap.adjust!=="none")) RVS.F.clearSnapVisual();
-					if (RVS.S.DaD.target.elementID===undefined)
+					if (RVS.S.DaD.target.elementID===undefined && RVS.L[RVS.S.DaD.currentLayerId].position.position==="relative")
 						if (RVS.S.DaD.target.columnTop)
 							RVS.H[RVS.S.DaD.target.columnID].w[0].classList.add("drop_before_firstlayer");
 						else
 							RVS.H[RVS.S.DaD.target.columnID].w[0].classList.add("drop_after_lastlayer");
 				}
-				if (RVS.S.DaD.target.elementID!==undefined) {
+
+				if (RVS.S.DaD.target.elementID!==undefined &&  RVS.S.DaD.draggedPosType!=="absolute") {
 					if (RVS.S.DaD.target.elementBefore)
 						RVS.H[RVS.S.DaD.target.elementID].w[0].classList.add("drop_before_layer");
 					else
@@ -2172,24 +2468,34 @@
 				}
 			}
 
-			if (RVS.S.DaD.target.columnType=="column" && RVS.S.DaD.showInMini==false) {
+			if (RVS.S.DaD.target.columnType=="column" && RVS.S.DaD.showInMini==false && RVS.S.DaD.draggedPosType!=="absolute") {
 				RVS.S.DaD.showInMini = true;
-				tpGS.gsap.to(RVS.S.DaD.uiHelper,0.1,{
-															left:(RVS.S.mP.left-RVS.S.layer_grid_offset.left) / RVS.zoom,
-															top:(RVS.S.mP.top-RVS.S.layer_grid_offset.top) / RVS.zoom,
+				tpGS.gsap.set(RVS.S.DaD.uiHelper,{left:(RVS.S.mP.left-RVS.S.layer_grid_offset.left) / RVS.zoom,
+												top:(RVS.S.mP.top-RVS.S.layer_grid_offset.top) / RVS.zoom});
+				tpGS.gsap.to(RVS.S.DaD.uiHelper,0.3,{
+															//left:(RVS.S.mP.left-RVS.S.layer_grid_offset.left) / RVS.zoom,
+															//top:(RVS.S.mP.top-RVS.S.layer_grid_offset.top) / RVS.zoom,
 															transformOrigin:"0 0",
 															width:RVS.S.DaD.originalWidth,
 															display:RVS.L[RVS.S.DaD.currentLayerId].idle.display,
 															opacity:0.75,
 															scale:0.6,
-															x:0+RVS.S.DaD.scrolldiff.x,
-															y:0+RVS.S.DaD.scrolldiff.y
+															//x:0+RVS.S.DaD.scrolldiff.x,
+															//y:0+RVS.S.DaD.scrolldiff.y
 														});
 			}
 		} else
 		if (target==="free") {
 			if (RVS.S.DaD.showInMini && RVS.S.DaD.showInMini==true)
-				tpGS.gsap.to(RVS.S.DaD.uiHelper,0.1,{top:RVS.S.mP.top+RVS.S.rb_ScrollY, width:RVS.L[RVS.S.DaD.currentLayerId].size.width[RVS.screen].v, display:"block", left:RVS.S.mP.left+RVS.S.rb_ScrollX, scale:1, x:0-RVS.S.DaD.touchPosition.x+"px", y:0-RVS.S.DaD.touchPosition.y+"px"});
+				tpGS.gsap.to(RVS.S.DaD.uiHelper,0.3,{
+							//top:RVS.S.mP.top+RVS.S.rb_ScrollY,
+							//left:RVS.S.mP.left+RVS.S.rb_ScrollX,
+							width:RVS.L[RVS.S.DaD.currentLayerId].size.width[RVS.screen].v,
+							display:"block",
+							scale:1,
+							//x:0-RVS.S.DaD.touchPosition.x+"px",
+							//y:0-RVS.S.DaD.touchPosition.y+"px"
+							});
 			RVS.S.DaD.showInMini = false;
 
 			if (RVS.S.DaD.target!==undefined) {
@@ -2218,6 +2524,13 @@
 
 	}
 
+    RVS.F.isParent = function(main,self,found) {
+        if (found!==undefined) return found;
+        if (self==main) return true;
+        if (RVS.L[self]===undefined || RVS.L[self].group===undefined || RVS.L[self].group.puid==-1) return false;
+        if (RVS.L[self].group.puid==main) return true; else return RVS.F.isParent(main,RVS.L[self].group.puid,found);
+    }
+
 	function clearHCoors() {
 		for (var i in RVS.H) if (RVS.H.hasOwnProperty(i)) delete RVS.H[i].coor;
 	}
@@ -2230,132 +2543,146 @@
 		RVS.DOC.on('mousemove','#dropSensor',function(event) {
 			if (RVS.S.DaD.dropSensor!==1) return;
 			requestAnimationFrame(function() {
+				if (!RVS.S.dragging) return;
+				RVS.S.realDragHappen = true;
 				if (RVS.S.rb_ScrollX!==window.scrollMem.x || RVS.S.rb_ScrollY!==window.scrollMem.y) clearHCoors();
 				var wrap = jQuery('#dropSensor'),
 					b = { x: (event.clientX-15), y: (event.clientY-65)},
-					wo = wrap.offset(),currentZindex;
+					wo = wrap.offset(),currentZindex,isChild;
 				RVS.S.DaD.dropTimer = 0;
 				RVS.S.DaD.targetBefore = RVS.S.DaD.target;  // FOLLOW THE LAST ELEMENT HAS BEEN HOVERED TO DROP
 				RVS.S.DaD.target = {};
 				RVS.S.DaD.dropParentPos = {x:0, y:0};
 
 				clearTimeout(RVS.S.DaD.timer);
-				if (RVS.L[RVS.S.DaD.currentLayerId].type!=="group") {
+				var found = false;
+				for (var i in RVS.H) {
 
-					for (var i in RVS.H) {
+					if(!RVS.H.hasOwnProperty(i)) continue;
 
-						if(!RVS.H.hasOwnProperty(i)) continue;
-						clearDragClasses(i)
-
-						RVS.H[i].coor = RVS.H[i].coor===undefined ? { top: (RVS.H[i].w.offset().top-wo.top - RVS.S.rb_ScrollY),
-								  left:(RVS.H[i].w.offset().left-wo.left - RVS.S.rb_ScrollX),
-								  width:RVS.H[i].w.outerWidth(),
-								  height: RVS.H[i].w.outerHeight()
-								} : RVS.H[i].coor;
+					clearDragClasses(i);
+					if (RVS.H[i].coor===undefined) {
+						RVS.H[i].coor =  { 	top: (RVS.H[i].w.offset().top-wo.top - RVS.S.rb_ScrollY),
+											left:(RVS.H[i].w.offset().left-wo.left - RVS.S.rb_ScrollX),
+											width:RVS.H[i].w.outerWidth(),
+											height: RVS.H[i].w.outerHeight()
+											};
 						RVS.H[i].coor.right = RVS.H[i].coor.left + (RVS.H[i].coor.width*RVS.zoom);
 						RVS.H[i].coor.center = RVS.H[i].coor.left + (RVS.H[i].coor.width*RVS.zoom)/2;
 						RVS.H[i].coor.bottom = RVS.H[i].coor.top + (RVS.H[i].coor.height*RVS.zoom);
 						RVS.H[i].coor.middle = RVS.H[i].coor.top + (RVS.H[i].coor.height*RVS.zoom)/2;
+					}
 
-						if (RVS.L[i]==undefined || RVS.L[i].visibility===undefined ||
-							!RVS.L[i].visibility.visible || RVS.L[i].visibility.locked ||
-							(RVS.L[i].group.puid!==undefined && RVS.L[i].group.puid!==-1 && RVS.L[RVS.L[i].group.puid]!==undefined && RVS.L[RVS.L[i].group.puid].visibility!==undefined &&
-								(!RVS.L[RVS.L[i].group.puid].visibility.visible || RVS.L[RVS.L[i].group.puid].visibility.locked))) continue;
+					if (RVS.L[i]==undefined || RVS.L[i].visibility===undefined || !RVS.L[i].visibility.visible || RVS.L[i].visibility.locked ||
+						(RVS.L[i].group.puid!==undefined && RVS.L[i].group.puid!==-1 && RVS.L[RVS.L[i].group.puid]!==undefined && RVS.L[RVS.L[i].group.puid].visibility!==undefined &&
+						(!RVS.L[RVS.L[i].group.puid].visibility.visible || RVS.L[RVS.L[i].group.puid].visibility.locked))) continue;
 
+					var deepestHoveringlevel = -1;
+					if (b.x>=RVS.H[i].coor.left && b.x<=RVS.H[i].coor.right && b.y>=RVS.H[i].coor.top && b.y <=RVS.H[i].coor.bottom) {
 
+						// CHECK IF LAYER IS IN THE COLUMN / ROW AND UNDERLAYING FULL ITEMS NOT WINNING
+						isChild = RVS.F.isParent(RVS.S.DaD.currentLayerId,i);
 
-						if (b.x>=RVS.H[i].coor.left && b.x<=RVS.H[i].coor.right && b.y>=RVS.H[i].coor.top && b.y <=RVS.H[i].coor.bottom) {
+						if (isChild) continue;
+						currentZindex = RVS.S.DaD.lastGroupParent!==undefined && RVS.S.DaD.lastGroupParent === i ? 474 :
+										RVS.S.DaD.target.groupID!==undefined && RVS.S.DaD.target.groupID!==-1 ? RVS.L[RVS.S.DaD.target.groupID].position.zIndex :
+										RVS.S.DaD.target.puid!==-1 && RVS.S.DaD.target.puid!==undefined ? RVS.L[RVS.S.DaD.target.puid].position.zIndex
+										: RVS.L[i].position.zIndex;
 
-							// CHECK IF LAYER IS IN THE COLUMN / ROW AND UNDERLAYING FULL ITEMS NOT WINNING
+						if (RVS.S.DaD.target.zIndex!==undefined && RVS.S.DaD.target.zIndex>=currentZindex && (RVS.L[i].group.puid==-1 || RVS.L[i].group.puid==undefined)) continue;
 
-							currentZindex = RVS.S.DaD.lastGroupParent!==undefined && RVS.S.DaD.lastGroupParent === i ? 474 :
-											RVS.S.DaD.target.groupID!==undefined && RVS.S.DaD.target.groupID!==-1 ? RVS.L[RVS.S.DaD.target.groupID].position.zIndex :
-											RVS.S.DaD.target.puid!==-1 && RVS.S.DaD.target.puid!==undefined ? RVS.L[RVS.S.DaD.target.puid].position.zIndex
-											: RVS.L[i].position.zIndex;
+						if ( RVS.L[i].type==="group" && RVS.L[i].visibility.visible) {
 
-							if (RVS.S.DaD.target.zIndex!==undefined && RVS.S.DaD.target.zIndex>=currentZindex && (RVS.L[i].group.puid==-1 || RVS.L[i].group.puid==undefined)) continue;
+							RVS.S.DaD.target.type = RVS.L[i].type;
+							RVS.S.DaD.target.rowID = "group";
+							if (deepestHoveringlevel!==-1 && RVS.L[i].group.puid==-1) continue;
+							deepestHoveringlevel = RVS.L[i].group.puid;
 
-							if (RVS.L[i].type==="column" && RVS.L[i].visibility.visible) {
-								RVS.S.DaD.target.type = RVS.L[i].type;
-								RVS.S.DaD.target.groupID = RVS.L[i].group.puid;
-								RVS.S.DaD.target.rowID = RVS.L[i].group.puid;
-							 	RVS.S.DaD.target.columnID = RVS.S.DaD.toContainerID = i;
-							 	RVS.S.DaD.target.columnType = RVS.S.DaD.toContainerType = "column";
-							 	RVS.S.DaD.target.columnTop = b.y<=RVS.H[i].coor.middle;
-							 	RVS.S.DaD.target.zIndex = 	currentZindex;
-							} else
-							if (RVS.L[i].type==="group" && RVS.L[i].visibility.visible) {
-								RVS.S.DaD.target.type = RVS.L[i].type;
-								RVS.S.DaD.target.rowID = "group";
+							/*if (RVS.L[i].group.puid!==-1 && ) {
+								RVS.S.DaD.target.groupID = RVS.L[RVS.L[i].group.puid].group.puid;
+								RVS.S.DaD.target.columnID = RVS.S.DaD.toContainerID = RVS.L[i].group.puid;
+							} else {								*/
 								RVS.S.DaD.target.groupID = RVS.L[i].group.puid;
 								RVS.S.DaD.target.columnID = RVS.S.DaD.toContainerID = i;
-								RVS.S.DaD.target.columnType = RVS.S.DaD.toContainerType = "group";
-								RVS.S.DaD.target.columnTop = true;
-								RVS.S.DaD.target.zIndex = 	currentZindex;
-							} else
-							if (RVS.L[i].type!=="row" && RVS.S.DaD.target.columnType!=="group" && i!=RVS.S.DaD.currentLayerId) {
-								RVS.S.DaD.target.type = RVS.L[i].type;
+							//}
+
+							RVS.S.DaD.target.columnType = RVS.S.DaD.toContainerType = "group";
+							RVS.S.DaD.target.columnTop = true;
+							RVS.S.DaD.target.zIndex = 	currentZindex;
+							found = "group";
+						} else
+						if (RVS.L[i].type==="column" && RVS.L[i].visibility.visible && found!=="group") {
+							RVS.S.DaD.target.type = RVS.L[i].type;
+							RVS.S.DaD.target.groupID = RVS.L[i].group.puid;
+							RVS.S.DaD.target.rowID = RVS.L[i].group.puid;
+							RVS.S.DaD.target.columnID = RVS.S.DaD.toContainerID = i;
+							RVS.S.DaD.target.columnType = RVS.S.DaD.toContainerType = "column";
+							RVS.S.DaD.target.columnTop = b.y<=RVS.H[i].coor.middle;
+							RVS.S.DaD.target.zIndex = 	currentZindex;
+							found = "column";
+						} else
+						if (found!=="group" && RVS.L[i].type!=="row" && i!=RVS.S.DaD.currentLayerId && ((RVS.S.DaD.target.columnType!=="group" || (RVS.S.DaD.target.columnType!=="column" && RVS.S.DaD.draggedPosType!=="absolute"))  || (RVS.L[RVS.S.DaD.currentLayerId].position.position=="relative" && RVS.L[i].position.position=="relative"))) {
+							RVS.S.DaD.target.type = RVS.L[i].type;
+							RVS.S.DaD.target.elementID = i;
+							RVS.S.DaD.target.puid = RVS.L[i].group.puid;
+							RVS.S.DaD.target.elementMiddle = RVS.H[i].coor.middle;
+							RVS.S.DaD.target.elementBefore = b.y<=RVS.H[i].coor.middle;
+							RVS.S.DaD.target.zIndex = 	currentZindex;
+						}
+					}
+				}
+
+
+				var gpcache = RVS.S.DaD.lastGroupParent;
+				delete RVS.S.DaD.lastGroupParent;
+
+				if (RVS.S.DaD.target.rowID==="group") {
+					RVS.S.DaD.lastGroupParent = RVS.S.DaD.target.columnID;
+					RVS.F.setZindex({id:RVS.S.DaD.lastGroupParent,o:474});
+				}
+				if (gpcache!==undefined && RVS.S.DaD.lastGroupParent!==gpcache) RVS.F.setZindex({id:gpcache});
+
+
+
+				if (RVS.S.DaD.target!==undefined && (RVS.S.DaD.target.rowID === "group" || (RVS.S.DaD.target.type =="column" && RVS.S.DaD.draggedPosType=="absolute") || (RVS.S.DaD.target.type !=="column" && RVS.S.DaD.target.columnID!=undefined && RVS.S.DaD.target.columnType!==undefined && RVS.S.DaD.draggedPosType=="absolute"))) {
+					if (RVS.S.DaD.target.type =="column" && RVS.S.DaD.draggedPosType=="absolute") RVS.H[RVS.S.DaD.target.columnID].w_offset = RVS.H[RVS.S.DaD.target.columnID].w.offset();
+					RVS.S.DaD.dropParentPos.x = RVS.H[RVS.S.DaD.target.columnID].w_offset.left;
+					RVS.S.DaD.dropParentPos.y = RVS.H[RVS.S.DaD.target.columnID].w_offset.top;
+				}
+
+				//Check the Closest Layer in Column if Hovering on Column but not on Layer
+				if (RVS.S.DaD.draggedPosType!=="absolute" && RVS.S.DaD.targetBefore!==undefined && RVS.S.DaD.target.elementID===undefined && RVS.S.DaD.target.columnID!==undefined && RVS.S.DaD.target.columnID===RVS.S.DaD.targetBefore.columnID) {
+
+					var lInColumns = RVS.F.getLayerChildren({layerid:RVS.S.DaD.target.columnID}),
+						in_same_vrange = [],
+						big_bottom = 0,
+						smallest_dist = 10000;
+
+					for (var i in lInColumns) {
+						if(!lInColumns.hasOwnProperty(i) || ((RVS.S.DaD.target.columnType=="group" || RVS.S.DaD.target.columnType=="column") && (RVS.L[RVS.S.DaD.currentLayerId].position.position!="relative" || RVS.L[i].position.position!=="relative"))) continue;
+						if (i!=RVS.S.DaD.currentLayerId) {
+							if (RVS.H[i].coor.bottom<b.y || RVS.H[i].coor.middle<=b.y && RVS.H[i].coor.bottom>=b.y) {
+								in_same_vrange.push(i);
+								big_bottom = big_bottom<RVS.H[i].coor.bottom ? RVS.H[i].coor.bottom : big_bottom;
+							}
+						}
+					}
+					for (var k in in_same_vrange) {
+						if(!in_same_vrange.hasOwnProperty(k)) continue;
+						var i = in_same_vrange[k];
+						if (big_bottom<=RVS.H[i].coor.bottom) {
+							if (smallest_dist>Math.abs(RVS.H[i].coor.center-b.x)) {
+								smallest_dist = Math.abs(RVS.H[i].coor.center-b.x);
 								RVS.S.DaD.target.elementID = i;
-								RVS.S.DaD.target.puid = RVS.L[i].group.puid;
-								RVS.S.DaD.target.elementMiddle = RVS.H[i].coor.middle;
-								RVS.S.DaD.target.elementBefore = b.y<=RVS.H[i].coor.middle;
-								RVS.S.DaD.target.zIndex = 	currentZindex;
-							}
-
-						}
-					}
-
-
-					var gpcache = RVS.S.DaD.lastGroupParent;
-					delete RVS.S.DaD.lastGroupParent;
-					if (RVS.S.DaD.target.rowID==="group") {
-						RVS.S.DaD.lastGroupParent = RVS.S.DaD.target.columnID;
-						RVS.F.setZindex({id:RVS.S.DaD.lastGroupParent,o:474});
-					}
-					if (gpcache!==undefined && RVS.S.DaD.lastGroupParent!==gpcache) RVS.F.setZindex({id:gpcache});
-
-
-
-					if (RVS.S.DaD.target!==undefined && RVS.S.DaD.target.rowID === "group") {
-						RVS.S.DaD.dropParentPos.x = RVS.H[RVS.S.DaD.target.columnID].w_offset.left;
-						RVS.S.DaD.dropParentPos.y = RVS.H[RVS.S.DaD.target.columnID].w_offset.top;
-					}
-
-
-					//Check the Closest Layer in Column if Hovering on Column but not on Layer
-					if (RVS.S.DaD.targetBefore!==undefined && RVS.S.DaD.target.elementID===undefined && RVS.S.DaD.target.columnID!==undefined && RVS.S.DaD.target.columnID===RVS.S.DaD.targetBefore.columnID) {
-
-						var lInColumns = RVS.F.getLayerChildren({layerid:RVS.S.DaD.target.columnID}),
-							in_same_vrange = [],
-							big_bottom = 0,
-							smallest_dist = 10000;
-
-						for (var i in lInColumns) {
-							if(!lInColumns.hasOwnProperty(i)) continue;
-							if (i!=RVS.S.DaD.currentLayerId) {
-								if (RVS.H[i].coor.bottom<b.y || RVS.H[i].coor.middle<=b.y && RVS.H[i].coor.bottom>=b.y) {
-									in_same_vrange.push(i);
-									big_bottom = big_bottom<RVS.H[i].coor.bottom ? RVS.H[i].coor.bottom : big_bottom;
-								}
+								RVS.S.DaD.target.elementBefore = false;
 							}
 						}
-						for (var k in in_same_vrange) {
-							if(!in_same_vrange.hasOwnProperty(k)) continue;
-							var i = in_same_vrange[k];
-							if (big_bottom<=RVS.H[i].coor.bottom) {
-								if (smallest_dist>Math.abs(RVS.H[i].coor.center-b.x)) {
-									smallest_dist = Math.abs(RVS.H[i].coor.center-b.x);
-									RVS.S.DaD.target.elementID = i;
-									RVS.S.DaD.target.elementBefore = false;
-								}
-							}
-						}
-					} else
-					//CHECK IF THE HOVERED LAYER IS REALLY IN A COLUMN IF COLUMN ALSO HOVERED
-					if (RVS.S.DaD.target.elementID!==undefined && RVS.S.DaD.target.columnID!==undefined)
-						if (RVS.S.DaD.target.puid==-1) RVS.S.DaD.target.elementID = undefined;
+					}
+				} else
+				//CHECK IF THE HOVERED LAYER IS REALLY IN A COLUMN IF COLUMN ALSO HOVERED
+				if (RVS.S.DaD.target.elementID!==undefined && RVS.S.DaD.target.columnID!==undefined)
+					if (RVS.S.DaD.target.puid==-1) RVS.S.DaD.target.elementID = undefined;
 
-				} else for (var i in RVS.H) if(RVS.H.hasOwnProperty(i)) clearDragClasses(i);
 
 				if (RVS.S.DaD.target!==undefined && RVS.S.DaD.lastRegisteredRow===RVS.S.DaD.target.rowID) {
 					RVS.S.DaD.target.into = "column";
@@ -2366,6 +2693,7 @@
 
 					drawDroppingTarget();
 				} else {
+
 					RVS.S.DaD.toContainerType = "root";
 					RVS.S.DaD.target.into = "free";
 					RVS.S.DaD.toContainerID = -1;
@@ -2383,12 +2711,15 @@
 								RVS.H[RVS.S.DaD.lastRegisteredRowBefore].w[0].className = RVS.H[RVS.S.DaD.lastRegisteredRowBefore].w[0].className.split("dont_blur").join("").split("drop_over_layer").join("");
 
 							clearTimeout(RVS.S.DaD.timerLeaveRow);
+
 							RVS.S.DaD.timerLeaveRowStarted = false;
 							RVS.S.DaD.target.into = "column";
 							RVS.S.DaD.toContainerID = RVS.S.DaD.target.columnID;
 							RVS.S.DaD.toContainerType = RVS.S.DaD.target.columnType;
 							drawDroppingTarget();
+							RVS.F.updateDraggedWidth(true);
 						} else {
+
 							RVS.S.DaD.target.into = "free";
 							RVS.S.DaD.toContainerType = "root";
 							RVS.S.DaD.toContainerID = -1;
@@ -2755,6 +3086,10 @@
 		return (slide!==undefined ? RVS.SLIDER[slide].layers[uid]!==undefined ? RVS.SLIDER[slide].layers[uid].behavior.intelligentInherit : false : RVS.L[uid]!==undefined ? RVS.L[uid].behavior.intelligentInherit : false);
 	};
 
+	RVS.F.inntelligentRespAttrExtend = function(a) {
+		respAttrs.push(a);
+	}
+
 	//ENABLE THE OPTION INTELLIGENT INHERIT && SET VALUES AUTO CALCULATED
 	RVS.F.setToIntelligentUpdate = function(reset) {
 
@@ -2861,8 +3196,9 @@
 	RVS.F.iUHelp = function(_) {
 		var v = _.l[RVS.V.sizes[0]].v,
 			mu = 1;
-
+		if (v===null) return;
 		for (var i=0;i<=3;i++) {
+
 			var s = !RVS.F.isNumeric(v) ? v.indexOf("%")>=0 ? "%" :  "px" : "",
 				tmp = v==="inherit" || (!RVS.F.isNumeric(v) && (v.indexOf("{")>=0 || v.indexOf("[")>=0 || jQuery.inArray(v,["top","left","bottom","right","center","middle"])>=0 || (v[0]=='#' && v[2]=="/" && v[4]=='#')));
 			mu = _.iii ? RVS.S.shrink[RVS.V.sizes[i]] : mu;
@@ -3041,6 +3377,9 @@
 				RVS.F.iUHelp(_);
 			break;
 		}
+		if (RVS.F.intelligentUpdateExtend!==undefined && RVS.F.intelligentUpdateExtend[L[_.uid].subtype]!==undefined) {
+			RVS.F.intelligentUpdateExtend[L[_.uid].subtype](_,L);
+		}
 	};
 
 	/*
@@ -3095,7 +3434,7 @@
 
 			for (i in list) {
 				if(!list.hasOwnProperty(i)) continue;
-				if (RVS.L[list[i]].group.puid!==-1 && RVS.L[RVS.L[list[i]].group.puid].type==="column") {
+				if (RVS.L[list[i]].group.puid!==-1 && (RVS.L[RVS.L[list[i]].group.puid].type==="column" || RVS.L[RVS.L[list[i]].group.puid].type==="group")) {
 					var newID = RVS.F.addLayer({type:"linebreak",forceSelect:false, subtype:this.dataset.subtype, libevent:this.dataset.libevent, libfilters:this.dataset.libfilters});
 					//firstadded = firstadded===undefined ? newID : firstadded;
 					RVS.F.intelligentUpdateValuesOnLayer(newID);
@@ -3176,7 +3515,7 @@
 		});
 
 		RVS.DOC.on('click','.mdl_group_member',function() {
-			if (metatarget==="layer") {
+			if (window.metatarget==="layer") {
 				var insertAt = jQuery('#ta_layertext')[0].selectionStart;
 				RVS.F.openBackupGroup({id:"insertMeta",txt:"Insert Meta Data",icon:"note_add"});
 				for (var lid in RVS.selLayers) {
@@ -3208,10 +3547,20 @@
 
 		RVS.DOC.on('click','.add_layer',function(e,ep) {
 			if (this.id==="import_layers" || this.id==="add_from_layerlibrary") return;
-			var newID = RVS.F.addLayer({type:this.dataset.type,forceSelect:true, subtype:this.dataset.subtype, libevent:this.dataset.libevent, libfilters:this.dataset.libfilters, extensiongroup:this.dataset.extensiongroup, subsubtype:this.dataset.subsubtype});
-
-			RVS.F.intelligentUpdateValuesOnLayer(newID);
-			RVS.F.selectLayers({id:newID,overwrite:true, action:"add"});
+			var obj ={type:this.dataset.type,forceSelect:true, subtype:this.dataset.subtype, evt:this.dataset.evt, libevent:this.dataset.libevent, filter:this.dataset.filter, selected:this.dataset.selected, libfilters:this.dataset.libfilters, extensiongroup:this.dataset.extensiongroup, subsubtype:this.dataset.subsubtype};
+			//In Case we want to add Layers from Object Library...
+			if (this.dataset.fromobjlib!==undefined) {
+				var filters = obj.libfilters==undefined ? ['all'] : obj.libfilters.split(",");
+				obj.filter = obj.filter=="undefined" || obj.filter==undefined ? "all" : obj.filter;
+				obj.selected = [obj.selected=="undefined" || obj.selected==undefined ? filters[0] : obj.selected];
+				obj.success = {custom:obj.libevent==undefined  ? obj.success : obj.libevent};
+				obj.extension = obj.extensiongroup;
+				RVS.F.openObjectLibrary(obj);
+			} else {
+				var newID = RVS.F.addLayer(obj);
+				RVS.F.intelligentUpdateValuesOnLayer(newID);
+				RVS.F.selectLayers({id:newID,overwrite:true, action:"add"});
+			}
 		});
 
 		// DELETE LAYER ON CLICK
@@ -3318,6 +3667,16 @@
 				break;
 			}
 		});
+
+		RVS.F.clearKeyDowns = function() {
+			window.cmdctrldown = false;
+			window.shiftdown = false;
+			window.altdown = false;
+		}
+
+		// GET RID OF CACHES IN CASE WE FOCUS/BLUR THE WINDOW
+		window.addEventListener('blur', RVS.F.clearKeyDowns);
+		window.addEventListener('focus', RVS.F.clearKeyDowns);
 
 		// KEYBOARD LISTENERS FOR LAYERS
 		RVS.DOC.on('keydown',function(e) {
@@ -3660,6 +4019,11 @@
 			if (RVS.L[param.layerid].type==="group") document.getElementById('_group_head_title_'+RVS.S.slideId+'_'+param.layerid).innerHTML = RVS.L[param.layerid].alias;
 		});
 
+		// UPDATE THE LAYER ALIAS DUE THE SINGLE INPUT FIELD FOMR TOOLBAR
+		RVS.DOC.on('udateAbsoluteRelativePosition',function(e,param) {
+			if (param.layerid==undefined) return;
+		});
+
 		/* SELECT ALL LAYERS */
 		RVS.DOC.on('do_select_all_layer', function() {
 			for (var i in RVS.L) {
@@ -3851,36 +4215,39 @@
 		});
 
 
+		RVS.F.notChildrenOfList = function(pid,l,_SRC,duplicate) {
+			// pid = Parent ID of Layer
+			// l = The List to check against
+			// _SRC = In which Environment to get Attributes
+			// Not on the List, and not children of direct parent, or parents parent
+			if ( _SRC[pid]==undefined || (""+pid=="-1")) return true;
+			if (jQuery.inArray((""+pid),l)!=-1) return false;
+			if ((""+_SRC[pid].group.puid)!=="-1") return jQuery.inArray((""+_SRC[pid].group.puid),l)==-1;
+			else return duplicate ? true : false;
+		}
+
 		/* LAYER DUPLICATE LISTENER */
 		RVS.DOC.on('do_duplicate_layer',function() {
 
 			var duplicateLayers = [],
 				duplicateLayersID = [],
 				newLayerIDs = [],
-				rows = [],
-				rowid;
+				rows = [];
 
 			for (var sli in RVS.selLayers) {
 				if(!RVS.selLayers.hasOwnProperty(sli)) continue;
 				var uid = RVS.selLayers[sli];
 				duplicateLayers.push({type:RVS.L[uid].type, duplicateId:uid, ignoreBackupGroup:true, ignoreLayerList:true , ignoreOrderHTMLLayers:true});
-				duplicateLayersID.push(uid);
-				if (RVS.L[uid].type==="column") {
-					rowid = RVS.L[uid].type==="row" ? uid : RVS.L[uid].group.puid;
-					if (jQuery.inArray(rowid,rows)===-1) rows.push(rowid);
-				}
+				duplicateLayersID.push(""+uid);
+				if (RVS.L[uid].type==="column" && jQuery.inArray(RVS.L[uid].group.puid,rows)===-1) rows.push(RVS.L[uid].group.puid);
 			}
 
+			RVS.F.openBackupGroup({id:"addLayer",txt:"Duplicate Layers",icon:"layers",lastkey:"layer"});
 
-			RVS.F.openBackupGroup({id:"addLayer",txt:"Duplicate Layer(s)",icon:"layers",lastkey:"layer"});
-
-			// CHECK MULTPILE DUPLICATES, LIKE COLUMN IN ROW WHICH ALREADY IN DUPLICATE MODE. (Parrents Check)
+			// Create new Layers, ignore children of elements which are also getting duplicated
 			for (var i in duplicateLayers) {
-				if(!duplicateLayers.hasOwnProperty(i)) continue;
-				var puid = RVS.L[duplicateLayersID[i]].group.puid;
-				if (puid===-1 || (jQuery.inArray(puid,duplicateLayersID)==-1)) {
-					newLayerIDs.push(RVS.F.addLayer(duplicateLayers[i]));
-				}
+				if(!duplicateLayers.hasOwnProperty(i) || !RVS.F.notChildrenOfList(RVS.L[duplicateLayersID[i]].group.puid,duplicateLayersID,RVS.L,true)) continue;
+				newLayerIDs.push(RVS.F.addLayer(duplicateLayers[i],true));
 			}
 
 			//UPDATE ROWS (Extend, Remove Sizes)
@@ -3893,9 +4260,12 @@
 			}
 
 			RVS.F.buildLayerLists({force:true, ignoreRebuildHTML:true});
+
 			RVS.F.reOrderHTMLLayers();
+
 			for (var i in newLayerIDs) {
 				if(!newLayerIDs.hasOwnProperty(i)) continue;
+				RVS.F.updateDuplicatedLayerActionDependencies(newLayerIDs[i],duplicateLayersID[i]);
 				RVS.F.selectLayers({id:newLayerIDs[i],overwrite:false, action:"add", ignoreUpdate:true, ignoreFieldUpdates:true});
 			}
 
@@ -3903,7 +4273,7 @@
 			RVS.F.updateSelectedHtmlLayers();
 			RVS.F.updateZIndexTable();
 			RVS.F.closeBackupGroup({id:"addLayer"});
-
+			RVS.DOC.trigger('selectLayersDone');
 		});
 
 		/* LAYER COPY LISTENER */
@@ -3916,48 +4286,61 @@
 			for (var sli in RVS.selLayers) {
 				if(!RVS.selLayers.hasOwnProperty(sli)) continue;
 				var uid = RVS.selLayers[sli];
-				copyLayers.push({type:RVS.L[uid].type, duplicateId:uid, ignoreBackupGroup:true, ignoreLayerList:true , ignoreOrderHTMLLayers:true, copyPaste:"copy"});
-				copyLayersID.push(uid);
+                copyLayers.push({type:RVS.L[uid].type, duplicateId:uid, ignoreBackupGroup:true, ignoreLayerList:true , ignoreOrderHTMLLayers:true, copyPaste:"copy", deep:RVS.F.isDeeperGroup(uid)});
+                copyLayersID.push(uid);
 			}
 
 			// CHECK MULTPILE DUPLICATES, LIKE COLUMN IN ROW WHICH ALREADY IN DUPLICATE MODE. (Parrents Check)
 			for (var i in copyLayers) {
 				if(!copyLayers.hasOwnProperty(i)) continue;
-				var puid = RVS.L[copyLayersID[i]].group.puid;
-				if (puid===-1 || (jQuery.inArray(puid,copyLayersID)==-1)) {
-					RVS.F.addLayer(copyLayers[i]);
-				}
-			}
+                RVS.F.addLayer(copyLayers[i],true);
+            }
 			jQuery('#do_paste_layer').removeClass("disabled");
 		});
 
 		/* LAYER PASTE LISTENER */
 		RVS.DOC.on('do_paste_layer', function() {
 			var pasteLayers = [],
+                tempList = [],
 				pasteLayersID = [],
 				newLayerIDs = [],
-				selectedRow = RVS.F.getFirstSelectedType("row"),
-				selectedGroupColumn = RVS.F.getFirstSelectedType("column"),
-				rows = [],
-				rowid;
+                selG = RVS.F.getFirstSelectedType("group"),
+                selC = RVS.F.getFirstSelectedType("column"),
+                insertInto = selG==false ? selC==false ? RVS.F.getFirstSelectedType("row") : selC :  selG,
+                rows = [];
 
 			//CACHE THE COPY PASTE STRUCTURE
-			window.backupCopyPaste = RVS.F.safeExtend(true,{},window.copyPasteLayers.layers);
+            window.backupCopyPaste = {...window.copyPasteLayers.layers};
 
 			//CHECK IF CURRENTLY ROWS, COLUMNS EXISTS TO INCLUDE THE ITEMS INTO
-			selectedRow = selectedRow===false && selectedGroupColumn!==false ? RVS.L[selectedGroupColumn].group.puid : selectedRow;
-			selectedGroupColumn = selectedGroupColumn===false ? RVS.F.getFirstSelectedType("group") : selectedGroupColumn;
+            insertInto = insertInto==false ? "-1" : RVS.L[insertInto]!==undefined && RVS.L[insertInto].type=="row" ? RVS.F.getColumnsInRow({layerid:insertInto, type:'column'})[0] : insertInto;
+            insertInto = insertInto==undefined || insertInto==false || RVS.L[insertInto]==undefined ? "-1" : insertInto;
 
 			//CHECK COPIED COLUMNS WITHOUT PARRENT CONTAINERS
 			for (var sli in window.copyPasteLayers.layers) {
 				if(!window.copyPasteLayers.layers.hasOwnProperty(sli)) continue;
-				var type = window.copyPasteLayers.layers[sli].type,
-					puid = window.copyPasteLayers.layers[sli].group.puid;
-				switch (type) {
-					case "column":
+                var uid = window.copyPasteLayers.layers[sli].uid,
+                    puid = window.copyPasteLayers.layers[sli].group.puid,
+                    deeper = RVS.F.isDeeperGroup(window.copyPasteLayers.layers[sli]);
+
+                tempList.push(""+uid); //Need to push since it skip the rest
+
+                //Having layers on root Level and inserting them to root can be skipped
+                if (insertInto=="-1" && (""+puid=="-1" || window.copyPasteLayers.layers[puid]!==undefined)) continue;
+
+                switch (window.copyPasteLayers.layers[sli].type) {
+                    case "group":
+                      if (deeper || insertInto=="-1") puid = "-1";  //Deeper Construction must go to root
+                      else
+                      if (RVS.L[insertInto].type=="column") puid = insertInto; // Not Deeper Target Column can be addressed
+                      else if (RVS.L[insertInto].type=="group" && (""+RVS.L[insertInto].group.puid=="-1"))
+                          window.copyPasteLayers.layers[sli].copiedFromUid == insertInto && insertInto!=="-1" ? RVS.L[insertInto].group.puid : insertInto // Into Group only if Parent on root and copied is not equal with insert into
+                    break;
+
+                case "column":
 						if (window.copyPasteLayers.layers[puid]===undefined || window.copyPasteLayers.layers[puid].type!=="row") {
-							puid = selectedRow!==false ? selectedRow : RVS.F.addLayerToLayers({type:"row",alias:"row",buildHTMLLayer:false,copyPaste:"copy"});
-							if(puid!==-1 && jQuery.inArray(puid,rows)===-1) rows.push(puid);
+                            puid = insertInto!==false && insertInto!=="-1" && RVS.L[insertInto].type=="row" ? insertInto : RVS.F.addLayerToLayers({type:"row",alias:"row",buildHTMLLayer:false,copyPaste:"copy"});
+                            if(puid!==-1 && jQuery.inArray(puid,rows)===-1) rows.push(puid);
 						}
 					break;
 					case "group":
@@ -3965,52 +4348,47 @@
 					break;
 
 					default:
-						//Should have Parrent, But it is not Existing, Not Column and not Group
-						if (puid>=0 && puid<=5000 && (window.copyPasteLayers.layers[puid]===undefined || (window.copyPasteLayers.layers[puid].type!=="group" && window.copyPasteLayers.layers[puid].type!=="column")))
-							puid = selectedGroupColumn!==false ? selectedGroupColumn : -1;
-						else
-							puid = puid===-1 && selectedGroupColumn!==false ? selectedGroupColumn : puid;
+                        //Should have Parrent, But it is not Existing, Not Column and not Group in 2nd Level
+                        if (puid>=0 && puid<=5000 && window.copyPasteLayers.layers[puid]===undefined)
+                            puid = insertInto;
+                        else
+                        puid = ""+puid==="-1" && insertInto!=="-1" ? insertInto : puid;
+                        break;
+                    }
 
-						if (puid === selectedGroupColumn) {
-							for (var device in RVS.V.sizes) {
+                    if (RVS.L[puid]!==undefined && RVS.L[puid].type=="column" && (window.copyPasteLayers.layers[sli].group.puid=="-1" || (window.copyPasteLayers.layers[window.copyPasteLayers.layers[sli].group.puid]==undefined || window.copyPasteLayers.layers[window.copyPasteLayers.layers[sli].group.puid].type!=="column"))) {
+                        for (var device in RVS.V.sizes) {
 								if(!RVS.V.sizes.hasOwnProperty(device)) continue;
 								var s = RVS.V.sizes[device];
-								window.copyPasteLayers.layers[sli].position.horizontal[s].v = "center";
+                                window.copyPasteLayers.layers[sli].position.position = "relative";
+                                window.copyPasteLayers.layers[sli].position.horizontal[s].v = "center";
 								window.copyPasteLayers.layers[sli].position.vertical[s].v = "middle";
 								window.copyPasteLayers.layers[sli].position.x[s].v = 0;
 								window.copyPasteLayers.layers[sli].position.y[s].v = 0;
 							}
 
-						}
-					break;
 				}
 				window.copyPasteLayers.layers[sli].group.puid = puid;
 			}
 
 			// Paste Elements
 			for (var sli in window.copyPasteLayers.layers) {
-				if(!window.copyPasteLayers.layers.hasOwnProperty(sli)) continue;
-				var uid = window.copyPasteLayers.layers[sli].uid;
+                if(!window.copyPasteLayers.layers.hasOwnProperty(sli) || !RVS.F.notChildrenOfList((""+window.copyPasteLayers.layers[sli].group.puid),tempList,window.backupCopyPaste)) continue;
+                var uid = window.copyPasteLayers.layers[sli].uid;
 				pasteLayers.push({type:window.copyPasteLayers.layers[sli].type, duplicateId:uid, ignoreBackupGroup:true, ignoreLayerList:true , ignoreOrderHTMLLayers:true, copyPaste:"paste"});
-				pasteLayersID.push(uid);
-			}
+                pasteLayersID.push(""+uid);
+            }
 
-			RVS.F.openBackupGroup({id:"addLayer",txt:"Paste Layer(s)",icon:"layers",lastkey:"layer"});
-			// CHECK MULTPILE DUPLICATES, LIKE COLUMN IN ROW WHICH ALREADY IN DUPLICATE MODE. (Parrents Check)
-			for (var i in pasteLayers) {
+
+            RVS.F.openBackupGroup({id:"addLayer",txt:"Copy Paste Layers",icon:"layers",lastkey:"layer"});
+            var newid;
+            // Create new Layers, ignore children of elements which are also getting duplicated
+            for (var i in pasteLayers) {
 				if(!pasteLayers.hasOwnProperty(i)) continue;
-				var puid = window.copyPasteLayers.layers[pasteLayersID[i]].group.puid;
-				rowid = -1;
-				if (puid===-1 || (jQuery.inArray(puid,pasteLayersID)==-1) || (pasteLayers[i].type==="column" && RVS.L[puid]!==undefined && RVS.L[puid].type==="row")) {
-					var newid = RVS.F.addLayer(pasteLayers[i]);
-					newLayerIDs.push(newid);
-					rowid = RVS.L[newid].type==="row" ? newid : puid;
-				}
-				rowid = RVS.L[puid]!==undefined && RVS.L[puid].type==="row" ? puid : rowid;
-
-				if(rowid!==-1 && jQuery.inArray(rowid,rows)===-1) rows.push(rowid);
-
-			}
+                newLayerIDs.push(newid = RVS.F.addLayer(pasteLayers[i]));
+                if (RVS.L[newid].type=="row") rows.push(newid);
+                else if (RVS.L[newid].type==="column" && jQuery.inArray(RVS.L[uid].group.puid,rows)===-1) rows.push(RVS.L[uid].group.puid);
+            }
 
 			//UPDATE ROWS (Extend, Remove Sizes)
 			if (rows.length>0) {
@@ -4025,14 +4403,16 @@
 			RVS.F.reOrderHTMLLayers();
 			for (var i in newLayerIDs) {
 				if(!newLayerIDs.hasOwnProperty(i)) continue;
+                RVS.F.updateDuplicatedLayerActionDependencies(newLayerIDs[i], window.copyPasteLayers.layers[pasteLayersID[i]].copiedFromUid);
 				RVS.F.selectLayers({id:newLayerIDs[i],overwrite:false, action:"add", ignoreUpdate:true});
 			}
 			RVS.F.selectedLayersVisualUpdate();
 			RVS.F.updateSelectedHtmlLayers();
 
-			// RESTORE CACHE
-			window.copyPasteLayers.layers = RVS.F.safeExtend({},window.backupCopyPaste);
-		});
+            RVS.DOC.trigger('selectLayersDone');
+            // RESTORE CACHE
+            window.copyPasteLayers.layers ={...window.backupCopyPaste};
+        });
 
 
 		/* ADD CONTENT BY OIBJECT LIBRARY EVENT */

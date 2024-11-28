@@ -3,13 +3,16 @@
 namespace Nwdthemes\Revslider\Model\Gallery;
 
 use Nwdthemes\Revslider\Helper\Data;
+use Nwdthemes\Revslider\Helper\Images;
+use Magento\Cms\Model\Wysiwyg\Images\Storage as WysiwygImagesStorage;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
-class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
+class Storage extends WysiwygImagesStorage {
 
-    private const MEDIA_GALLERY_IMAGE_FOLDERS_CONFIG_PATH
+    const MEDIA_GALLERY_IMAGE_FOLDERS_CONFIG_PATH
         = 'system/media_storage_configuration/allowed_resources/media_gallery_image_folders';
 
     /**
@@ -47,10 +50,29 @@ class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
      */
     private $allowedDirs;
 
+    /**
+     * @var boolean
+     */
+    protected $_isRevsliderModule;
+
+    /**
+     * If we are on prehistoric 2.1.x version
+     *
+     * @var boolean
+     */
+    protected $_isLegacy21x = false;
+
+    /**
+     * If we are on an ancient 2.2.x version
+     *
+     * @var boolean
+     */
+    protected $_isLegacy22x = false;
+
     public function __construct(
         \Magento\Backend\Model\Session $session,
         \Magento\Backend\Model\UrlInterface $backendUrl,
-        \Nwdthemes\Revslider\Helper\Gallery\Images $cmsWysiwygImages,
+        \Magento\Cms\Helper\Wysiwyg\Images $cmsWysiwygImages,
         \Magento\MediaStorage\Helper\File\Storage\Database $coreFileStorageDb,
         \Magento\Framework\Filesystem $filesystem,
         \Magento\Framework\Image\AdapterFactory $imageFactory,
@@ -60,18 +82,35 @@ class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
         \Magento\MediaStorage\Model\File\Storage\DatabaseFactory $storageDatabaseFactory,
         \Magento\MediaStorage\Model\File\Storage\Directory\DatabaseFactory $directoryDatabaseFactory,
         \Magento\MediaStorage\Model\File\UploaderFactory $uploaderFactory,
+        RequestInterface $request,
         array $resizeParameters = [],
         array $extensions = [],
         array $dirs = [],
         array $data = []
     ) {
-        $extendedExtensions = array_merge($extensions, ['video_allowed' => [
-            'mp4'   => 1,
-            'mp3'   => 1,
-            'webm'  => 1,
-            'ogv'   => 1,
-            'avi'   => 1
-        ]]);
+        $this->_isRevsliderModule = $request->getParam('module') == 'revslider';
+
+        if ($this->_isRevsliderModule) {
+            $extendExtensions = [
+                'allowed' => [
+                    'webp'   => 'image/webp'
+                ],
+                'image_allowed' => [
+                    'webp'   => 'image/webp'
+                ],
+                'video_allowed' => [
+                    'mp4'   => 1,
+                    'mp3'   => 1,
+                    'webm'  => 1,
+                    'ogv'   => 1,
+                    'avi'   => 1
+                ]
+            ];
+            foreach ($extendExtensions as $key => $value) {
+                $extendedExtensions[$key] = array_merge(isset($extensions[$key]) ? $extensions[$key] : [], $value);
+            }
+            $extensions = $extendedExtensions;
+        }
 
         parent::__construct(
             $session,
@@ -87,7 +126,7 @@ class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
             $directoryDatabaseFactory,
             $uploaderFactory,
             $resizeParameters,
-            $extendedExtensions,
+            $extensions,
             $dirs,
             $data
         );
@@ -97,6 +136,21 @@ class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
         $this->file = ObjectManager::getInstance()->get(\Magento\Framework\Filesystem\Driver\File::class);
         $this->ioFile = ObjectManager::getInstance()->get(\Magento\Framework\Filesystem\Io\File::class);
         $this->mime = ObjectManager::getInstance()->get(\Magento\Framework\File\Mime::class);
+
+        // Check if we are on legacy version
+        $reflectionClass = new \ReflectionClass(WysiwygImagesStorage::class);
+        try {
+            $reflectionClass->getMethod('getAllowedMimeTypes');
+        } catch (\Exception $e) {
+            Data::log('Legacy 2.1.x code detected', $e->getMessage());
+            $this->_isLegacy21x = true;
+        }
+        try {
+            $reflectionClass->getMethod('isDirectoryAllowed');
+        } catch (\Exception $e) {
+            Data::log('Legacy 2.2.x code detected', $e->getMessage());
+            $this->_isLegacy22x = true;
+        }
     }
 
     /**
@@ -165,7 +219,6 @@ class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
             $collection->setFilesFilter('/\.(' . implode('|', $allowed) . ')$/i');
         }
 
-        // prepare items
         foreach ($collection as $item) {
             $item->setId($this->_cmsWysiwygImages->idEncode($item->getBasename()));
             $item->setName($item->getBasename());
@@ -181,14 +234,26 @@ class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
                 $thumbUrl = $this->getThumbnailUrl($item->getFilename(), true);
                 // generate thumbnail "on the fly" if it does not exists
                 if (!$thumbUrl) {
-                    $thumbUrl = $this->_backendUrl->getUrl('nwdthemes_revslider/*/thumbnail', ['file' => $item->getId()]);
+                    $thumbOptions = [
+                        'file' => $item->getId(),
+                    ];
+                    if ($this->_isRevsliderModule) {
+                        $thumbOptions['module'] = 'revslider';
+                    }
+                    $thumbUrl = $this->_backendUrl->getUrl('cms/*/thumbnail', $thumbOptions);
                 }
 
-                $size = @getimagesize($item->getFilename());
+                try {
+                    $size = getimagesizefromstring(
+                        $driver->fileGetContents($item->getFilename())
+                    );
 
-                if (is_array($size)) {
-                    $item->setWidth($size[0]);
-                    $item->setHeight($size[1]);
+                    if (is_array($size)) {
+                        $item->setWidth($size[0]);
+                        $item->setHeight($size[1]);
+                    }
+                } catch (\Error $e) {
+                    $this->logger->notice(sprintf("GetImageSize caused error: %s", $e->getMessage()));
                 }
             } else {
                 $thumbUrl = $this->_assetRepo->getUrl(self::THUMB_PLACEHOLDER_PATH_SUFFIX);
@@ -339,7 +404,8 @@ class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
         }
         $uploader->setAllowRenameFiles(true);
         $uploader->setFilesDispersion(false);
-        if (!$uploader->checkMimeType($this->getAllowedMimeTypes($type))) {
+
+        if (! $this->_isLegacy21x && !$uploader->checkMimeType($this->getAllowedMimeTypes($type))) {
             throw new \Magento\Framework\Exception\LocalizedException(__('File validation failed.'));
         }
         $result = $uploader->save($targetPath);
@@ -402,14 +468,55 @@ class Storage extends \Magento\Cms\Model\Wysiwyg\Images\Storage {
      */
     private function isDirectoryAllowed($directoryPath): bool
     {
-        $storageRoot = $this->_cmsWysiwygImages->getStorageRoot();
-        $storageRootLength = strlen($storageRoot) - strlen(\Nwdthemes\Revslider\Helper\Images::IMAGE_DIR);
-        $mediaSubPathname = substr($directoryPath, $storageRootLength);
-        if (!$mediaSubPathname) {
-            return false;
+        if ($this->_isRevsliderModule) {
+            // revslider module
+            $storageRoot = $this->_cmsWysiwygImages->getStorageRoot();
+            $storageRootLength = strlen($storageRoot) - strlen(Images::IMAGE_DIR);
+            $mediaSubPathname = substr($directoryPath, $storageRootLength);
+            if (!$mediaSubPathname) {
+                return false;
+            }
+            $mediaSubPathname = ltrim($mediaSubPathname, '/');
+            return strpos($mediaSubPathname, Images::IMAGE_DIR) === 0;
+        } elseif ($this->_isLegacy22x) {
+            // no such method in older version so just allow it
+            return true;
+        } else {
+            // original code
+            $storageRoot = $this->_cmsWysiwygImages->getStorageRoot();
+            $storageRootLength = strlen($storageRoot);
+            $mediaSubPathname = $directoryPath === null ? '' : substr($directoryPath, $storageRootLength);
+            if (!$mediaSubPathname) {
+                return false;
+            }
+            $mediaSubPathname = ltrim($mediaSubPathname, '/');
+            return preg_match($this->getAllowedPathPattern(), $mediaSubPathname) == 1;
         }
-        $mediaSubPathname = ltrim($mediaSubPathname, '/');
-        return strpos($mediaSubPathname, \Nwdthemes\Revslider\Helper\Images::IMAGE_DIR) === 0;
+    }
+
+    /**
+     * Get allowed path pattern
+     *
+     * @return string
+     */
+    private function getAllowedPathPattern()
+    {
+        if (null === $this->allowedPathPattern) {
+            $mediaGalleryImageFolders = $this->coreConfig->getValue(
+                self::MEDIA_GALLERY_IMAGE_FOLDERS_CONFIG_PATH,
+                'default'
+            );
+            $regExp = '/^(';
+            $or = '';
+            foreach ($mediaGalleryImageFolders as $folder) {
+                $folderPattern = str_replace('/', '[\/]+', $folder ?? '');
+                $regExp .= $or . $folderPattern . '\b(?!-)(?:\/?[a-zA-Z0-9\-\_]+)*\/?$';
+                $or = '|';
+            }
+            $regExp .= ')/';
+            $this->allowedPathPattern = $regExp;
+        }
+        return $this->allowedPathPattern;
     }
 
 }

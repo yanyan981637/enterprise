@@ -10,12 +10,12 @@
     .ambase-dropdown-component {
         & > .ambase-label {
             & {
-                position: relative;
+                cursor: pointer;
                 display: block;
                 outline: none;
-                cursor: pointer;
-                user-select: none;
                 padding-right: 15px;
+                position: relative;
+                user-select: none;
             }
 
             .ambase-menu-item &:hover {
@@ -25,13 +25,13 @@
             &:after {
                 &:extend(.abs-icon all);
 
+                content: @admin__page-nav-icon-down__content;
+                font-size: 1.3rem;
+                font-weight: @font-weight__bold;
                 position: absolute;
+                right: 0;
                 top: 50%;
                 transform: translateY(-50%);
-                right: 0;
-                content: @admin__page-nav-icon-down__content;
-                font-weight: @font-weight__bold;
-                font-size: 1.3rem;
                 transition: .3s all;
             }
         }

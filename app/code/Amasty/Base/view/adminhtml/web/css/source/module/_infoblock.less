@@ -1,6 +1,6 @@
 //
 //  Amasty Base Info-block
-//  _____________________________________________
+//  ______________________________________________
 
 //
 //  Variables
@@ -15,21 +15,21 @@
 & when (@media-common = true) {
     .ambase-buttons-container {
         & {
-            display: flex;
             align-items: center;
+            display: flex;
             margin-top: @ambase-button__margin;
         }
 
         .ambase-button {
+            background: @ambase__infoblock-button__color;
+            border-radius: 4px;
+            color: @color-white;
+            font-weight: 600;
+            letter-spacing: 1.25px;
             margin-right: @ambase-button__margin;
             padding: 13px 27px;
-            border-radius: 4px;
-            background: #1787e0;
-            color: #fff;
             text-decoration: none;
             text-transform: uppercase;
-            letter-spacing: 1.25px;
-            font-weight: 600;
             transition: opacity .3s ease-in-out;
         }
 
@@ -40,7 +40,7 @@
 
     .amasty-info-block {
         .module-version.last-version {
-            color: #008000ff;
+            color: @ambase__infoblock-module-last-version__color;
         }
 
         span.message {
@@ -48,7 +48,7 @@
         }
 
         .message.success {
-            background-color: #e9fbdb;
+            background-color: @ambase__infoblock-message-success__background;
         }
     }
 }

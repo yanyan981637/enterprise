@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -36,7 +36,11 @@ class Converter
 
     public function convertToObject(array $data): InstanceInfo
     {
-        $addIfEmpty = [InstanceInfo::DOMAINS => [], InstanceInfo::MODULES => []];
+        $addIfEmpty = [
+            InstanceInfo::DOMAINS => [],
+            InstanceInfo::MODULES => [],
+            InstanceInfo::CUSTOMER_INSTANCE_KEY => []
+        ];
         foreach ($addIfEmpty as $field => $value) {
             if (!isset($data[$field])) {
                 $data[$field] = $value;

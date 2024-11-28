@@ -19,6 +19,7 @@ use Magento\Cms\Model\Page;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Filter\FilterInput;
 
 class Save extends \Magento\Backend\App\Action
 {
@@ -106,7 +107,7 @@ class Save extends \Magento\Backend\App\Action
                 $filterValues['to_date'] = $this->dateFilter;
             }
             if ($filterValues) {
-                $inputFilter = new \Zend_Filter_Input(
+                $inputFilter = new FilterInput(
                     $filterValues,
                     [],
                     $data

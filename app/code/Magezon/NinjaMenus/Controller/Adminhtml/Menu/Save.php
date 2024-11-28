@@ -36,7 +36,7 @@ class Save extends \Magento\Backend\App\Action
     protected $cacheTypeList;
 
     /**
-     * @var \Magezon\NinjaMenus\Helper\Form
+     * @var \Magezon\NinjaMenus\Helper\Menu
      */
     protected $menuHelper;
 

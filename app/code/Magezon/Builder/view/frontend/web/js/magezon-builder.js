@@ -2,21 +2,19 @@ define([
 	'jquery',
 	'Magezon_Builder/js/vimeo/player',
 	'Magezon_Builder/js/parallax',
-	'Magezon_Builder/js/responsive-typography',
-	'Magezon_Core/js/jquery.magnific-popup.min',
+    'Magezon_Builder/js/responsive-typography',
+    'Magezon_Core/js/jquery.magnific-popup.min',
 	'waypoints'
-	], function ($, Vimeo) {
+], function ($, Vimeo) {
 
-		var mgzInit = function() {
-			
-		$(window).resize(function() {
-			var height = $(window).height();
-			$(document).find('.mgz-row-full-height').each(function(index, el) {
-				$(this).css('min-height', height);
-				$(this).children('.mgz-element-inner').css('min-height', height);
-				$(this).children().children('.mgz-element-row-content').css('min-height', height);
-			});
-		}).resize();
+	var mgzInit = function() {
+
+		var height = $(window).height();
+		$(document).find('.mgz-row-full-height').each(function(index, el) {
+			$(this).css('min-height', height);
+			$(this).children('.mgz-element-inner').css('min-height', height);
+			$(this).children().children('.mgz-element-row-content').css('min-height', height);
+		});
 
 		// ANIMATION
 		if ($(".mgz-animated:not(.mgz_start_animation)").length) {
@@ -57,10 +55,10 @@ define([
 			var options = {
 				type: type,
 				mainClass: $(this).data('main-class'),
-				removalDelay: 300,
-				fixedContentPos: true,
-				fixedBgPos: true,
-				image: {
+		        removalDelay: 300,
+		        fixedContentPos: true,
+		        fixedBgPos: true,
+		        image: {
 					verticalFit: true
 				}
 			}
@@ -102,73 +100,73 @@ define([
 
 			switch (type) {
 				case 'gallery':
-				var delegate = 'a';
-				options = {
-					delegate: delegate,
-					type: 'image',
-					tLoading: 'Loading image #%curr%...',
-					mainClass: 'mgz-mfp',
-					fixedContentPos: true,
-					gallery: {
-						enabled: true,
-						navigateByImgClick: true,
-						preload: [0,1]
-					},
-					iframe: {
-						markup: '<div class="mfp-iframe-scaler">'+
-						'<div class="mfp-close"></div>'+
-						'<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>'+
-						'<div class="mfp-title"></div>' +
-						'<div class="mfp-counter"></div>' +
-						'</div>',
-						patterns: {
-							youtube: {
-								index: 'youtube.com/',
-								id: 'v=',
-								src: 'http://www.youtube.com/embed/%id%?rel=0&autoplay=1'
-							}
-						}
-					},
-					callbacks: {
-						elementParse: function(item) {
-							if (item.el.data('type')) {
-								item.type = item.el.data('type');
+					var delegate = 'a';
+					options = {
+						delegate: delegate,
+						type: 'image',
+						tLoading: 'Loading image #%curr%...',
+						mainClass: 'mgz-mfp',
+						fixedContentPos: true,
+						gallery: {
+							enabled: true,
+							navigateByImgClick: true,
+							preload: [0,1]
+						},
+						iframe: {
+							markup: '<div class="mfp-iframe-scaler">'+
+							'<div class="mfp-close"></div>'+
+							'<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>'+
+							'<div class="mfp-title"></div>' +
+							'<div class="mfp-counter"></div>' +
+							'</div>',
+							patterns: {
+								youtube: {
+									index: 'youtube.com/',
+									id: 'v=',
+									src: 'http://www.youtube.com/embed/%id%?rel=0&autoplay=1'
+								}
 							}
 						},
+						callbacks: {
+							elementParse: function(item) {
+								if (item.el.data('type')) {
+									item.type = item.el.data('type');
+								}
+							},
 
-						markupParse: function(template, values, item) {
-							values.title = item.el.attr('title');
+							markupParse: function(template, values, item) {
+								values.title = item.el.attr('title');
+							}
 						}
 					}
-				}
-				break;
+					break;
 
 				default:
-				options = {
-					type: type,
-					mainClass: $(this).data('main-class'),
-					removalDelay: 300,
-					fixedContentPos: true,
-					image: {
-						verticalFit: true
-					},
-					image: {
-						titleSrc: function(item) {
-							var title = item.el.attr('title');
-							if (item.el.data('title')) {
-								title = item.el.data('title');
+					options = {
+						type: type,
+						mainClass: $(this).data('main-class'),
+						removalDelay: 300,
+						fixedContentPos: true,
+						image: {
+							verticalFit: true
+						},
+						image: {
+							titleSrc: function(item) {
+								var title = item.el.attr('title');
+								if (item.el.data('title')) {
+									title = item.el.data('title');
+								}
+								return title;
 							}
-							return title;
 						}
 					}
-				}
-				if ($(this).data('zoom')) {
-					options['zoom'] = {
-						enabled: true,
-						duration: 300
-					};
-				}
-				break;
+					if ($(this).data('zoom')) {
+						options['zoom'] = {
+							enabled: true,
+							duration: 300
+						};
+					}
+					break;
 			}
 
 			if ($(this).data('zoom')) {

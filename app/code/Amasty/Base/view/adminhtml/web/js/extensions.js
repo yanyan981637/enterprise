@@ -3,8 +3,9 @@
  */
 
 define([
-    'uiComponent'
-], function (Component) {
+    'uiComponent',
+    'mage/translate'
+], function (Component, $t) {
     'use strict';
 
     return Component.extend({
@@ -18,6 +19,12 @@ define([
             modulesData: [],
             update: [],
             solutions: [],
+            shouldRenderLicenseStatus: false,
+            subscription: {
+                statusTypesToCheck: ['warning', 'error'],
+                url: 'https://amasty.com/amasty_recurring/customer/subscriptions',
+                faqUrl: 'https://amasty.com/knowledge-base/what-does-each-product-license-status-in-the-base-extension-mean'
+            },
             stateValues: {
                 default: 'default',
                 solutions: 'solutions',
@@ -40,6 +47,8 @@ define([
             }));
 
             this.modules(this.prepareModules(this.modulesData));
+
+            this.shouldRenderLicenseStatus = this.modules().some((module) => !!module.verify_status);
 
             return this;
         },
@@ -101,6 +110,33 @@ define([
                 });
 
             return availableUpgrade.concat(needUpdate, modules);
+        },
+
+        /**
+         * @param {Object} module
+         * @returns {Object|null}
+         */
+        getActionLink: function (module) {
+            const actionLinkData = {
+                text: null,
+                url: null
+            };
+
+            const isNeedCheckSubscription = this.isNeedCheckSubscription(module);
+            if (module.upgrade_url || isNeedCheckSubscription) {
+                actionLinkData.text = isNeedCheckSubscription ? $t('Check Your Subscriptions') : $t('Upgrade Your Plan');
+                actionLinkData.url = isNeedCheckSubscription ? this.subscription.url : module.upgrade_url;
+            }
+
+            return actionLinkData;
+        },
+
+        /**
+         * @param {Object} module
+         * @returns {boolean}
+         */
+        isNeedCheckSubscription: function (module) {
+            return this.subscription.statusTypesToCheck.includes(module.verify_status?.type);
         }
     });
 });

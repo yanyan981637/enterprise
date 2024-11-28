@@ -4,6 +4,7 @@ namespace Nwdthemes\Revslider\Controller\Adminhtml;
 
 use \Nwdthemes\Revslider\Model\Revslider\RevSliderFunctions;
 use \Nwdthemes\Revslider\Model\Revslider\Admin\RevSliderAdmin;
+use \Nwdthemes\Revslider\Model\Revslider\Admin\Includes\RevSliderTracking;
 use \Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront;
 
 abstract class Revslider extends \Magento\Backend\App\Action {
@@ -38,6 +39,7 @@ abstract class Revslider extends \Magento\Backend\App\Action {
         $pluginHelper->deactivateOldPlugins();
         $pluginHelper->loadPlugins($this->_frameworkHelper);
 
+        new RevSliderTracking();
         new RevSliderAdmin();
 
         $this->_frameworkHelper->do_action('init');

@@ -42,7 +42,6 @@ AddOns,Addons
 "AddOns Outdated. Please Update","AddOns veraltet. Bitte aktualisieren"
 "AddOns need attention","AddOns brauchen Aufmerksamkeit"
 "Adding new Blank Module...","Neues leeres Modul hinzufügen ..."
-Additional,Zusätzlich
 "Addon Required","Addon erforderlich"
 "Admin Thumb","Admin Miniaturansicht"
 "Adv. Style","Erw. Stil"
@@ -169,7 +168,7 @@ Class,Klasse
 "Class to Toggle","Klasse zum Umschalten"
 Classes,Klassen
 Clear,Leeren
-"Cleared Photosets","Fotosets geleert"
+"Cleared Albums","Alben geleert"
 Click,Klicken
 "Click to Choose","Klicken zum Auswählen"
 Close,Schließen
@@ -195,7 +194,6 @@ Corners,Ecken
 "Could not create Slider","Slider konnte nicht erstellt werden"
 "Could not fetch Facebook albums","Facebook-Alben konnten nicht abgerufen werden"
 "Could not fetch YouTube playlists","YouTube-Wiedergabelisten konnten nicht abgerufen werden"
-"Could not fetch flickr photosets","Flickr-Fotosets konnten nicht abgerufen werden"
 "Cover Color","Cover Farbe"
 "Create Blank Page","Leere Seite erstellen"
 "Creation Ascending","Erstellung aufsteigend"
@@ -256,8 +254,6 @@ Disabled,Deaktiviert
 "Disabling Add-On","Deaktiviere Addon"
 "Dismiss Messages","Nachrichten schließen"
 Display,Anzeige
-"Display Mode in Column","Anzeigemodus in Spalte"
-"Display a certain photoset from a user","Zeigen Sie einen bestimmten Fotosatz eines Benutzers an"
 "Display a gallery","Galerie anzeigen"
 "Do It","Tu es"
 "Do you want to start the Update process?","Möchten Sie den Update Vorgang starten?"
@@ -350,11 +346,9 @@ Filename,Dateiname
 "Filter Effect Scroll is now generally Enabled","Filter Effect Scroll ist jetzt allgemein aktiviert"
 Filters,Filter
 "Find My Code","Meinen Code finden"
-"Find information about the YouTube API key <a target=""_blank"" href=""https://developers.google.com/youtube/v3/getting-started#before-you-start"">here</a>","Informationen zum YouTube-API-Schlüssel <a target=""_blank"" href=""https://developers.google.com/youtube/v3/getting-started#before-you-start""> finden Sie hier </ a >"
 "Finnished with slide change","Fertig mit dem Slidewechsel"
 "First Slide","Erster Slide"
 "Five Spikes","Fünf Stacheln"
-"Fix during Scroll","Fix während des Scrollens"
 "Fixed on Top","Oben fixiert"
 "Flickr Settings","Flickr Einstellungen"
 Folder,Ordner
@@ -485,7 +479,6 @@ Interaction,Interaktion
 "Inverse Toggled Content","Umgekehrter umgeschalteter Inhalt"
 "Invert Horizontal","Horizontal umkehren"
 "Invert Vertical","Vertikal umkehren"
-Inverts,Invertiert
 "Jump to Slide","Zu Slide springen"
 "Keep Auto Sizes","Automatische Größen beibehalten"
 "Keep Breakpoint Heights","Haltepunkthöhen behalten"
@@ -643,13 +636,11 @@ Move,Bewegen
 "New Module from Template","Neues Modul aus Vorlage"
 "New Version Available. Please Update","Neue Version verfügbar. Bitte aktualisieren"
 "New Window","Neues Fenster"
-News,Neuigkeiten
 "Next Frame","Nächster Frame"
 "Next Slide","Nächster Slide"
 "Next Slide at End","Nächster Slide beim Ende"
 "Next Step","Nächster Schritt"
 "Next on Browser Focus","Nächste bei Browser Fokus"
-"No API KEY - Could not fetch flickr photosets","Kein API KEY - Flickr-Fotosets konnten nicht abgerufen werden"
 "No Action Selected","Keine Aktion ausgewählt"
 "No Corner","Keine Ecke"
 "No Data Received","Keine Daten empfangen"
@@ -662,13 +653,10 @@ News,Neuigkeiten
 "No Spikes","Keine Spikes"
 "No Sticky Keyframes","Keine Sticky Keyframes"
 "No Style","Kein Stil"
-"No User URL - Could not fetch flickr photosets","Keine Benutzer-URL - flickr-Fotosets konnten nicht abgerufen werden"
 "No data received","Keine Daten empfangen"
 "No file sent.","Keine Datei gesendet."
 "No further source settings needed. Content is created manually.","Keine weiteren Quelleneinstellungen erforderlich. Der Inhalt wird manuell erstellt."
 "No response on action","Keine Antwort auf Aktion"
-"No slides found, please add at least one Slide Template to the choosen language.","Keine Slides gefunden. Fügen Sie der ausgewählten Sprache mindestens ein Slide Template hinzu."
-"No slides found, please add some slides","Keine Slides gefunden, bitte fügen Sie einige Slides hinzu"
 None,Nichts
 "None of the Settings changed. There is Nothing to Save","Keine der Einstellungen wurde geändert. Es gibt nichts zu speichern"
 "Not Activated","Nicht aktiviert"
@@ -734,18 +722,15 @@ Params,Parameter
 Paste,Einfügen
 "Pause Slider","Slider anhalten"
 "Per Page","Pro Seite"
-Photoset,Fotosatz
 "Pick an Item","Wähle ein Item"
 "Place the shortcode on the page or post where you want to show this modal.","Platzieren Sie den Shortcode auf der Seite oder im Beitrag, auf der Sie dieses Modal anzeigen möchten."
 "Place the shortcode on the page or post where you want to show this module.","Platzieren Sie den Shortcode auf der Seite oder im Beitrag, auf der Sie dieses Modul anzeigen möchten."
 Placeholder,Platzhalter
 "Play Slide","Slide abspielen"
-"Please <a target=""_blank"" href=""https://dev.twitter.com/apps"">register</a> your application with Twitter<br>to get the right values","Bitte <a target=""_blank"" href=""https://dev.twitter.com/apps"">registrieren</a> Sie Ihre Application bei Twitter um die richtigen Werte zu erhalten"
 "Please Wait a Moment","Bitte warte einen Moment"
 "Please Wait...","Bitte warten ..."
 "Please activate Slider Revolution","Bitte aktivieren Sie Slider Revolution"
 "Please add at least one Layer.","Bitte füge mindestens einen Layer hinzu."
-"Please follow this link to edit the Slider:","Bitte folgen Sie diesem Link, um den Slider zu bearbeiten:"
 "Please select an Addon to start with.","Bitte wählen Sie ein Addon zum Start aus."
 "Please select the correct zip file, checksum failed!","Bitte wählen Sie die richtige Zip-Datei aus, Prüfsumme fehlgeschlagen!"
 "Plugin deregistered","Plugin abgemeldet"
@@ -797,7 +782,6 @@ Published,Veröffentlicht
 Random,Zufällig
 "Random Order","Zufällige Reihenfolge"
 "Re-Download Online","Erneut Online herunterladen"
-"Read <a target=""_blank"" href=""http://weblizar.com/get-flickr-api-key/"">here</a> how to receive your Flickr API key","Lesen Sie <a target=""_blank"" href=""http://weblizar.com/get-flickr-api-key/""> hier </a>, wie Sie Ihren Flickr-API-Schlüssel erhalten"
 "Recalculate all positions, sizing etc in the slider.  This should be called i.e. if Slider was invisible and becomes visible without any window resize event.","Berechnen Sie alle Positionen, Größen usw. im Silber neu. Dies sollte zB aufgerufen werden, wenn der Slider unsichtbar war und ohne ein Ereignis zur Größenänderung des Fensters sichtbar wird."
 Rectangle,Rechteck
 "Redirecting to Overview Page","Weiterleitung zur Übersichtsseite"
@@ -807,7 +791,6 @@ Rectangle,Rechteck
 "Register Slider Revolution<br>to Unlock Premium Features","Registrieren Sie Slider Revolution <br>, um Premium-Funktionen freizuschalten"
 "Register this Code","Registriere diesen Codes"
 "Register to Unlock","Registrieren zum entsperren"
-"Register to Unlock all Features","Registrieren Sie sich, um alle Funktionen freizuschalten"
 "Register to unlock AddOns","Registrieren Sie sich, um AddOns freizuschalten"
 "Register to unlock Library","Registrieren Sie sich, um die Bibliothek freizuschalten"
 "Register to unlock Premium Features","Registrieren Sie sich, um die Premium-Funktionen freizuschalten"
@@ -881,7 +864,6 @@ Scene,Szene
 Search,Suche
 "Search Icons...","Icons suchen..."
 "Search Modules...","Module suchen ..."
-"See how to find the Youtube channel ID <a target=""_blank"" href=""https://support.google.com/youtube/answer/3250431?hl=en"">here</a>","Weitere Informationen zum Finden der Youtube-Kanal-ID <a target=""_blank"" href=""https://support.google.com/youtube/answer/3250431?hl=de""> hier </a>"
 Select,Wählen
 "Select Album","Album auswählen"
 "Select Playlist","Playlist auswählen"
@@ -971,7 +953,6 @@ Solid,Solide
 "Some AddOns have new versions available","Für einige AddOns sind neue Versionen verfügbar"
 "Some Layers are <strong>Locked</strong> and/or <strong>Invisible</strong>.<br>Change Status in Timeline.","Einige Layer sind <strong> gesperrt </ strong> und / oder <strong> unsichtbar </ strong>. <br> Ändern Sie den Status in der Zeitleiste."
 "Some Settings in Slider <strong>Source may not complete</strong>.<br>Please Complete All Settings in Slider Sources.","Einige Einstellungen in der Slider Quelle <strong> sind möglicherweise nicht komplett </ strong>. <br> Bitte vervollständigen Sie alle Einstellungen in den Slider Quellen."
-"Sorry, this Social Stream cannot be displayed.","Dieser Social Stream kann leider nicht angezeigt werden."
 "Sort Direction",Sortierrichtung
 "Sort by Creation","Nach Erstellung sortieren"
 "Sort by Title","Nach Titel sortieren"
@@ -1015,7 +996,6 @@ Style,Stil
 "Success! Please check your E-Mails to finish the subscription","Erfolgreich! Bitte überprüfen Sie Ihre E-Mails, um das Abonnement abzuschließen"
 "Successfully fetched Facebook albums","Facebook-Alben erfolgreich abgerufen"
 "Successfully fetched YouTube playlists","YouTube-Wiedergabelisten wurden erfolgreich abgerufen"
-"Successfully fetched flickr photosets","Flickr-Fotosets wurden erfolgreich abgerufen"
 Support,Hilfe
 "Swipe Settings","Swipe Einstellungen"
 "Switch slider to next slide.","Schalte im Slider zum nächsten Slide."
@@ -1125,7 +1105,6 @@ Uppercase,Großbuchstaben
 "Use Slide Loop","Slide Loop verwenden"
 "Use Toggle","Verwenden von Umschalten"
 User,Nutzer
-"User Photoset","Benutzer Fotosatz"
 "User Public Photos","Öffentliche Benutzerfotos"
 "User URL:",Benutzer-URL:
 Username,Nutzername
@@ -1142,7 +1121,6 @@ Vertical,Vertikal
 "Video is playing in slider","Video spielt im Slider"
 "Video is stopped","Video ist angehalten"
 "Video stopped in slider","Video in Slider gestoppt"
-"View all posts in %s","Zeige alle Beiträge in %s"
 "Vimeo Settings",Vimeo-Einstellungen
 "Vimeo Thumb","Vimeo Miniaturansicht"
 Visibility,Sichtbarkeit

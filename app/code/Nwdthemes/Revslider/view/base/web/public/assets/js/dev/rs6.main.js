@@ -18,7 +18,7 @@
 .....................xxxxxxxxxxxxxxxxxxx.........
 .....................xxxxxxxxxxxxxxxxxxx.........
 
-			   DATE: 2021-06-16
+			   DATE: 2022-10-06
 	@author: Krisztian Horvath, ThemePunch OHG.
 
 INTRODUCING GIT
@@ -37,7 +37,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 (function(jQuery, undefined) {
 	"use strict";
 
-	var version = "Slider Revolution 6.5.2";
+	var version = "Slider Revolution 6.6.0";
 
 	window.RSANYID = window.RSANYID === undefined ? [] : window.RSANYID;
 	window.RSANYID_sliderID = window.RSANYID_sliderID === undefined ? [] : window.RSANYID_sliderID;
@@ -70,11 +70,12 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			_R[id].c = jQuery(this);
 			_R[id].cpar = _R[id].c.parent();
 			_R[id].canvas = _R[id].c.find('rs-slides');
-			_R[id].caches = { calcResponsiveLayersList: [], contWidthManager: {} };
+			_R[id].caches = { calcResponsiveLayersList: [], contWidthManager: {}, middleHeights:{} };
 			_R[id].sbgs = {};
 			window.RSBrowser = window.RSBrowser === undefined ? _R.get_browser() : window.RSBrowser;
 			_R.setIsIOS();
 			_R.setIsChrome8889();
+			if(_R.useBackdrop === undefined) _R.checkBackdrop();
 			_R[id].noDetach = _R[id].BUG_ie_clipPath = window.RSBrowser === "Edge" || window.RSBrowser === "IE";
 
 			_R.getByTag = getTagSelector();
@@ -83,7 +84,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			_R[id].indexhelper = 0;
 			_R[id].fullScreenOffsetResult = 0;
 			_R[id].level = 0;
-			_R[id].rtl = jQuery('body').hasClass("rtl");
+			_R[id].rtl = jQuery('body').hasClass("rtl") || document.dir=="rtl";
 			_R[id]._L = _R[id]._L === undefined ? {} : _R[id]._L;
 			_R[id].emptyObject = "{}";
 			_R[id].dimensionReCheck = {};
@@ -102,7 +103,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			_R[id].BUG_safari_clipPath = _R.get_browser() === "Safari" && _R.get_browser_version() > "12";
 
 			// Prepare maxHeight
-			_R[id].minHeight = _R[id].sliderLayout === "fullwidth" ? 0 : _R[id].minHeight != undefined && _R[id].minHeight !== "" ? parseInt(_R[id].minHeight, 0) : 0;
+			_R[id].minHeight = _R[id].sliderLayout === "fullwidth" || _R[id].sliderType === "carousel" ? 0 : _R[id].minHeight != undefined && _R[id].minHeight !== "" ? parseInt(_R[id].minHeight, 0) : 0;
 			_R[id].minHeight = _R[id].minHeight === undefined ? 0 : _R[id].minHeight;
 
 			_R[id].isEdge = _R.get_browser() === "Edge";
@@ -153,6 +154,8 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				_R.RS_prioList.push(id);
 			}
 			_R.initNextRevslider(id);
+
+			//_R.observeRemoved(id);
 		});
 	}
 
@@ -163,7 +166,6 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 
 	jQuery.fn.extend({
-
 
 		getRSJASONOptions: function(id) { console.log(JSON.stringify(_R[id].option_export)); },
 
@@ -242,9 +244,27 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				containerResized(this.id, undefined, true);
 			});
 		},
+
+		// METHODE GoToFrame
+		//Trigger a Frame from Script outside of RS
+		revGoToFrame:function(_) {
+			if (_.layerid==undefined || _.frame==undefined) return;
+			if (this==undefined || this==null) return;
+			 _.moduleid = this[0].id;
+			_.targetlayer = jQuery('#'+_.layerid);
+			if (_.targetlayer==undefined || _.targetlayer.length==0) return;
+			var pars = {layer:_.targetlayer, frame:_.frame, mode:"trigger", id:_.moduleid};
+			if (_.children===true) {
+				pars.updateChildren = true;
+				pars.fastforward = true;
+			}
+			if (_R.renderLayerAnimation) _R.renderLayerAnimation(pars);
+
+		},
 		// METHODE PAUSE
 		revkill: function() {
 			return this.each(function() {
+				if (this==undefined || this==null) return;
 				var id = this.id;
 
 				_R[id].c.data('conthover', 1);
@@ -256,15 +276,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 
 				var resizid = "updateContainerSizes." + _R[id].c.attr('id');
-				_R.window.unbind(resizid);
+				_R.window.off(resizid);
 				tpGS.gsap.killTweensOf(_R[id].c.find('*'), false);
 				tpGS.gsap.killTweensOf(_R[id].c, false);
-				_R[id].c.unbind('hover, mouseover, mouseenter,mouseleave, resize');
+				_R[id].c.off('hover, mouseover, mouseenter,mouseleave, resize');
 				_R[id].c.find('*').each(function() {
 					var el = jQuery(this);
 
-					el.unbind('on, hover, mouseenter,mouseleave,mouseover, resize,restarttimer, stoptimer');
-					el.off('on, hover, mouseenter,mouseleave,mouseover, resize');
+					el.off('on, hover, mouseenter,mouseleave,mouseover, resize,restarttimer, stoptimer');
 					el.data('mySplitText', null);
 					el.data('ctl', null);
 					if (el.data('tween') != undefined) el.data('tween').kill();
@@ -283,17 +302,26 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				try { _R[id].c.closest('rs-fullwidth-wrap').remove(); } catch (e) {}
 				try { _R[id].c.closest('rs-module-wrap').remove(); } catch (e) {}
 				try { _R[id].c.remove(); } catch (e) {}
+
 				_R[id].cpar.detach();
 				_R[id].c.html('');
 				_R[id].c = null;
+				window[_R[id].revapi] = undefined;
 				delete _R[id];
+
+				delete _R.RS_swapList[id];
+				delete _R.slidersToScroll[id];
+				delete _R.RS_toInit[id];
+				if (_R.nextSlider == id) delete _R.nextSlider;
+
 
 				//Remove Slider from the PrioList and reset Preparations
 				_R.RS_prioList.splice(_R.RS_prioList.indexOf(id), 1);
-				_R.RS_toInit[id] = false;
+				//_R.RS_toInit[id] = false;
 				//Put Slider on the Killed List, so it can be reinitialised later again if needed
 				_R.RS_killedlist = _R.RS_killedlist === undefined ? [] : _R.RS_killedlist;
 				if (_R.RS_killedlist.indexOf(id) === -1) _R.RS_killedlist.push(id);
+
 			});
 
 		},
@@ -457,6 +485,18 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			});
 		},
 
+		mobileTimedHeightCheck : function() {
+			requestAnimationFrame(function() { _R.mobileTimedHeightCheck();})
+			_R.mobileHeights.now = Date.now();
+			_R.mobileHeights.elapsed = _R.mobileHeights.now - _R.mobileHeights.then;
+
+			// if enough time has elapsed, draw the next frame
+			if (_R.mobileHeights.elapsed > _R.mobileHeights.fpsInterval) {
+				_R.mobileHeights.then = _R.mobileHeights.now - (_R.mobileHeights.elapsed % _R.mobileHeights.fpsInterval);
+				_R.getWindowDimension();
+			}
+		},
+
 		pageHandler: function(id) {
 			_R.globalListener = true;
 			_R.window = jQuery(window);
@@ -478,6 +518,15 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				tpGS.gsap.delayedCall(3, function(){
 					window.removeEventListener("resize", _R.getWindowDimension);
 				});
+				// Checking Heights all time
+				_R.mobileHeights = {
+					fpsInterval : 500,
+					then : Date.now(),
+				}
+				if (!_R[id].ignoreHeightChange && !_R.mobileHeights.checking) {
+					_R.mobileHeights.checking = true;
+					_R.mobileTimedHeightCheck();
+				}
 			} else {
 				// removed old touchscreen check as sliders were not resizing on touchscreen desktops
 				window.addEventListener("resize", _R.getWindowDimension);
@@ -499,6 +548,10 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			_R.nextSlider = id;
 			_R.RS_prioListFirstInit = true;
 
+			_R.document.one('click', function(){ _R.clickedOnce = true; });
+
+			document.addEventListener('visibilitychange', visibilityHandler);
+
 			if (_R.hasNavClickListener === undefined) {
 				_R.document.on((_R.is_mobile() ? 'touchstart' : 'mouseenter'), '.tparrows, .tp-bullets, .tp-bullet, .tp-tab, .tp-thumb, .tp-thumbs, .tp-tabs, .tp-rightarrow, .tp-leftarrow', function(e) {
 					this.classList.add('rs-touchhover');
@@ -512,32 +565,6 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				});
 				_R.hasNavClickListener = true;
 			}
-
-			window.addEventListener('unload', function(event) {
-				for (var i in _R.RS_toInit) {
-					if (!_R.hasOwnProperty(i)) continue;
-
-					for (var j in _R[i].sbgs) {
-						if (!_R[id].sbgs.hasOwnProperty(j)) continue;
-						var BG = _R[id].sbgs[j];
-
-						_R.destroyCanvas(BG.canvas);
-						_R.destroyCanvas(BG.shadowCanvas);
-						if (BG.three) _R.destroyCanvas(BG.three.canvas);
-						_R.destroyCanvas(BG.patternImageCanvas);
-						_R.destroyCanvas(BG.fmShadow);
-						_R.destroyCanvas(BG.help_canvas);
-					}
-
-					_R.destroyCanvas(_R[i].createPattern);
-				}
-
-				var canvases = document.querySelectorAll('canvas');
-				for (var i in canvases) {
-					if (!canvases.hasOwnProperty(i)) continue;
-					_R.destroyCanvas(canvases[i]);
-				}
-			});
 
 		},
 
@@ -559,6 +586,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					element = element.parentNode;
 				}
 			});
+		},
+
+		observeRemoved : function(id) {
+			var x = new MutationObserver(function (e) {
+				try{if (!document.body.contains(e[0].target)) _R[id].c.revkill();} catch(e) {};
+			});
+
+			x.observe(_R[id].cpar[0], { childList: true });
 		},
 
 		initNextRevslider: function(id) {
@@ -670,6 +705,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 						if (_R[id] === undefined) return;
 						_R[id].revolutionSlideOnLoaded = true;
 						_R[id].c.trigger('revolution.slide.onloaded');
+						_R.calcScrollToId();
 					}, 50);
 				}, _R[id].startDelay);
 				_R[id].startDelay = 0;
@@ -703,16 +739,20 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		},
 
 
-		//	-	SET POST OF SCROLL PARALLAX	-
 		scrollHandling: function(id, fromMouse, speedoverwrite, ignorelayers) {
 			if (_R[id] === undefined) return;
 
 			//if (_R.lastscrolltop==_R.scrollY && !_R[id].duringslidechange && !fromMouse) return false;
 
-			var b = _R[id].topc !== undefined ? _R[id].topc[0].getBoundingClientRect() : _R[id].canv.height === 0 ? _R[id].cpar[0].getBoundingClientRect() : _R[id].c[0].getBoundingClientRect();
+			var b = _R[id].topc !== undefined ? _R[id].topc[0].getBoundingClientRect() : _R[id].canv.height === 0 ? _R[id].cpar[0].getBoundingClientRect() : _R[id].c[0].getBoundingClientRect(),
+				realwheight = _R.ISM ? window.innerHeight : _R.lastwindowheight;
 			b.hheight = b.height === 0 ? _R[id].canv.height === 0 ? _R[id].module.height : _R[id].canv.height : b.height;
 
-			_R[id].scrollproc = b.top < 0 || b.hheight > _R.lastwindowheight && b.top < _R.lastwindowheight ? b.top / b.hheight : b.bottom > _R.lastwindowheight ? (b.bottom - _R.lastwindowheight) / b.hheight : 0;
+
+			_R[id].scrollproc = b.top < 0 || (b.hheight >realwheight && b.top <realwheight) ? b.top / b.hheight :
+								b.bottom >realwheight ? (b.bottom -realwheight) / b.hheight :
+								0;
+
 			var area = Math.max(0, 1 - Math.abs(_R[id].scrollproc));
 
 			if (_R[id].viewPort.enable) {
@@ -738,7 +778,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			}
 
 			// NOT VISIBLE, NO MORE CHECK NEEDED
-			if (!_R[id].inviewport) return;
+			if (!_R[id].inviewport) {
+				if (_R.stickySupported !== true && _R[id].fixedScrollOnState !== false) {
+					_R[id].topc.removeClass("rs-fixedscrollon");
+					tpGS.gsap.set(_R[id].cpar, { top: 0, y:0 });
+					_R[id].fixedScrollOnState = false;
+				}
+				return;
+			}
 			if (_R.callBackHandling) _R.callBackHandling(id, "parallax", "start");
 			requestAnimationFrame(function() { if (_R[id].sliderLayout === "fullscreen") _R.getFullscreenOffsets(id); });
 			_R.parallaxProcesses(id, b, ignorelayers, speedoverwrite);
@@ -780,10 +827,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		},
 
 		getWindowDimension: function(e, oriChanged) {
-
 			if (e === false) {
 				_R.rAfScrollbar = "skip";
-				_R.winWAll = window.innerWidth;
+				_R.winWAll = _R.ISM && window.visualViewport ? document.documentElement.clientWidth : window.innerWidth;
 				_R.winWSbar = document.documentElement.clientWidth;
 				if (_R.ISM) {
 					_R.zoom = oriChanged ? 1 : _R.winWSbar / _R.winWAll;
@@ -811,7 +857,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				clearTimeout(_R.windowDimenstionDelay);
 			_R.windowDimenstionDelay = setTimeout(function() {
 				_R.rAfScrollbar = undefined;
-				_R.winWAll = window.innerWidth;
+				_R.winWAll = _R.ISM && window.visualViewport ? document.documentElement.clientWidth : window.innerWidth;
 				_R.winWSbar = document.documentElement.clientWidth;
 				if (_R.ISM) {
 					_R.zoom = oriChanged ? 1 : _R.winWSbar / _R.winWAll;
@@ -908,6 +954,8 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				window.RS_60_MODAL_API_CALLS = window.RS_60_MODAL_API_CALLS || [];
 				window.RS_60_MODAL_API_CALLS.push(modal);
 				//SHOW MODAL COVER
+                if(event === undefined) event = {};
+                if(event.alias === undefined) event.alias = modal;
 				if (cover) _R.showModalCover(id, event, "show");
 
 				// GET SLIDER PER AJAX
@@ -921,16 +969,16 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 						if (ret !== null && ret.success == true) {
 							var i;
-
+							id = id==undefined ? ret.htmlid : id;
 							// AFTER LOAD UPDATE THE GENERAL WAITING LIST, MAYBE ADDON NEED TO BE LOADED AS WELL
 							if (ret.waiting !== undefined)
 								for (i in ret.waiting)
-									if (jQuery.inArray(ret.waiting[i], RS_MODULES.waiting) == -1) {
+									if (ret.waiting.hasOwnProperty(i) && jQuery.inArray(ret.waiting[i], RS_MODULES.waiting) == -1) {
 										RS_MODULES.waiting.push(ret.waiting[i]);
 										window.RS_MODULES.minimal = false;
 									}
 
-									// ADD SCRIPTS TO LOAD
+							// ADD SCRIPTS TO LOAD
 							if (ret.toload !== undefined) {
 								var scripts = "";
 								RS_MODULES = RS_MODULES || {};
@@ -948,7 +996,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 								if (scripts !== "") jQuery('body').append(scripts);
 							}
 							// ADD MARKUP, CSS and INIT SCRIPT TO THE DOM
-							jQuery('body').append(ret.data);
+							if (RS_MODULES===undefined || RS_MODULES.modules[ret.htmlid]==undefined) jQuery('body').append(ret.data);
 
 							if (cover) _R.showModalCover(id, event, "hide");
 
@@ -1012,12 +1060,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				}, 750);
 				return;
 			}
+			_R[id].modal.lastModalCall =_.mode;
 
 			switch (_.mode) {
 				case "show":
 					if (_R[id].modal.isLive === true) return;
 					if (_R.anyModalclosing === true) return;
 
+					_R.document.trigger('RS_MODALOPENED');	//TO TRIGGER ANYTHING WHAT LISTENING ON ANY MODAL OPENED
 
 					_R[id].modal.isLive = true;
 					_.slide = _.slide === undefined ? "to0" : _.slide;
@@ -1031,6 +1081,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					var u = { a: 0 }
 					_R.isModalOpen = true;
 					_R[id].clearModalBG = true;
+					if (_R[id].sliderType === 'carousel' && _R[id].pr_active_bg !== undefined && _R[id].pr_active_bg.length > 0) tpGS.gsap.to(_R[id].pr_active_bg, 0.5, { opacity: 1 });
 					tpGS.gsap.fromTo(u, _R[id].modal.coverSpeed / 5, { a: 0 }, {
 						a: 10,
 						ease: "power3.inOut",
@@ -1046,9 +1097,10 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					setTimeout(function() {
 						tpGS.gsap.fromTo([_R[id].modal.c], 0.01, { opacity: 0 }, { opacity: 1, delay: _R[id].modal.coverSpeed / 4, ease: "power3.inOut", onComplete: function() {} });
 						window.overscrollhistory = document.body.style.overflow;
-						document.body.style.overflow = "hidden";
-						_R.getWindowDimension();
+						if (!_R[id].modal.allowPageScroll) document.body.style.overflow = "hidden";
+						if(_R[id].sliderLayout === 'fullscreen') _R.getWindowDimension();
 					}, 250);
+					if(_R[id].sliderLayout !== 'fullscreen') _R.getWindowDimension();
 					break;
 				case "close":
 					if (_R.anyModalclosing === true) return;
@@ -1086,7 +1138,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					if (_R[id].modal.listener === undefined) {
 						_R[id].modal.c = jQuery('#' + id + '_modal');
 						if (_R[id].modal.cover === false || _R[id].modal.cover === "false") _R[id].modal.coverColor = "transparent";
-						_R[id].modal.bg = jQuery('rs-modal-cover[data-alias="' + _.alias + '"]');
+						_R[id].modal.bg = jQuery('rs-modal-cover[data-alias="' + _R[id].modal.alias + '"]');
 						if (_R[id].modal.bg === undefined || _R[id].modal.bg.length === 0) {
 							_R[id].modal.bg = jQuery('<rs-modal-cover style="display:none;opacity:0;background:' + _R[id].modal.coverColor + '" data-rid="' + id + '" id="' + id + '_modal_bg"></rs-modal-cover>');
 
@@ -1175,8 +1227,11 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 								if (_R[id].modal.trigger.scrollo !== undefined || _R[id].modal.trigger.scroll !== undefined) {
 									if (_R[id].modal.trigger.scroll !== undefined && jQuery(_R[id].modal.trigger.scroll)[0] !== undefined) _R[id].modal.trigger.scroll = jQuery(_R[id].modal.trigger.scroll)[0];
 									var startModalOnScrollListener = function() {
-										if (_R[id].modal.trigger.scroll !== undefined) var rect = _R[id].modal.trigger.scroll.getBoundingClientRect();
-										if ((_R[id].modal.trigger.scroll !== undefined && Math.abs((rect.top + (rect.bottom - rect.top) / 2) - _R.getWinH(id) / 2) < 50) || (_R[id].modal.trigger.scrollo !== undefined && Math.abs(_R[id].modal.trigger.scrollo - (_R.scrollY !== undefined ? _R.scrollY : window.scrollY)) < 100)) {
+										if (_R[id].modal.trigger.scroll !== undefined) {
+											var selement = typeof _R[id].modal.trigger.scroll =="string" ?  document.getElementById(_R[id].modal.trigger.scroll) : 	typeof _R[id].modal.trigger.scroll =="object" ? _R[id].modal.trigger.scroll : undefined,
+											rect = selement!==undefined && selement!==null ? _R[id].modal.trigger.scroll.getBoundingClientRect() : undefined;
+										}
+										if ((_R[id].modal.trigger.scroll !== undefined && rect!==undefined && Math.abs((rect.top + (rect.bottom - rect.top) / 2) - _R.getWinH(id) / 2) < 50) || (_R[id].modal.trigger.scrollo !== undefined && Math.abs(_R[id].modal.trigger.scrollo - (_R.scrollY !== undefined ? _R.scrollY : window.scrollY)) < 100)) {
 											_R.document.trigger('RS_OPENMODAL_' + _R[id].modal.alias);
 											if (_R[id].modal.trigger.cookie !== undefined) _R.setCookie(_R[id].modal.alias + '_modal_one_time', true, _R[id].modal.trigger.cookie);
 											document.removeEventListener('scroll', startModalOnScrollListener);
@@ -1201,7 +1256,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			if (typeof a === "string" && a.indexOf("#") >= 0) {
 				var b = a.split(","),
 					l = b.length - 1;
-				for (var j in b) {
+				for (var j in b) if (b.hasOwnProperty(j)) {
 					if (typeof b[j] === "string" && b[j][0] === "#")
 						ret = ret + ((b[j][1] / b[j][3])) * 100 + "%" + (j < l ? "," : "");
 					else
@@ -1239,7 +1294,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 			for (var j in containers) {
 				if (!containers.hasOwnProperty(j)) continue;
-				var imgs = containers[j].querySelectorAll('img, rs-sbg, .rs-svg');
+
+				var imgs = containers[j].querySelectorAll('img, rs-sbg, .rs-svg'),
+					bgs = _R[id].lazyOnBg ? containers[j].querySelectorAll('rs-bg-elem, rs-column, rs-layer') : [];
 
 				for (var i in imgs) {
 					if (!imgs.hasOwnProperty(i)) continue;
@@ -1249,9 +1306,21 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 						src = lazy !== undefined ? lazy : _R.gA(imgs[i], "svg_src") != undefined ? _R.gA(imgs[i], "svg_src") : imgs[i].src === undefined ? jQuery(imgs[i]).data('src') : imgs[i].src,
 						type = _R.gA(imgs[i], "svg_src") != undefined ? "svg" : "img";
 					//_R[id].loadqueue.filter(x=>x.src === src)
-					if (src !== undefined && _R[id].loadqueue !== undefined && _R[id].loadqueue.filter(function(x) { return x.src === src; }).length == 0) _R[id].loadqueue.push({ src: src, img: imgs[i], index: i, starttoload: jQuery.now(), type: type || "img", prio: prio, progress: (imgs[i].complete && src === imgs[i].src) ? "loaded" : "prepared", static: staticlayer, width: (imgs[i].complete && src === imgs[i].src ? imgs[i].width : undefined), height: (imgs[i].complete && src === imgs[i].src) ? imgs[i].height : undefined });
-
+					if (src !== undefined && _R[id].loadqueue !== undefined && _R[id].loadqueue.filter(function(x) { return x.src === src; }).length == 0) _R[id].loadqueue.push({ src: src, img: imgs[i], index: i, starttoload: Date.now(), type: type || "img", prio: prio, progress: (imgs[i].complete && src === imgs[i].src) ? "loaded" : "prepared", static: staticlayer, width: (imgs[i].complete && src === imgs[i].src ? imgs[i].width : undefined), height: (imgs[i].complete && src === imgs[i].src) ? imgs[i].height : undefined });
 				}
+
+				//Change Lazy Load images in Backgrounds
+				for (var i in bgs) {
+					if (!bgs.hasOwnProperty(i)) continue;
+					if (bgs[i] !== undefined && bgs[i].dataset !== undefined && bgs[i].dataset.bglazy !== undefined && bgs[i].style.backgroundImage.indexOf('dummy.png') >= 0) bgs[i].style.backgroundImage = 'url("'+bgs[i].dataset.bglazy+'")';
+				}
+
+				if (bgs[i] !== undefined && bgs[i].dataset !== undefined && bgs[i].dataset.bglazy !== undefined && bgs[i].style.backgroundImage.indexOf('dummy.png') >= 0) bgs[i].style.backgroundImage = 'url("'+bgs[i].dataset.bglazy+'")';
+			}
+
+			if (!_R[id].cparBgChecked && _R[id].cpar[0] !== undefined && _R[id].cpar[0].dataset !== undefined && _R[id].cpar[0].dataset.bglazy !== undefined && _R[id].cpar[0].style.backgroundImage.indexOf('dummy.png') >= 0) {
+				_R[id].cparBgChecked = true;
+				_R[id].cpar[0].style.backgroundImage = 'url("'+_R[id].cpar[0].dataset.bglazy+'")';
 			}
 			progressImageLoad(id);
 		},
@@ -1333,7 +1402,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 									if (containers[j].getAttribute('data-iratio') !== undefined && !containers[j].getAttribute('data-iratio') && loadobj.img && loadobj.img.naturalWidth) {
 										containers[j].setAttribute('data-iratio', loadobj.img.naturalWidth / loadobj.img.naturalHeight);
-										_R.setCarouselDefaults(id, "redraw");
+										_R.setCarouselDefaults(id, "redraw", true);
 										if (_R[id].carousel.ocfirsttun === true) _R.organiseCarousel(id, "right", true, false, false);
 									}
 									_R.updateSlideBGs(id, key, _R[id].sbgs[key]);
@@ -1346,7 +1415,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					}
 
 					if (loadobj && loadobj.progress && loadobj.progress.match(/inprogress|inload|prepared/g))
-						if (!loadobj.error && jQuery.now() - loadobj.starttoload < 15000) waitforload = true;
+						if (!loadobj.error && Date.now() - loadobj.starttoload < 15000) waitforload = true;
 						else {
 							loadobj.progress = "failed";
 							if (!loadobj.reported_img) {
@@ -1363,19 +1432,18 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 			}
 
-
-			if (!_R.ISM && _R[id].audioqueue && _R[id].audioqueue.length > 0) {
+			/*if (!_R.ISM && _R[id].audioqueue && _R[id].audioqueue.length > 0) {
 				jQuery.each(_R[id].audioqueue, function(i, obj) {
 					if (obj.status && obj.status === "prepared")
-						if (jQuery.now() - obj.start < obj.waittime)
+						if (Date.now() - obj.start < obj.waittime)
 							waitforload = true;
 				});
-			}
+			}*/
 
 			jQuery.each(_R[id].loadqueue, function(i, o) {
 				if (o.static === true && ((o.progress != "loaded" && o.progress !== "done") || o.progress === "failed")) {
 					if (o.progress == "failed" && !o.reported) o.reported = simWarn(o.src, o.error);
-					else if (!o.error && jQuery.now() - o.starttoload < 5000) waitforload = true;
+					else if (!o.error && Date.now() - o.starttoload < 5000) waitforload = true;
 					else if (!o.reported) o.reported = simWarn(o.src, o.error);
 				}
 			});
@@ -1439,6 +1507,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		},
 
 		setIsIOS: function() {
+			_R.isiPhone = /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 			_R.isIOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) || (navigator.platform === "MacIntel" && typeof navigator.standalone !== "undefined");
 		},
 
@@ -1547,6 +1616,25 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			return _R.IE11;
 		},
 
+		checkBackdrop: function(){
+			var el = document.createElement('div');
+			el.style.cssText = '-webkit-backdrop-filter: blur(2px)';
+			var test1 = (el.style.length != 0);
+
+			var test2 = (
+				document.documentMode === undefined //non-IE browsers, including ancient IEs
+				|| document.documentMode > 9 //IE compatibility moe
+			);
+
+			if(!(test1 && test2)) {
+				el.style.cssText = 'backdrop-filter: blur(2px)';
+				test1 = (el.style.length != 0);
+			}
+			el = null;
+
+			_R.useBackdrop = test1 && test2;
+		},
+
 		deepLink: function(id, deeplink) {
 			if (deeplink === undefined) return;
 
@@ -1598,17 +1686,19 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		},
 
 		// 	-	CALLING THE NEW SLIDE 	-	//
-		callingNewSlide: function(id, direction, ignore) {
+		callingNewSlide: function(id, direction, ignore, skip) {
 			var r = _R.getComingSlide(id, direction);
 
 			_R[id].pr_next_key = r.nindex;
-			_R[id].sdir = _R[id].pr_next_key < _R[id].pr_active_key ? 1 : 0;
+			_R[id].sdir = (_R[id].sc_indicator!=="bullet" && _R[id].pr_active_key==(_R[id].slideamount-1) && _R[id].pr_next_key==0) ? 0 : _R[id].pr_next_key < _R[id].pr_active_key ? 1 : 0;
+
+
 			if (ignore && _R[id].carousel !== undefined) _R[id].carousel.focused = _R[id].pr_next_key;
 
 
 			if (!_R[id].ctNavElement) _R[id].c.trigger("revolution.nextslide.waiting");
 			else _R[id].ctNavElement = false;
-			if (_R[id].started && (r.aindex === _R[id].pr_next_key && r.aindex === _R[id].pr_lastshown_key) || (_R[id].pr_next_key !== r.aindex && _R[id].pr_next_key != -1 && _R[id].pr_lastshown_key !== undefined)) swapSlide(id, ignore);
+			if (_R[id].started && (r.aindex === _R[id].pr_next_key && r.aindex === _R[id].pr_lastshown_key) || (_R[id].pr_next_key !== r.aindex && _R[id].pr_next_key != -1 && _R[id].pr_lastshown_key !== undefined)) swapSlide(id, ignore, skip);
 		},
 
 		// FIND SEARCHED IMAGE/SRC IN THE LOAD QUEUE
@@ -1752,16 +1842,13 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			/* CALCULATE OUTER NAVIGATION SIZES */
 			_R[id].outNavDims = _R.getOuterNavDimension(id);
 
-
 			/* CALCULATE CANVAS WIDTH */
 			_R[id].canv.width = _R[id].module.width - _R[id].outNavDims.horizontal - (ismodal ? _R.scrollBarWidth : 0);
 			if (ismodal && _R[id].sliderLayout === "auto") _R[id].canv.width = Math.min(_R[id].gridwidth[_R[id].level], _W_);
-
 			/* CALCULAT CANVAS HEIGHT */
 			if (_R[id].sliderLayout === "fullscreen" || _R[id].infullscreenmode) {
 				var tempHeight = _R.getWinH(id) - (_R[id].modal.useAsModal ===  true ? 0 : _R.getFullscreenOffsets(id));
 				_R[id].canv.height = Math.max(_R[id].rowHeights.cur, Math.max(tempHeight - _R[id].outNavDims.vertical, _R[id].minHeight));
-
 				/* FIX IF DIFFERENT HEIGHTS OF CURRENT AND LAST SLIDE DIMENSION EXIST BASED ON ROW HEIGHT !! */
 				if (_oldli !== _actli) {
 					_R[id].currentSlideHeight = Math.max(_R[id].rowHeights.last, Math.max(tempHeight - _R[id].outNavDims.vertical, _R[id].minHeight));
@@ -1771,8 +1858,13 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			} else {
 				_R[id].canv.height = _R[id].keepBPHeight ? _R[id].gridheight[_R[id].level] : Math.round(_R[id].canv.width * _R[id].aratio);
 				_R[id].canv.height = !_R[id].autoHeight ? Math.min(_R[id].canv.height, _R[id].gridheight[_R[id].level]) : _R[id].canv.height;
-				_R[id].canv.height = Math.max(Math.max(_R[id].rowHeights.cur, _R[id].canv.height), _R[id].minHeight);
+				_R[id].carousel.prevNextVisCalculated =  _R[id].sliderType=="carousel" && _R[id].carousel.orientation=="v" ? _R[id].carousel.prevNextVisType=="%" ? _R[id].canv.height * _R[id].carousel.prevNextVis : _R[id].carousel.prevNextVis  : 0;
+				_R[id].canv.height = Math.max(Math.max(_R[id].rowHeights.cur, _R[id].canv.height), _R[id].minHeight) + _R[id].carousel.prevNextVisCalculated;
 				_R[id].drawUpdates.c.height = _R[id].canv.height;
+			}
+			if(_R[id].sliderLayout === 'fullscreen' || _R[id].sliderLayout === 'fullwidth') {
+				_R[id].canv.width -= (_R[id].cpar.outerWidth() - _R[id].cpar.width());
+				if(_R[id].sliderLayout === 'fullscreen') _R[id].canv.height -= (_R[id].cpar.outerHeight() - _R[id].cpar.height());
 			}
 
 			_R[id].module.height = _R[id].canv.height;
@@ -1792,8 +1884,6 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 			/* CALCULATE CONTENT MULTIPLICATORS */
 			_R[id].CM = _R.getSizeMultpilicator(id, _R[id].enableUpscaling, { width: _R[id].canv.width, height: _R[id].canv.height });
-
-
 			/* CALCULATE CONTENT WIDTH AND HEIGHT */
 			_R[id].content.width = _R[id].gridwidth[_R[id].level] * _R[id].CM.w;
 			_R[id].content.height = Math.round(Math.max(_R[id].rowHeights.cur, _R[id].gridheight[_R[id].level] * _R[id].CM.h));
@@ -1818,8 +1908,18 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			// OUTER CONTAINER HEIGHT MUST BE DIFFERENT DUE FIXED SCROLL EFFECT
 			if (_R[id].sbtimeline.set && _R[id].sbtimeline.fixed) {
 				if (_R[id].sbtimeline.extended === undefined) _R.updateFixedScrollTimes(id);
-
 				_R[id].forcerHeight = ((2 * _h) + _R[id].sbtimeline.extended);
+				if (_R[id].sbtimeline.pullc && _R[id].rsFullWidthWrap!==undefined && _R[id].rsFullWidthWrap[0]!==null)
+					requestAnimationFrame(function() {
+						var pullcMargin = _R[id].rsFullWidthWrapMarginBottom + (-1*_R[id].forcerHeight);
+						// sometimes pullcMargin is NaN
+						_R[id].rsFullWidthWrap[0].style.marginBottom = (isNaN(pullcMargin) ? _R[id].rsFullWidthBottomMarginPush : _R[id].rsFullWidthBottomMarginPush + pullcMargin) + "px";
+					});
+
+				if(_R[id].rsFullWidthWrap!==undefined && _R[id].rsFullWidthWrap[0]!==null && _R[id].sliderLayout == "fullscreen"){
+					_R[id].rsFullWidthBottomMarginPush = _R.getFullscreenOffsets(id)
+					_R[id].rsFullWidthWrap[0].style.marginBottom = _R[id].rsFullWidthBottomMarginPush + "px"
+				}
 			} else {
 				_R[id].forcerHeight = _h;
 
@@ -1896,10 +1996,13 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				if (_R[id].redraw.forcer) tpGS.gsap.set(_R[id].forcer, { height: _R[id].forcerHeight });
 				if (_R[id].redraw.c) tpGS.gsap.set(_R[id].c, _R[id].drawUpdates.c);
 				if (_R[id].redraw.cpar) tpGS.gsap.set(_R[id].cpar, _R[id].drawUpdates.cpar);
-				if (_R[id].redraw.modalcanvas) tpGS.gsap.set([_R[id].modal.c, _R[id].canvas], { width: _R[id].canv.width });
-				if (_R[id].redraw.maxHeightOld) _R[id].slides[_oldli].style.maxHeight = _R[id].currentSlideHeight !== _R[id].canv.height ? _R[id].currentSlideHeight + "px" : "none";
+                if (_R[id].redraw.modalcanvas && _R[id]!==undefined) {
+                    if (_R[id].modal!==undefined && _R[id].modal.c!==undefined) tpGS.gsap.set(_R[id].modal.c, { width: _R[id].canv.width });
+                    if ( _R[id].canvas!==undefined) tpGS.gsap.set(_R[id].canvas, { width: _R[id].canv.width });
+                }
+                if (_R[id].redraw.maxHeightOld) _R[id].slides[_oldli].style.maxHeight = _R[id].currentSlideHeight !== _R[id].canv.height ? _R[id].currentSlideHeight + "px" : "none";
 				if (_R[id].redraw.slayers) tpGS.gsap.set(_R[id].slayers, { left: _R[id].outNavDims.left });
-				if (_R[id].redraw.modulewrap) tpGS.gsap.set(_R[id].modal.c.find('rs-module-wrap'), _R[id].modal.calibration);
+				if (_R[id].redraw.modulewrap && _R[id].modal.c != undefined) tpGS.gsap.set(_R[id].modal.c.find('rs-module-wrap'), _R[id].modal.calibration);
 				//1ST TIME START NAVIGATION BUILDER
 				if (_R[id].navigation.initialised !== true && type === "prepared") {
 					if (_R[id].sliderType !== "hero" && _R.createNavigation && _R[id].navigation.use && _R[id].navigation.createNavigationDone !== true) _R.createNavigation(id);
@@ -1908,6 +2011,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 				//IF PROGRESSBAR DRAWN, BUT NOT YET POSITIONED WELL
 				if (_R[id].rebuildProgressBar) buildProgressBar(id);
+				_R.putRowsInPosition(id);
 
 				_R[id].redraw = {};
 			});
@@ -1953,6 +2057,33 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			});
 
 			return somethingchanged;
+		},
+
+		putMiddleZoneInPosition : function(id, a) {
+
+			if (!(_R[id].middleZones==undefined || _R[id].middleZones[a]==undefined || _R[id].rowMiddleHeights==undefined || _R[id].rowMiddleHeights[a]==undefined) && (_R[id].caches.middleHeights[a]!==_R[id].rowMiddleHeights[a] || _R[id].caches.lastModuleHeight!==_R[id].module.height)) {
+				tpGS.gsap.set(_R[id].middleZones[a],{top:Math.round(_R[id].module.height/2-_R[id].rowMiddleHeights[a]/2)});
+				_R[id].caches.middleHeights[a]=_R[id].rowMiddleHeights[a];
+			}
+		},
+
+		putRowsInPosition : function(id) {
+			var a = _R[id].activeRSSlide || 0,
+				b = _R[id].pr_processing_key;
+
+			//Current Slide Middle Zone
+			_R.putMiddleZoneInPosition(id,a);
+			//Coming Slide Middle Zone
+			if (a!==b && b!==undefined) _R.putMiddleZoneInPosition(id,b);
+
+			//STATIC Slide Rows
+			if (!(_R[id].smiddleZones==undefined || _R[id].rowMiddleHeights==undefined || _R[id].rowMiddleHeights.static==undefined) && (_R[id].caches.middleHeights.static!==_R[id].rowMiddleHeights.static || _R[id].caches.lastModuleHeight!==_R[id].module.height)) {
+				tpGS.gsap.set(_R[id].smiddleZones[0],{top:Math.round(_R[id].module.height/2-_R[id].rowMiddleHeights.static/2)});
+				_R[id].caches.middleHeights.static=_R[id].rowMiddleHeights.static;
+			}
+
+			_R[id].caches.lastModuleHeight=_R[id].module.height;
+
 		},
 
 		getSlideIndex: function(id, key) {
@@ -2288,6 +2419,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 		_R[id].canvas.css({ visibility: "visible" });
 		_R[id].slayers = _R[id].c.find('rs-static-layers');
+		if(_R[id].slayers[0] && _R[id].slayers.className && _R[id].slayers[0].className.indexOf('rs-stl-visible') !== -1) _R[id].c.addClass('rs-stl-visible');
 		if (_R[id].slayers.length > 0) _R.sA(_R[id].slayers[0], 'key', 'staticlayers');
 		if (_R[id].modal.useAsModal === true) {
 			_R[id].cpar.wrap('<rs-modal id="' + (_R[id].c[0].id + "_modal") + '"></rs-modal>');
@@ -2325,7 +2457,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			def; // DEFAULT
 	}
 
-
+	var  getParentLevel = function(nc,l) {
+						return l==0 ? jQuery(nc) : l==1 ? jQuery(nc.parentNode) : l==2 ? jQuery(nc.parentNode.parentNode) : l==3 ? jQuery(nc.parentNode.parentNode.parentNode) : l==4 ? jQuery(nc.parentNode.parentNode.parentNode.parentNode) : jQuery(nc.parentNode.parentNode.parentNode.parentNode.parentNode)
+					}
 
 
 	var runSlider = function(id) {
@@ -2336,10 +2470,10 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		// REMOVE SLIDER MODULE FOR A WHILE
 		if (_R[id].noDetach !== true) _R[id].c.detach();
 
+		var fli = _R[id].canvas.find('rs-slide:first-child');
 		// RANDOMIZE THE SLIDER SHUFFLE MODE
 		if (_R[id].shuffle) {
-			var fli = _R[id].canvas.find('rs-slide:first-child'),
-				fsa = _R.gA(fli[0], "firstanim");
+			var fsa = _R.gA(fli[0], "firstanim");
 			for (var u = 0; u < _R[id].slideamount; u++) _R[id].canvas.find('rs-slide:eq(' + Math.round(Math.random() * _R[id].slideamount) + ')').prependTo(_R[id].canvas);
 			_R.sA(_R[id].canvas.find('rs-slide:first-child')[0], "firstanim", fsa);
 		}
@@ -2355,7 +2489,8 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		var aindex = 0,
 			carborder = _R[id].sliderType === "carousel" && _R[id].carousel.border_radius !== undefined ? parseInt(_R[id].carousel.border_radius, 0) : 0;
 
-
+		if(_R[id].sliderType !== "carousel") tpGS.gsap.set(_R[id].slides, {display: 'none'});
+		if(_R[id].sliderType !== "carousel") tpGS.gsap.set(fli, {display: 'block'});
 
 		for (var index in _R[id].slides) {
 			if (!_R[id].slides.hasOwnProperty(index) || index === "length") continue;
@@ -2384,9 +2519,11 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			// IF LINK ON SLIDE EXISTS, NEED TO CREATE A PROPER LAYER FOR IT.
 			if (_R.gA(slide, "link") != undefined || _R.gA(slide, "linktoslide") !== undefined) {
 
-				var link = _R.gA(slide, "link") !== undefined ? _R.gA(slide, "link") : "slide",
+				var rlink = _R.gA(slide, "link"),
+					link =  rlink!== undefined ? rlink : "slide",
 					linktoslide = link != "slide" ? "no" : _R.gA(slide, "linktoslide"),
-					seoz = _R.gA(slide, "seoz");
+					seoz = _R.gA(slide, "seoz"),
+					tag = _R.gA(slide, "tag");
 
 				if (linktoslide != undefined && linktoslide != "no" && linktoslide != "next" && linktoslide != "prev") {
 					for (var ris in _R[id].slides) {
@@ -2395,11 +2532,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					}
 				}
 
-				jQuery(slide).prepend('<rs-layer class="rs-layer slidelink" id="rs_slidelink_' + Math.round(Math.random() * 100000) + '" data-zindex="' + (seoz === "back" ? 0 : seoz === "front" ? 95 : seoz !== undefined ? parseInt(seoz, 0) : 100) + '" dataxy="x:c;y:c" data-dim="w:100%;h:100%" data-basealign="slide"' +
-					(linktoslide == "no" ? link != "slide" && !_R.ISM ? "  data-actions=\'" + 'o:click;a:simplelink;target:' + (_R.gA(slide, "target") || "_self") + ';url:' + link + ';' + "\'" : "" : "  data-actions=\'" + (linktoslide === "scroll_under" ? 'o:click;a:scrollbelow;offset:100px;' : linktoslide === "prev" ? 'o:click;a:jumptoslide;slide:prev;d:0.2;' : linktoslide === "next" ? 'o:click;a:jumptoslide;slide:next;d:0.2;' : 'o:click;a:jumptoslide;slide:' + linktoslide + ';d:0.2;') + "\'") +
-					" data-frame_1='e:power3.inOut;st:100;sp:100' data-frame_999='e:power3.inOut;o:0;st:w;sp:100'>" +
-					(_R.ISM ? "<a " + (link != "slide" ? (_R.gA(slide, "target") === "_blank" ? 'rel="noopener" ' : '') + 'target="' + (_R.gA(slide, "target") || "_self") + '" href="' + link + '"' : '') + "><span></span></a>" : "") +
-					"</rs-layer>");
+				if (link=="slide" || tag!="a")
+					jQuery(slide).prepend('<rs-layer class="rs-layer slidelink" id="rs_slidelink_' + Math.round(Math.random() * 100000) + '" data-zindex="' + (seoz === "back" ? 0 : seoz === "front" ? 95 : seoz !== undefined ? parseInt(seoz, 0) : 100) + '" dataxy="x:c;y:c" data-dim="w:100%;h:100%" data-basealign="slide"' +
+						(linktoslide == "no" ? link != "slide" && !_R.ISM ? "  data-actions=\'" + 'o:click;a:simplelink;target:' + (_R.gA(slide, "target") || "_self") + ';url:' + link + ';' + "\'" : "" : "  data-actions=\'" + (linktoslide === "scroll_under" ? 'o:click;a:scrollbelow;offset:100px;' : linktoslide === "prev" ? 'o:click;a:jumptoslide;slide:prev;d:0.2;' : linktoslide === "next" ? 'o:click;a:jumptoslide;slide:next;d:0.2;' : 'o:click;a:jumptoslide;slide:' + linktoslide + ';d:0.2;') + "\'") +
+						" data-frame_1='e:power3.inOut;st:100;sp:100' data-frame_999='e:power3.inOut;o:0;st:w;sp:100'>" +
+						(_R.ISM ? "<a " + (link != "slide" ? (_R.gA(slide, "target") === "_blank" ? 'rel="noopener" ' : '') + 'target="' + (_R.gA(slide, "target") || "_self") + '" href="' + link + '"' : '') + "><span></span></a>" : "") +
+						"</rs-layer>");
+				else
+					jQuery(slide).prepend('<a class="rs-layer slidelink" id="rs_slidelink_' + Math.round(Math.random() * 100000) + '" data-zindex="' + (seoz === "back" ? 0 : seoz === "front" ? 95 : seoz !== undefined ? parseInt(seoz, 0) : 100) + '" dataxy="x:c;y:c" data-dim="w:100%;h:100%" data-basealign="slide" href="'+link+'" target="' + (_R.gA(slide, "target") || "_self") + '" rel="noopener" data-frame_1="e:power3.inOut;st:100;sp:100" data-frame_999="e:power3.inOut;o:0;st:w;sp:100"><span></span></a>');
 			}
 			aindex++;
 		}
@@ -2430,7 +2570,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		// SOME _R[id]IONS WHICH SHOULD CLOSE OUT SOME OTHER SETTINGS
 		_R[id].autoHeight = _R[id].sliderLayout == "fullscreen" ? true : _R[id].autoHeight;
 
-		if (_R[id].sliderLayout == "fullwidth" && !_R[id].autoHeight) _R[id].c.css({ maxHeight: _R[id].gridheight[_R[id].level] + "px" });
+		if (_R[id].sliderLayout == "fullwidth" && !_R[id].autoHeight && (_R[id].sliderType!=="carousel" || _R[id].carousel.orientation!=="v")) {
+			_R[id].c.css({ maxHeight: _R[id].gridheight[_R[id].level] + "px" });
+		}
 
 
 
@@ -2438,6 +2580,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		if (_R[id].sliderLayout != "auto" && _R.closestNode(_R[id].c[0], 'RS-FULLWIDTH-WRAP') === null /*_R[id].c.closest('rs-fullwidth-wrap').length==0*/ && (_R[id].sliderLayout !== "fullscreen" || _R[id].disableForceFullWidth != true)) {
 			var mt = _R[id].cpar[0].style.marginTop,
 				mb = _R[id].cpar[0].style.marginBottom;
+
+			_R[id].rsFullWidthWrapMarginBottom = parseInt(mb,0);
+
 			mt = mt === undefined || mt === "" ? "" : "margin-top:" + mt + ";";
 			mb = mb === undefined || mb === "" ? "" : "margin-bottom:" + mb + ";";
 			_R[id].rsFullWidthWrap = _R[id].topc = jQuery('<rs-fullwidth-wrap id="' + (_R[id].c[0].id + "_forcefullwidth") + '" style="' + mt + mb + '"></rs-fullwidth-wrap>');
@@ -2455,6 +2600,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 		// MENU MODE AND SIMILIAR FUN
 		if (_R[id].forceOverflow) _R[id].topc[0].classList.add("rs-forceoverflow");
+		else if (_R[id].parallax.type === '3D') _R[id].topc[0].classList.add("rs-parallax-hidden-of");
 		if (_R[id].sliderType === "carousel" && _R[id].overflowHidden !== true) _R[id].c.css({ overflow: "visible" });
 		if (_R[id].maxHeight !== 0) tpGS.gsap.set([_R[id].cpar, _R[id].c, _R[id].topc], { maxHeight: _R[id].maxHeight + "px" });
 		if (_R[id].fixedOnTop) tpGS.gsap.set(_R[id].blockSpacing !== undefined && _R[id].blockSpacing.block !== undefined ? _R[id].blockSpacing.block : _R[id].topc, { position: "fixed", top: "0px", left: "0px", pointerEvents: "none", zIndex: 5000 });
@@ -2497,6 +2643,8 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			/*_R[id].c.find('rs-layer, rs-row, rs-column, rs-group,  rs-bgvideo, .rs-layer').each(function() {*/
 			for (var _eli_ in elements) {
 				if (!elements.hasOwnProperty(_eli_)) continue;
+				//Remove Elements if they are for Gyroscope Permission added
+				if (!_R.ISM && elements[_eli_].classList.contains('iospermaccwait')) elements[_eli_].remove();
 				var _nc = jQuery(elements[_eli_]),
 					_ = _nc.data(),
 					s, v;
@@ -2523,6 +2671,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					_.startclasses += " rs-sba";
 					_nc[0].className += " rs-sba";
 				}
+
+
+
 				if (_.startclasses.indexOf("rs-layer-static") >= 0 && _R.handleStaticLayers) _R.handleStaticLayers(_nc, id);
 				if (_nc[0].tagName !== "RS-BGVIDEO") {
 					_nc[0].classList.add("rs-layer");
@@ -2539,16 +2690,27 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 							}
 						}
 					}
+					if (_.type === "group") {
+						_.verticalalign = "top";
+						if (_.column !== undefined) {
+							s = _.column.split(";");
+							for (var ci in s) {
+								if (!s.hasOwnProperty(ci)) continue;
+								v = s[ci].split(":");
+								if (v[0] === "a") _.verticalalign = v[1];
+							}
+						}
+					}
+
 					// PREPARE LAYERS AND WRAP THEM WITH PARALLAX, LOOP, MASK HELP CONTAINERS
 					var ec = _.startclasses.indexOf("slidelink") >= 0 ? "z-index:" + _.zindex + ";width:100% !important;height:100% !important;" : "",
-						specec = _.type !== "column" ? "" : _.verticalalign === undefined ? " vertical-align:top;" : " vertical-align:" + _.verticalalign + ";",
-						_pos = _.type === "row" || _.type === "column" ? "position:relative;" : "position:absolute;",
+						specec = _.type !== "column" && _.type !== "group" ? "" : _.verticalalign === undefined ? " vertical-align:top;" : " vertical-align:" + _.verticalalign + ";",
+						_pos = _.type === "row" || _.type === "column" || _.pos==="r" ? "position:relative;" : "position:absolute;",
 						preclas = "",
 						pretag = _.type === "row" ? "rs-row-wrap" : _.type === "column" ? "rs-column-wrap" : _.type === "group" ? "rs-group-wrap" : "rs-layer-wrap",
 						dmode = "",
 						preid = "",
 						pevents = _.noPevents ? ';pointer-events:none' : ';pointer-events:none';
-
 					if (_.type === "row" || _.type === "column" || _.type === "group") {
 						_nc[0].classList.remove("tp-resizeme");
 						if (_.type === "column") {
@@ -2573,13 +2735,23 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					if (_.wrpcls !== undefined) preclas = preclas + " " + _.wrpcls;
 					if (_.wrpid !== undefined) preid = 'id="' + _.wrpid + '"';
 
+					//Solution for Live Demo Pages & Older Templates with direct parent/parent solutions
+					_.thFixed = (_.wrpcls!==undefined && _.wrpcls.includes("th-fixed")) || (_.startclasses!==undefined && _.startclasses.includes("ddd_mousebox"));
+					_.reqWrp = {loop :  _R[id].rtl==true || _.thFixed || _.loop_0!==undefined || _.loop_999!==undefined ? true : false,
+								level : { m:0, lp: 0, p:0}
+					}
+					_.reqWrp.mask = _.reqWrp.loop || _R[id].rtl==true ||  _.pxundermask || _.thFixed || _.btrans!==undefined || (_.frame_hover!==undefined && _.frame_hover.includes('m:t')) ||  _.clip!==undefined ||  _.sba!==undefined ||  _.frame_0_sfx !== undefined || _.frame_1_sfx !== undefined || _.frame_999_sfx !== undefined || _.frame_0_mask !== undefined ||  _.frame_1_mask !== undefined  || _.frame_2_mask !== undefined ||  _.frame_3_mask !== undefined ||  _.frame_4_mask !== undefined ||  _.frame_999_mask !== undefined ? true : false;
+					_.reqWrp.level.m = _.pxundermask ? 2 :  _.reqWrp.mask ? 1 : 0;
+					_.reqWrp.level.lp = _.reqWrp.level.m + (_.reqWrp.loop ? 1 : 0);
+					_.reqWrp.level.p = _.reqWrp.level.lp + 1;
+
 					//WRAP LAYER
 					_nc.wrap('<' + pretag + ' ' + preid + ' class="rs-parallax-wrap ' + preclas + '" style="' + specec + ' ' + ec + _pos + dmode + '' + pevents + '">' +
-						'<rs-loop-wrap style="' + ec + _pos + dmode + '">' +
-						'<rs-mask-wrap style="' + ec + _pos + dmode + '">' +
+						(_.reqWrp.loop ? '<rs-loop-wrap style="' + ec + _pos + dmode + '">' : '') +
+						(_.reqWrp.mask ? '<rs-mask-wrap style="' + ec + _pos + dmode + '">' : '') +
 						(_.pxundermask ? '<rs-px-mask></rs-px-mask>' : '') +
-						'</rs-mask-wrap>' +
-						'</rs-loop-wrap>' +
+						(_.reqWrp.mask ? '</rs-mask-wrap>' : '') +
+						(_.reqWrp.loop ? '</rs-loop-wrap>' : '') +
 						'</' + pretag + '>');
 
 
@@ -2591,24 +2763,27 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					_nc[0].id = _nc[0].id === undefined ? 'layer-' + Math.round(Math.random() * 999999999) : _nc[0].id;
 					_R.revCheckIDS(id, _nc[0]);
 
+
+
 					// CACHE PARENT ELEMENTS
-					if (_.pxundermask) {
-						_R[id]._Lshortcuts[_nc[0].id] = {
-							p: jQuery(_nc[0].parentNode.parentNode.parentNode.parentNode),
-							lp: jQuery(_nc[0].parentNode.parentNode.parentNode),
-							m: jQuery(_nc[0].parentNode.parentNode)
-						}
-					} else {
-						_R[id]._Lshortcuts[_nc[0].id] = {
-							p: jQuery(_nc[0].parentNode.parentNode.parentNode),
-							lp: jQuery(_nc[0].parentNode.parentNode),
-							m: jQuery(_nc[0].parentNode)
-						}
+
+					_R[id]._Lshortcuts[_nc[0].id] = {
+						p:  getParentLevel(_nc[0], _.reqWrp.level.p),
+						lp:  getParentLevel(_nc[0], _.reqWrp.level.lp),
+						m: getParentLevel(_nc[0], _.reqWrp.level.m),
 					}
 
 
+
 					// Add BG for Columns
-					if (_.type === "column") _R[id]._Lshortcuts[_nc[0].id].p.append('<rs-cbg-mask-wrap><rs-column-bg id="' + _nc[0].id + '_rs_cbg"></rs-column-bg></rs-cbg-mask-wrap>');
+					if (_.type === "column" && (_nc[0].style.background!="" || _nc[0].style.backgroundColor!=="" || _nc[0].style.backgroundImage!=="" || _.border!==undefined)) {
+						_R[id]._Lshortcuts[_nc[0].id].p.append('<rs-cbg-mask-wrap><rs-column-bg id="' + _nc[0].id + '_rs_cbg"></rs-column-bg></rs-cbg-mask-wrap>');
+						_.cbgexists = true;
+					} else {
+						_.cbgexists = false;
+					}
+
+
 					if (_.type === "text" && _R.getByTag(_nc[0], 'IFRAME').length > 0) {
 						_R[id].slideHasIframe = true;
 						_nc[0].classList.add('rs-ii-o'); //inner iframe ok
@@ -2687,6 +2862,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			_R[id].middleZones = [];
 			_R[id].bottomZones = [];
 
+			_R[id].rowMiddleHeights = {};
+
+
 
 
 			// IF DEEPLINK HAS BEEN SET
@@ -2737,7 +2915,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				li.find('rs-zone').each(function() {
 					_R[id].rowzones[i].push(jQuery(this));
 					if (this.className.indexOf("rev_row_zone_top") >= 0) _R[id].topZones[i].push(this);
-					if (this.className.indexOf("rev_row_zone_middle") >= 0) _R[id].middleZones[i].push(this);
+					if (this.className.indexOf("rev_row_zone_middle") >= 0) {_R[id].middleZones[i].push(this);this.dataset.middle="true";}
 					if (this.className.indexOf("rev_row_zone_bottom") >= 0) _R[id].bottomZones[i].push(this);
 				});
 			}
@@ -2752,12 +2930,13 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			if (_R[id].slayers)
 				_R[id].slayers.find('rs-zone').each(function() {
 					_R[id].srowzones.push(jQuery(this));
-					if (this.className.indexOf("rev_row_zone_middle") >= 0) _R[id].smiddleZones.push(this);
+					if (this.className.indexOf("rev_row_zone_middle") >= 0) {
+						_R[id].smiddleZones.push(this);
+						this.dataset.middle="true";
+					}
 				});
 
 			if (_R[id].sliderType === "carousel") tpGS.gsap.set(_R[id].canvas, { scale: 1, perspective: 1200, transformStyle: "flat", opacity: 0 });
-
-
 
 			// APPEND MODULE CONTAINER BACK
 			_R[id].c.prependTo(_R[id].cpar);
@@ -2864,16 +3043,19 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					_R.updateSlideBGs(id);
 				}
 
-				if (_R[id].sliderType === "carousel" && _R[id].carCheckconW != _R[id].canv.width) {
+				if (_R[id].sliderType === "carousel" && ((_R[id].carCheckconW != _R[id].canv.width) || (_R[id].sliderLayout=="fullscreen" && _R[id].carCheckconH != _R[id].canv.height))) {
 					clearTimeout(_R[id].pcartimer);
 					for (var i in _R[id].sbgs)
 						if (_R[id].sbgs[i].loadobj !== undefined) _R.updateSlideBGs(id, _R[id].sbgs[i].key, _R[id].sbgs[i]);
-
-					_R[id].pcartimer = setTimeout(function() {
-						_R.prepareCarousel(id);
-						_R.animateTheLayers({ slide: "individual", id: id, mode: "rebuild", caller: "containerResized_1" });
-						_R[id].carCheckconW = _R[id].canv.width;
-					}, 100);
+					if (_R[id].carousel.orientation=="v") tpGS.gsap.set(_R[id].canvas, {height: _R[id].carousel.slide_height});
+					//_R[id].pcartimer = setTimeout(function() {
+						requestAnimationFrame(function() {
+							_R.prepareCarousel(id);
+							_R.animateTheLayers({ slide: "individual", id: id, mode: "rebuild", caller: "containerResized_1" });
+							_R[id].carCheckconW = _R[id].canv.width;
+							_R[id].carCheckconH = _R[id].canv.height;
+						});
+					//}, 100);
 					_R[id].lastconw = _R[id].canv.width;
 				}
 
@@ -2933,7 +3115,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		//SET CAROUSEL
 		if (_R[id].sliderType === "carousel") {
 			var carsty = "margin-top:" + parseInt((_R[id].carousel.padding_top || 0), 0) + "px;";
-			_R[id].canvas.css({ overflow: "visible" }).wrap('<rs-carousel-wrap style="' + carsty + '"></rs-carousel-wrap>');
+			_R[id].canvas.css({ overflow: "visible"}).wrap('<rs-carousel-wrap style="' + carsty + '"></rs-carousel-wrap>');
 			_R[id].cpar.prepend('<rs-carousel-space></rs-carousel-space>').append('<rs-carousel-space></rs-carousel-space>');
 			_R.defineCarouselElements(id);
 		}
@@ -2959,7 +3141,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			B.bgvid.detach();
 
 			//START WITH CORRECT SLIDE
-			if ((_R[id].startWithSlide != undefined && _R.gA(_R[id].slides[i], "originalindex") == _R[id].startWithSlide) || _R[id].startWithSlide === undefined && i == 0) _R[id].pr_next_key = cli.index();
+			if ((_R[id].startWithSlide != undefined && _R.gA(_R[id].slides[i], "originalindex") == _R[id].startWithSlide) || _R[id].startWithSlide === undefined && i == 0) _R[id].pr_next_key = _R[id].carousel.focused = cli.index();
 
 			tpGS.gsap.set(cli, { width: '100%', height: '100%', overflow: overflow });
 			img.wrap('<rs-sbg-px><rs-sbg-wrap data-key="' + key + '"></rs-sbg-wrap></rs-sbg-px>');
@@ -3195,17 +3377,23 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 						if (queue.type == "img") {
 							var img = queue.img.tagName == "IMG" ? queue.img : new Image();
 							_R.sA(img, "reference", queue.src);
-							if (/^([\w]+\:)?\/\//.test(queue.src) && queue.src.indexOf(location.host) === -1 && _R[id].imgCrossOrigin !== "" && _R[id].imgCrossOrigin !== undefined) img.crossOrigin = _R[id].imgCrossOrigin;
+							if (/^([\w]+\:)?\/\//.test(queue.src) && (queue.src.indexOf(location.host) === -1 || queue.src.indexOf("." + location.host) !== -1) && _R[id].imgCrossOrigin !== "" && _R[id].imgCrossOrigin !== undefined) img.crossOrigin = _R[id].imgCrossOrigin;
 							img.onload = function() {
 								imgLoaded(this, id, "loaded");
 								queue.error = false;
 							};
 							img.onerror = function() {
-								imgLoaded(this, id, "failed");
-								queue.error = true;
+								if(!img.failedOnce){
+									img.failedOnce = true;
+									delete img.crossOrigin;
+									img.removeAttribute('crossorigin');
+									img.src = queue.src;
+									imgLoaded(this, id, "failed");
+									queue.error = true;
+								}
 							};
 							img.src = queue.src;
-							queue.starttoload = jQuery.now();
+							queue.starttoload = Date.now();
 						} else {
 							jQuery.get(queue.src, function(data) {
 								queue.innerHTML = new XMLSerializer().serializeToString(data.documentElement);
@@ -3233,7 +3421,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 	var vidWarning = function(w, id) {
 
-		if (jQuery.now() - _R[id][w + "starttime"] > 5000 && _R[id][w + "warning"] != true) {
+		if (Date.now() - _R[id][w + "starttime"] > 5000 && _R[id][w + "warning"] != true) {
 			_R[id][w + "warning"] = true;
 			var txt = w + " Api Could not be loaded !";
 			if (location.protocol === 'https:') txt = txt + " Please Check and Renew SSL Certificate !";
@@ -3269,7 +3457,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		}, 200);
 	};
 
-	var swapSlide = function(id, ignore) {
+	var swapSlide = function(id, ignore, skip) {
 		if (_R[id] === undefined) return;
 
 
@@ -3294,7 +3482,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 		//Preload Video
 		var key = _R.gA(_R[id].pr_next_slide[0], "key");
-		if (_R[id].sbgs[key].bgvid && _R[id].sbgs[key].bgvid.length > 0 && (_R[id].videos == undefined || _R[id].videos[_R[id].sbgs[key].bgvid[0].id] === undefined)) {
+		if (_R[id].sbgs[key]!==undefined && _R[id].sbgs[key].bgvid && _R[id].sbgs[key].bgvid.length > 0 && (_R[id].videos == undefined || _R[id].videos[_R[id].sbgs[key].bgvid[0].id] === undefined)) {
 			_R.manageVideoLayer(_R[id].sbgs[key].bgvid, id, key);
 		}
 
@@ -3345,13 +3533,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		// WAIT FOR SWAP SLIDE PROGRESS
 		_R.waitForCurrentImages(waitList, id, function() {
 			_R[id].firstSlideShown = true;
+
+
 			// MANAGE BG VIDEOS
-			_R[id].pr_next_slide.find('rs-bgvideo').each(function() { _R.prepareCoveredVideo(id); });
+				_R[id].pr_next_slide.find('rs-bgvideo').each(function() { _R.prepareCoveredVideo(id); });
 
 			_R.loadUpcomingContent(id);
 			window.requestAnimationFrame(function() {
-
-				swapSlideProgress(_R[id].pr_next_slide.find('rs-sbg'), id, ignore);
+				swapSlideProgress(_R[id].pr_next_slide.find('rs-sbg'), id, ignore, skip);
 			});
 		});
 
@@ -3362,7 +3551,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 	//////////////////////////////////////
 	//	-	PROGRESS SWAP THE SLIDES -  //
 	/////////////////////////////////////
-	var swapSlideProgress = function(defimg, id, ignoreLayerAnimation) {
+	var swapSlideProgress = function(defimg, id, ignoreLayerAnimation, skip) {
 
 		if (_R[id] === undefined) return;
 
@@ -3397,8 +3586,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			prevslide: _R[id].pr_lastshown_key !== undefined ? _R[id].slides[_R[id].pr_lastshown_key] : ""
 		}
 
-
+		if(_R[id].sliderType !== "carousel") tpGS.gsap.set(_R[id].pr_next_slide, {display: 'block'});
 		_R[id].c.trigger('revolution.slide.onbeforeswap', _R[id].onBeforeSwap);
+		var bgkey = _R.gA(_R[id].pr_active_slide[0], "key");
+		var BG = _R[id].sbgs[bgkey];
+		if(BG && BG.panzoom && BG.pzAnim){
+			BG.pzLastFrame = true;
+			_R.pzDrawShadow(id,BG,BG.pzAnim.start);
+		}
 
 		_R[id].transition = 1;
 		_R[id].stopByVideo = false;
@@ -3420,12 +3615,15 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 
 		_R[id].c.trigger('nulltimer');
-		_R[id].sdir = _R[id].pr_processing_key < _R[id].pr_active_key ? 1 : 0;
+		_R[id].sdir = (_R[id].sc_indicator!=="bullet" && _R[id].pr_active_key==(_R[id].slideamount-1) && _R[id].pr_processing_key==0) ? 0 : _R[id].pr_processing_key < _R[id].pr_active_key ? 1 : 0;
 
 		if (_R[id].sc_indicator == "arrow") {
+			/*
 			if (_R[id].pr_active_key == 0 && _R[id].pr_processing_key == _R[id].slideamount - 1) _R[id].sdir = 1;
-			if ((_R[id].pr_active_key == _R[id].slideamount - 1) && _R[id].pr_processing_key == 0) _R[id].sdir = 0;
+			if ((_R[id].pr_active_key == _R[id].slideamount - 1) && _R[id].pr_processing_key == 0) _R[id].sdir = 0;*/
+			_R[id].sdir = _R[id].sc_indicator_dir;
 		}
+
 
 		//_R[id].lsdir = _R[id].lsdir === undefined ? _R[id].sdir : _R[id].lsdir;
 		_R[id].lsdir = _R[id].sdir;
@@ -3451,7 +3649,10 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		if (_R[id].sliderType == "carousel") {
 			_R[id].mtl = tpGS.gsap.timeline();
 			_R.prepareCarousel(id);
-			letItFree(id);
+			if (_R[id].carousel.orientation=="v") {
+				tpGS.gsap.set(_R[id].canvas, {height: _R[id].carousel.slide_height});
+			}
+			letItFree(id, skip);
 			_R.updateSlideBGs(id);
 			if (_R[id].carousel.checkFVideo !== true) {
 				var key = _R.gA(_R[id].pr_next_slide[0], "key");
@@ -3485,7 +3686,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			var key = _R.gA(_R[id].pr_next_slide[0], "key");
 
 			// Alternated Animations
-			if (_R[id].sbgs[key].alt === undefined) {
+			if (_R[id].sbgs[key]!==undefined && _R[id].sbgs[key].alt === undefined) {
 				_R[id].sbgs[key].alt = _R.gA(_R[id].pr_next_slide[0], "alttrans") || false;
 				_R[id].sbgs[key].alt = _R[id].sbgs[key].alt !== false ? _R[id].sbgs[key].alt.split(",") : false;
 				_R[id].sbgs[key].altIndex = 0;
@@ -3500,8 +3701,8 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				5;
 
 			_R[id].sbgs[key].slideanimation = _R[id].firstSlideAnimDone === undefined && _R[id].fanim !== undefined && _R[id].fanim !== false ? _R.convertSlideAnimVals(jQuery.extend(true, {}, _R.getSlideAnim_EmptyObject(), _R[id].fanim)) :
-				_R[id].sbgs[key].slideanimation === undefined || _R[id].sbgs[key].slideanimationRebuild ? _R.getSlideAnimationObj(id, { anim: _R.gA(_R[id].pr_next_slide[0], "anim"), filter: _R.gA(_R[id].pr_next_slide[0], "filter"), in: _R.gA(_R[id].pr_next_slide[0], "in"), out: _R.gA(_R[id].pr_next_slide[0], "out"), d3: _R.gA(_R[id].pr_next_slide[0], "d3") }, key) :
-				_R[id].sbgs[key].random !== undefined && _R.SLTR !== undefined ? _R.convertSlideAnimVals(jQuery.extend(true, {}, _R.getSlideAnim_EmptyObject(), _R.getAnimObjectByKey(_R.getRandomSlideTrans(_R[id].sbgs[key].random.rndmain, _R[id].sbgs[key].random.rndgrp, _R.SLTR), _R.SLTR))) :
+                (_R[id].sbgs[key].slideanimation === undefined || _R[id].sbgs[key].slideanimationRebuild) || (_R[id].sbgs[key].altLen > 0 &&  _R[id].sbgs[key].alt[_R[id].sbgs[key].altIndex] == "default_first_anim") ? _R.getSlideAnimationObj(id, { anim: _R.gA(_R[id].pr_next_slide[0], "anim"), filter: _R.gA(_R[id].pr_next_slide[0], "filter"), in: _R.gA(_R[id].pr_next_slide[0], "in"), out: _R.gA(_R[id].pr_next_slide[0], "out"), d3: _R.gA(_R[id].pr_next_slide[0], "d3") }, key) :
+                _R[id].sbgs[key].random !== undefined && _R.SLTR !== undefined ? _R.convertSlideAnimVals(jQuery.extend(true, {}, _R.getSlideAnim_EmptyObject(), _R.getAnimObjectByKey(_R.getRandomSlideTrans(_R[id].sbgs[key].random.rndmain, _R[id].sbgs[key].random.rndgrp, _R.SLTR), _R.SLTR))) :
 				_R[id].sbgs[key].altLen > 0 && _R.SLTR !== undefined ? _R.convertSlideAnimVals(jQuery.extend(true, { altAnim: _R[id].sbgs[key].alt[_R[id].sbgs[key].altIndex] }, _R.getSlideAnim_EmptyObject(), _R.getAnimObjectByKey(_R[id].sbgs[key].alt[_R[id].sbgs[key].altIndex], _R.SLTR))) :
 				_R[id].sbgs[key].slideanimation;
 
@@ -3514,6 +3715,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				} else {
 					_R[id].sbgs[key].firstSlideAnimDone = true;
 					if (_R.SLTR === undefined && _R.SLTR_loading === undefined) _R.loadSlideAnimLibrary(id);
+					//Loop back to and to the first anim
+					_R[id].sbgs[key].alt.push('default_first_anim');
+					_R[id].sbgs[key].altLen++;
 				}
 			}
 
@@ -3542,7 +3746,11 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 					else
 						_R.animateTheLayers({ slide: "individual", id: id, mode: "rebuild", caller: "swapSlideProgress_5" });
 
-					_R[id].carousel.allLayersStarted = true;
+					// ADJUST ROWS IN ALL SLIDES WHEN CAROUSEL AND ALL LAYERS STARTED SET
+					if (_R[id].carousel.allLayersStarted==undefined) {
+						_R.updateCarouselRows(id);
+						_R[id].carousel.allLayersStarted = true;
+					}
 				}
 				if (_R[id].firststart !== 0) _R.animateTheLayers({ slide: 0, id: id, mode: "start", caller: "swapSlideProgress_6" });
 				else
@@ -3554,7 +3762,31 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		} else
 		if (_R[id].mtl != undefined) setTimeout(function() { _R[id].mtl.resume(); }, 18);
 
-		if (_R[id].sliderType !== "carousel") tpGS.gsap.to(_R[id].pr_next_slide, 0.001, { autoAlpha: 1 });
+		if (_R[id].sliderType !== "carousel"){
+			// with scwDur, slide change duration can be changed from addon
+			_R[id].scwDur = 0.001;
+			if(Array.isArray(_R[id].scwCallback) && _R[id].scwCallback.length > 0){
+				_R[id].scwDone = false;
+				_R[id].scwCount = _R[id].scwCallback.length;
+				for(var i = 0; i < _R[id].scwCallback.length; i++){
+					_R[id].scwCallback[i]();
+				}
+
+				// IF callback fails to execute within 2 seconds then then force change slide
+				// Update scwDur from addon so addon will update custom duration
+				_R[id].scwTimeout = tpGS.gsap.delayedCall(2, function name() {
+					if(_R[id].scwCount > 0) {
+						if(_R[id].scwTween && typeof _R[id].scwTween.kill === 'function'){
+							_R[id].scwTween.kill();
+							_R[id].scwTween = null;
+						}
+						_R[id].scwTween = tpGS.gsap.to(_R[id].pr_next_slide, { duration: _R[id].scwDur, autoAlpha: 1});
+					}
+				});
+			} else {
+				tpGS.gsap.to(_R[id].pr_next_slide, { duration: _R[id].scwDur, autoAlpha: 1 });
+			}
+		}
 
 
 
@@ -3670,15 +3902,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		}
 
 		// CHECK IF THIS REALLY NEEDED !?
-		if (_R[id].pr_next_bg.data('panzoom') !== undefined) {
-			if (_R[id].panzoomTLs !== undefined && _R[id].panzoomTLs[_R.getSlideIndex(id, activeKey)] !== undefined) {
-				_R[id].panzoomTLs[_R.getSlideIndex(id, activeKey)].timeScale(1);
-				_R[id].panzoomTLs[_R.getSlideIndex(id, activeKey)].play();
-			} else {
-
-				_R.startPanZoom(_R[id].pr_next_bg, id, 0, _R.getSlideIndex(id, activeKey), 'play', activeKey);
-			}
-		}
+		checkPanzoom(id, activeKey);
 
 
 		// TIRGGER THE ON CHANGE EVENTS
@@ -3694,6 +3918,8 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		};
 		_R[id].c.trigger('revolution.slide.onchange', data);
 		_R[id].c.trigger('revolution.slide.onafterswap', data);
+
+		if((""+_R[id].pr_lastshown_key !== ""+_R[id].pr_active_key) && _R[id].sliderType !== "carousel") tpGS.gsap.set(data.prevSlide, {display: 'none', delay: 0.01});
 
 		//Need to update the current HASH Tag ?
 		if (_R[id].deepLinkListener || _R[id].enableDeeplinkHash) {
@@ -3719,16 +3945,33 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 		if ((_R[id].rowzones != undefined && _R[id].rowzones.length > 0 && _R[id].rowzones[_actli] != undefined && _actli >= 0 && _actli <= _R[id].rowzones.length && _R[id].rowzones[_actli].length > 0) || _R.winH < _R[id].module.height) _R.updateDims(id);
 
-		delete _R[id].sc_indicator;
-		delete _R[id].sc_indicator_dir;
+		//delete _R[id].sc_indicator;
+		//delete _R[id].sc_indicator_dir;
 		if (_R[id].firstLetItFree === undefined) {
 			_R.generalObserver(_R.ISM);
 			_R[id].firstLetItFree = true;
 		}
 
+		_R[id].skipAttachDetach = false;
+
 	};
 
+	// checks if bg image is loaded because in modals loadobj might be empty
+	var checkPanzoom = function(id, activeKey){
+		if(_R[id].sbgs[activeKey]!==undefined && !_R[id].sbgs[activeKey].loadobj.img){
+			tpGS.gsap.delayedCall(0.1, function(){ checkPanzoom(id, activeKey); });
+			return;
+		}
+		if (_R[id].pr_next_bg.data('panzoom') !== undefined) {
+			if (_R[id].panzoomTLs !== undefined && _R[id].panzoomTLs[_R.getSlideIndex(id, activeKey)] !== undefined) {
+				_R[id].panzoomTLs[_R.getSlideIndex(id, activeKey)].timeScale(1);
+				_R[id].panzoomTLs[_R.getSlideIndex(id, activeKey)].play();
+			} else {
 
+				_R.startPanZoom(_R[id].pr_next_bg, id, 0, _R.getSlideIndex(id, activeKey), 'play', activeKey);
+			}
+		}
+	};
 
 
 
@@ -3740,7 +3983,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			try { jQuery(this).die('click'); } catch (e) {}
 			try { jQuery(this).die('mouseenter'); } catch (e) {}
 			try { jQuery(this).die('mouseleave'); } catch (e) {}
-			try { jQuery(this).unbind('hover'); } catch (e) {}
+			try { jQuery(this).off('hover'); } catch (e) {}
 		});
 		try { _R[id].c.die('click', 'mouseenter', 'mouseleave'); } catch (e) {}
 		clearInterval(_R[id].cdint);
@@ -4101,6 +4344,23 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 	};
 
+	var visibilityHandler = function(){
+		jQuery('rs-module').each(function() {
+			var id = this.id;
+			if(_R[id].inviewport || !_R[id].viewPort.enable){
+				var key = _R[id].pr_active_slide!==undefined &&  _R[id].pr_active_slide.data('key') !==undefined ? _R[id].pr_active_slide.data('key') : _R[id].pr_next_slide!==undefined && _R[id].pr_next_slide.data('key')!==undefined ?  _R[id].pr_next_slide.data('key') : undefined;
+				if (key==undefined) return;
+				if(_R[id].sbgs[key].bgvid.length > 0 && _R[id].videos[_R[id].sbgs[key].bgvid[0].id].loop){
+					if (document.visibilityState === 'visible') {
+						_R.playVideo(_R[id].sbgs[key].bgvid, id);
+					} else {
+						_R.stopVideo(_R[id].sbgs[key].bgvid, id);
+					}
+				}
+			}
+		});
+	}
+
 	var tabBlurringCheck = function() {
 		var notIE = (document.documentMode === undefined),
 			isChromium = window.chrome;
@@ -4212,6 +4472,12 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 		_.carousel.minScale = parseInt(_.carousel.minScale, 0);
 		_.carousel.minScale = _.carousel.minScale > 0.9 ? _.carousel.minScale / 100 : _.carousel.minScale;
 		_.carousel.speed = parseInt(_.carousel.speed, 0);
+		_.carousel.skewX = parseFloat(_.carousel.skewX);
+		_.carousel.skewY = parseFloat(_.carousel.skewY);
+		_.carousel.spinAngle = parseFloat(_.carousel.spinAngle);
+		if(_.carousel.spinAngle === 0) _.carousel.spinAngle = 1;
+
+		if(_.carousel.orientation === 'v') _.carousel.justify = false;
 		_.navigation.maintypes = ["arrows", "tabs", "thumbnails", "bullets"];
 		_.perspective = parseInt(_.perspective, 0);
 		for (var i in _.navigation.maintypes) {
@@ -4270,7 +4536,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			_.keepBPHeight = true;
 		}
 		_.enableUpscaling = _.enableUpscaling == true && _.sliderType !== "carousel" && _.sliderLayout === "fullwidth" ? true : false;
-		_.useFullScreenHeight = _.sliderType === "carousel" && _.sliderLayout === "fullscreen" && _.useFullScreenHeight === true;
+		_.useFullScreenHeight = _.sliderType === "carousel" && _.sliderLayout === "fullscreen" && _.useFullScreenHeight === true && _.carousel.orientation!=='v';
 		_.progressBar.y = parseInt(_.progressBar.y, 0);
 		_.progressBar.x = parseInt(_.progressBar.x, 0);
 
@@ -4303,6 +4569,12 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			_.viewPort.local = _.viewPort.enable;
 			_.viewPort.enable = true;
 		}
+
+		if (_.carousel!==undefined && _.carousel.orientation=="v") {
+			_.carousel.prevNextVisType = (""+_.carousel.prevNextVis).includes("%") ? "%" : "px";
+			_.carousel.prevNextVis = (parseInt(_.carousel.prevNextVis,0) / (_.carousel.prevNextVisType=="%" ? 100 : 1));
+		}
+
 		return _;
 	};
 
@@ -4345,6 +4617,8 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				msWayDownOffset:0,						// if mouseScrollNavigation === "on" px						*/
 				onHoverStop: true, // Stop Banner Timet at Hover on Slide on/off
 				mouseScrollReverse: "default",
+				target: 'window',
+				threshold: 50,
 				touch: {
 					touchenabled: false, // Enable Swipe Function : on/off
 					touchOnDesktop: false, // Enable Tuoch on Desktop Systems also
@@ -4465,6 +4739,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			gridwidth: 960, // Single or Array i.e. 960 or [960, 840,760,460]
 			gridheight: 500, // Single or Array i.e. 500 or [500, 450,400,350]
 			minHeight: 0,
+
 			maxHeight: 0,
 			keepBPHeight: false,
 			useFullScreenHeight: true, // Use FullScreen Height for Content if Carousel Mode is on and FullScreen Layout selected
@@ -4511,6 +4786,7 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 
 			startDelay: 0, // Delay before the first Animation starts.
 			lazyType: "none", //all, smart, single
+			lazyOnBg: false,
 			spinner: "off",
 			shuffle: false, // Random Order of Slides,
 			perspective: "600px",
@@ -4579,12 +4855,16 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			},
 
 			carousel: {
+				orientation:'h',
+				prevNextVis:"50px",
 				easing: "power3.inOut",
 				speed: 800,
 				showLayersAllTime: false,
 				horizontal_align: "center",
 				vertical_align: "center",
+				snap: true,
 				infinity: false,
+				stopOnClick: true,
 				space: 0,
 				maxVisibleItems: 3,
 				stretch: false,
@@ -4598,7 +4878,12 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 				vary_scale: false,
 				border_radius: "0px",
 				padding_top: 0,
-				padding_bottom: 0
+				padding_bottom: 0,
+				skewX: 0,
+				skewY: 0,
+				spin: 'off',
+				spinAngle: 0,
+				overshoot: false
 			},
 			observeWrap: false,
 			extensions: "extensions/", //example extensions/ or extensions/source/
@@ -4613,7 +4898,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 	//Support Defer and Async and Footer Loads
 	window.RS_MODULES = window.RS_MODULES || {};
 	window.RS_MODULES.waiting = window.RS_MODULES.waiting || [];
-	window.RS_MODULES.waiting = window.RS_MODULES.waiting.concat(['DOM','main', 'parallax', 'video', 'slideanims', 'actions', 'layeranimation', 'navigation', 'carousel', 'panzoom']);
+	var waitingBasics = ['DOM','main', 'parallax', 'video', 'slideanims', 'actions', 'layeranimation', 'navigation', 'carousel', 'panzoom'];
+	for (var i in waitingBasics) if (waitingBasics.hasOwnProperty(i) && window.RS_MODULES.waiting.indexOf(waitingBasics[i])==-1) window.RS_MODULES.waiting.push(waitingBasics[i]);
+	//window.RS_MODULES.waiting = window.RS_MODULES.waiting.concat(['DOM','main', 'parallax', 'video', 'slideanims', 'actions', 'layeranimation', 'navigation', 'carousel', 'panzoom']);
 	window.RS_MODULES.main = { loaded: true, version: version };
 	window.RS_MODULES.minimal = false;
 
@@ -4626,10 +4913,9 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			}
 		}
 	}
-
 	// ELEMENTOR SPECIALS
 	function elementorGlobalHook($scope){
-		elementorFrontend.hooks.removeAction( 'frontend/element_ready/global', elementorGlobalHook);
+		if (window.elementorFrontend!==undefined && elementorFrontend.hooks !== undefined) elementorFrontend.hooks.removeAction( 'frontend/element_ready/global', elementorGlobalHook);
 		window.RS_MODULES.elementor = {loaded:true, version:'6.5.0'};
 		if (window.RS_MODULES.checkMinimal) window.RS_MODULES.checkMinimal();	// Do something that is based on the elementorFrontend object.
 	}
@@ -4637,8 +4923,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 	// ELEMENTOR INIT WAITS
 	function addElementorHook() {
 		if (window.elementorFrontend===undefined || window.elementorFrontend.hooks===undefined || window.elementorFrontend.hooks.addAction===undefined) {
-			requestAnimationFrame(addElementorHook);
-			return;
+			window.RS_MODULES.elementorCounter++;
+			if (window.RS_MODULES.elementorCounterCheck && window.RS_MODULES.elementorCounter>20) {
+				elementorGlobalHook();
+				return;
+			} else {
+				requestAnimationFrame(addElementorHook);
+				return;
+			}
 		}
 		if (window.elementorFrontend.config.environmentMode.edit)
 			elementorFrontend.hooks.addAction( 'frontend/element_ready/widget', elementorGlobalHook);
@@ -4646,10 +4938,14 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 	}
 
 	function checkElementor() {
-		// CHECK ELEMENTOR EXISTS
-		if (document.body && document.body.className.indexOf('elementor-page')>=0) {
+		if (RS_MODULES.checkElementorCalled==true) return;
+		RS_MODULES.checkElementorCalled = true;
+		if (document.body && (document.body.className.indexOf('elementor-page')>=0 || document.body.className.indexOf('elementor-default')>=0)) {
+			// CHECK ELEMENTOR EXISTS
 			window.RS_MODULES.waiting = window.RS_MODULES.waiting===undefined ? [] : window.RS_MODULES.waiting;
-			window.RS_MODULES.waiting.push('elementor');
+			if (window.RS_MODULES.waiting.indexOf('elementor') == -1) window.RS_MODULES.waiting.push('elementor');
+			if (document.body && document.body.className.indexOf('elementor-editor-active')==-1) window.RS_MODULES.elementorCounterCheck = true;
+			window.RS_MODULES.elementorCounter = 0;
 			addElementorHook();
 		}
 	}
@@ -4674,8 +4970,8 @@ This work is subject to the terms at https://www.themepunch.com/links/slider_rev
 			var allthere = window.RS_MODULES.minimal == true ? true : window.RS_MODULES.waiting !== undefined && jQuery.fn.revolution !== undefined && window.tpGS !== undefined && window.tpGS.gsap !== undefined;
 			if (allthere){
 				for (var i in window.RS_MODULES.waiting) {
-					if(!window.RS_MODULES.waiting.hasOwnProperty(i)) continue;
-					if (!allthere) continue;
+                    if(!window.RS_MODULES.waiting.hasOwnProperty(i) || typeof window.RS_MODULES.waiting[i]=="function") continue;
+                    if (!allthere) continue;
 					if (window.RS_MODULES[window.RS_MODULES.waiting[i]] === undefined) {
 						allthere = false;
 					}

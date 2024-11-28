@@ -16,6 +16,9 @@ use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\View\Design\Theme\ThemeProviderInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magefan\TranslationPlus\Model\Config;
+use Magento\Framework\App\Cache\TypeListInterface;
+use \Magento\Framework\App\Cache\Type\Translate;
 
 class TranslationSaveAfter implements ObserverInterface
 {
@@ -55,6 +58,17 @@ class TranslationSaveAfter implements ObserverInterface
     private $storeManager;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var TypeListInterface
+     */
+    private $typeList;
+
+    /**
+     * TranslationSaveAfter constructor.
      * @param DirectoryList $directoryList
      * @param File $driverFile
      * @param ScopeConfigInterface $scopeConfig
@@ -62,6 +76,8 @@ class TranslationSaveAfter implements ObserverInterface
      * @param Json $json
      * @param DateTime $date
      * @param StoreManagerInterface $storeManager
+     * @param Config $config
+     * @param TypeListInterface $typeList
      */
     public function __construct(
         DirectoryList $directoryList,
@@ -70,7 +86,9 @@ class TranslationSaveAfter implements ObserverInterface
         ThemeProviderInterface $themeProvider,
         Json $json,
         DateTime $date,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        Config $config,
+        TypeListInterface $typeList
     ) {
         $this->directoryList = $directoryList;
         $this->driverFile = $driverFile;
@@ -79,6 +97,8 @@ class TranslationSaveAfter implements ObserverInterface
         $this->json = $json;
         $this->date = $date;
         $this->storeManager = $storeManager;
+        $this->config = $config;
+        $this->typeList = $typeList;
     }
 
     /**
@@ -152,6 +172,24 @@ class TranslationSaveAfter implements ObserverInterface
                 $timestampNew = (string)$this->date->gmtTimestamp($this->date->gmtDate());
                 $this->driverFile->filePutContents($basePath . '/deployed_version.txt', $timestampNew);
             }
+        }
+
+        $this->flushCacheOnTranslationChange();
+    }
+
+    /**
+     * Invalidate or Flush translation cache
+     */
+    private function flushCacheOnTranslationChange()
+    {
+        if ($this->config->isFlushCacheOnSaveTranslation()) {
+            $this->typeList->cleanType(
+                \Magento\Framework\App\Cache\Type\Translate::TYPE_IDENTIFIER
+            );
+        } else {
+            $this->typeList->invalidate(
+                \Magento\Framework\App\Cache\Type\Translate::TYPE_IDENTIFIER
+            );
         }
     }
 }

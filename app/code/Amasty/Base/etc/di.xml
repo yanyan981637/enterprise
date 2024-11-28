@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,6 +11,12 @@
     <preference for="Magento\Framework\Filesystem\DriverInterface" type="Magento\Framework\Filesystem\Driver\File" />
     <preference for="Amasty\Base\Model\SysInfo\Provider\Collector\CacheService\Info\CacheInfoInterface"
                 type="Amasty\Base\Model\SysInfo\Provider\Collector\CacheService\Info\CacheInfo" />
+    <preference for="Amasty\Base\Api\Data\InstanceDataInterface" type="Amasty\Base\Model\InstanceData\InstanceData"/>
+    <preference for="Amasty\Base\Api\InstanceDataRepositoryInterface" type="Amasty\Base\Model\InstanceData\Repository"/>
+    <preference for="Amasty\Base\Api\Data\ScheduleInterface" type="Amasty\Base\Model\Schedule\Schedule"/>
+    <preference for="Amasty\Base\Api\ScheduleRepositoryInterface" type="Amasty\Base\Model\Schedule\Repository"/>
+    <preference for="Amasty\Base\Api\Data\InstanceHashInterface" type="Amasty\Base\Model\InstanceHash\InstanceHash"/>
+    <preference for="Amasty\Base\Api\InstanceHashRepositoryInterface" type="Amasty\Base\Model\InstanceHash\Repository"/>
 
     <type name="Amasty\Base\Model\Response\OctetResponseInterfaceFactory">
         <arguments>
@@ -76,6 +82,12 @@
                     <item name="modules" xsi:type="object">Amasty\Base\Model\SysInfo\Provider\Collector\LicenceService\Module</item>
                     <item name="domains" xsi:type="object">Amasty\Base\Model\SysInfo\Provider\Collector\LicenceService\Domain</item>
                     <item name="platform" xsi:type="object">Amasty\Base\Model\SysInfo\Provider\Collector\LicenceService\Platform</item>
+                    <item name="customer_instance_key" xsi:type="object">Amasty\Base\Model\SysInfo\Provider\Collector\LicenceService\CustomerInstanceKey</item>
+                    <item name="is_production" xsi:type="object">Amasty\Base\Model\SysInfo\Provider\Collector\LicenceService\IsProduction</item>
+                </item>
+                <item name="pingRequest" xsi:type="array">
+                    <item name="customer_instance_key" xsi:type="object">Amasty\Base\Model\SysInfo\Provider\Collector\LicenceService\CustomerInstanceKey</item>
+                    <item name="is_production" xsi:type="object">Amasty\Base\Model\SysInfo\Provider\Collector\LicenceService\IsProduction</item>
                 </item>
                 <item name="sysInfoService" xsi:type="array">
                     <item name="module" xsi:type="object">Amasty\Base\Model\SysInfo\Provider\Collector\Module</item>
@@ -143,4 +155,23 @@
         </arguments>
     </type>
     <!-- CLI Configuration End -->
+    <type name="Magento\Framework\Mview\View\Subscription">
+        <plugin name="Amasty_Base::FixInstall" sortOrder="10"
+                type="Amasty\Base\Plugin\Framework\Mview\View\Subscription\FixInstall"/>
+    </type>
+    <type name="Magento\Indexer\Model\Indexer">
+        <plugin name="Amasty_Base::skipException" sortOrder="10"
+                type="Amasty\Base\Plugin\Indexer\Model\Indexer\SkipException"/>
+    </type>
+    <virtualType name="Amasty\Base\Model\Source\ActiveWithEmptyOptionCategory" type="Amasty\Base\Model\Source\Category">
+        <arguments>
+            <argument name="caption" xsi:type="string" translatable="true">All Categories</argument>
+            <argument name="filters" xsi:type="array">
+                <item name="is_active" xsi:type="string">1</item>
+                <item name="level" xsi:type="array">
+                    <item name="gt" xsi:type="string">0</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
 </config>

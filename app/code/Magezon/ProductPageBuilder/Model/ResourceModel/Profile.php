@@ -15,24 +15,27 @@
 namespace Magezon\ProductPageBuilder\Model\ResourceModel;
 
 use Magento\Framework\Model\AbstractModel;
-use Magezon\ProductPageBuilder\Model\ResourceModel\Profile;
-use Magento\Cms\Api\Data\BlockInterface;
-use Magento\Framework\DB\Select;
 use Magento\Framework\EntityManager\EntityManager;
 use Magento\Framework\EntityManager\MetadataPool;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\Model\ResourceModel\Db\Context;
-use Magento\Store\Model\Store;
-use Magento\Store\Model\StoreManagerInterface;
 
 class Profile extends \Magento\Rule\Model\ResourceModel\AbstractResource
 {
     /**
-     * @param Context       $context        
-     * @param EntityManager $entityManager  
-     * @param MetadataPool  $metadataPool   
-     * @param string        $connectionName 
+     * @var EntityManager
+     */
+    protected $entityManager;
+
+    /**
+     * @var MetadataPool
+     */
+    protected $metadataPool;
+
+    /**
+     * @param Context       $context
+     * @param EntityManager $entityManager
+     * @param MetadataPool  $metadataPool
+     * @param string        $connectionName
      */
     public function __construct(
         Context $context,
@@ -55,6 +58,10 @@ class Profile extends \Magento\Rule\Model\ResourceModel\AbstractResource
         $this->_init('mgz_productpagebuilder_profile', 'profile_id');
     }
 
+    /**
+     * @param AbstractModel $object
+     * @return Profile
+     */
     protected function _afterLoad(AbstractModel $object)
     {
         $storeIds = $this->lookupStoreIds($object->getId());
@@ -83,6 +90,10 @@ class Profile extends \Magento\Rule\Model\ResourceModel\AbstractResource
         return $connection->fetchCol($select, ['profile_id' => (int)$id]);
     }
 
+    /**
+     * @param AbstractModel $object
+     * @return Profile
+     */
     public function _afterSave(AbstractModel $object)
     {
         $profileId = $object->getId();

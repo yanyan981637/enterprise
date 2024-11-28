@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -12,6 +12,7 @@ namespace Amasty\Base\Model\SysInfo\Command\LicenceService\RegisterLicenceKey\Do
 
 use Amasty\Base\Model\SysInfo\RegisteredInstanceRepository;
 use Magento\Framework\UrlInterface;
+use Magento\Store\Model\Store;
 
 class Provider
 {
@@ -49,7 +50,14 @@ class Provider
     public function getCurrentDomains(): array
     {
         // phpcs:disable Magento2.Functions.DiscouragedFunction.Discouraged
-        $baseUrl = parse_url($this->url->getBaseUrl(), PHP_URL_HOST);
+        $baseUrl = parse_url(
+            $this->url->getBaseUrl(['_scope' => Store::DEFAULT_STORE_ID]),
+            PHP_URL_HOST
+        );
+
+        if (!$baseUrl) {
+            return [];
+        }
 
         return [$baseUrl];
     }

@@ -171,6 +171,6 @@ if ($hoverEffect) $classes[] = 'mgz-image-hovers';
 </div>
 <script>
 	require(['jquery', 'Magezon_PageBuilder/js/slider'], function($) {
-		$('#<?= $id ?>').slider(<?= $coreHelper->serialize($carouselOptions) ?>);
+		$('#<?= $id ?>').sliders(<?= $coreHelper->serialize($carouselOptions) ?>);
 	})
 </script>

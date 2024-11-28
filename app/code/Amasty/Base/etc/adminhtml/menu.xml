@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */-->
 
@@ -22,12 +22,28 @@
              action="ambase/marketplace"
              parent="MenuAmasty_Base::menu"
              resource="Amasty_Base::marketplace"/>
+        <add id="Amasty_Base::get_support"
+             title="Get Support"
+             module="Amasty_Base"
+             translate="title"
+             sortOrder="100"
+             action="adminhtml/system_config/edit/section/amasty_get_support"
+             parent="MenuAmasty_Base::menu"
+             resource="Amasty_Base::get_support"/>
+        <add id="Amasty_Base::settings"
+             title="Settings &amp; Notifications"
+             module="Amasty_Base"
+             translate="title"
+             sortOrder="9997"
+             action="adminhtml/system_config/edit/section/amasty_base"
+             parent="MenuAmasty_Base::menu"
+             resource="Amasty_Base::config"/>
         <add id="Amasty_Base::extensions"
-             title="Products &amp; Notifications"
+             title="Products"
              module="Amasty_Base"
              translate="title"
              sortOrder="9998"
-             action="adminhtml/system_config/edit/section/amasty_base"
+             action="adminhtml/system_config/edit/section/amasty_products"
              parent="MenuAmasty_Base::menu"
              resource="Amasty_Base::config"/>
     </menu>

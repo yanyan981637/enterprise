@@ -21,10 +21,10 @@ class Product extends \Magento\Framework\View\Element\Template
      */
     protected $_template = 'Magezon_ProductPageBuilder::product.phtml';
 
-	/**
-	 * @var \Magento\Framework\Registry
-	 */
-	protected $_coreRegistry;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $_coreRegistry;
 
     /**
      * @var \Magezon\Builder\Helper\Data
@@ -32,10 +32,10 @@ class Product extends \Magento\Framework\View\Element\Template
     protected $builderHelper;
 
     /**
-     * @param \Magento\Framework\View\Element\Template\Context $context       
-     * @param \Magento\Framework\Registry                      $registry      
-     * @param \Magezon\Builder\Helper\Data                     $builderHelper 
-     * @param array                                            $data          
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Magento\Framework\Registry                      $registry
+     * @param \Magezon\Builder\Helper\Data                     $builderHelper
+     * @param array                                            $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -49,11 +49,11 @@ class Product extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @return null|Magezon\ProductPageBuilder\Model\Profile
+     * @return null|\Magezon\ProductPageBuilder\Model\Profile
      */
     public function getCurrentProfile()
     {
-    	return $this->_coreRegistry->registry('productpagebuilder_profile');
+        return $this->_coreRegistry->registry('productpagebuilder_profile');
     }
 
     /**
@@ -61,7 +61,9 @@ class Product extends \Magento\Framework\View\Element\Template
      */
     public function toHtml()
     {
-    	if (!$this->getCurrentProfile()) return;
+        if (!$this->getCurrentProfile()) {
+            return;
+        }
         return parent::toHtml();
     }
 
@@ -71,8 +73,14 @@ class Product extends \Magento\Framework\View\Element\Template
     public function getProfileHtml()
     {
         $profile = $this->getCurrentProfile();
-        $block = $this->builderHelper->prepareProfileBlock(\Magezon\Builder\Block\Profile::class, $profile->getProfile());
-        $block->setData('custom_classes', 'mgz-productpagebuilder' . $profile->getId() . ' ' . $block->getCustomClasses());
+        $block = $this->builderHelper->prepareProfileBlock(
+            \Magezon\Builder\Block\Profile::class,
+            $profile->getProfile()
+        );
+        $block->setData(
+            'custom_classes',
+            'mgz-productpagebuilder' . $profile->getId() . ' ' . $block->getCustomClasses()
+        );
         return $block->toHtml();
     }
 }

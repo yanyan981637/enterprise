@@ -14,10 +14,10 @@ use Nwdthemes\Revslider\Helper\Framework;
 class LayoutLoadBefore implements ObserverInterface
 {
     protected $_frameworkHelper;
-    private $_optionFactory;
-    private $_pageRepository;
-    private $_request;
-    private $_status;
+    protected $_optionFactory;
+    protected $_pageRepository;
+    protected $_request;
+    protected $_status;
 
     public function __construct(
         PageRepositoryInterface $pageRepository,

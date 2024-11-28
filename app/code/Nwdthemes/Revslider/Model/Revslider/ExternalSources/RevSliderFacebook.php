@@ -25,6 +25,8 @@ use \Nwdthemes\Revslider\Model\Revslider\RevSliderSlider;
 
 class RevSliderFacebook extends RevSliderFunctions {
 
+	const TRANSIENT_PREFIX = 'revslider_fb_';
+
     const URL_FB_AUTH = 'https://updates.themepunch.tools/fb/login.php';
     const URL_FB_API = 'https://updates.themepunch.tools/fb/api.php';
 
@@ -63,6 +65,7 @@ class RevSliderFacebook extends RevSliderFunctions {
     {
         FA::add_action('init', array(&$this, 'do_init'), 5);
         FA::add_action('admin_footer', array(&$this, 'footer_js'));
+		FA::add_action('revslider_slider_on_delete_slider', array(&$this, 'on_delete_slider'), 10, 1);
     }
 
 	/**
@@ -72,7 +75,7 @@ class RevSliderFacebook extends RevSliderFunctions {
     public function do_init()
     {
         // are we on revslider page?
-        if (!isset(Data::$_GET['page']) || Data::$_GET['page'] != 'revslider') return;
+        if($this->get_val(Data::$_GET, 'page') != 'revslider') return;
 
         //fb returned error
         if (isset(Data::$_GET[self::QUERY_ERROR])) return;
@@ -91,13 +94,13 @@ class RevSliderFacebook extends RevSliderFunctions {
         $slide->init_by_id($id);
         $slider_id = $slide->get_slider_id();
         if(intval($slider_id) == 0){
-            Data::$_GET[self::QUERY_ERROR] = __('Slider could not be loaded', 'revslider');
+            Data::$_GET[self::QUERY_ERROR] = __('Slider could not be loaded');
             return;
         }
 
         $slider->init_by_id($slider_id);
         if($slider->inited === false){
-            Data::$_GET[self::QUERY_ERROR] = __('Slider could not be loaded', 'revslider');
+            Data::$_GET[self::QUERY_ERROR] = __('Slider could not be loaded');
             return;
         }
 
@@ -122,7 +125,7 @@ class RevSliderFacebook extends RevSliderFunctions {
         }
 
         if (isset(Data::$_GET[self::QUERY_ERROR])) {
-            $err = __('Facebook API error: ', 'revslider') . Data::$_GET[self::QUERY_ERROR];
+            $err = __('Facebook API error: ') . FA::esc_html(Data::$_GET[self::QUERY_ERROR]);
             echo '<script>require(["jquery", "revsliderEditor"], function(jQuery, RVS) { jQuery(document).ready(function(){ RVS.DOC.one("builderInitialised", function(){ RVS.F.showInfo({content:"' . $err . '", type:"warning", showdelay:1, hidedelay:5, hideon:"", event:"" }); });}); });</script>';
         }
 	}
@@ -158,9 +161,9 @@ class RevSliderFacebook extends RevSliderFunctions {
         return $responseData;
     }
 
-    protected function _get_transient_fb_data($requestData)
+	protected function _get_transient_fb_data($requestData)
     {
-        $transient_name = 'revslider_' . md5(json_encode($requestData));
+		$transient_name = self::TRANSIENT_PREFIX . $requestData['slider_id'] . '_' . md5(json_encode($requestData));
 		if($this->transient_sec > 0 && false !== ($data = FA::get_transient($transient_name))){
 			return $data;
 		}
@@ -180,78 +183,96 @@ class RevSliderFacebook extends RevSliderFunctions {
         return array();
     }
 
-    /**
-     * Get Photosets List from User
-     *
-     * @param    string    $access_token     page access token
-     * @param    string    $page_id     page id
-     * @return    mixed
-     */
-    public function get_photo_sets($access_token, $page_id){
-        return $this->_make_api_call(array(
-            'token' => $access_token,
-            'page_id' => $page_id,
-            'action' => 'albums',
-        ));
-    }
+	/**
+	 * Get Photosets List from User
+	 *
+	 * @param	string	$access_token 	page access token
+	 * @param	string	$page_id 	page id
+	 * @return	mixed
+	 */
+	public function get_photo_sets($access_token, $page_id){
+		return $this->_make_api_call(array(
+			'token' => $access_token,
+			'page_id' => $page_id,
+			'action' => 'albums',
+		));
+	}
 
 	/**
 	 * Get Photosets List from User as Options for Selectbox
 	 *
-     * @param    string    $access_token     page access token
-     * @param    string    $page_id     page id
-     * @return    mixed    options html string | array('error' => true, 'message' => '...');
-     */
-    public function get_photo_set_photos_options($access_token, $page_id){
-        $photo_sets = $this->get_photo_sets($access_token, $page_id);
+	 * @param	string	$access_token 	page access token
+	 * @param	string	$page_id 	page id
+	 * @return	mixed	options html string | array('error' => true, 'message' => '...');
+	 */
+	public function get_photo_set_photos_options($access_token, $page_id){
+		$photo_sets = $this->get_photo_sets($access_token, $page_id);
 
-        if($photo_sets['error']){
-			return $photo_sets;
-		}
+		if($photo_sets['error']) return $photo_sets;
 
 		$return = array();
-        if(is_array($photo_sets['data'])){
-            foreach($photo_sets['data'] as $photo_set){
-                $return[] = '<option title="'.$photo_set['name'].'" value="'.$photo_set['id'].'">'.$photo_set['name'].'</option>"';
-            }
+		if(is_array($photo_sets['data'])){
+			foreach($photo_sets['data'] as $photo_set){
+				$return[] = '<option title="'.$photo_set['name'].'" value="'.$photo_set['id'].'">'.$photo_set['name'].'</option>"';
+			}
 		}
 		return $return;
 	}
 
 	/**
-     * Get Photoset Photos
-     *
-     * @param    string    $access_token     page access token
-     * @param    string    $album_id     Album ID
-     * @param    int     $item_count     items count
-     * @return    array
-     */
-    public function get_photo_set_photos($access_token, $album_id, $item_count = 8){
-        $requestData = array(
-            'token' => $access_token,
-            'action' => 'photos',
-            'album_id' => $album_id,
-            'limit' => $item_count,
-        );
-        return $this->_get_transient_fb_data($requestData);
-    }
+	 * Get Photoset Photos
+	 *
+	 * @param	mixed	$slider_id 	slider id
+	 * @param	string	$access_token 	page access token
+	 * @param	string	$album_id 	Album ID
+	 * @param	int 	$item_count 	items count
+	 * @return	array
+	 */
+	public function get_photo_set_photos($slider_id, $access_token, $album_id, $item_count = 8){
+		$requestData = array(
+			'slider_id' => $slider_id,
+			'token' => $access_token,
+			'action' => 'photos',
+			'album_id' => $album_id,
+			'limit' => $item_count,
+		);
+		return $this->_get_transient_fb_data($requestData);
+	}
 
 	/**
-     * Get Feed
-     *
-     * @param    string    $access_token     page access token
-     * @param    string    $page_id     page id
-     * @param    int     $item_count     items count
-     * @return    array
-     */
-    public function get_photo_feed($access_token, $page_id, $item_count = 8){
-        $requestData = array(
-            'token' => $access_token,
-            'page_id' => $page_id,
-            'action' => 'feed',
-            'limit' => $item_count,
-        );
-        return $this->_get_transient_fb_data($requestData);
-    }
+	 * Get Feed
+	 *
+	 * @param	mixed	$slider_id 	slider id
+	 * @param	string	$access_token 	page access token
+	 * @param	string	$page_id 	page id
+	 * @param	int 	$item_count 	items count
+	 * @return	array
+	 */
+	public function get_photo_feed($slider_id, $access_token, $page_id, $item_count = 8){
+		$requestData = array(
+			'slider_id' => $slider_id,
+			'token' => $access_token,
+			'page_id' => $page_id,
+			'action' => 'feed',
+			'limit' => $item_count,
+		);
+		return $this->_get_transient_fb_data($requestData);
+	}
+
+	/**
+	 * delete slider fb transients upon deletion
+	 *
+	 * @param	$id		slider id
+	 * @return	void
+	 */
+	public function on_delete_slider($id)
+	{
+		$wpdb = FA::getQueryHelper();
+
+		if (empty($id)) return;
+
+		$prefix = self::TRANSIENT_PREFIX . $id;
+		$wpdb->query($wpdb->prepare("DELETE FROM $wpdb->options WHERE `option_name` LIKE '%s'", '%'.$prefix.'%'));
+	}
 
 }

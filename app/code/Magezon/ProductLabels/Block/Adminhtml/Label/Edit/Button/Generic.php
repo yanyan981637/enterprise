@@ -21,12 +21,12 @@ use Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface;
 class Generic implements ButtonProviderInterface
 {
     /**
-     * @var Magento\Framework\View\Element\UiComponent\Context
+     * @var \Magento\Framework\View\Element\UiComponent\Context
      */
     protected $context;
 
     /**
-     * @var Magento\Framework\Registry
+     * @var \Magento\Framework\Registry
      */
     protected $registry;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -15,6 +15,8 @@ use Magento\Framework\Api\ExtensibleDataInterface;
 
 class ScheduleConfig extends SimpleDataObject implements ExtensibleDataInterface
 {
+    public const ID = 'id';
+    public const CODE = 'code';
     public const LAST_SEND_DATE = 'last_send_date';
     public const TIME_INTERVALS = 'time_intervals';
     public const IS_NEED_TO_SHOW_NOTIFICATION = 'is_need_to_how_notification';

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -55,11 +55,12 @@ class ExistingConflicts extends Template
         foreach ($this->getExistingConflicts() as $moduleName) {
             if ($this->moduleManager->isEnabled($moduleName)) {
                 $messages[] = __(
-                    'Incompatibility with the %1. '
-                    . 'To avoid the conflicts we strongly recommend turning off '
-                    . 'the 3rd party mod via the following command: "%2"',
+                    'Incompatibility with 3rd party module %1 found. To avoid possible conflicts,'
+                    . ' we strongly recommend turning it off with the following command: "%2". '
+                    . '<a href="%3" target="_blank">Contact</a> our Support team for more information.',
                     $moduleName,
-                    'magento module:disable ' . $moduleName
+                    'magento module:disable ' . $moduleName,
+                    'https://support.amasty.com/portal/en/newticket'
                 );
             }
         }

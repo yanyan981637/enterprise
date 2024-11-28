@@ -39,14 +39,14 @@ class RelatedProducts extends \Magezon\Builder\Block\ListProduct
     protected $_catalogConfig;
 
     /**
-     * @param \Magento\Catalog\Block\Product\Context            $context                  
-     * @param \Magento\Framework\App\Http\Context               $httpContext              
-     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency            
-     * @param \Magento\Framework\Url\Helper\Data                $urlHelper             
-     * @param \Magento\Framework\Registry                       $registry    
-     * @param \Magento\Catalog\Model\Product\Visibility         $catalogProductVisibility                
-     * @param \Magento\Catalog\Model\Config                     $catalogConfig            
-     * @param array                                             $data                     
+     * @param \Magento\Catalog\Block\Product\Context            $context
+     * @param \Magento\Framework\App\Http\Context               $httpContext
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \Magento\Framework\Url\Helper\Data                $urlHelper
+     * @param \Magento\Framework\Registry                       $registry
+     * @param \Magento\Catalog\Model\Product\Visibility         $catalogProductVisibility
+     * @param \Magento\Catalog\Model\Config                     $catalogConfig
+     * @param array                                             $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
@@ -104,7 +104,9 @@ class RelatedProducts extends \Magezon\Builder\Block\ListProduct
      */
     public function isEnabled()
     {
-        if (!$this->getCollection()->count()) return false;
+        if (!$this->getCollection()->count()) {
+            return false;
+        }
         return parent::isEnabled();
     }
 
@@ -150,7 +152,8 @@ class RelatedProducts extends \Magezon\Builder\Block\ListProduct
     {
         $styleHtml  = '';
         $element    = $this->getElement();
-        $useDefault = $element->hasData('use_default_theme_layout') ? $element->getData('use_default_theme_layout') : true;
+        $useDefaultThemeLayout = $element->hasData('use_default_theme_layout');
+        $useDefault = $useDefaultThemeLayout ? $useDefaultThemeLayout : true;
         if (!$useDefault) {
             $styleHtml = $this->getOwlCarouselStyles();
             $styleHtml .= $this->getLineStyles();

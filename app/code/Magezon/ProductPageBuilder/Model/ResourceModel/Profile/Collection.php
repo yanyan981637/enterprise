@@ -25,7 +25,10 @@ class Collection extends \Magento\Rule\Model\ResourceModel\Rule\Collection\Abstr
 
     protected function _construct()
     {
-        $this->_init(\Magezon\ProductPageBuilder\Model\Profile::class, \Magezon\ProductPageBuilder\Model\ResourceModel\Profile::class);
+        $this->_init(
+            \Magezon\ProductPageBuilder\Model\Profile::class,
+            \Magezon\ProductPageBuilder\Model\ResourceModel\Profile::class
+        );
     }
 
     /**
@@ -65,7 +68,7 @@ class Collection extends \Magento\Rule\Model\ResourceModel\Rule\Collection\Abstr
      */
     protected function _afterLoad()
     {
-    	
+        
         $this->performAfterLoad('mgz_productpagebuilder_profile_store', 'profile_id', 'store_id');
         return parent::_afterLoad();
     }
@@ -115,7 +118,7 @@ class Collection extends \Magento\Rule\Model\ResourceModel\Rule\Collection\Abstr
      *
      * @param int|array|Store $store
      * @param bool $withAdmin
-     * @return void
+     * @return $this|void
      */
     public function addStoreFilter($store, $withAdmin = true)
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -63,15 +63,13 @@ class Curl
         );
 
         $responseData = $curl->read();
-        $responseData = json_decode($responseData, true) ?? [];
+        $responseData = json_decode((string)$responseData, true) ?? [];
         $httpCode = $curl->getInfo(CURLINFO_HTTP_CODE);
-
-        if (!in_array($httpCode, [200, 204])) {
-            throw new LocalizedException(__('Invalid request.'));
-        }
         $curl->close();
+        $response = $this->responseFactory->create($url, $responseData);
+        $response->setData('code', $httpCode);
 
-        return $this->responseFactory->create($url, $responseData);
+        return $response;
     }
 
     public function setHeaders(array $headers): self

@@ -1,0 +1,203 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+
+/**
+ * @var $mfSecureRenderer \Magefan\Community\Api\SecureHtmlRendererInterface
+ * @var $block \Magento\Backend\Block\Template
+ */
+?>
+<?php
+if ($block->getRequest()->getParam('store')) {
+    return;
+}
+
+$objectType = $block->escapeHtml($block->getRequest()->getControllerName());
+
+?>
+<?php $script = "
+    require(['jquery', 'domReady!'], function($){
+
+        function init() {
+            $('div.admin__field[data-index]').each(function () {
+                var _this = $(this);
+
+                if (_this.data('mftanslation')) {
+                    return;
+                }
+                _this.data('mftanslation', 1);
+
+                var r = _this.find(\"[data-config-scope='" . __('[STORE VIEW]') . "']\");
+                if (!r.length) {
+                    return;
+                }
+                if (_this.find('select').length || _this.find('.admin__actions-switch-label').length) {
+                    return;
+                }
+
+                var fc = _this.find('.admin__field-control:first');
+
+                a = $('<a href=\"#\" style=\"margin-top:10px;display: inline-block;\">' + $.mage.__('Translate') + '</a>').click(function(){
+                    var field = $(this).parents('.admin__field:first').find('.admin__field-control').find('input,select,textarea');
+                    var attrCode = field.parents('div.admin__field[data-index]').attr('data-index');
+
+                    if (attrCode == 'search') {
+                        return false;
+                    }
+
+                    $('body').trigger('processStart');
+                    $.ajax({
+                        'url' : '" . $block->escapeHtml($block->getUrl('translationplus/' . $objectType . '/translate')) . "',
+                        'data' : {
+    'attr_code' : attrCode,
+                            'id' : '" . (int)$block->getRequest()->getParam('id') . "',
+                        },
+                        'method' : 'get'
+                    }).done(function (data) {
+    $('body').trigger('processStop');
+
+    var html = $(data);
+    var form = html.find('#translate_template_edit_form');
+
+    form.mage('form').mage('validation');
+    form.find('.fieldset-wrapper-title,.admin__legend').hide();
+
+    if (field.parents('.pagebuilder-wysiwyg-wrapper').length) {
+        var registry = require('uiRegistry');
+        var fieldName = registry.get('index = ' + attrCode);
+
+        form.find('#store-view-group-0 #'+attrCode).val(fieldName.value());
+    } else {
+        form.find('#store-view-group-0 #'+attrCode).val(field.val());
+    }
+
+    form.find('.store-view-name').each(function(){
+        if ($(this).parent().find('input[type=\"checkbox\"].use-default-control:not([checked=\"checked\"])').length) {
+            $(this).parent().find('[name*=url_key_create_redirect][type=\"checkbox\"]').removeAttr('disabled');
+        }
+
+        $(this).parent().find('.admin__field-label span').first().html(
+            $(this).html()
+        );
+    });
+
+    setTimeout(function () {
+        $('.mf_translation_popup input[type=\"checkbox\"].use-default-control').trigger('click').trigger('click');
+    },200);
+
+    document.dispatchEvent(new CustomEvent('mfTranslationPopupOpened', {bubbles: false}));
+
+                        require([
+                            'Magento_Ui/js/modal/alert',
+                        ], function( mageAlert) {
+        mageAlert({
+                                modalClass : 'mf_translation_popup',
+                                title: $.mage.__('Translate') + ' ' + attrCode,
+                                content: form,
+                                actions: {
+            always: function () {
+            }
+        },
+                                buttons: [
+                                    {
+                                        text: $.mage.__('Save'),
+                                        class: 'action-primary action-accept',
+                                        click: function () {
+                                        var self = this;
+                                        $('body').trigger('processStart');
+                                        var formData = [...form.serializeArray(), ...getUseRedirectForDefaultValue()];
+                                            $.ajax({
+                                                'url' : form.attr('action'),
+                                                'method' : form.attr('method'),
+                                                'data' : formData,
+                                                'dataType': 'json'
+                                            }).done(function (data) {
+                                            $('body').trigger('processStop');
+                                            if (!data.success) {
+                                                alert(data.message);
+                                            } else {
+
+                                                for (var i = 0; i < formData.length; i++) {
+                                                    if (formData[i].name == '-1[' + attrCode + ']') {
+                                                        field.val(formData[i].value).change();
+                                                        break;
+                                                    }
+                                                }
+                                                    self.closeModal(true);
+
+                                                    mageAlert({
+                                                        title: data.message,
+                                                        actions: {
+                                                    always: function () {
+                                                    }
+                                                },
+                                                        buttons: [
+                                                            {
+                                                                text: $.mage.__('OK'),
+                                                                class: 'action-primary action-accept',
+                                                                click: function () {
+                                                                this.closeModal(true);
+                                                            }
+                                                            }
+                                                        ]
+                                                    });
+
+                                                }
+                                        }).fail(function (xhr, ajaxOptions, thrownError) {
+                                            alert(thrownError);
+                                            $('body').trigger('processStop');
+                                        });
+                                        }
+                                    }
+                                ]
+                            });
+
+                        });
+
+
+                    }).fail(function (xhr, ajaxOptions, thrownError) {
+                    alert(thrownError);
+                    $('body').trigger('processStop');
+                });
+
+                });
+
+                fc.append('<br>');
+                fc.append(a);
+
+            });
+        }
+
+        function getUseRedirectForDefaultValue()
+        {
+            var use_redirect_for_default_value = [];
+
+            $('input[type=\"checkbox\"].use-default-control:checked').each(function () {
+                let el = $(this).parents('#attribute-url_key-container').find('#url_key_create_redirect');
+
+                if (el.length) {
+                    let storeId = el.attr('name').replace('[url_key_create_redirect]', '');
+                    use_redirect_for_default_value.push(
+                        {
+                            'name': 'use_redirect_for_default_value[]',
+                            'value': storeId + '_' +  (el.is(':checked') ? 1 : 0)
+                        }
+                    );
+                }
+            });
+
+            return use_redirect_for_default_value;
+        }
+
+        setInterval(init, 1000);
+    });
+"; ?>
+
+<?= /* @noEscape */ $mfSecureRenderer->renderTag('script', [], $script, false) ?>
+
+<style>
+    .use-default {padding-left: 15px;}
+    label[for="url_key_create_redirect"] {padding-left: 10px;pointer-events: none;}
+</style>

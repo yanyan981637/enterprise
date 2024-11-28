@@ -37,9 +37,9 @@ class Builder
     protected $dataHelper;
 
     /**
-     * @param \Magento\Framework\View\LayoutInterface $layout     
-     * @param \Magento\Framework\Registry             $registry   
-     * @param \Magezon\ProductPageBuilder\Helper\Data $dataHelper 
+     * @param \Magento\Framework\View\LayoutInterface $layout
+     * @param \Magento\Framework\Registry             $registry
+     * @param \Magezon\ProductPageBuilder\Helper\Data $dataHelper
      */
     public function __construct(
         \Magento\Framework\View\LayoutInterface $layout,
@@ -52,17 +52,19 @@ class Builder
     }
 
     public function beforeBuild(
-    	$subject
+        $subject
     ) {
-    	if ($this->dataHelper->isEnable() && $this->registry->registry('productpagebuilder_profile') && !$this->_valid) {
+        if ($this->dataHelper->isEnable() &&
+            $this->registry->registry('productpagebuilder_profile') &&
+            !$this->_valid
+        ) {
             $product = $this->registry->registry('product');
             $update = $this->layout->getUpdate();
             $update->addHandle('productpagebuilder');
             $update->addHandle('productpagebuilder_type_' . $product->getTypeId());
             $update->addHandle('productpagebuilder_id_' . $product->getTypeId());
             $update->addHandle('productpagebuilder_sku_' . $product->getSku());
-            $update->addHandle('catalog_product_view_type_' . $product->getTypeId());
             $this->_valid = true;
-    	}
+        }
     }
 }

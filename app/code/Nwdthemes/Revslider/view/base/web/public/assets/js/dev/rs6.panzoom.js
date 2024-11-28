@@ -1,6 +1,6 @@
 /********************************************
  * REVOLUTION EXTENSION - PANZOOM
- * @date: 23.04.2021
+ * @date: 06.10.2022
  * @requires rs6.main.js
  * @author ThemePunch
 *********************************************/
@@ -14,7 +14,7 @@
 
     jQuery.fn.revolution = jQuery.fn.revolution || {};
 
-    var  _R = _R_is_Editor ? RVS._R : jQuery.fn.revolution, version = "6.2.0";
+var  _R = _R_is_Editor ? RVS._R : jQuery.fn.revolution, version = "6.6.0";
 
     ///////////////////////////////////////////
     // 	EXTENDED FUNCTIONS AVAILABLE GLOBAL  //
@@ -93,10 +93,12 @@
                 o = {start:{
                                 width:cw,
                                 height:_R_is_Editor ?  cw / d.loadobj.width * d.loadobj.height : cw / d.owidth*d.oheight,
-                                rotation:_.rotatestart,
+							rotation:(Math.PI / 180) * _.rotatestart,
+							rotationV:_.rotatestart,
                                 scale:_.scalestart,
                                 transformOrigin:"0% 0%" },
-                     end:{	rotation:_.rotateend,
+				 end:{	rotation:(Math.PI / 180) * _.rotateend,
+				 		rotationV: _.rotateend,
                              scale:_.scaleend },
                      },
                 sw = cw*_.scalestart,
@@ -148,22 +150,44 @@
             return o;
         },
 
-        pzDrawShadow : function(id,nBG,anim) {
+	pzDrawShadow : function(id,nBG,a) {
+		// During Animation OR in case no panFake exists use Canvas
+		if ((nBG.currentState==="animating" || nBG.panFake==undefined) || nBG.pzLastFrame) {
+			nBG.pzLastFrame = false;
+			nBG.shadowCTX.clearRect(0,0,nBG.shadowCanvas.width, nBG.shadowCanvas.height);
+			nBG.shadowCTX.save();
+			if (a.rotation!==undefined)
+				nBG.shadowCTX.transform(Math.cos(a.rotation) * a.scale, Math.sin(a.rotation) * a.scale,Math.sin(a.rotation) * -a.scale,Math.cos(a.rotation) * a.scale,a.x,a.y);
+			else
+				nBG.shadowCTX.transform(a.scale, 0, 0, a.scale,a.x,a.y);
 
-            var _width = anim.start.width*anim.start.scale,
-                _height = anim.start.height*anim.start.scale;
+			nBG.shadowCTX.drawImage(nBG.loadobj.img, 0,0,a.width, a.height);
+			nBG.shadowCTX.restore();
+		}
 
-            nBG.shadowCTX.clearRect(0,0,nBG.shadowCanvas.width, nBG.shadowCanvas.height);
-            nBG.shadowCTX.save();
-            nBG.shadowCTX.translate(anim.start.x,anim.start.y);
-            if (anim.start.rotation!==undefined)  nBG.shadowCTX.rotate(anim.start.rotation*Math.PI/180);
-            nBG.shadowCTX.drawImage(nBG.loadobj.img, 0, 0, _width, _height);
-            nBG.shadowCTX.restore();
+		// If Not Animating
             if (nBG.currentState!=="animating") {
-                _R.updateSlideBGs(id,anim.slidekey,nBG,true);
-                if (anim.start.blur!==undefined) nBG.canvas.style.filter = anim.start.blur===0 ? "none" : "blur("+anim.start.blur+"px)";
-            } else
-            if (anim.start.blur!==undefined && nBG.canvasFilter) nBG.canvasFilterBlur = anim.start.blur; else nBG.canvas.style.filter = anim.start.blur===0 ? "none" : "blur("+anim.start.blur+"px)";
+			if (nBG.panFake!=undefined) {
+				if (!nBG.panFake.visible) {
+					nBG.panFake.visible = true;
+					nBG.panFake.img.style.opacity = 1;
+					nBG.canvas.style.opacity = 0;
+				}
+				tpGS.gsap.set(nBG.panFake.img,{width:a.width, height:a.height,force3D:true,x:a.x,y:a.y,transformOrigin:"0% 0%", rotationZ:a.rotationV+"deg", scale:a.scale});
+				if (a.blur!==undefined) nBG.panFake.img.style.filter = a.blur===0 ? "none" : "blur("+a.blur+"px)";
+			} else {
+				_R.updateSlideBGs(id,a.slidekey,nBG,true);
+				if (a.blur!==undefined) nBG.canvas.style.filter = a.blur===0 ? "none" : "blur("+a.blur+"px)";
+			}
+		} else {
+			if (nBG.panFake!==undefined && nBG.panFake.visible!==false) {
+				nBG.panFake.visible = false;
+				nBG.panFake.img.style.opacity = 0;
+				nBG.canvas.style.opacity = 1;
+				nBG.panFake.img.style.filter =  "none";
+			}
+			if (a.blur!==undefined && nBG.canvasFilter) nBG.canvasFilterBlur = a.blur; else nBG.canvas.style.filter = a.blur===0 ? "none" : "blur("+a.blur+"px)";
+		}
         },
 
         startPanZoom :  function(l,id,prgs,cid,prepare,key) {
@@ -182,7 +206,7 @@
             var hDIM = _R.getmDim(id,cid, nBG);
             var	anim = _R.pzCalcL(hDIM.width,hDIM.height,d),
                 PZ;
-
+		nBG.pzAnim = anim;
             if (!_R_is_Editor) {
                 _R[id].panzoomTLs = _R[id].panzoomTLs===undefined ? {} : _R[id].panzoomTLs;
                 _R[id].panzoomBGs = _R[id].panzoomBGs===undefined ? {} : _R[id].panzoomBGs;
@@ -210,15 +234,15 @@
                     nBG.shadowCanvas.style.opacity = 1;
                 }
 
-                nBG.shadowCanvas.width = hDIM.width;
-                nBG.shadowCanvas.height = hDIM.height;
-
+                if(nBG.shadowCanvas.width !== hDIM.width) nBG.shadowCanvas.width = hDIM.width;
+                if(nBG.shadowCanvas.height !== hDIM.height) nBG.shadowCanvas.height = hDIM.height;
 
                 anim.slideindex = cid;
                 anim.slidekey = _R_is_Editor ? undefined : key;
 
-                _R.pzDrawShadow(id,nBG,anim);
-                anim.end.onUpdate = function() {_R.pzDrawShadow(id,nBG,anim);}
+                anim.start.slidekey = anim.slidekey;
+                _R.pzDrawShadow(id,nBG,anim.start);
+                anim.end.onUpdate = function() {_R.pzDrawShadow(id,nBG,anim.start);}
 
                 nBG.panStart = jQuery.extend(true,{},anim.start);
 
@@ -226,6 +250,25 @@
                 if (d.panvalues.blurstart!==undefined && d.panvalues.blurend!==undefined &&  (d.panvalues.blurstart!==0 || d.panvalues.blurend!==0)) {
                     anim.start.blur = d.panvalues.blurstart;
                     anim.end.blur = d.panvalues.blurend;
+                }
+
+                //iOS Canvas PAN BUG Workaround
+                if (!_R_is_Editor && anim.start.blur===undefined && !_R.isFF || (window.isSafari11 && _R.ISM)) {
+                    nBG.panFake= nBG.panFake===undefined ? { img : nBG.loadobj.img.cloneNode(true)} : nBG.panFake;
+                    if (nBG.panFake!==undefined) {
+                        if (nBG.panFake.appended!==true) {
+                            nBG.panFake.appended = true;
+                            nBG.sbg.appendChild(nBG.panFake.img);
+                            nBG.panFake.img.style.position="absolute";
+                            nBG.panFake.img.style.display = "block";
+                            nBG.panFake.img.style.zIndex = 0;
+                            nBG.panFake.img.style.opacity = 0;
+                            nBG.panFake.img.style.top = "0px";
+                            nBG.panFake.img.style.left = "0px";
+                        }
+                        nBG.panFake.img.width = anim.start.width;
+                        nBG.panFake.img.height = anim.start.height;
+                    }
                 }
 
                 PZ.add(tpGS.gsap.to(anim.start,d.panvalues.duration,anim.end),0);

@@ -88,6 +88,7 @@ RVS.F.cI = function(_) {
 RVS.F.cE = function(_) {
     let e = document.createElement(_.t || 'div');
     if (_.con!==undefined) e.textContent = _.con;
+	if (_.txt!==undefined) e.innerHTML = _.txt;
     if (_.id) e.id = _.id;
     if (_.cN) e.className = _.cN;
     if (_.ds) for (let i in _.ds) if(_.ds.hasOwnProperty(i)) e.dataset[i] = _.ds[i];
@@ -153,6 +154,8 @@ RVS.F.cE = function(_) {
 		console.log(txt);
 	};
 
+
+
 	RVS.F.compareVersion = function(v1, v2) {
 		if (typeof v1 !== 'string') return false;
 		if (typeof v2 !== 'string') return false;
@@ -182,12 +185,85 @@ RVS.F.cE = function(_) {
  				if (RVS!==undefined && RVS.F!==undefined) {
  					if (RVS.F.updateDraw!==undefined) RVS.F.updateDraw();
  					if (RVS.F.isActivated!==undefined) RVS.F.isActivated();
- 					if (RVS.F.notifications!==undefined) RVS.F.notifications();
+ 					if (RVS.F.notifications!==undefined && RVS.S.ovMode) RVS.F.notifications();
+					//Update Rwed Badgesa
+					jQuery('.rs_lib_premium_wrap .rs_lib_premium_red').each(function() {
+						this.className = "rs_lib_premium_lila";
+						this.innerHTML = RVS_LANG.premium_template;
+					});
+					jQuery('#rs_premium .rs_lib_premium_red').each(function() {
+						this.className = "rs_lib_premium_lila";
+						this.innerHTML = RVS_LANG.premium_template;
+					});
  				}
  			}
  		});
 	 });
 
+
+
+	/*
+	ASK FOR TRACKING
+	*/
+
+	function addWeeks(numOfWeeks, date = new Date()) { date. setDate(date. getDate() + numOfWeeks * 7); return date; }
+	RVS.DOC.on('udpateTrackingEnv',function() {
+		if (RVS.SLIDER!==undefined && RVS.SLIDER.globals!==undefined) {
+			RVS.SLIDER.globals.tracking = RVS.SLIDER.globals.trackingOnOff == true || RVS.SLIDER.globals.trackingOnOff=='true' ? 'enabled' : '1999-01-01';
+			RVS.ENV.tracking = RVS.SLIDER.globals.tracking;
+		}
+	});
+
+	//UPDATE TRACKING INFOS
+	RVS.F.updateTrackingInfo = function() {
+		RVS.F.ajaxRequest('update_global_settings', {global_settings:{tracking : RVS.ENV.tracking},update:true}, function(response){
+			if (response!==undefined && (response.success==true || response.success=="true")) {
+				if (RVS.SLIDER!==undefined && RVS.SLIDER.globals!==undefined) {
+					RVS.SLIDER.globals.tracking = RVS.ENV.tracking;
+					RVS.SLIDER.globals.trackingOnOff = RVS.ENV.trackingOnOff;
+				}
+			}
+			RVS.F.RSDialog.close();
+		});
+	}
+
+	RVS.F.reqTracking = function() {
+		if (RVS.F.dontShowTracking) return;
+		if (RVS.ENV.tracking=="enabled") return;
+		let today = (new Date()).toISOString().split('T')[0]
+		if (RVS.ENV.tracking>=today && RVS.ENV.tracking!=="disabled") return;
+		if (RVS.F.showTrackingFirstgo) RVS.F.showTrackingFirstgo();
+	}
+
+	RVS.F.showTrackingFirstgo = function() {
+		if (RVS.F.dontShowTracking) return;
+		RVS.F.RSDialog.create({modalid:'#rbm_tracking_firstgo', bgopacity:0.8});
+		tpGS.gsap.from('#rbm_des_rocket',0.5,{scale:0.3,opacity:0,y:25,x:-25,delay:0.5});
+		tpGS.gsap.from('#rbm_des_charts',0.7,{scale:0.3,rotation:70,opacity:0,delay:0.3});
+		tpGS.gsap.from('#rbm_des_rsicon',1,{scale:0,rotation:-270,opacity:0,delay:0.1});
+		if (RVS.S.shTFreg==undefined) {
+			RVS.DOC.on('click','#rbm_track_enable',function() {
+				RVS.ENV.tracking = "enabled";
+				RVS.ENV.trackingOnOff = true;
+				RVS.F.updateTrackingInfo();
+			});
+			RVS.DOC.on('click','#rbm_track_disable',function() {
+				RVS.ENV.tracking = (addWeeks(5)).toISOString().split('T')[0];
+				RVS.ENV.trackingOnOff = false;
+				RVS.F.updateTrackingInfo();
+			});
+			RVS.DOC.on('click','#rbm_tracking_firstgo .rbm_close',function() {
+				RVS.ENV.tracking = (addWeeks(0.3)).toISOString().split('T')[0];
+				RVS.ENV.trackingOnOff = false;
+				RVS.F.updateTrackingInfo();
+			});
+			RVS.S.shTFreg = true;
+		}
+	}
+
+	setTimeout(function() {
+		RVS.F.reqTracking();
+	},1500);
 
 	/**********************************
 		-	IMAGE AND VIDEO DIALOG -
@@ -243,7 +319,8 @@ RVS.F.cE = function(_) {
         row:"reorder",
         object:"filter_drama",
         svg:"filter_drama",
-        video:"live_tv"
+			video:"live_tv",
+			linebreak:"keyboard_return"
     });
 
 
@@ -471,20 +548,22 @@ RVS.F.getLayerIcon = function(_,_sub) {
 		RVS.S.setUnserRafCalled = true;
 
 		requestAnimationFrame(function() {
-			var i,j,q,el;
+			var i,j,q,el,qs;
 			for (i in RVS.S.setUnsetClasses) {
 				if (!RVS.S.setUnsetClasses.hasOwnProperty(i)) continue;
 				for (j=0;j<RVS.S.setUnsetClasses[i].length;j++) {
-					if (RVS.S.setUnsetClasses[i][j].query===undefined || RVS.S.setUnsetClasses[i][j].query==="" || RVS.S.setUnsetClasses[i][j].query===" " || RVS.S.setUnsetClasses[i][j].query===",") continue;
-					el = document.querySelectorAll(RVS.S.setUnsetClasses[i][j].query.slice(0,-1));
+					qs = RVS.S.setUnsetClasses[i][j].query.slice(0,-1);
+					if (qs===undefined || qs==="" || qs===" " || qs===",") continue;
+					el = document.querySelectorAll(qs[qs.length-1]=="," ? qs.slice(0,-1) : qs);
 					for (q=0;q<el.length;q++) el[q].classList[RVS.S.setUnsetClasses[i][j].type](i);
 				}
 			}
 			RVS.S.setUnsetClasses={};
 
 			for (j=0;j<RVS.S.setShowHide.length;j++) {
-				if (RVS.S.setShowHide[j].query=="" || RVS.S.setShowHide[j].query===undefined || RVS.S.setShowHide[j].query===" " || RVS.S.setShowHide[j].query===",") continue;
-				el = document.querySelectorAll(RVS.S.setShowHide[j].query.slice(0,-1));
+				qs = RVS.S.setShowHide[j].query.slice(0,-1);
+				if (qs=="" || qs===undefined || qs===" " || qs===",") continue;
+				el = document.querySelectorAll(qs[qs.length-1]=="," ? qs.slice(0,-1) : qs);
 				for (q=0;q<el.length;q++) jQuery(el[q])[RVS.S.setShowHide[j].type==="hide" ? 'hide' : 'show']();
 			}
 			RVS.S.setShowHide=[];
@@ -679,7 +758,7 @@ RVS.F.getLayerIcon = function(_,_sub) {
 	}
 
 	RVS.F.getConcVals = function(_,screen) {
-		return _.replace('#size#',screen).replace('#slide#',RVS.S.slideId).replace('#curslidetrans#',RVS.S.slideTrans).replace('#actionindex#',RVS.S.actionIdx).replace('#targetlayer#',RVS.S.actionTrgtLayerId).replace('#frame#','timeline.frames.'+RVS.S.keyFrame).replace('#framekey#',RVS.S.keyFrame);
+		return _.replace('#size#',screen).replace('#curlayer#',(RVS.selLayers!==undefined ? RVS.selLayers[0] : '#curlayer#')).replace('#slide#',RVS.S.slideId).replace('#curslidetrans#',RVS.S.slideTrans).replace('#actionindex#',RVS.S.actionIdx).replace('#targetlayer#',RVS.S.actionTrgtLayerId).replace('#frame#','timeline.frames.'+RVS.S.keyFrame).replace('#framekey#',RVS.S.keyFrame);
 	}
 
 	//***************************************************
@@ -703,8 +782,8 @@ RVS.F.getLayerIcon = function(_,_sub) {
 
 		// Split Numeric from Text first
 		var valisnum = RVS.F.isNumeric(_.val),
-			_n = valisnum ? _.val : _.val.replace(/[^\d||-]+/g,''),
-			_t = valisnum ? "" : _.val.replace(/\d+/,''),
+			_n = valisnum ? _.val : _.val.replace(/[^0-9\.\-]+/g,""),
+			_t = valisnum ? "" : _.val.replace(/[0-9\.\-]+/g,""),
 			_oldt = _.history!==undefined ? _.history.replace(/\d+/,'') : "px",
 			_a = _.allowed!==undefined ?_.allowed.toLowerCase().split(",") : ["px"],
 			_s = "";
@@ -1012,7 +1091,7 @@ RVS.F.getLayerIcon = function(_,_sub) {
 			window.rbmContent += '	<div class="rbmas_benef"><i class="material-icons">check</i>'+RVS_LANG.active_sr_one_on_one+'</div>';
 			window.rbmContent += '	<div class="dcenter">';
 			window.rbmContent += '		<div class="div30"></div><div id="rbmas_active_plugin_now" style="width:220px" class="basic_action_button longbutton basic_action_lilabutton"><i class="material-icons">vpn_key</i>'+(RVS.ENV.selling ? RVS_LANG.ihavelicensekey : RVS_LANG.ihavepurchasecode)+'</div>';
-            window.rbmContent += '        <div class="div0"></div><a href="'+(RVS.ENV.selling ? 'https://account.sliderrevolution.com/portal/pricing/' : 'https://codecanyon.net/item/slider-revolution-responsive-magento-extension/9332896?ref=nwdthemes&license=regular&open_purchase_for_item_id=9332896&purchasable=source') +'" target="_blank" style="width:220px" class="basic_action_button longbutton basic_action_coloredbutton"><i class="material-icons">shopping_cart</i>'+(RVS.ENV.selling ? RVS_LANG.getlicensekey : RVS_LANG.getpurchasecode)+'</a>';
+            window.rbmContent += '        <div class="div0"></div><a href="'+(RVS.ENV.selling ? 'https://account.sliderrevolution.com/portal/pricing/?utm_source=admin&utm_medium=button&utm_campaign=srusers&utm_content=buykey' : 'https://codecanyon.net/item/slider-revolution-responsive-magento-extension/9332896?ref=nwdthemes&license=regular&open_purchase_for_item_id=9332896&purchasable=source') +'" target="_blank" style="width:220px" class="basic_action_button longbutton basic_action_coloredbutton"><i class="material-icons">shopping_cart</i>'+(RVS.ENV.selling ? RVS_LANG.getlicensekey : RVS_LANG.getpurchasecode)+'</a>';
             window.rbmContent += '	</div>';
 			window.rbmContent += '</div>';
 			window.rbmContent += '<div class="rbmas_activate_page">';
@@ -1022,9 +1101,9 @@ RVS.F.getLayerIcon = function(_,_sub) {
 			window.rbmContent += '	<div class="dcenter">';
 			window.rbmContent += '		<div class="div65"></div><div class="rbmas_solidtitle">'+(RVS.ENV.selling ? RVS_LANG.onelicensekey : RVS_LANG.onepurchasekey)+'</div>';
 			window.rbmContent += '		<div class="div30"></div><div class="rbmas_solidtext">'+(RVS.ENV.selling ? RVS_LANG.onelicensekey_info : RVS_LANG.onepurchasekey_info)+'</div>';
-            window.rbmContent += '        <div class="div30"></div><a '+(RVS.ENV.selling ? 'style="width:185px !important; margin-right:10px;"' : '')+' href="'+(RVS.ENV.selling ? 'https://account.sliderrevolution.com/portal/pricing/' : 'https://codecanyon.net/item/slider-revolution-responsive-magento-extension/9332896?ref=nwdthemes&license=regular&open_purchase_for_item_id=9332896&purchasable=source') +'" target="_blank" class="basic_action_button longbutton basic_action_coloredbutton"><i class="material-icons">shopping_cart</i>'+(RVS.ENV.selling ? RVS_LANG.getlicensekey : RVS_LANG.getpurchasecode)+'</a>';
+            window.rbmContent += '        <div class="div30"></div><a '+(RVS.ENV.selling ? 'style="width:185px !important; margin-right:10px;"' : '')+' href="'+(RVS.ENV.selling ? 'https://account.sliderrevolution.com/portal/pricing/' : 'https://codecanyon.net/item/slider-revolution-responsive-magento-extension/9332896?ref=nwdthemes&license=regular&open_purchase_for_item_id=9332896&purchasable=source') +'" target="_blank" rel="noopener" class="basic_action_button longbutton basic_action_coloredbutton"><i class="material-icons">shopping_cart</i>'+(RVS.ENV.selling ? RVS_LANG.getlicensekey : RVS_LANG.getpurchasecode)+'</a>';
             if (RVS.ENV.selling)
-                window.rbmContent += '<a href="https://account.sliderrevolution.com/portal/" target="_blank" style="width:185px !important" class="basic_action_button longbutton basic_action_coloredbutton basic_action_coloredpurplebutton"><i class="material-icons">person</i>'+RVS_LANG.membersarea+'</a>';
+                window.rbmContent += '<a href="https://account.sliderrevolution.com/portal/" target="_blank" rel="noopener" style="width:185px !important" class="basic_action_button longbutton basic_action_coloredbutton basic_action_coloredpurplebutton"><i class="material-icons">person</i>'+RVS_LANG.membersarea+'</a>';
             window.rbmContent += '	</div>';
 			window.rbmContent += '</div>';
 			window.rbmContent += '<div id="rbm_activate_slider_deco"></div>';

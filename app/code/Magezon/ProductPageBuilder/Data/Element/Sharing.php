@@ -17,11 +17,11 @@ namespace Magezon\ProductPageBuilder\Data\Element;
 class Sharing extends \Magezon\ProductPageBuilder\Data\Element
 {
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
-	public function prepareGeneralTab()
+    public function prepareGeneralTab()
     {
-    	$general = parent::prepareGeneralTab();
+        $general = parent::prepareGeneralTab();
 
             $container1 = $general->addContainerGroup(
                 'container1',
@@ -82,6 +82,6 @@ class Sharing extends \Magezon\ProductPageBuilder\Data\Element
                     ]
                 );
 
-    	return $general;
+        return $general;
     }
 }

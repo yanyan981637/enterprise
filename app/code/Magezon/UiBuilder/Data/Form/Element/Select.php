@@ -33,6 +33,7 @@ class Select extends AbstractElement
             'selectedPlaceholders' => false
         ], (array) $this->getData('config'));
 
+        $config['selectedPlaceholders'] = []; // require this for PHP 8.1
         if (isset($config['placeholder']) && !isset($config['selectedPlaceholders']['defaultPlaceholder'])) {
             $config['selectedPlaceholders']['defaultPlaceholder'] = $config['placeholder'];
         }

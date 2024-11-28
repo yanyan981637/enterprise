@@ -2,7 +2,7 @@
 /**
 * @author    ThemePunch <info@themepunch.com>
 * @link      https://www.themepunch.com/
-* @copyright 2019 ThemePunch
+* @copyright 2022 ThemePunch
 */
 
 namespace Nwdthemes\Revslider\Model\Revslider\Admin\Includes;
@@ -13,7 +13,7 @@ class RevSliderTooltips {
 
 		$translations = array(
 
-			'docs' => __('Docs', 'revslider'),
+			'docs' => __('Docs'),
 			'next_tip' => __('Next Tip'),
 			'got_it' => __('Got It'),
 			'hide_tips' => __("Don't show tooltips again")
@@ -30,7 +30,7 @@ class RevSliderTooltips {
 				'margin' => '20px 0 0 0',
 				'text' => 'Get information about the different options available for your Slider',
 				'linkText' => 'Learn More',
-				'link' => 'https://www.sliderrevolution.com/help-center/'
+				'link' => 'https://www.sliderrevolution.com/help-center/?utm_source=admin&utm_medium=button&utm_campaign=srusers&utm_content=faq'
 
 			),
 			'slides' => array(

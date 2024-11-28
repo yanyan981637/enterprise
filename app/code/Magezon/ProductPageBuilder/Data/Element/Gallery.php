@@ -21,17 +21,17 @@ class Gallery extends \Magezon\ProductPageBuilder\Data\Element
      */
     public function prepareForm()
     {
-    	parent::prepareForm();
-    	$this->prepareGalleryTab();
-    	return $this;
+        parent::prepareForm();
+        $this->prepareGalleryTab();
+        return $this;
     }
 
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
     public function prepareGalleryTab()
     {
-    	$gallery = $this->addTab(
+        $gallery = $this->addTab(
             'gallery',
             [
                 'sortOrder'       => 50,
@@ -45,170 +45,170 @@ class Gallery extends \Magezon\ProductPageBuilder\Data\Element
                 'use_default_theme_settings',
                 'toggle',
                 [
-					'sortOrder'       => 10,
-					'key'             => 'use_default_theme_settings',
-					'templateOptions' => [
+                    'sortOrder'       => 10,
+                    'key'             => 'use_default_theme_settings',
+                    'templateOptions' => [
                         'label'   => __('Use Default Theme Settings')
                     ]
                 ]
             );
 
-	        $container1 = $gallery->addContainerGroup(
-	            'container1',
-	            [
-					'sortOrder' => 20,
-		            'hideExpression' => 'model.use_default_theme_settings'
-	            ]
-	        );
+            $container1 = $gallery->addContainerGroup(
+                'container1',
+                [
+                    'sortOrder' => 20,
+                    'hideExpression' => 'model.use_default_theme_settings'
+                ]
+            );
 
-	            $container1->addChildren(
-	                'gallery_navposition',
-	                'select',
-	                [
-						'sortOrder'       => 10,
-						'key'             => 'gallery_navposition',
-						'defaultValue'    => 'bottom',
-						'templateOptions' => [
-							'label'   => __('Nav Position'),
-							'options' => $this->getNavPosition(),
-							'tooltip' => __('Position of thumbnails. Default: Bottom')
-	                    ]
-	                ]
-	            );
+                $container1->addChildren(
+                    'gallery_navposition',
+                    'select',
+                    [
+                        'sortOrder'       => 10,
+                        'key'             => 'gallery_navposition',
+                        'defaultValue'    => 'bottom',
+                        'templateOptions' => [
+                            'label'   => __('Nav Position'),
+                            'options' => $this->getNavPosition(),
+                            'tooltip' => __('Position of thumbnails. Default: Bottom')
+                        ]
+                    ]
+                );
 
-	            $container1->addChildren(
-	                'gallery_nav',
-	                'select',
-	                [
-						'sortOrder'       => 20,
-						'key'             => 'gallery_nav',
-						'defaultValue'    => 'thumbs',
-						'templateOptions' => [
-							'label'   => __('Nav'),
-							'options' => $this->getNav(),
-							'tooltip' => __('Gallery navigation style. Default: Thumbs')
-	                    ]
-	                ]
-	            );
+                $container1->addChildren(
+                    'gallery_nav',
+                    'select',
+                    [
+                        'sortOrder'       => 20,
+                        'key'             => 'gallery_nav',
+                        'defaultValue'    => 'thumbs',
+                        'templateOptions' => [
+                            'label'   => __('Nav'),
+                            'options' => $this->getNav(),
+                            'tooltip' => __('Gallery navigation style. Default: Thumbs')
+                        ]
+                    ]
+                );
 
-	            $container1->addChildren(
-	                'gallery_loop',
-	                'toggle',
-	                [
-						'sortOrder'       => 30,
-						'key'             => 'gallery_loop',
-						'defaultValue'    => true,
-						'templateOptions' => [
-							'label'        => __('Loop'),
-							'tooltip'      => __('Gallery navigation loop. Default: true'),
-							'tooltipClass' => 'tooltip-bottom tooltip-bottom-left'
-	                    ]
-	                ]
-	            );
+                $container1->addChildren(
+                    'gallery_loop',
+                    'toggle',
+                    [
+                        'sortOrder'       => 30,
+                        'key'             => 'gallery_loop',
+                        'defaultValue'    => true,
+                        'templateOptions' => [
+                            'label'        => __('Loop'),
+                            'tooltip'      => __('Gallery navigation loop. Default: true'),
+                            'tooltipClass' => 'tooltip-bottom tooltip-bottom-left'
+                        ]
+                    ]
+                );
 
-	        $container2 = $gallery->addContainerGroup(
-	            'container2',
-	            [
-					'sortOrder' => 30,
-		            'hideExpression' => 'model.use_default_theme_settings'
-	            ]
-	        );
+            $container2 = $gallery->addContainerGroup(
+                'container2',
+                [
+                    'sortOrder' => 30,
+                    'hideExpression' => 'model.use_default_theme_settings'
+                ]
+            );
 
-	            $container2->addChildren(
-	                'gallery_arrows',
-	                'toggle',
-	                [
-						'sortOrder'       => 10,
-						'key'             => 'gallery_arrows',
-						'defaultValue'    => true,
-						'templateOptions' => [
-							'label'   => __('Arrows'),
-							'tooltip' => __('Turn on/off arrows on the sides preview. Default: true')
-	                    ]
-	                ]
-	            );
+                $container2->addChildren(
+                    'gallery_arrows',
+                    'toggle',
+                    [
+                        'sortOrder'       => 10,
+                        'key'             => 'gallery_arrows',
+                        'defaultValue'    => true,
+                        'templateOptions' => [
+                            'label'   => __('Arrows'),
+                            'tooltip' => __('Turn on/off arrows on the sides preview. Default: true')
+                        ]
+                    ]
+                );
 
-	            $container2->addChildren(
-	                'gallery_caption',
-	                'toggle',
-	                [
-						'sortOrder'       => 20,
-						'key'             => 'gallery_caption',
-						'defaultValue'    => false,
-						'templateOptions' => [
-							'label'   => __('Caption'),
-							'tooltip' => __('Display alt text as image title. Default: false')
-	                    ]
-	                ]
-	            );
+                $container2->addChildren(
+                    'gallery_caption',
+                    'toggle',
+                    [
+                        'sortOrder'       => 20,
+                        'key'             => 'gallery_caption',
+                        'defaultValue'    => false,
+                        'templateOptions' => [
+                            'label'   => __('Caption'),
+                            'tooltip' => __('Display alt text as image title. Default: false')
+                        ]
+                    ]
+                );
 
-	            $container2->addChildren(
-	                'gallery_allowfullscreen',
-	                'toggle',
-	                [
-						'sortOrder'       => 30,
-						'key'             => 'gallery_allowfullscreen',
-						'defaultValue'    => true,
-						'templateOptions' => [
-							'label'        => __('Allow Fullscreen'),
-							'tooltip'      => __('Turn on/off fullscreen. Default: true'),
-							'tooltipClass' => 'tooltip-bottom tooltip-bottom-left'
-	                    ]
-	                ]
-	            );
+                $container2->addChildren(
+                    'gallery_allowfullscreen',
+                    'toggle',
+                    [
+                        'sortOrder'       => 30,
+                        'key'             => 'gallery_allowfullscreen',
+                        'defaultValue'    => true,
+                        'templateOptions' => [
+                            'label'        => __('Allow Fullscreen'),
+                            'tooltip'      => __('Turn on/off fullscreen. Default: true'),
+                            'tooltipClass' => 'tooltip-bottom tooltip-bottom-left'
+                        ]
+                    ]
+                );
 
-	        $container3 = $gallery->addContainerGroup(
-	            'container3',
-	            [
-					'sortOrder' => 40,
-		            'hideExpression' => 'model.use_default_theme_settings'
-	            ]
-	        );
+            $container3 = $gallery->addContainerGroup(
+                'container3',
+                [
+                    'sortOrder' => 40,
+                    'hideExpression' => 'model.use_default_theme_settings'
+                ]
+            );
 
-	            $container3->addChildren(
-	                'gallery_navtype',
-	                'select',
-	                [
-						'sortOrder'       => 10,
-						'key'             => 'gallery_navtype',
-						'defaultValue'    => 'slides',
-						'templateOptions' => [
-							'label'   => __('Nav Type'),
-							'options' => $this->getNavType(),
-							'tooltip' => __('Sliding type of thumbnails. Default: Slides')
-	                    ]
-	                ]
-	            );
+                $container3->addChildren(
+                    'gallery_navtype',
+                    'select',
+                    [
+                        'sortOrder'       => 10,
+                        'key'             => 'gallery_navtype',
+                        'defaultValue'    => 'slides',
+                        'templateOptions' => [
+                            'label'   => __('Nav Type'),
+                            'options' => $this->getNavType(),
+                            'tooltip' => __('Sliding type of thumbnails. Default: Slides')
+                        ]
+                    ]
+                );
 
-	            $container3->addChildren(
-	                'gallery_transition_effect',
-	                'select',
-	                [
-						'sortOrder'       => 20,
-						'key'             => 'gallery_transition_effect',
-						'defaultValue'    => 'slide',
-						'templateOptions' => [
-							'label'   => __('Transition Effect'),
-							'options' => $this->getTransitionEffect(),
-							'tooltip' => __('Sets transition effect for slides changing Default: Slide')
-	                    ]
-	                ]
-	            );
+                $container3->addChildren(
+                    'gallery_transition_effect',
+                    'select',
+                    [
+                        'sortOrder'       => 20,
+                        'key'             => 'gallery_transition_effect',
+                        'defaultValue'    => 'slide',
+                        'templateOptions' => [
+                            'label'   => __('Transition Effect'),
+                            'options' => $this->getTransitionEffect(),
+                            'tooltip' => __('Sets transition effect for slides changing Default: Slide')
+                        ]
+                    ]
+                );
 
-	            $container3->addChildren(
-	                'gallery_transition_duration',
-	                'number',
-	                [
-						'sortOrder'       => 30,
-						'key'             => 'gallery_transition_duration',
-						'defaultValue'    => 500,
-						'templateOptions' => [
-							'label'        => __('Transition Duration'),
-							'tooltip'      => __('Sets transition duration in ms Default: 500'),
-							'tooltipClass' => 'tooltip-bottom tooltip-bottom-left'
-	                    ]
-	                ]
-	            );
+                $container3->addChildren(
+                    'gallery_transition_duration',
+                    'number',
+                    [
+                        'sortOrder'       => 30,
+                        'key'             => 'gallery_transition_duration',
+                        'defaultValue'    => 500,
+                        'templateOptions' => [
+                            'label'        => __('Transition Duration'),
+                            'tooltip'      => __('Sets transition duration in ms Default: 500'),
+                            'tooltipClass' => 'tooltip-bottom tooltip-bottom-left'
+                        ]
+                    ]
+                );
 
         return $gallery;
     }

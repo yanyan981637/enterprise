@@ -2,9 +2,9 @@
     "name": "magefan/module-translation-plus",
     "description": "This module allowed admin user to change translations in admin panel",
     "type": "magento2-module",
-    "version": "2.2.0",
+    "version": "2.3.5",
     "require": {
-        "magefan/module-translation" : "2.2.0"
+        "magefan/module-translation" : "2.3.5"
     },
     "autoload": {
         "files": [ "registration.php" ],

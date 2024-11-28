@@ -1,12 +1,11 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
-/**
- * @var \Amasty\Base\Block\Import $block
- */
+/** @var \Amasty\Base\Block\Import $block */
+/** @var \Magento\Framework\Escaper $escaper */
 ?>
 <script>
     require([
@@ -18,7 +17,7 @@
             var entity = $('#entity');
             entity.hide();
             entity.closest('fieldset').find('label.label.admin__field-label').css('visibility','hidden');
-            $(entity).val('<?= $block->escapeHtml($block->getImportEntity()) ?>');
+            $(entity).val('<?= $escaper->escapeHtml($block->getImportEntity()) ?>');
             varienImport.handleEntityTypeSelector();
             //]]>
         }

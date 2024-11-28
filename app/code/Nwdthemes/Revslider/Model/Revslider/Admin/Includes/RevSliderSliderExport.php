@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider\Admin\Includes;
@@ -526,7 +526,7 @@ class RevSliderSliderExport extends RevSliderSlider {
 			$success = $this->zip->open($this->export_path_zip, \ZIPARCHIVE::CREATE | \ZipArchive::OVERWRITE);
 
 			if($success !== true)
-				$this->throw_error(__("Can't create zip file: ", 'revslider').$this->export_path_zip);
+				$this->throw_error(__("Can't create zip file: ").$this->export_path_zip);
 		}else{
 			//fallback to pclzip
 

@@ -17,5 +17,10 @@
         <css src="Nwdthemes_Revslider::public/assets/css/rs6.min.css" />
         <css src="Nwdthemes_Revslider::public/assets/fonts/font-awesome/css/font-awesome.min.css" />
         <css src="Nwdthemes_Revslider::public/assets/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.min.css" />
+        <remove src="Magento_Backend::js/bootstrap/editor.js"/>
+        <remove src="prototype/windows/themes/default.css"/>
     </head>
+	<body>
+		<referenceBlock name="builder_head_editor" remove="true"/>
+	</body>
 </page>

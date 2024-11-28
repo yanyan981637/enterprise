@@ -16,11 +16,11 @@ namespace Magezon\ProductPageBuilder\Block;
 
 class Builder extends \Magezon\Builder\Block\Builder
 {
-	/**
-	 * @param \Magento\Framework\View\Element\Template\Context          $context        
-	 * @param \Magezon\ProductPageBuilder\Model\CompositeConfigProvider $configProvider 
-	 * @param array                                                     $data           
-	 */
+    /**
+     * @param \Magento\Framework\View\Element\Template\Context          $context
+     * @param \Magezon\ProductPageBuilder\Model\CompositeConfigProvider $configProvider
+     * @param array                                                     $data
+     */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magezon\ProductPageBuilder\Model\CompositeConfigProvider $configProvider,

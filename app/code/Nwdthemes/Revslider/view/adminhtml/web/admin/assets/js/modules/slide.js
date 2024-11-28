@@ -88,7 +88,7 @@
 
 	};
 
-	RVS.F.makeSlideListScroll = function() {
+	RVS.F.makeSlideListScroll = function() {		
 		if (RVS.S.slidesListSB===undefined)
 			RVS.S.slidesListSB = RVS.C.slideList.RSScroll({
 				wheelPropagation:false,
@@ -97,6 +97,9 @@
 			});
 		else
 			RVS.C.slideList.RSScroll("update");
+		RVS.DOC.on('mouseenter','#slidelist',function() {			
+			RVS.C.slideList.RSScroll("update");
+		});
 	}
 
 
@@ -223,6 +226,8 @@
 		RVS.DOC.trigger("slideAmountUpdated");
 
 		RVS.S.slideId = obj.slideid;
+		RVS.ENV.firstLayoutAfterSlideload = true;
+			
 		RVS.DOC.trigger('showLastEditedSlideStatic');
 		RVS.DOC.trigger("slideFocusChanged");
 
@@ -283,13 +288,17 @@
 		 RVS.C.rZone.bottom = RVS.C.layergrid.find('.row_wrapper_bottom');
 
 		RVS.C.layergrid.attr("id","layer_grid_"+obj.slideid);
-		RVS.H = {};
+		RVS.HALL = RVS.HALL==undefined ? {} : RVS.HALL;
+		RVS.HALL[RVS.S.slideId] = RVS.HALL[RVS.S.slideId] == undefined ? {} : RVS.HALL[RVS.S.slideId];
+		RVS.H = RVS.HALL[RVS.S.slideId];
+
 
 		RVS.C.slide.show();
 		RVS.DOC.trigger('updatesliderlayout','setSlideFocus-139');
 		RVS.F.setRulers();
 
 		RVS.F.updateFields(obj.ignoreUpdateFields);
+
 
 
 		//CALL BASIC CHANGES
@@ -303,6 +312,8 @@
 
 		//Build Layers here
 		RVS.F.buildLayerLists({ignoreSelectLayers:obj.ignoreUpdateFields, ignoreDrawLayers:true});
+		
+		RVS.F.updateReferencigToggleLayerType();			
 		RVS.F.updateAllLayerFrames();
 
 		RVS.F.updateSelectedHtmlLayers(true,true);
@@ -320,6 +331,7 @@
 
 		RVS.DOC.trigger('updateSlideLoopRange');
 		RVS.DOC.trigger('updateFixedScrollRange');
+		 RVS.F.reOrderHTMLLayers(); // To show Groups in Columns at Start
 
 		//Create a First Save Option to make sure that we have some Basic to compare
 		RVS.S.lastSaved = RVS.S.lastSaved===undefined ? {} : RVS.S.lastSaved;
@@ -453,7 +465,8 @@
                 RVS.SBGS[RVS.S.slideId].c = RVS.F.safeExtend(true,RVS.SBGS[RVS.S.slideId].c,RVS.F.getSlideBGObj({type:"c", slideBGFrom : { bg:{color:"transparent", repeat:"repeat",position:"center center",fit:"50%", src:RVS.ENV.plugin_url+"admin/assets/images/light_pattern_2x.png"}}}));
 
                 //LOAD IMAGES IF NOT YET LOADED
-                if (RVS.SBGS[RVS.S.slideId].n.loadobj.img===undefined || RVS.SBGS[RVS.S.slideId].n.loadobj.src!==RVS.SBGS[RVS.S.slideId].n.src || RVS.S.lastSlideBGSrc!==RVS.SLIDER[RVS.S.slideId].slide.bg.type) RVS.F.loadBGImages(undefined,"n");
+				if (RVS.SBGS[RVS.S.slideId].n.loadobj.img===undefined || RVS.S.lastSlideBGSrc!==RVS.SLIDER[RVS.S.slideId].slide.bg.type
+					|| (RVS.SBGS[RVS.S.slideId].n.loadobj.src!==RVS.SBGS[RVS.S.slideId].n.src && RVS.SBGS[RVS.S.slideId].n.src !== '')) RVS.F.loadBGImages(undefined,"n");
                 if (RVS.SBGS[RVS.S.slideId].c.loadobj.img===undefined) RVS.F.loadBGImages(undefined,"c");
 
 
@@ -577,6 +590,7 @@
                     bgobj.src = iurl;
                     sip.val(_.bg.externalSrc);
                     sip.height(Math.max(25, (8 + ((_.bg.externalSrc.length/20) * 16))));
+					sip.trigger('changedvalue',{sip:sip[0].value})
                     bgobj.type="image";
                     bgobj.usebgColor = false;
                 break;
@@ -586,7 +600,8 @@
                 case "image":
                     var iurl = _.bg.image.split(' ').join('%20');
                     bgobj.src = iurl;
-                    sip.val(_.bg.image);
+					sip.val(_.bg.image);
+					sip.trigger('changedvalue',{sip:sip[0].value})				
                     if (_.bg.image!==undefined )
                         sip.height(Math.max(25, (8 + ((_.bg.image.length/20) * 16))));
                     else
@@ -676,8 +691,10 @@
 	/*
 	GET SLIDE LENGTH BASED ON DEFAULT AND EDITED VALUE
 	*/
-	RVS.F.getSlideLength = function() {
-		var d = RVS.SLIDER[RVS.S.slideId].slide.timeline.delay;
+	RVS.F.getSlideLength = function(slideid) {		
+		slideid = slideid===undefined ? RVS.S.slideId : slideid;
+		if (RVS.SLIDER[slideid]===undefined) return 800;
+		var d = RVS.SLIDER[slideid].slide.timeline.delay;
 		d = d == undefined || d=="" || d==="default" || d==0 || d==="Default"  ? RVS.SLIDER.settings.def.delay : d;
 		d = d == undefined || d=="" || d==="default" || d==0 || d==="Default"  ? 8000 : parseInt(d,0);
 		return d/10;
@@ -980,14 +997,24 @@
 			linktoslide.innerHTML = iH;
 		}
 	}
-
+	RVS.F.warnFilterWithTransitions = function() {
+		if (RVS.SLIDER[RVS.S.slideId].slide.bg.mediaFilter!=="none" && RVS.SLIDER[RVS.S.slideId].slide.slideChange.e=="tpbasic")
+			RVS.F.showInfo({content:RVS_LANG.filtertransitionissuepre, type:"goodtoknow", showdelay:0, hidedelay:2, hideon:"", event:"" });
+			
+	}
 	/*
 	INIT CUSTOM EVENT LISTENERS FOR TRIGGERING FUNCTIONS
 	*/
 	function initLocalListeners() {
 		//RVS.DOC.on('',function() {);
 
+		RVS.DOC.on('updateslidebasicmediafilter',function(evt) {			
+			RVS.F.redrawSlideBG(evt);
+			RVS.F.warnFilterWithTransitions();
+		});
+		
 		RVS.DOC.on('updateslidebasic',RVS.F.redrawSlideBG);
+
 		RVS.DOC.on('updateslidebasicmpeg',function() {
 			RVS.F.videoExtract.get(RVS.SLIDER[RVS.S.slideId].slide.bg.mpeg,function(data) {
 				RVS.F.setBGPosterImage(data.path,data.id,"slide");
@@ -1352,6 +1379,7 @@
         var cont = RVS.F.createPresets({
             modern:true,
             icon:grp.icon,
+			eclass:grp.eclass,
             groupid:id,
             groupclass:"slide_trans_templates",
             maingrpclass:"slide_trans_mains",
@@ -1396,6 +1424,8 @@
                 if (group==="noSubLevel") list[main].noSubLevel = RVS.LIB.SLTR[main].noSubLevel;
                 else
                 if (group=="icon") list[main].icon = RVS.LIB.SLTR[main].icon;
+				else
+				if (group=="eclass") list[main].eclass = RVS.LIB.SLTR[main].eclass;
                 else
                 if (RVS.LIB.SLTR[main].noSubLevel) {
                     list[main][main] = list[main][main]===undefined ? { title:RVS_LANG["sltr_"+main]===undefined ? main : RVS_LANG["sltr_"+main], elements:{}} : list[main][main];
@@ -1608,7 +1638,7 @@
 
 		var empty = obj===undefined || jQuery.isEmptyObject(obj);
 		obj = obj===undefined ? {} : obj;
-
+		if(obj && obj.bg && ['cover', 'contain', 'percentage', 'auto'].indexOf(obj.bg.fit) === -1) obj.bg.fit = 'cover';
 		var newSlide = {};
 		newSlide.addOns = obj.addOns || {};
 		newSlide.version = RVS.ENV.revision;
@@ -1641,6 +1671,7 @@
 			repeat:"no-repeat",
 			image:"",
 			imageId:"",
+			crossOriginVideo: false,
 			imageFromStream:false,
 			imageSourceType:"full",
 			imageLib:"nothing",
@@ -1737,7 +1768,7 @@
 
         //Need to Translate old values to New Values
         newSlide.slideChange = newSlide.timeline.transition!==undefined || obj.slideChange===undefined ? migrateSlideAnimations(newSlide.timeline,compare) : _d(obj.slideChange, RVS._R.getSlideAnim_EmptyObject());
-
+		if (compare && (newSlide.slideChange!==undefined && newSlide.slideChange.in!==undefined && newSlide.slideChange.in.o==1)) delete newSlide.slideChange.in.o;
 
         if (newSlide.timeline.transition) {
             delete newSlide.timeline.duration;
@@ -1783,7 +1814,8 @@
 			slideLink:"nothing",
 			target:"_self",
 			z:"front",
-			type:"regular"
+			type:"regular",
+			tag:"l"
 
 		});
 		newSlide.nav = _d(obj.nav,{
@@ -1853,7 +1885,7 @@
 	/***********************************
 			INTERNAL FUNCTIONS
 	************************************/
-
+	RVS.F.getSlideTransitionDefaults = function(_) { return getSlideTransitionDefaults(_);}
     function getSlideTransitionDefaults(_) {
         var b = _.preset!==undefined ? RVS.F.safeExtend(true,RVS._R.getSlideAnim_EmptyObject(),_.preset) :
                 _.key!==undefined ? RVS._R.getAnimObjectByKey(_.key,RVS.LIB.SLTR)!==undefined ? RVS.F.safeExtend(true,{},RVS._R.getSlideAnim_EmptyObject(),RVS._R.getAnimObjectByKey(_.key,RVS.LIB.SLTR)) : RVS._R.getSlideAnim_EmptyObject():

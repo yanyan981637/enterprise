@@ -18,33 +18,32 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 
 class Version extends \Magento\Config\Block\System\Config\Form\Field
 {
-	/**
-	 * @var \Magento\Framework\Module\ModuleResource
-	 */
-	protected $moduleResource;
+    /**
+     * @var \Magento\Framework\Module\ModuleResource
+     */
+    protected $moduleResource;
 
-	/**
-	 * @param \Magento\Framework\Module\ModuleResource $moduleResource 
-	 * @param \Magento\Backend\Block\Template\Context  $context        
-	 * @param array                                    $data           
-	 */
-	public function __construct(
-		\Magento\Framework\Module\ModuleResource $moduleResource,
-		\Magento\Backend\Block\Template\Context $context,
-		array $data = []
-	) {
-		parent::__construct($context, $data);
-		$this->moduleResource = $moduleResource;
-	}
+    /**
+     * @param \Magento\Framework\Module\ModuleResource $moduleResource
+     * @param \Magento\Backend\Block\Template\Context  $context
+     * @param array                                    $data
+     */
+    public function __construct(
+        \Magento\Framework\Module\ModuleResource $moduleResource,
+        \Magento\Backend\Block\Template\Context $context,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+        $this->moduleResource = $moduleResource;
+    }
 
-	/**
-	 * @param  AbstractElement $element
-	 * @return string
-	 */
-	protected function _getElementHtml(AbstractElement $element)
-	{
-		$currentVersion = $this->moduleResource->getDataVersion('Magezon_ProductPageBuilder');
-		return $currentVersion;
-	}
-
+    /**
+     * @param  AbstractElement $element
+     * @return string
+     */
+    protected function _getElementHtml(AbstractElement $element)
+    {
+        $currentVersion = $this->moduleResource->getDataVersion('Magezon_ProductPageBuilder');
+        return $currentVersion;
+    }
 }

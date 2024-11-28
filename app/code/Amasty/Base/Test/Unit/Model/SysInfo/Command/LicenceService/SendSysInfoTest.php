@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -12,11 +12,14 @@ namespace Amasty\Base\Test\Unit\Model\SysInfo\Command\LicenceService;
 
 use Amasty\Base\Model\LicenceService\Api\RequestManager;
 use Amasty\Base\Model\LicenceService\Request\Data\InstanceInfo;
+use Amasty\Base\Model\SimpleDataObject;
+use Amasty\Base\Model\SysInfo\Command\LicenceService\ProcessLicenseValidationResponse;
 use Amasty\Base\Model\SysInfo\Command\LicenceService\SendSysInfo;
 use Amasty\Base\Model\SysInfo\Command\LicenceService\SendSysInfo\ChangedData\Persistor as ChangedDataPersistor;
 use Amasty\Base\Model\SysInfo\Command\LicenceService\SendSysInfo\Converter;
 use Amasty\Base\Model\SysInfo\Data\RegisteredInstance;
 use Amasty\Base\Model\SysInfo\Data\RegisteredInstance\Instance;
+use Amasty\Base\Model\SysInfo\Provider\Collector;
 use Amasty\Base\Model\SysInfo\RegisteredInstanceRepository;
 use Magento\Framework\Exception\LocalizedException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -49,18 +52,32 @@ class SendSysInfoTest extends TestCase
      */
     private $requestManagerMock;
 
+    /**
+     * @var Collector|MockObject
+     */
+    private $collectorMock;
+
+    /**
+     * @var ProcessLicenseValidationResponse|MockObject
+     */
+    private $processLicenseValidationResponseMock;
+
     protected function setUp(): void
     {
         $this->registeredInstanceRepositoryMock = $this->createMock(RegisteredInstanceRepository::class);
         $this->changedDataPersistorMock = $this->createMock(ChangedDataPersistor::class);
         $this->converterMock = $this->createMock(Converter::class);
         $this->requestManagerMock = $this->createMock(RequestManager::class);
+        $this->collectorMock = $this->createMock(Collector::class);
+        $this->processLicenseValidationResponseMock = $this->createMock(ProcessLicenseValidationResponse::class);
 
         $this->model = new SendSysInfo(
             $this->registeredInstanceRepositoryMock,
             $this->changedDataPersistorMock,
             $this->converterMock,
-            $this->requestManagerMock
+            $this->requestManagerMock,
+            $this->collectorMock,
+            $this->processLicenseValidationResponseMock
         );
     }
 
@@ -71,7 +88,7 @@ class SendSysInfoTest extends TestCase
      */
     public function testExecute(array $changedData): void
     {
-        list($instanceInfoMock, $systemInstanceKey) = $this->initExecute($changedData);
+        $instanceInfoMock = $this->initExecute($changedData);
 
         if ($changedData) {
             $this->requestManagerMock
@@ -83,10 +100,16 @@ class SendSysInfoTest extends TestCase
                 ->method('save')
                 ->with($changedData);
         } else {
+            $responseMock = $this->createMock(SimpleDataObject::class);
             $this->requestManagerMock
                 ->expects($this->once())
-                ->method('ping')
-                ->with($systemInstanceKey);
+                ->method('pingRequest')
+                ->with($instanceInfoMock)
+                ->willReturn($responseMock);
+            $this->processLicenseValidationResponseMock
+                ->expects($this->once())
+                ->method('process')
+                ->with($responseMock);
         }
 
         $this->model->execute();
@@ -95,7 +118,7 @@ class SendSysInfoTest extends TestCase
     public function testExecuteOnException(): void
     {
         $changedData = [[], []];
-        list($instanceInfoMock) = $this->initExecute($changedData);
+        $instanceInfoMock = $this->initExecute($changedData);
 
         $this->requestManagerMock
             ->expects($this->once())
@@ -114,7 +137,7 @@ class SendSysInfoTest extends TestCase
         $this->model->execute();
     }
 
-    private function initExecute(array $changedData): array
+    private function initExecute(array $changedData): InstanceInfo
     {
         $systemInstanceKey = 'systemInstanceKey';
         $instanceInfoMock = $this->createMock(InstanceInfo::class);
@@ -130,19 +153,21 @@ class SendSysInfoTest extends TestCase
             ->expects($this->once())
             ->method('get')
             ->willReturn($changedData);
-        if ($changedData) {
-            $this->converterMock
-                ->expects($this->once())
-                ->method('convertToObject')
-                ->with($changedData)
-                ->willReturn($instanceInfoMock);
-            $instanceInfoMock
-                ->expects($this->once())
-                ->method('setSystemInstanceKey')
-                ->with($systemInstanceKey);
-        }
+        $this->converterMock
+            ->expects($this->once())
+            ->method('convertToObject')
+            ->with($changedData)
+            ->willReturn($instanceInfoMock);
+        $this->collectorMock
+            ->expects($this->once())
+            ->method('collect')
+            ->willReturn($changedData);
+        $instanceInfoMock
+            ->expects($this->once())
+            ->method('setSystemInstanceKey')
+            ->with($systemInstanceKey);
 
-        return [$instanceInfoMock, $systemInstanceKey];
+        return $instanceInfoMock;
     }
 
     private function initInstanceMock(?Instance $instanceMock): void
@@ -162,8 +187,8 @@ class SendSysInfoTest extends TestCase
     public function executeDataProvider(): array
     {
         return [
-            [[[], []]],
-            [[]]
+            [['domains' => [0 => ['url' => 'test']]]], //collect
+            [[]] //ping
         ];
     }
 }

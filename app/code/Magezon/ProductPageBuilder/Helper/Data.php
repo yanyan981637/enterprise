@@ -16,14 +16,14 @@ namespace Magezon\ProductPageBuilder\Helper;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-	/**
-	 * @var \Magento\Store\Model\StoreManagerInterface
-	 */
-	protected $_storeManager;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
 
     /**
-     * @param \Magento\Framework\App\Helper\Context      $context      
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager 
+     * @param \Magento\Framework\App\Helper\Context      $context
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -45,7 +45,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $result    = $this->scopeConfig->getValue(
             'productpagebuilder/' . $key,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store);
+            $store
+        );
         return $result;
     }
 

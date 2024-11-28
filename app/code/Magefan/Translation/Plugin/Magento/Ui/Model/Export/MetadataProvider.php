@@ -10,7 +10,7 @@ class MetadataProvider
         \Magento\Ui\Model\Export\MetadataProvider $subject,
         $result
     ) {
-        $id = trim(str_replace('"', '', $result[0]));
+        $id = trim(str_replace('"', '', $result[0] ?? ''));
         if ('ID' == $id && 'Original Text' == trim($result[1]) && 'Translate Text' ==  trim($result[3])) {
             $result = [
                 'key_id',
@@ -19,6 +19,27 @@ class MetadataProvider
                 'translate',
                 'locale'];
         }
+        return $result;
+    }
+
+     /**
+     * @param \Magento\Ui\Model\Export\MetadataProvider $subject
+     * @param $result
+     * @return void
+     */
+    public function afterGetOptions(
+        \Magento\Ui\Model\Export\MetadataProvider $subject,
+                                                  $result
+    ) {
+        if (false != strpos(\Magento\Framework\Debug::backtrace(true), 'Magefan\Translation')){
+            if (isset($result['locale'])) {
+                unset($result['locale']);
+            }
+            if (isset($result['store_id'])) {
+                unset($result['store_id']);
+            }
+        }
+
         return $result;
     }
 }

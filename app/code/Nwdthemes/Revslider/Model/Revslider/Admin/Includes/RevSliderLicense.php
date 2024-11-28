@@ -31,6 +31,8 @@ class RevSliderLicense extends RevSliderFunctions {
 		if($version_info == 'valid'){
 			FA::update_option('revslider-valid', 'true');
 			FA::update_option('revslider-code', $code);
+            FA::update_option('revslider-deregister-popup', 'false');
+
 			return true;
 		}elseif($version_info == 'exist'){
 			return 'exist';
@@ -60,6 +62,7 @@ class RevSliderLicense extends RevSliderFunctions {
 		if($vi == 'valid'){
 			FA::update_option('revslider-valid', 'false');
 			FA::update_option('revslider-code', '');
+            FA::update_option('revslider-deregister-popup', 'true');
 
 			return true;
 		}

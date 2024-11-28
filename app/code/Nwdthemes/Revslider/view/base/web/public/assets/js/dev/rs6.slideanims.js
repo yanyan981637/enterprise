@@ -1,6 +1,6 @@
 /********************************************
  * REVOLUTION EXTENSION - SLIDE ANIMATIONS
- * @date:23.04.2021
+ * @date:06.10.2022
  * @requires rs6.main.js
  * @author ThemePunch
 *********************************************/
@@ -13,7 +13,7 @@
     if (window._R_is_Editor) RVS._R = RVS._R===undefined ? {} : RVS._R; else window._R_is_Editor=false;
 
 
-    var version = "6.4.9",
+var version = "6.6.0",
         p1i = "power1.in",  p1o = "power1.out", p1io = "power1.inOut", p2i = "power2.in", p2o = "power2.out", p2io = "power2.inOut",p3i = "power3.in", p3o = "power3.out", p3io = "power3.inOut";
 
     jQuery.fn.revolution = jQuery.fn.revolution || {};
@@ -80,14 +80,14 @@
 
             getSlideAnim_AddonDefaults : function() {
                 var r = {};
-                for (var i in _R.enabledSlideAnimAddons) r  = jQuery.extend(true,r,_R[_R.enabledSlideAnimAddons[i]].defaults());
+                for (var i in _R.enabledSlideAnimAddons) if (_R.enabledSlideAnimAddons.hasOwnProperty(i)) r  = jQuery.extend(true,r,_R[_R.enabledSlideAnimAddons[i]].defaults());
                 return r;
             },
 
 
             getSlideAnim_EmptyObject:function() {
                 return {
-                        speed:1000, o:'inout', e:'basic', f:'start', p:'none', d:15, eng:'animateCore', adpr: false,
+					speed:1000, o:'inout', e:'basic', f:'start', p:'none', d:15, eng:'animateCore', adpr: true,
                         d3 : {f:'none', d:'horizontal', z:300, t:0, c:'#ccc', e:'power2.inOut',fdi:1.5,fdo:2, fz:0, su:false, smi:0, sma:0.5, sc:'#000' , sl:1},
                         filter: {u:false, e:"default", b:0, g:0, h:100,  s:0,  c:100, i:0},
                         in: { o:1, x:0, y:0, r:0, sx:1, sy:1, m:false, e:'power2.inOut', row:1, col:1,  mo:80, mou:false},
@@ -136,7 +136,7 @@
             },
 
             cbgW : function(id,slide) { return _R_is_Editor ? RVS.RMD.width : _R[id].sliderType==="carousel" ? _R[id].justifyCarousel ? _R[id].carousel.slide_widths[slide!==undefined ? slide : _R[id].carousel.focused] : _R[id].carousel.slide_width : _R[id].canv.width;},
-            cbgH : function(id,slide) { return _R_is_Editor ? RVS.RMD.height :_R[id].sliderType==="carousel" ?  _R[id].carousel.slide_height : _R[id].maxHeight!==undefined && _R[id].maxHeight>0 && !_R[id].fixedOnTop ? Math.min(_R[id].canv.height,_R[id].maxHeight) : _R[id].canv.height;},
+		cbgH : function(id,slide) { return _R_is_Editor ? RVS.RMD.height :_R[id].sliderType==="carousel" ? (_R[id].carousel.orientation=='v' && _R[id].sliderLayout==="fullscreen") ? _R[id].carousel.slide_height : (_R[id].carousel.justify===true ? _R[id].carousel.slide_height : _R[id].sliderLayout==="fullscreen" ? _R[id].module.height : Math.min(_R[id].canv.height,_R[id].gridheight[_R[id].level])) : _R[id].maxHeight!==undefined && _R[id].maxHeight>0 && !_R[id].fixedOnTop ? Math.min(_R[id].canv.height,_R[id].maxHeight) : _R[id].canv.height;},
 
             valBeau : function(a) {
                 a = (""+a).split(",").join('|');
@@ -228,7 +228,7 @@
             getmDim : function(id,key, nBG) {
                 var w = _R.cbgW(id,key),
                     h = _R.cbgH(id,key);
-                nBG.DPR = _R_is_Editor ? Math.min(window.devicePixelRatio, 2) : _R[id].DPR;
+			nBG.DPR = _R_is_Editor ? Math.min(window.devicePixelRatio, 2) : _R[id].DPR;
                 return _R.maxDimCheck(nBG,w,h);
             },
 
@@ -238,8 +238,7 @@
                     newW,
                     newH;
 
-                if ((nBG.currentState!=="animating" && nBG.panzoom==undefined) || (nBG.currentState==="animating" && (nBG.slideanimation==undefined || nBG.slideanimation.anim==undefined || nBG.slideanimation.anim.adpr !== 'true'))) {
-
+			if ((nBG.currentState!=="animating" && nBG.panzoom==undefined) || (nBG.currentState==="animating" && nBG.panzoom==undefined && (nBG.slideanimation==undefined || nBG.slideanimation.anim==undefined || nBG.slideanimation.anim.adpr !== 'true'))) {
                     if (nBG.DPR>1 && _R.ISM && h>1024) {
                         nBG.DPR = 1;
                         newW = w;
@@ -250,6 +249,8 @@
                             h : nBG.video==undefined || nBG.isVidImg ? nBG.loadobj.height : nBG.video.videoHeight==0 ? nBG.loadobj.height : nBG.video.videoHeight
                         }
 
+					if(od.w === undefined) od.w = nBG.loadobj.width;
+					if(od.h === undefined) od.h = nBG.loadobj.height;
 
                         var vDPR = h/od.w,
                             hDPR = w/od.h,
@@ -313,7 +314,7 @@
                     nBG.canvas.height = nBG.mDIM.height;
                     if (nBG.currentState!=="panzoom" && nBG.currentState!=="animating" && (nBG.currentState!==undefined || _R_is_Editor || _R[id].sliderType =="carousel")) {
                         nBG.ctx.clearRect(0,0,nBG.mDIM.width, nBG.mDIM.height);
-                        nBG.ctx.drawImage( nBG.shadowCanvas  , 0,0);
+					if(nBG.shadowCanvas.width !== 0 && nBG.shadowCanvas.height !== 0) nBG.ctx.drawImage(nBG.shadowCanvas, 0, 0);
                     }
                 }
 
@@ -345,8 +346,8 @@
 
                         nBG.mDIM = _R.getmDim(id,nBG.skeyindex, nBG);
                         nBG.pDIMS = getContentDimensions(nBG.mDIM,nBG,{width:nBG.mDIM.width, height:nBG.mDIM.height, x:0, y:0, contw: nBG.loadobj.width, conth: nBG.loadobj.height});
-                        nBG.shadowCanvas.width = nBG.mDIM.width;
-                        nBG.shadowCanvas.height = nBG.mDIM.height;
+					if(nBG.shadowCanvas.width !== nBG.mDIM.width) nBG.shadowCanvas.width = nBG.mDIM.width;
+					if(nBG.shadowCanvas.height !== nBG.mDIM.height) nBG.shadowCanvas.height = nBG.mDIM.height;
                         nBG.shadowCTX.drawImage(nBG.loadobj.img,nBG.pDIMS.x, nBG.pDIMS.y, nBG.pDIMS.width, nBG.pDIMS.height);
 
 
@@ -354,18 +355,18 @@
                         if (force || nBG.sDIMS===undefined || isVidImg!==nBG.isVidImg || nBG.sDIMS.width===0 || nBG.sDIMS.height===0 ) {
                             nBG.isVidImg = isVidImg;
                             nBG.mDIM = _R.getmDim(id,nBG.skeyindex, nBG);
-                            nBG.sDIMS = getContentDimensions(nBG.mDIM,nBG,{width:nBG.mDIM.width, height:nBG.mDIM.height, x:0, y:0, contw: ( nBG.isVidImg ? nBG.loadobj.width : nBG.video.videoWidth), conth: (nBG.isVidImg ? nBG.loadobj.height : nBG.video.videoHeight)});
+						nBG.sDIMS = getContentDimensions(nBG.mDIM,nBG,{width:nBG.mDIM.width, height:nBG.mDIM.height, x:0, y:0, contw: ( nBG.isVidImg ? nBG.loadobj.width : nBG.video.videoWidth), conth: (nBG.isVidImg ? nBG.loadobj.height : nBG.video.videoHeight)});
                         }
 
                         if (nBG.sDIMS!==undefined && nBG.sDIMS.width!==0 && nBG.sDIMS.height!==0) {
                             if (nBG.currentState==="animating")	{   // It is still animating, so create Shadow Canvas First
-                                nBG.shadowCanvas.width = nBG.sDIMS.width;
-                                nBG.shadowCanvas.height = nBG.sDIMS.height;
+							if(nBG.shadowCanvas.width !== nBG.mDIM.width) nBG.shadowCanvas.width = nBG.mDIM.width;
+							if(nBG.shadowCanvas.height !== nBG.mDIM.height) nBG.shadowCanvas.height = nBG.mDIM.height;
                                 nBG.shadowCTX.drawImage(nBG.video,nBG.sDIMS.x, nBG.sDIMS.y, nBG.sDIMS.width, nBG.sDIMS.height);
                             } else
                             if(nBG.animateDirection===undefined) {  // If not in Animating and/or Out Animating, than simple draw straight on the Real Canvas, no need Shadow Canvas any more
-                                nBG.canvas.width = nBG.mDIM.width;
-                                nBG.canvas.height = nBG.mDIM.height;
+							if(nBG.canvas.width !== nBG.mDIM.width) nBG.canvas.width = nBG.mDIM.width;
+							if(nBG.canvas.height !== nBG.mDIM.height)  nBG.canvas.height = nBG.mDIM.height;
                                 nBG.ctx.drawImage(nBG.video, nBG.sDIMS.x, nBG.sDIMS.y, nBG.sDIMS.width, nBG.sDIMS.height);
                             }
                             nBG.shadowCanvas_Drawn = true;
@@ -437,8 +438,8 @@
 
                 if (nBG.replaceShadowCanvas!==true && nBG.loadobj.bgColor!==true && nBG.usebgColor!==true && nBG.panzoom===undefined && (nBG.isHTML5==undefined || nBG.poster==true) && !nBG.usepattern) {  // IT IS AN IMAGE AND NOT A BACKGROUND COLOR
                     r = getContentDimensions(nBG.mDIM,nBG,{width:nBG.mDIM.width, height:nBG.mDIM.height, x:0, y:0, contw: nBG.loadobj.width, conth: nBG.loadobj.height});
-                    nBG.shadowCanvas.width = nBG.mDIM.width;
-                    nBG.shadowCanvas.height = nBG.mDIM.height;
+				if(nBG.shadowCanvas.width !== nBG.mDIM.width) nBG.shadowCanvas.width = nBG.mDIM.width;
+				if(nBG.shadowCanvas.height !== nBG.mDIM.height) nBG.shadowCanvas.height = nBG.mDIM.height;
                     if (nBG.loadobj!==undefined && nBG.loadobj.img!==undefined){
                         nBG.shadowCTX.drawImage(nBG.loadobj.img,r.x, r.y, r.width, r.height);
                     }
@@ -451,8 +452,8 @@
                         _R.getCanvasPattern(id,nBG, { ratio : nBG.loadobj.height / nBG.loadobj.width});
                     else
                     if (nBG.loadobj.bgColor || nBG.usebgColor) {
-                        nBG.shadowCanvas.width = nBG.mDIM.width;
-                        nBG.shadowCanvas.height = nBG.mDIM.height;
+					if(nBG.shadowCanvas.width !== nBG.mDIM.width) nBG.shadowCanvas.width = nBG.mDIM.width;
+					if(nBG.shadowCanvas.height !== nBG.mDIM.height) nBG.shadowCanvas.height = nBG.mDIM.height;
                         _R.getCanvasGradients(id,nBG);
                     }
                 }
@@ -490,8 +491,9 @@
                 nBG.patternImageCanvas.height = r.height;
                 nBG.patternImageCTX.drawImage(nBG.loadobj.img,0,0,r.width,r.height);
 
-                nBG.shadowCanvas.width = nBG.mDIM.width;
-                nBG.shadowCanvas.height = nBG.mDIM.height;
+			if(nBG.shadowCanvas.width !== nBG.mDIM.width) nBG.shadowCanvas.width = nBG.mDIM.width;
+			if(nBG.shadowCanvas.height !== nBG.mDIM.height) nBG.shadowCanvas.height = nBG.mDIM.height;
+			nBG.shadowCTX.clearRect(0, 0, nBG.shadowCTX.canvas.width, nBG.shadowCTX.canvas.height);
                 nBG.pattern = nBG.shadowCTX.createPattern(nBG.patternImageCanvas, nBG.bgrepeat);
                 nBG.shadowCTX.fillStyle = nBG.pattern;
 
@@ -502,9 +504,10 @@
 
                 nBG.shadowShifts.x = nBG.shadowShifts.h==="left" ? 0 : nBG.shadowShifts.h==="center" || nBG.shadowShifts.h=="50%" ? nBG.bgrepeat=="repeat" || nBG.bgrepeat=="repeat-x" ? (nBG.mDIM.width/2 - r.width/2) - Math.ceil((nBG.mDIM.width/2)/r.width)*r.width : (nBG.mDIM.width/2 - r.width/2) : nBG.shadowShifts.h==="right" ? nBG.bgrepeat=="repeat" || nBG.bgrepeat=="repeat-x" ? -(r.width-(nBG.mDIM.width%r.width)) :nBG.mDIM.width-r.width  : nBG.bgrepeat=="repeat" || nBG.bgrepeat=="repeat-x" ?  -(r.width -(nBG.shadowShifts.hperc%r.width))  : nBG.shadowShifts.hperc ;
                 nBG.shadowShifts.y = nBG.shadowShifts.v==="top" ? 0 : nBG.shadowShifts.v==="center" || nBG.shadowShifts.v=="50%" ? nBG.bgrepeat=="repeat" || nBG.bgrepeat=="repeat-y" ? (nBG.mDIM.height/2 - r.height/2) - Math.ceil((nBG.mDIM.height/2)/r.height)*r.height : (nBG.mDIM.height/2 - r.height/2)  : nBG.shadowShifts.v==="bottom" ? nBG.bgrepeat=="repeat" || nBG.bgrepeat=="repeat-y" ? -(r.height-(nBG.mDIM.height%r.height)) : nBG.mDIM.height-r.height : nBG.bgrepeat=="repeat" || nBG.bgrepeat=="repeat-y" ? -(r.height -(nBG.shadowShifts.vperc%r.height))  : nBG.shadowShifts.vperc ;
-
+			nBG.shadowCTX.save();
                 nBG.shadowCTX.translate(nBG.shadowShifts.x,nBG.shadowShifts.y);
                 nBG.shadowCTX.fillRect(0,0,nBG.mDIM.width-nBG.shadowShifts.x,nBG.mDIM.height-nBG.shadowShifts.y);
+			nBG.shadowCTX.restore();
             },
             getCanvasGradients : function(id,nBG) {	//Create Canvas with color
                 if (nBG.bgcolor.indexOf('gradient')>=0) {
@@ -520,7 +523,7 @@
                     nBG.shadowCTX.fillRect(0,0,nBG.mDIM.width,nBG.mDIM.height);
                 } else {
                     // FILL SIMPLE COLOR
-
+				nBG.shadowCTX.clearRect(0,0,nBG.mDIM.width,nBG.mDIM.height);
                     nBG.shadowCTX.fillStyle=nBG.bgcolor;
                     nBG.shadowCTX.fillRect(0,0,nBG.mDIM.width,nBG.mDIM.height);
                 }
@@ -1051,6 +1054,11 @@
                     BG.bgvid[0].style.zIndex=0;
                 }
 
+			if(BG.panFake && BG.panFake.img){
+				if(params.direction === "out") BG.panFake.img.style.display = "none";
+				else BG.panFake.img.style.display = "block";
+			}
+
                 if (params.direction==="in") {
                     _R.transitions.motionFilter.complete(BG);
                     BG.ctx.canvas.style.filter = "none";
@@ -1059,9 +1067,13 @@
                     if (BG.bgvid.length>0) {
                         if (!BG.isHTML5) {
                             _R.resetVideo(BG.bgvid,id);
-                            _R.playVideo(BG.bgvid,id,true);
+						tpGS.gsap.delayedCall(0.1, function(){
+							_R.playVideo(BG.bgvid,id,true);
+							tpGS.gsap.set(BG.bgvid[0],{zIndex:30, display:"block",opacity:1});
+						})
+					} else {
+						tpGS.gsap.set(BG.bgvid[0],{zIndex:30, display:"block",opacity:1});
                         }
-                        tpGS.gsap.set(BG.bgvid[0],{zIndex:30, display:"block",opacity:1});
                     }
                 }
                 if (params.direction==="out") {
@@ -1296,7 +1308,7 @@
                 out_dist = obj.ow!==undefined ? parseInt(obj.ow,0) : 100;
 
             // Collect Needed Attributes
-            for (var i in anim.attr) {
+            for (var i in anim.attr) if (anim.attr.hasOwnProperty(i)) {
                 a = anim.attr[i];
                 anim.in[a] = toDefNum(anim.in[a], obj.in[a]);  // Get Values from Object
                 anim.out[a] = anim.out.reversed ? anim.in[a] : obj.out===undefined ? anim.out[a] : toDefNum(anim.out[a], obj.out[a]); // Get Values from Object
@@ -1333,6 +1345,12 @@
                 _;
 
             SDIR = SDIR === 1 ? -1 : 1; //-1 -> Previous, 1 -> Next
+
+            if (!_R_is_Editor) {
+                delete _R[id].sc_indicator;
+                delete _R[id].sc_indicator_dir;
+            }
+
             _ = jQuery.extend(true,{},getAnim(id,obj,SDIR));
 
 
@@ -1372,6 +1390,8 @@
 
             _.in.ms = _.ms==="default" || _.ms==="d" ? _.in.ms : _.ms==="random" ? Math.round(Math.random()*1000+300) : _.ms!=undefined ? parseInt(_.ms,0) : _.in.ms;
             _.out.ms = _.in.ms;
+
+
             if (_.filter!==undefined) {
                 _.filter.ms = _.in.ms;
                 _.filter.sec = _.in.sec;
@@ -1386,6 +1406,14 @@
 
             // GET ENGINE
             _.in.eng = _.out.eng = obj.anim.eng;
+
+		// Out Engin is not available ? Set in/out Fade instead
+		if (_.out.eng!==undefined && _R[_.out.eng]==undefined) {
+			_.out.o = 0;
+			_.in.o = 0;
+			_.in.ms = _.out.ms = 1000;
+			_.in.eng = _.out.eng = 'animateCore';
+		}
 
             //PAUSE OPTIONS
             if (_.p!==undefined && _.p!=="none") {

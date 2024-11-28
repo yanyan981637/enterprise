@@ -45,10 +45,10 @@ class Menu extends AbstractDb
     protected $metadataPool;
 
     /**
-     * @param Context               $context        
-     * @param StoreManagerInterface $storeManager   
-     * @param EntityManager         $entityManager  
-     * @param MetadataPool          $metadataPool   
+     * @param Context               $context
+     * @param StoreManagerInterface $storeManager
+     * @param EntityManager         $entityManager
+     * @param MetadataPool          $metadataPool
      */
     public function __construct(
         Context $context,
@@ -130,7 +130,7 @@ class Menu extends AbstractDb
     /**
      * Load an object
      *
-     * @param \Magezon\NinjaMenus\Model\Form|AbstractModel $object
+     * @param \Magezon\NinjaMenus\Model\Menu|AbstractModel $object
      * @param mixed $value
      * @param string $field field to load by (defaults to model id)
      * @return $this
@@ -149,7 +149,7 @@ class Menu extends AbstractDb
      *
      * @param string $field
      * @param mixed $value
-     * @param \Magezon\NinjaMenus\Model\Form|AbstractModel $object
+     * @param \Magezon\NinjaMenus\Model\Menu|AbstractModel $object
      * @return Select
      */
     protected function _getLoadSelect($field, $value, $object)

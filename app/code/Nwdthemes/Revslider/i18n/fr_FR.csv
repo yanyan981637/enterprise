@@ -93,7 +93,7 @@ Channel,Chaine
 "Check for Updates","Vérifier les mises à jour"
 "Choose Image","Choisissez l'image"
 "Choose Video","Choisissez la vidéo"
-"Cleared Photosets","Séries de photos supprimées"
+"Cleared Albums","Albums supprimés"
 "Click to Choose","Cliquez pour choisir"
 Close,Fermer
 "Close Slider Modal","Ferme le modal Slider"
@@ -108,7 +108,6 @@ Copy,Copier
 "Could not create Slider","Impossible de créer le Slider"
 "Could not fetch Facebook albums","Impossible de récupérer les albums Facebook"
 "Could not fetch YouTube playlists","Impossible de récupérer les listes de lecture YouTube"
-"Could not fetch flickr photosets","Impossible de récupérer les séries de photos flickr"
 "Cover Color","Couleur de couverture"
 "Create Blank Page","Créer une page vierge"
 "Creation Ascending","Création ascendante"
@@ -136,7 +135,6 @@ Desktop,Bureau
 Disabled,Désactivé
 "Disabling Add-On","Désactivation de l'extension"
 "Dismiss Messages","Supprimer les messages"
-"Display a certain photoset from a user","Afficher une certain série de photos d'un utilisateur"
 "Display a gallery","Afficher une galerie"
 "Do It",Fais-le
 "Do you want to start the Update process?","Souhaitez-vous démarrer le processus de mise à jour?"
@@ -334,21 +332,16 @@ Medium,Moyen
 "New Folder","Nouveau dossier"
 "New Module from Template","Nouveau module à partir d'un modèle"
 "New Version Available. Please Update","Nouvelle version disponible. Merci de mettre à jour"
-News,Nouvelles
 "Next Frame","Cadre suivant"
 "Next Slide","Prochain Slide"
-"No API KEY - Could not fetch flickr photosets","Aucune clé API - Impossible d'extraire la série de photos flickr"
 "No Data Received","Aucune donnée recue"
 "No Email given","Aucun email renseigné"
 "No Layers Selected","Aucune Layer sélectionnée"
 "No Shadow","Pas d'ombre"
-"No User URL - Could not fetch flickr photosets","Aucune URL utilisateur - Impossible d'extraire la série de photos flickr"
 "No data received","Aucune donnée reçue"
 "No file sent.","Aucun fichier envoyé."
 "No further source settings needed. Content is created manually.","Aucun autre paramètre source requis. Le contenu est créé manuellement."
 "No response on action","Pas de réponse reçue"
-"No slides found, please add at least one Slide Template to the choosen language.","Aucune Slide trouvée, merci d'ajouter au moins un modèle de Slide à la langue choisie."
-"No slides found, please add some slides","Aucune Slide trouvée, merci d'en ajouter une"
 None,Rien
 "None of the Settings changed. There is Nothing to Save","Aucun des paramètres n'a changé. Il n'y a rien à sauvegarder"
 "Not Activated","Non activé"
@@ -379,17 +372,14 @@ PACKAGE,PAQUET
 Paste,Coller
 "Pause Slider","Pause du Slider"
 "Per Page","Par Page"
-Photoset,"Série de photos"
 "Pick an Item","Sélectionnez un élément"
 "Place the shortcode on the page or post where you want to show this modal.","Placez le Shortcode sur la page ou le post où vous souhaitez afficher ce modal."
 "Place the shortcode on the page or post where you want to show this module.","Placez le Shortcode sur la page ou le post où vous souhaitez afficher ce module."
 "Play Slide","Lecture du Slider"
 Playlist,"Liste de lecture"
-"Please <a target=""_blank"" href=""https://dev.twitter.com/apps"">register</a> your application with Twitter<br>to get the right values","Merci<a target=""_blank"" href=""https://dev.twitter.com/apps"">d'enregistrer</a>votre demande avec Twitter<br>afin d'obtenir les bonnes valeurs"
 "Please Wait a Moment","Merci de patientez"
 "Please activate Slider Revolution","Merci d'activer Slider Revolution"
 "Please add at least one Layer.","Veuillez ajouter au moins une Layer."
-"Please follow this link to edit the Slider:","Veuillez suivre ce lin pour modifier le Slider :"
 "Please select an Addon to start with.","Veuillez sélectionner une extension pour commencer."
 "Please select the correct zip file, checksum failed!","Veuillez sélectionner le fichier zip correct, la somme de contrôle a échoué!"
 "Plugin Updates","Mises à Jour Plugin"
@@ -416,13 +406,11 @@ Product,Produit
 "Quick Style Headline","Titre avec style rapide"
 Random,Aléatoire
 "Re-Download Online","Re-télécharger sur internet"
-"Read <a target=""_blank"" href=""http://weblizar.com/get-flickr-api-key/"">here</a> how to receive your Flickr API key","Lisez <a target=""_blank"" href=""http://weblizar.com/get-flickr-api-key/"">ici</a> pour savoir comment recevoir votre clé d'API Flickr"
 "Redirecting to Overview Page","Redirection vers la page de présentation"
 "Register Purchase Code","Enregistrer le code d'achat"
 "Register Slider Revolution<br>to Unlock Premium Features","Enregistrer Slider Revolution<br>pour déverrouiller les fonctionnalités Premium"
 "Register this Code","Enregistrer ce code"
 "Register to Unlock","Inscrivez-vous pour déverrouiller"
-"Register to Unlock all Features","Inscrivez-vous pour déverrouiller toutes les fonctionnalités"
 "Register to unlock AddOns","Inscrivez-vous pour déverrouiller les Extensions"
 "Register to unlock Library","Inscrivez-vous pour déverrouiller la Bibliothèque"
 "Register to unlock Premium Features","Inscrivez-vous pour déverrouiller les fonctionnalités Premium"
@@ -514,7 +502,6 @@ Small,Petit
 "Some AddOns have new versions available","Certaines extensions ont de nouvelles versions disponibles"
 "Some Layers are <strong>Locked</strong> and/or <strong>Invisible</strong>.<br>Change Status in Timeline.","Certaines Layers sont <strong> verrouillées </strong> et / ou <strong> invisibles </strong>. <br>Merci de modifier le statut dans la chronologie."
 "Some Settings in Slider <strong>Source may not complete</strong>.<br>Please Complete All Settings in Slider Sources.","Il est possible que certains paramètres du Slider <strong> source ne soient pas complets </strong>. <br>Merci dez renseigner tous les paramètres des Sliders sources."
-"Sorry, this Social Stream cannot be displayed.","Désolé, ce  Social Stream ne peut pas être affiché."
 "Sort Direction","Direction de tri"
 "Sort by Creation","Trier par création"
 "Sort by Title","Trier par titre"
@@ -533,7 +520,6 @@ Square,Carré
 "Success! Please check your E-Mails to finish the subscription","Succès! Veuillez vérifier vos emails pour compléter votre abonnement"
 "Successfully fetched Facebook albums","Récupération des albums Facebook faite avec succès"
 "Successfully fetched YouTube playlists","Listes de lecture YouTube récupérées avec succès"
-"Successfully fetched flickr photosets","Séries de photos flickr récupérées avec succès"
 Support,Assistance
 Tablet,Tablette
 Tags,Etiquettes
@@ -594,14 +580,12 @@ Updating,"Mise à jour en cours"
 "Use Custom Sizes","Utiliser les tailles personnalisées"
 "Use Image","Utiliser l'image"
 "Use LineBreaks only in Columns","Utiliser les sauts de ligne dans les colonnes uniquement"
-"User Photoset","Série de photo de l'utilisateur"
 "User Public Photos","Photos publiques de l'utilisateur"
 "User URL:","URL de l'utilisateur :"
 Video,Vidéo
 "Video cover could not be loaded","La vidéo de couverture n'a pas pu être chargée"
 "Video in Active Slide","Vidéo dans le Slide actuel"
 Videos,Vidéos
-"View all posts in %s","Voir tous les posts en %s"
 "Visit Page","Visiter la page"
 WAIT,ATTENDEZ
 Warning,Attention

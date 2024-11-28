@@ -4,36 +4,56 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
 namespace Amasty\Base\Model\SysInfo\Command\LicenceService\SendSysInfo;
 
 use Amasty\Base\Model\FlagRepository;
+use Amasty\Base\Model\InstanceHash\InstanceHashFactory;
+use Amasty\Base\Model\InstanceHash\Repository;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class CacheStorage
 {
-    public const PREFIX = 'amasty_base_';
+    /**
+     * @var Repository
+     */
+    private $instanceHashRepository;
 
     /**
-     * @var FlagRepository
+     * @var InstanceHashFactory
      */
-    private $flagRepository;
+    private $instanceHashFactory;
 
-    public function __construct(FlagRepository $flagRepository)
-    {
-        $this->flagRepository = $flagRepository;
+    public function __construct(
+        FlagRepository $flagRepository = null, //@deprecated
+        Repository $instanceHashRepository = null,
+        InstanceHashFactory $instanceHashFactory = null
+    ) {
+        $this->instanceHashRepository = $instanceHashRepository
+            ?? ObjectManager::getInstance()->get(Repository::class);
+        $this->instanceHashFactory = $instanceHashFactory
+            ?? ObjectManager::getInstance()->get(InstanceHashFactory::class);
     }
 
     public function get(string $identifier): ?string
     {
-        return $this->flagRepository->get(self::PREFIX . $identifier);
+        try {
+            return $this->instanceHashRepository->get($identifier)->getValue();
+        } catch (NoSuchEntityException $e) {
+            return null;
+        }
     }
 
     public function set(string $identifier, string $value): bool
     {
-        $this->flagRepository->save(self::PREFIX . $identifier, $value);
+        $instanceHash = $this->instanceHashFactory->create();
+        $instanceHash->setCode($identifier);
+        $instanceHash->setValue($value);
+        $this->instanceHashRepository->save($instanceHash);
 
         return true;
     }

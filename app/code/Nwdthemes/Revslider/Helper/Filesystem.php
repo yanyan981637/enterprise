@@ -2,9 +2,11 @@
 
 namespace Nwdthemes\Revslider\Helper;
 
-use \Nwdthemes\Revslider\Model\Revslider\Framework\PclZip;
+use Nwdthemes\Revslider\Model\Revslider\Framework\PclZip;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 
-class Filesystem extends \Magento\Framework\App\Helper\AbstractHelper {
+class Filesystem extends AbstractHelper {
 
     protected $_context;
 
@@ -13,8 +15,8 @@ class Filesystem extends \Magento\Framework\App\Helper\AbstractHelper {
 	 */
 
 	public function __construct(
-        \Magento\Framework\App\Helper\Context $context)
-    {
+        Context $context
+    ) {
         $this->_context = $context;
 
         parent::__construct($this->_context);
@@ -68,30 +70,9 @@ class Filesystem extends \Magento\Framework\App\Helper\AbstractHelper {
 			}
 		} else {
 			$pclZip = new PclZip($file);
-			$list = $pclZip->listContent();
-			if ($list) {
-				for ($i=0; $i<sizeof($list); $i++) {
-					$fileInfo = $list[$i];
-					$fileName = $fileInfo['filename'];
-					if (strpos($fileName, '_') !== 0 && strpos($fileName, '.') !== 0 && strpos($fileName, '/_') === FALSE && strpos($fileName, '/.') === FALSE) {
-						if ($fileInfo['folder']) {
-                            if ( ! file_exists($path.$fileName)) {
-                                $this->wp_mkdir_p($path.$fileName);
-                            }
-						} elseif ( ! file_exists($path . dirname($fileName))) {
-							$parts = explode('/', dirname($fileName));
-							$dirPath = $path;
-							foreach ($parts as $part) {
-								$dirPath .= $part . DIRECTORY_SEPARATOR;
-								$this->wp_mkdir_p($dirPath);
-							}
-                        }
-						copy("zip://".$file."#".$fileName, $path.$fileName);
-					}
-				}
-			}
-			$zipResult = count($list) !== 0;
+			$zipResult = $pclZip->extract($path) ? true : false;
 		}
+
 		return $zipResult;
 	}
 

@@ -171,7 +171,7 @@ class Chooser extends \Magento\Backend\Block\Widget\Grid\Extended
 
     /**
      * Get grid url
-     *
+     *identifier
      * @return string
      */
     public function getGridUrl()

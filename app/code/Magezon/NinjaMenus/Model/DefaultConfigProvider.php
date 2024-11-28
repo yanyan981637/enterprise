@@ -16,26 +16,26 @@ namespace Magezon\NinjaMenus\Model;
 
 class DefaultConfigProvider extends \Magezon\Builder\Model\DefaultConfigProvider
 {
-	/**
-	 * @var string
-	 */
-	protected $_builderArea = 'menu';
+    /**
+     * @var string
+     */
+    protected $_builderArea = 'menu';
 
-	/**
-	 * @return array
-	 */
-	public function getConfig()
-	{
-		$config = parent::getConfig();
-		$config['profile'] = [
-			'builder'          => 'Magezon\NinjaMenus\Block\Builder',
-			'home'             => 'https://magezon.com/magento-2-mega-menu.html?utm_campaign=mgzbuilder&utm_source=mgz_user&utm_medium=backend',
-			'templateUrl'      => 'https://www.magezon.com/productfile/ninjamenus/templates.php',
-			'importCategories' => [
-				'class' => 'Magezon\NinjaMenus\Data\Modal\ImportCategories'
-			]
-		];
-		$config['historyLabels']['imported_categories'] = __('Imported Categories');
-		return $config;
-	}
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        $config = parent::getConfig();
+        $config['profile'] = [
+            'builder'          => \Magezon\NinjaMenus\Block\Builder::class,
+            'home'             => 'https://magezon.com/magento-2-mega-menu.html?utm_campaign=mgzbuilder&utm_source=mgz_user&utm_medium=backend',
+            'templateUrl'      => 'https://www.magezon.com/productfile/ninjamenus/templates.php',
+            'importCategories' => [
+                'class' => \Magezon\NinjaMenus\Data\Modal\ImportCategories::class
+            ]
+        ];
+        $config['historyLabels']['imported_categories'] = __('Imported Categories');
+        return $config;
+    }
 }

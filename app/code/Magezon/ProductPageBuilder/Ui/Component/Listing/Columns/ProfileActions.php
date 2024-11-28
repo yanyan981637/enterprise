@@ -28,7 +28,7 @@ class ProfileActions extends Column
     protected $urlBuilder;
 
     /**
-     * @var [Escaper
+     * @var Escaper
      */
     protected $escaper;
 

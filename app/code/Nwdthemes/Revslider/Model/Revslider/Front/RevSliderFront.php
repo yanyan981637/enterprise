@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider\Front;
@@ -25,13 +25,14 @@ class RevSliderFront extends RevSliderFunctions {
 	const TABLE_LAYER_ANIMATIONS = 'nwdthemes_revslider_animations';
 	const TABLE_NAVIGATIONS		 = 'nwdthemes_revslider_navigations';
 	const TABLE_SETTINGS		 = 'nwdthemes_revslider_settings'; //existed prior 5.0 and still needed for updating from 4.x to any version after 5.x
-    const CURRENT_TABLE_VERSION  = '1.0.9';
+    const CURRENT_TABLE_VERSION	 = '1.0.12';
 
 	const YOUTUBE_ARGUMENTS		 = 'hd=1&amp;wmode=opaque&amp;showinfo=0&amp;rel=0';
 	const VIMEO_ARGUMENTS		 = 'title=0&amp;byline=0&amp;portrait=0&amp;api=1';
 
 	public function __construct() {
 		FA::add_action('wp_enqueue_scripts', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'add_actions'));
+        FA::add_filter('wp_img_tag_add_loading_attr', array('RevSliderFront', 'check_lazy_loading'), 99, 3);
 	}
 
 
@@ -61,8 +62,8 @@ class RevSliderFront extends RevSliderFunctions {
 		FA::add_action('wp_head', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'add_meta_generator'));
 		FA::add_action('wp_head', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'js_set_start_size'), 99);
 		FA::add_action('admin_head', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'js_set_start_size'), 99);
-        FA::add_action('wp_footer', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'add_inline_css'));
-		FA::add_action('wp_footer', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'load_icon_fonts'));
+        FA::add_action('wp_footer', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'add_inline_css'), 10);
+        FA::add_action('wp_footer', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'load_icon_fonts'), 11);
 		FA::add_action('wp_footer', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'load_google_fonts'));
         FA::add_action('wp_footer', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'add_waiting_script'), 1);
         FA::add_action('wp_print_footer_scripts', array('\Nwdthemes\Revslider\Model\Revslider\Front\RevSliderFront', 'add_inline_js'), 100);
@@ -96,6 +97,8 @@ class RevSliderFront extends RevSliderFunctions {
 
         $custom_css = (trim($custom_css) == '') ? '#rs-demo-id {}' : $custom_css;
 
+        if(strpos($custom_css, 'revicon') !== false) Framework::$rs_revicons = true;
+
         FA::wp_add_inline_style('rs-plugin-settings', $custom_css);
     }
 
@@ -107,7 +110,7 @@ class RevSliderFront extends RevSliderFunctions {
         if(empty(Framework::$rs_js_collection)) return true;
         if(empty(Framework::$rs_js_collection['revapi'])) return true;
 
-        echo '<script type="text/javascript" id="rs-initialisation-scripts">'."\n";
+        echo '<script id="rs-initialisation-scripts">'."\n";
         echo Framework::RS_T2.'if(window.RS_MODULES === undefined) window.RS_MODULES = {};'."\n";
         echo Framework::RS_T2.'if(RS_MODULES.modules === undefined) RS_MODULES.modules = {};'."\n";
         echo Framework::RS_T2.'var    '.implode(',', Framework::$rs_js_collection['revapi']) . ';'."\n";
@@ -122,6 +125,9 @@ class RevSliderFront extends RevSliderFunctions {
 
     }
 
+	public static function welcome_screen_activate(){
+		FA::set_transient('_revslider_welcome_screen_activation_redirect', true, 60);
+	}
 
 	/**
 	 * Add Meta Generator Tag in FrontEnd
@@ -140,7 +146,7 @@ class RevSliderFront extends RevSliderFunctions {
 		$global	= $func->get_global_settings();
 		$ignore_fa = $func->_truefalse($func->get_val($global, 'fontawesomedisable', false));
 
-        echo Framework::RS_T3.'<link rel="preload" as="font" id="rs-icon-set-revicon-woff" href="' . Framework::$RS_PLUGIN_URL . 'public/assets/fonts/revicons/revicons.woff2?5510888" type="font/woff2" crossorigin="anonymous" media="all" />'."\n";
+        echo Framework::$rs_revicons ? Framework::RS_T3.'<link rel="preload" as="font" id="rs-icon-set-revicon-woff" href="' . Framework::$RS_PLUGIN_URL . 'public/assets/fonts/revicons/revicons.woff?5510888" type="font/woff" crossorigin="anonymous" media="all" />'."\n" : '';
         echo ($ignore_fa === false && (Framework::$fa_icon_var == true || Framework::$fa_var == true)) ? Framework::RS_T3.'<link rel="preload" as="font" id="rs-icon-set-fa-icon-woff" type="font/woff2" crossorigin="anonymous" href="' . Framework::$RS_PLUGIN_URL . 'public/assets/fonts/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0" media="all" />'."\n" : '';
         echo ($ignore_fa === false && (Framework::$fa_icon_var == true || Framework::$fa_var == true)) ? Framework::RS_T3.'<link rel="stylesheet" property="stylesheet" id="rs-icon-set-fa-icon-css" href="' . Framework::$RS_PLUGIN_URL . 'public/assets/fonts/font-awesome/css/font-awesome.min.css" type="text/css" media="all" />'."\n" : '';
 
@@ -172,7 +178,7 @@ class RevSliderFront extends RevSliderFunctions {
         $wait    = FA::apply_filters('revslider_modify_waiting_scripts', $wait);
         ?>
 
-        <script type="text/javascript">
+        <script>
             window.RS_MODULES = window.RS_MODULES || {};
             window.RS_MODULES.modules = window.RS_MODULES.modules || {};
             window.RS_MODULES.waiting = window.RS_MODULES.waiting || [];
@@ -196,7 +202,7 @@ class RevSliderFront extends RevSliderFunctions {
 		}
 
 		?>
-		<script type="text/javascript">
+		<script>
 			function rs_adminBarToolBarTopFunction() {
 				if(jQuery('#wp-admin-bar-revslider-default').length > 0 && jQuery('rs-module-wrap').length > 0){
 					var aliases = new Array();
@@ -233,47 +239,13 @@ class RevSliderFront extends RevSliderFunctions {
 			}
 		</script>
 		<?php
-}
-
-	/**
-	 * add admin nodes
-	 * @since: 5.0.5
-	 */
-	public static function add_admin_menu_nodes(){
-		if(!FA::is_super_admin() || !FA::is_admin_bar_showing()){
-			return;
-		}
-
-		self::_add_node('<span class="rs-label">Slider Revolution</span>', false, FA::admin_url('admin.php?page=revslider'), array('class' => 'revslider-menu'), 'revslider'); //<span class="wp-menu-image dashicons-before dashicons-update"></span>
-
-		//add all nodes of all Slider
-		$sl = new RevSliderSlider();
-		$sliders = $sl->get_slider_for_admin_menu();
-
-		if(!empty($sliders)){
-			foreach ($sliders as $id => $slider){
-				self::_add_node('<span class="rs-label" data-alias="' . FA::esc_attr($slider['alias']) . '">' . FA::esc_html($slider['title']) . '</span>', 'revslider', FA::getBackendUrl('nwdthemes_revslider/revslider/builder') . '?id=' . $id, array('class' => 'revslider-sub-menu'), FA::esc_attr($slider['alias'])); //<span class="wp-menu-image dashicons-before dashicons-update"></span>
-			}
-		}
 	}
 
 	/**
-	 * add admin node
-	 * @since: 5.0.5
-	 */
-	public static function _add_node($title, $parent = false, $href = '', $custom_meta = array(), $id = ''){
-		if(!FA::is_super_admin() || !FA::is_admin_bar_showing()){
-			return;
-		}
-
-		$id = ($id == '') ? strtolower(str_replace(' ', '-', $title)) : $id;
-
-		//links from the current host will open in the current window
-		$meta = (strpos($href, site_url()) !== false) ? array() : array('target' => '_blank'); //external links open in new tab/window
-		$meta = array_merge($meta, $custom_meta);
-
-		global $wp_admin_bar;
-		$wp_admin_bar->add_node(array('parent'=> $parent, 'id' => $id, 'title' => $title, 'href' => $href, 'meta' => $meta));
+	 * check that loading="lazy" is not written in slider HTML
+	 **/
+	public static function check_lazy_loading($value, $image, $context){
+		return (strpos($image, 'tp-rs-img') !== false) ? false : $value;
 	}
 
 	/**
@@ -282,7 +254,7 @@ class RevSliderFront extends RevSliderFunctions {
      * @updated: 6.4.12
      */
     public static function add_defer_forscript($tag, $handle){
-        if(strpos($tag, 'rs6') === false && strpos($tag, 'rbtools.min.js') === false && strpos($tag, 'revolution.addon.') === false && strpos($tag, 'public/assets/js/libs/') === false && strpos($tag, 'pixi.min.js') === false && strpos($tag, 'lottie.min.js') === false){
+		if(strpos($tag, 'rs6') === false && strpos($tag, 'rbtools.min.js') === false && strpos($tag, 'revolution.addon.') === false && strpos($tag, 'public/assets/js/libs/') === false && (strpos($tag, 'liquideffect') === false && strpos($tag, 'pixi.min.js') === false) && strpos($tag, 'rslottie-js') === false){
             return $tag;
         }elseif(FA::is_admin()){
             return $tag;
@@ -297,7 +269,7 @@ class RevSliderFront extends RevSliderFunctions {
      * @updated: 6.4.12
 	 */
     public static function add_async_forscript($tag, $handle){
-        if(strpos($tag, 'rs6') === false && strpos($tag, 'rbtools.min.js') === false && strpos($tag, 'revolution.addon.') === false && strpos($tag, 'public/assets/js/libs/') === false && strpos($tag, 'pixi.min.js') === false && strpos($tag, 'lottie.min.js') === false){
+		if(strpos($tag, 'rs6') === false && strpos($tag, 'rbtools.min.js') === false && strpos($tag, 'revolution.addon.') === false && strpos($tag, 'public/assets/js/libs/') === false && (strpos($tag, 'liquideffect') === false && strpos($tag, 'pixi.min.js') === false) && strpos($tag, 'rslottie-js') === false){
             return $tag;
         }elseif(FA::is_admin()){
             return $tag;
@@ -307,82 +279,15 @@ class RevSliderFront extends RevSliderFunctions {
 	}
 
 	/**
-	 * Add functionality to gutenberg, elementor, visual composer and so on
-	 **/
-	public static function add_post_editor(){
-		/**
-		 * Page Editor Extensions
-		 **/
-		if(function_exists('is_user_logged_in') && FA::is_user_logged_in()){
-			//only include gutenberg for production
-			if(FA::is_admin() && defined('ABSPATH')){
-				include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-				if(function_exists('is_plugin_active') && !FA::is_plugin_active('revslider-gutenberg/plugin.php')){
-					require_once(Framework::$RS_PLUGIN_PATH . 'admin/includes/shortcode_generator/gutenberg/gutenberg-block.php');
-					new RevSliderGutenberg('gutenberg/');
-				}
-			}
-		}
-
-		//Elementor Functionality
-		require_once(Framework::$RS_PLUGIN_PATH . 'admin/includes/shortcode_generator/elementor/elementor.class.php');
-		FA::add_action('init', array('RevSliderElementor', 'init'));
-	}
-
-	/**
 	 * Add Meta Generator Tag in FrontEnd
 	 * @since: 5.4.3
 	 * @before: add_setREVStartSize()
-		//NOT COMPRESSED VERSION
-		function setREVStartSize(e){
-            window.RSIW = window.RSIW===undefined ? window.innerWidth : window.RSIW;
-            window.RSIH = window.RSIH===undefined ? window.innerHeight : window.RSIH;
-            try {
-                var pw = document.getElementById(e.c).parentNode.offsetWidth,
-                    newh;
-                pw = pw===0 || isNaN(pw) ? window.RSIW : pw;
-                e.tabw = e.tabw===undefined ? 0 : parseInt(e.tabw);
-                e.thumbw = e.thumbw===undefined ? 0 : parseInt(e.thumbw);
-                e.tabh = e.tabh===undefined ? 0 : parseInt(e.tabh);
-                e.thumbh = e.thumbh===undefined ? 0 : parseInt(e.thumbh);
-                e.tabhide = e.tabhide===undefined ? 0 : parseInt(e.tabhide);
-                e.thumbhide = e.thumbhide===undefined ? 0 : parseInt(e.thumbhide);
-                e.mh = e.mh===undefined || e.mh=="" || e.mh==="auto" ? 0 : parseInt(e.mh,0);
-                if(e.layout==="fullscreen" || e.l==="fullscreen")
-                    newh = Math.max(e.mh,window.RSIH);
-                else{
-                    e.gw = Array.isArray(e.gw) ? e.gw : [e.gw];
-                    for (var i in e.rl) if (e.gw[i]===undefined || e.gw[i]===0) e.gw[i] = e.gw[i-1];
-                    e.gh = e.el===undefined || e.el==="" || (Array.isArray(e.el) && e.el.length==0)? e.gh : e.el;
-                    e.gh = Array.isArray(e.gh) ? e.gh : [e.gh];
-                    for (var i in e.rl) if (e.gh[i]===undefined || e.gh[i]===0) e.gh[i] = e.gh[i-1];
-
-                    var nl = new Array(e.rl.length),
-                        ix = 0,
-                        sl;
-                    e.tabw = e.tabhide>=pw ? 0 : e.tabw;
-                    e.thumbw = e.thumbhide>=pw ? 0 : e.thumbw;
-                    e.tabh = e.tabhide>=pw ? 0 : e.tabh;
-                    e.thumbh = e.thumbhide>=pw ? 0 : e.thumbh;
-                    for (var i in e.rl) nl[i] = e.rl[i]<window.RSIW ? 0 : e.rl[i];
-                    sl = nl[0];
-                    for (var i in nl) if (sl>nl[i] && nl[i]>0) { sl = nl[i]; ix=i;}
-                    var m = pw>(e.gw[ix]+e.tabw+e.thumbw) ? 1 : (pw-(e.tabw+e.thumbw)) / (e.gw[ix]);
-                    newh =  (e.gh[ix] * m) + (e.tabh + e.thumbh);
-                }
-                if(window.rs_init_css===undefined) window.rs_init_css = document.head.appendChild(document.createElement("style"));
-                document.getElementById(e.c).height = newh+"px";
-                window.rs_init_css.innerHTML += "#"+e.c+"_wrapper { height: "+newh+"px }";
-            } catch(e){
-                console.log("Failure at Presize of Slider:" + e)
-            }
-        };
 	 */
 	public static function js_set_start_size(){
 		if(Framework::$revslider_rev_start_size_loaded === true) return false;
 
-		$script = '<script type="text/javascript">';
-		$script .= 'define("setREVStartSize",function(){return function(t){window.RSIW=void 0===window.RSIW?window.innerWidth:window.RSIW,window.RSIH=void 0===window.RSIH?window.innerHeight:window.RSIH;try{var h=0===(h=document.getElementById(t.c).parentNode.offsetWidth)||isNaN(h)?window.RSIW:h;if(t.tabw=void 0===t.tabw?0:parseInt(t.tabw),t.thumbw=void 0===t.thumbw?0:parseInt(t.thumbw),t.tabh=void 0===t.tabh?0:parseInt(t.tabh),t.thumbh=void 0===t.thumbh?0:parseInt(t.thumbh),t.tabhide=void 0===t.tabhide?0:parseInt(t.tabhide),t.thumbhide=void 0===t.thumbhide?0:parseInt(t.thumbhide),t.mh=void 0===t.mh||""==t.mh||"auto"===t.mh?0:parseInt(t.mh,0),"fullscreen"===t.layout||"fullscreen"===t.l)w=Math.max(t.mh,window.RSIH);else{for(var e in t.gw=Array.isArray(t.gw)?t.gw:[t.gw],t.rl)void 0!==t.gw[e]&&0!==t.gw[e]||(t.gw[e]=t.gw[e-1]);for(var e in t.gh=void 0===t.el||""===t.el||Array.isArray(t.el)&&0==t.el.length?t.gh:t.el,t.gh=Array.isArray(t.gh)?t.gh:[t.gh],t.rl)void 0!==t.gh[e]&&0!==t.gh[e]||(t.gh[e]=t.gh[e-1]);var i,n=new Array(t.rl.length),r=0;for(e in t.tabw=t.tabhide>=h?0:t.tabw,t.thumbw=t.thumbhide>=h?0:t.thumbw,t.tabh=t.tabhide>=h?0:t.tabh,t.thumbh=t.thumbhide>=h?0:t.thumbh,t.rl)n[e]=t.rl[e]<window.RSIW?0:t.rl[e];for(e in i=n[0],n)i>n[e]&&0<n[e]&&(i=n[e],r=e);var h=h>t.gw[r]+t.tabw+t.thumbw?1:(h-(t.tabw+t.thumbw))/t.gw[r],w=t.gh[r]*h+(t.tabh+t.thumbh)}void 0===window.rs_init_css&&(window.rs_init_css=document.head.appendChild(document.createElement("style"))),document.getElementById(t.c).height=w+"px",window.rs_init_css.innerHTML+="#"+t.c+"_wrapper { height: "+w+"px }"}catch(t){console.log("Failure at Presize of Slider:"+t)}}});';
+		$script = '<script>';
+		$script .= 'function setREVStartSize(t){window.RSIW=void 0===window.RSIW?window.innerWidth:window.RSIW,window.RSIH=void 0===window.RSIH?window.innerHeight:window.RSIH;try{var h=0===(h=document.getElementById(t.c).parentNode.offsetWidth)||isNaN(h)||"fullwidth"==t.l||"fullwidth"==t.layout?window.RSIW:h;if(t.tabw=void 0===t.tabw?0:parseInt(t.tabw),t.thumbw=void 0===t.thumbw?0:parseInt(t.thumbw),t.tabh=void 0===t.tabh?0:parseInt(t.tabh),t.thumbh=void 0===t.thumbh?0:parseInt(t.thumbh),t.tabhide=void 0===t.tabhide?0:parseInt(t.tabhide),t.thumbhide=void 0===t.thumbhide?0:parseInt(t.thumbhide),t.mh=void 0===t.mh||""==t.mh||"auto"===t.mh?0:parseInt(t.mh,0),"fullscreen"===t.layout||"fullscreen"===t.l)d=Math.max(t.mh,window.RSIH);else{for(var e in t.gw=Array.isArray(t.gw)?t.gw:[t.gw],t.rl)void 0!==t.gw[e]&&0!==t.gw[e]||(t.gw[e]=t.gw[e-1]);for(var e in t.gh=void 0===t.el||""===t.el||Array.isArray(t.el)&&0==t.el.length?t.gh:t.el,t.gh=Array.isArray(t.gh)?t.gh:[t.gh],t.rl)void 0!==t.gh[e]&&0!==t.gh[e]||(t.gh[e]=t.gh[e-1]);var i,a=new Array(t.rl.length),r=0;for(e in t.tabw=t.tabhide>=h?0:t.tabw,t.thumbw=t.thumbhide>=h?0:t.thumbw,t.tabh=t.tabhide>=h?0:t.tabh,t.thumbh=t.thumbhide>=h?0:t.thumbh,t.rl)a[e]=t.rl[e]<window.RSIW?0:t.rl[e];for(e in i=a[0],a)i>a[e]&&0<a[e]&&(i=a[e],r=e);var w=h>t.gw[r]+t.tabw+t.thumbw?1:(h-(t.tabw+t.thumbw))/t.gw[r],d=t.gh[r]*w+(t.tabh+t.thumbh)}w=document.getElementById(t.c);null!==w&&w&&(w.style.height=d+"px"),null!==(w=document.getElementById(t.c+"_wrapper"))&&w&&(w.style.height=d+"px",w.style.display="block")}catch(t){console.log("Failure at Presize of Slider:"+t)}};';
 		$script .= '</script>' . "\n";
 		echo FA::apply_filters('revslider_add_setREVStartSize', $script);
 
@@ -461,6 +366,10 @@ class RevSliderFront extends RevSliderFunctions {
 
 			if(isset($shortcodes[1]) && $shortcodes[1] !== ''){
 				foreach($shortcodes[1] as $s){
+                    if(strpos($s, '"') !== false){
+                        $s = explode('"', $s);
+                        $s = (isset($s[0])) ? $s[0] : '';
+                    }
 					if(!RevSliderSlider::alias_exists($s)) continue;
 
 					$sldr = new RevSliderSlider();

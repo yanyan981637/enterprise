@@ -37,7 +37,7 @@ class Delete extends \Magento\Backend\App\Action
         if ($id) {
             try {
                 // init model and delete
-                $model = $this->_objectManager->create('Magezon\NinjaMenus\Model\Menu');
+                $model = $this->_objectManager->create(\Magezon\NinjaMenus\Model\Menu::class);
                 $model->load($id);
                 $model->delete();
                 // display success message

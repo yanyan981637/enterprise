@@ -40,9 +40,23 @@
         <columnsControls name="columns_controls"/>
         <exportButton name="export_button"/>
         <filterSearch name="fulltext"/>
-        <filters name="listing_filters"/>
+        <filters name="listing_filters">
+            <filterSelect name="used_in_area" provider="${ $.parentName }" component="Magento_Ui/js/form/element/ui-select" template="ui/grid/filters/elements/ui-select" sortOrder="100">
+                <settings>
+                    <options class="Magefan\TranslationPlus\Model\Config\Source\UsedInArea"/>
+                    <caption translate="true">Select...</caption>
+                    <label translate="true">Used In Area</label>
+                    <dataScope>used_in_area</dataScope>
+                    <imports>
+                        <link name="visible">componentType = column, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterSelect>
+        </filters>
+
         <paging name="listing_paging"/>
     </listingToolbar>
+
     <columns name="translationplus_translation_columns" class="Magefan\TranslationPlus\Ui\Component\Listing\Columns">
         <settings>
             <editorConfig>
@@ -107,6 +121,33 @@
                 <fieldClass>
                     <class name="grid-column-source">true</class>
                 </fieldClass>
+            </settings>
+        </column>
+        <column name="module" sortOrder="70">
+            <settings>
+                <filter>text</filter>
+                <sorting>asc</sorting>
+                <label translate="true">Module</label>
+                <fieldClass>
+                    <class name="grid-column-module">true</class>
+                </fieldClass>
+            </settings>
+        </column>
+        <column name="path_to_string" sortOrder="80">
+            <settings>
+                <filter>text</filter>
+                <sorting>asc</sorting>
+                <label translate="true">Path to String</label>
+                <fieldClass>
+                    <class name="grid-column-path_to_string">true</class>
+                </fieldClass>
+            </settings>
+        </column>
+        <column name="used_in_area" class="Magefan\TranslationPlus\Ui\Component\Listing\Columns\Column\UsedInArea" sortOrder="100">
+            <settings>
+                <dataType>select</dataType>
+                <sortable>false</sortable>
+                <label translate="true">Used In Area</label>
             </settings>
         </column>
     </columns>

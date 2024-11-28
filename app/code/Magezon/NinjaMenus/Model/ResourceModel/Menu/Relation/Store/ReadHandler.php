@@ -20,12 +20,12 @@ use Magento\Framework\EntityManager\Operation\ExtensionInterface;
 class ReadHandler implements ExtensionInterface
 {
     /**
-     * @var Form
+     * @var Menu
      */
     protected $resourceMenu;
 
     /**
-     * @param Form $resourceMenu
+     * @param Menu $resourceMenu
      */
     public function __construct(
         Menu $resourceMenu

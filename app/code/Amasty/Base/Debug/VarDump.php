@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -190,8 +190,8 @@ class VarDump
     public static function amastyExit($code = 0)
     {
         if (self::isAllowed()) {
-            if (class_exists(\Zend\Console\Response::class)) {
-                (new \Zend\Console\Response())->send();
+            if (class_exists(\Laminas\Console\Response::class)) {
+                (new \Laminas\Console\Response())->send();
             }
         }
     }

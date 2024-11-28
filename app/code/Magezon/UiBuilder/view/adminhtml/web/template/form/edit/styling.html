@@ -40,41 +40,51 @@
     <div class="admin__fieldset-wrapper-content"
          css="'admin__collapsible-content': collapsible, '_show': opened, '_hide': !opened()">
         <fieldset if="opened() || _wasOpened || initializeFieldsetDataByDefault"
-                class="admin__fieldset">
-          <div class="uibuilder-modal-design-heading-wrapper">
-            <label class="uibuilder-modal-design-heading" data-bind="i18n: 'CSS box'"></label>
-            <each args="getRegion('simply')">
-              <div class="uibuilder-design-simply">
-                  <!--ko template: getTemplate()--><!-- /ko -->
-                  <label attr="for: uid" data-bind="i18n: 'Simplify controls'"></label>
-                </div>
-            </each>
-          </div>
-          <div class="uibuilder-modal-design-content">
-          <div class="uibuilder-modal-design-left">
-            <div class="uibuilder-modal-design-margin">
-              <label class="uibuilder-modal-design-element-heading" data-bind="i18n: 'margin'"></label>
-              <div each="getRegion('margin')" render=""/>
-              <div class="uibuilder-modal-design-margin-unit" each="getRegion('margin-unit')" render=""/>
-            <div class="uibuilder-modal-design-border">
-              <label class="uibuilder-modal-design-element-heading" data-bind="i18n: 'border'"></label>
-              <div each="getRegion('border')" render=""/>
-              <div class="uibuilder-modal-design-border-unit" each="getRegion('border-unit')" render=""/>
-              <div class="uibuilder-modal-design-padding">
-                <label class="uibuilder-modal-design-element-heading" data-bind="i18n: 'padding'"></label>
-                <div each="getRegion('padding')" render=""/>
-                <div class="uibuilder-modal-design-padding-unit" each="getRegion('padding-unit')" render=""/>
-              </div>
+                  class="admin__fieldset">
+            <div class="uibuilder-modal-design-heading-wrapper">
+                <label class="uibuilder-modal-design-heading" data-bind="i18n: 'CSS box'"></label>
+                <each args="getRegion('simply')">
+                    <div class="uibuilder-design-simply">
+                        <!--ko template: getTemplate()--><!-- /ko -->
+                        <label attr="for: uid" data-bind="i18n: 'Simplify controls'"></label>
+                    </div>
+                </each>
             </div>
-          </div>
-          <div class="uibuilder-modal-design-radius">
-            <div each="getRegion('borderRadius')" render=""/>
-            <div class="uibuilder-modal-design-border-radius-unit" each="getRegion('borderRadius-unit')" render=""/>
-          </div>
-        </div>
-        <div class="uibuilder-modal-design-right" each="getRegion('right')" render=""/>
-      </div>
-      <div class="uibuilder-modal-design-footer" each="getRegion('footer')" render=""/>
-      </fieldset>
+            <section class="uibuilder-modal-design-content">
+                <section class="uibuilder-modal-design-left">
+                    <section class="uibuilder-modal-design-margin">
+                        <label class="uibuilder-modal-design-element-heading" data-bind="i18n: 'margin'"></label>
+                        <section>
+                            <div each="getRegion('margin')" render=""/>
+                            <div class="uibuilder-modal-design-margin-unit" each="getRegion('margin-unit')" render=""/>
+                        </section>
+                        <section class="uibuilder-modal-design-border">
+                            <label class="uibuilder-modal-design-element-heading" data-bind="i18n: 'border'"></label>
+                            <section>
+                                <div each="getRegion('border')" render=""/>
+                                <div class="uibuilder-modal-design-border-unit" each="getRegion('border-unit')" render=""/>
+                            </section>
+                            <div class="uibuilder-modal-design-padding">
+                                <label class="uibuilder-modal-design-element-heading" data-bind="i18n: 'padding'"></label>
+                                <div>
+                                    <div>
+                                        <div each="getRegion('padding')" render=""/>
+                                    </div>
+                                    <div>
+                                        <div class="uibuilder-modal-design-padding-unit" each="getRegion('padding-unit')" render=""/>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </section>
+                    <section class="uibuilder-modal-design-radius">
+                        <div each="getRegion('borderRadius')" render=""/>
+                        <div class="uibuilder-modal-design-border-radius-unit" each="getRegion('borderRadius-unit')" render=""/>
+                    </section>
+                </section>
+                <div class="uibuilder-modal-design-right" each="getRegion('right')" render=""/>
+            </section>
+            <div class="uibuilder-modal-design-footer" each="getRegion('footer')" render=""/>
+        </fieldset>
     </div>
 </div>

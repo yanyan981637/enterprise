@@ -46,12 +46,13 @@ define(
 		updateOVFilteredList();
 		updateSysChecks();
 		initBasics();
+		RVS.F.handleDeactivatedwarning();
+		RVS.F.handleAddonsWarning();
+		RVS.F.activeNotActive();
 
 		// VERSION ACTIVATED, SHOW WELCOME MESSAGE
 		if (RVS.ENV.updated) RVS.F.welcome();
 
-		//Load and Regeenrate Missing Images imported by Slider Revolution into the Media Library
-		RVS.F.generateAttachmentMetaData();
 		checkAddOnVersions();
 
 		// CHECK FOR NEW ADDONS AND TEMPLATES
@@ -98,6 +99,149 @@ define(
 		RVS.F.notifications();
 		//RVS.F.openQuickContent({sliderid: "1510"});
 	};
+
+	// ADDON INSTALLED FROM TEMPLATE, UPDATES LISTS AND ADDON LISTS
+		RVS.F.addonInstalledFromWarning = function(response,slug) {
+			RVS.LIB.OBJ.addonsToInstall.splice(0,1);
+			RVS.LIB.ADDONS[slug].active = true;
+		}
+
+
+	RVS.F.installAddonOneByOne = function() {
+		if (RVS.LIB.OBJ.addonsToInstall.length>0) {
+			var slug = RVS.LIB.OBJ.addonsToInstall[0];
+			RVS.F.ajaxRequest('activate_addon', {addon:slug}, function(response){
+				if (RVS.LIB.ADDONS!==undefined && RVS.LIB.ADDONS[slug]!==undefined && RVS.LIB.ADDONS[slug].installed==true) {
+					RVS.F.addonInstalledFromWarning(response,slug);
+					RVS.F.installAddonOneByOne();
+				} else {
+					RVS.LIB.ADDONS[slug].installed = true;
+					RVS.F.installAddonOneByOne();
+				}
+			},undefined,undefined,RVS_LANG.installingaddon+'<br><span style="font-size:17px; line-height:25px;">'+RVS.LIB.OBJ.addonsToInstall[0]+'</span>');
+		} else {
+			RVS.F.handleAddonsWarning();
+			RVS.F.notifications();
+		}
+	}
+
+	RVS.F.handleAddonsWarning = function() {
+		if (!RVS.ENV.activated) return;
+		if (RVS.S.handleADDWAR===undefined) {
+			RVS.S.handleADDWAR = true;
+			RVS.C.addwarlist = document.getElementById('list_of_deactivated_addons');
+			RVS.DOC.on('click','#rbm_notactiveaddon_warning .rbm_close',function() {
+				RVS.F.RSDialog.close();
+				RVS.S.addonWarningOpen = false;
+			});
+
+			RVS.DOC.on('click','.de_add_fix',function() {
+				RVS.LIB.OBJ.addonsToInstall = RVS.S.addFixRefList[this.dataset.fixref];
+				RVS.F.installAddonOneByOne();
+			});
+
+			RVS.DOC.on('click','#naa_install_all',function() {
+				RVS.LIB.OBJ.addonsToInstall = [];
+				for (var i in RVS.S.addFixRefList) {
+					if (!RVS.S.addFixRefList.hasOwnProperty(i)) continue;
+					for (var j in RVS.S.addFixRefList[i]) {
+						if (!RVS.S.addFixRefList[i].hasOwnProperty(j)) continue;
+						if (RVS.LIB.OBJ.addonsToInstall.indexOf(RVS.S.addFixRefList[i][j]) == -1) RVS.LIB.OBJ.addonsToInstall.push(RVS.S.addFixRefList[i][j]);
+					}
+				}
+				RVS.F.installAddonOneByOne();
+			});
+
+			RVS.C.missingAddonLists = jQuery('#list_of_deactivated_addons').RSScroll({
+				wheelPropagation:true,
+				suppressScrollX:true,
+				minScrollbarLength:100
+
+			});
+		}
+		var txt = RVS.F.createNotActivatedAddonsList();
+		if (txt!=='') {
+			RVS.C.addwarlist.innerHTML = txt;
+			RVS.F.showAddonWarning();
+			RVS.C.missingAddonLists.RSScroll("update");
+		} else {
+			if (RVS.S.addonWarningOpen) {
+				RVS.S.addonWarningOpen = false;
+				RVS.F.RSDialog.close();
+			}
+		}
+	}
+
+	RVS.F.createNotActivatedAddonsList = function() {
+		var i,j,txt="",addlist,s,fixref=0;
+		RVS.S.addFixRefList = {};
+		for (i in sliderLibrary.sliders) {
+			fixref++;
+			if (!sliderLibrary.sliders.hasOwnProperty(i) || sliderLibrary.sliders[i].addons===undefined || sliderLibrary.sliders[i].addons.length==0) continue;
+			addlist = "";
+			s=0;
+			RVS.S.addFixRefList[fixref] = [];
+			for (j in sliderLibrary.sliders[i].addons) {
+				if (!sliderLibrary.sliders[i].addons.hasOwnProperty(j) || RVS.LIB.ADDONS[sliderLibrary.sliders[i].addons[j]]==undefined) continue;
+				if (!RVS.LIB.ADDONS[sliderLibrary.sliders[i].addons[j]].active || !RVS.LIB.ADDONS[sliderLibrary.sliders[i].addons[j]].installed) {
+					addlist += (s>0 ? ", " : "") + RVS.LIB.ADDONS[sliderLibrary.sliders[i].addons[j]].title;
+					RVS.S.addFixRefList[fixref].push(sliderLibrary.sliders[i].addons[j]);
+					s++;
+				}
+
+			}
+			if (addlist=="") continue;
+			if (addlist.length>34) addlist = addlist.substring(0, 31)+"...";
+			txt += '<div class="deactivated_addon">';
+			txt += '<div class="de_add_stitle">'+sliderLibrary.sliders[i].alias+'</div>';
+			txt += '<div class="de_add_needs">'+RVS_LANG.needsd+'</div>';
+			txt += '<div class="de_add_needs_adds">'+addlist+'</div>';
+			txt += '<div class="de_add_fix" data-fixref="'+fixref+'">'+RVS_LANG.fix+'</div>';
+			txt += '</div>';
+		}
+		return txt;
+	}
+
+	RVS.F.showAddonWarning = function() {
+		/* WARNING OF MISSING FUNCTIONS */
+		RVS.F.RSDialog.create({modalid:'#rbm_notactiveaddon_warning', bgopacity:0.25});
+		RVS.S.addonWarningOpen = true;
+	}
+
+	RVS.F.handleDeactivatedwarning = function() {
+		if (RVS.S.handleDEWAR===undefined) {
+			RVS.S.handleDEWAR = true;
+			RVS.DOC.on('click','#rbm_notactive_warning',function() {
+				RVS.F.ajaxRequest('close_deregister_popup', {}, function(response){},undefined,undefined,undefined,true);
+			});
+			if (RVS.ENV.deregisterPopup) RVS.F.showDeactivatedWarning();
+		}
+	}
+
+	RVS.F.scrollToOvRegister = function() {
+		overviewMenuScroll();
+		var o = { val:window.scroll_top};
+		tpGS.gsap.to(o,0.6,{val:window.ov_scroll_targets[2].top-200, onUpdate:function() {
+			RVS.WIN.scrollTop(o.val);
+		}, ease:"power3.out"});
+		overviewMenuScroll();
+	}
+
+	RVS.F.showDeactivatedWarning = function() {
+		/* WARNING OF MISSING FUNCTIONS */
+		RVS.F.RSDialog.create({modalid:'#rbm_notactive_warning', bgopacity:0.25});
+		if (RVS.S.pwcandreg==undefined) {
+			RVS.DOC.on('click','#pb_closeandregister',function() {
+				RVS.F.RSDialog.close();
+				RVS.F.scrollToOvRegister();
+			});
+			RVS.DOC.on('click','#rbm_notactive_warning .rbm_close',function() {
+				RVS.F.RSDialog.close();
+			});
+			RVS.S.pwcandreg = true;
+		}
+
+	}
 
 	RVS.F.getBackupList = function() {
 		RVS.F.ajaxRequest('get_v5_slider_list', {}, function(response){
@@ -166,7 +310,7 @@ define(
 
 		// NOT REGSITERED WARNINGS
 		if (RVS.ENV.activated!=="true" && RVS.ENV.activated!==true) {
-			RVS.ENV.notices.push({function:"registerPlugin", additional:[], code:"INTERN", disable:true, icon:"vpn_key", is_global:false, text:RVS_LANG.notRegistered, type:1});
+			//RVS.ENV.notices.push({function:"registerPlugin", additional:[], code:"INTERN", disable:true, icon:"vpn_key", is_global:false, text:RVS_LANG.notRegistered, type:1});
 			RVS.ENV.notices.push({function:"registerPlugin", additional:[], code:"INTERN", disable:true, icon:"style", is_global:false, text:RVS_LANG.notRegNoAll, type:1});
 		}
 
@@ -175,7 +319,7 @@ define(
 
 		//UPDATE PLUGIN, NEW VERSION AVAILABLE
 		if (RVS.F.compareVersion(RVS.ENV.latest_version, RVS.ENV.revision) > 0) RVS.ENV.notices.push({function:"updatePluginNow", additional:[], code:"INTERN", disable:true, icon:"new_releases", is_global:false, text:RVS_LANG.newVersionAvailable, type:1});
-
+		if (RVS.F.createNotActivatedAddonsList().length>0) RVS.ENV.notices.push({function:"fixMissingAddons", additional:[], code:"INTERN", disable:true, icon:"new_releases", is_global:false, text:RVS_LANG.fixMissingAddons, type:1});
 		//ANY ADDON TO UPDATE ?
 		var found = false;
 
@@ -183,7 +327,7 @@ define(
 			if (found) continue;
 			if (RVS.LIB.ADDONS[i].available>RVS.LIB.ADDONS[i].installed) {
 				found=true;
-				RVS.ENV.notices.push({additional:[], code:"INTERN", disable:true, icon:"extension", is_global:false, text:RVS_LANG.someAddonnewVersionAvailable, type:1});
+				RVS.ENV.notices.push({function:"addonNotUptodate",additional:[], code:"INTERN", disable:true, icon:"extension", is_global:false, text:RVS_LANG.someAddonnewVersionAvailable, type:1});
 			}
 		}
 		var count = 0;
@@ -227,10 +371,24 @@ define(
 			if (nw.innerHTML.length>0 && dismiscodes.length>0) nw.innerHTML += '<li id="remove_notifications" class="notice_level_2"><i class="material-icons">close</i>'+RVS_LANG.dismissmessages+'</li>';
 
 			// CHECK ADDON VERSIONS
-			jQuery('.notification_function_checkAddOnVersions').click(checkAddOnVersions);
+			jQuery('.notification_function_checkAddOnVersions').on('click', checkAddOnVersions);
 
 			// REGISTER PLUGIN
-			jQuery('.notification_function_registerPlugin').on('click',function() {RVS.F.showRegisterSliderInfo();});
+			jQuery('.notification_function_registerPlugin').on('click',function() {
+				RVS.F.scrollToOvRegister();
+				//RVS.F.showRegisterSliderInfo();
+			});
+
+			// INSTALL MISSING ADONS
+			jQuery('.notification_function_fixMissingAddons').on('click',function() {
+				RVS.F.handleAddonsWarning();
+			});
+
+			// ADDONS NOT UP TO DATE
+			jQuery('.notification_function_addonNotUptodate').on('click',function() {
+				RVS.S.addonPrefilter = "action";
+				RVS.F.openAddonModal();
+			});
 
 			// UPDATE PLUGIN OUT OF NOTIFICATIONS
 			jQuery('.notification_function_updatePluginNow').on('click',function() {
@@ -325,12 +483,13 @@ define(
 	};
 
 	RVS.F.welcome = function() {
+		RVS.F.dontShowTracking = true;
 		RVS.F.RSDialog.create({modalid:'rbm_welcomeModal', bgopacity:0.85});
-		jQuery('#rbm_welcomeModal .rbm_close').click(RVS.F.RSDialog.close);
+		jQuery('#rbm_welcomeModal .rbm_close').on('click',RVS.F.RSDialog.close);
 		if (RVS.ENV.activated)
-			jQuery('#open_welcome_register_form').click(RVS.F.RSDialog.close);
+			jQuery('#open_welcome_register_form').on('click',RVS.F.RSDialog.close);
 		else
-			jQuery('#open_welcome_register_form').click(RVS.F.showRegisterSliderInfo);
+			jQuery('#open_welcome_register_form').on('click',RVS.F.showRegisterSliderInfo);
 	}
 
 	RVS.F.changeOVToFolder = function(folder) {
@@ -477,9 +636,9 @@ define(
 		RVS.C.rbgf = RVS.C.rbgf === undefined ? jQuery('#rbm_globalfontsettings') : RVS.C.rbgf;
 		RVS.F.initOnOff(RVS.C.rbgf);
 		RVS.F.updateEasyInputs({container:RVS.C.rbgf, path:"", trigger:"init"});
-	}
+	},
 
-	/*OPEND GLOABAL SETTINGS*/
+		/*OPEND GLOABAL SETTINGS*/
 	openGlobalSettings = function() {
 
 		if (!window.initGlobalSettings) {
@@ -553,7 +712,7 @@ define(
 				jsliderType:"hero",
 				visibilityLevels:"9999,9999,9999,9999",
 				gridwidth:380,
-				gridheight:330,
+				gridheight:430,
 				perspective:600,
 				perspectiveType:"global",
 				lazyloaddata:"lazy-src",
@@ -637,7 +796,8 @@ define(
 				if(!sliderLibrary.slides[sliderLibrary.selectedSlider].hasOwnProperty(sindex)) continue;
 				var slideobj = sliderLibrary.slides[sliderLibrary.selectedSlider][sindex];
 				d++;
-				slideobj.ref = slideobj.ref===undefined ? buildOVElement({order:order, title:slideobj.title, bg:slideobj.customAdminThumbSrc, id:sliderLibrary.selectedSlider, slide_id:slideobj.id, type:"slide", state:slideobj.state}) : slideobj.ref;
+				var sliderobj = getSliderObjFromList(sliderLibrary.selectedSlider);
+				slideobj.ref = slideobj.ref===undefined ? buildOVElement({premium:sliderobj!==undefined ? sliderobj.premium : undefined, order:order, title:slideobj.title, bg:slideobj.customAdminThumbSrc, id:sliderLibrary.selectedSlider, slide_id:slideobj.id, type:"slide", state:slideobj.state}) : slideobj.ref;
 				slideobj.ref.appendTo(container);
 				order++;
 				if (!_.noanimation) tpGS.gsap.fromTo(slideobj.ref,0.4,{autoAlpha:0,scale:0.8,transformOrigin:"50% 50%", force3D:true},{scale:1,autoAlpha:1,ease:"power3.inOut",delay:d*0.02});
@@ -647,14 +807,25 @@ define(
 		overviewMenuScroll();
 	},
 
+    getSliderObjFromList = function(id) {
+        var found;
+        for (var i in sliderLibrary.sliders) {
+            if (found!==undefined || !sliderLibrary.sliders.hasOwnProperty(i)) continue;
+            if ((""+sliderLibrary.sliders[i].id) == (""+id)) {
+                found = sliderLibrary.sliders[i];
+            }
+        }
+        return found;
+    },
 
 	// BUILD ONE SINGLE ELEMENT IN THE OVERVIEW
 	buildOVElement = function(_,withouttoolbar) {
 		var folderclass = _.folder ? "folder_library_element" : "",
 			imgobjunder = jQuery('<div class="image_container_underlay"></div>'),
+            premium = _.premium ? '<div class="rs_lib_premium_wrap"><div class="rs_lib_premium_lila">'+RVS_LANG.premium+'</div><div class="rs_lib_premium_red"><i class="material-icons">visibility_off</i>'+RVS_LANG.premium+'</div><div class="rs_lib_premium_red_hover"><i class="material-icons">visibility_off</i>'+RVS_LANG.premiumunlock+'</div></div>' : ''
 			obj = !withouttoolbar ?
-					jQuery('<div data-itemtype="'+_.type+'" data-sliderid="'+_.id+'" id="slider_id_'+_.id+'" data-slideid="slide_id_'+_.slide_id+'" class="'+(_.state==="unpublished" ? "unpublished" : "")+'  rs_library_element '+folderclass+'"><div class="rsle_footer">'+(_.type==="slide" ? '<div id="slide_order_number'+_.slide_id+'" class="slide_order_number">#'+_.order+'</div>' : '')+'<div class="rs_library_el_next"></div><input data-id="'+_.id+'" data-slideid="'+_.slide_id+'" id="slider_title_'+_.slide_id+'" class="title_container '+(_.type==="slide" ? 'slide_with_number' : '')+'" value="'+_.title+'""><i class="material-icons iconofunpublished">visibility_off</i><i class="show_rsle material-icons">arrow_drop_down</i></div></div>')
-					: jQuery('<div data-itemtype="'+_.type+'" data-sliderid="'+_.id+'" data-slideid="'+_.slide_id+'" class="folder_in_list rs_library_element '+folderclass+'"><div class="rsle_footer"><input class="title_container" value="'+_.title+'""><i class="show_rsle material-icons">keyboard_arrow_down</i></div></div>');
+                jQuery('<div data-itemtype="'+_.type+'" data-sliderid="'+_.id+'" id="slider_id_'+_.id+'" data-slideid="slide_id_'+_.slide_id+'" class="'+(_.state==="unpublished" ? "unpublished" : "")+'  rs_library_element '+folderclass+'">'+premium+'<div class="rsle_footer">'+(_.type==="slide" ? '<div id="slide_order_number'+_.slide_id+'" class="slide_order_number">#'+_.order+'</div>' : '')+'<div class="rs_library_el_next"></div><input data-id="'+_.id+'" data-slideid="'+_.slide_id+'" id="slider_title_'+_.slide_id+'" class="title_container '+(_.type==="slide" ? 'slide_with_number' : '')+'" value="'+_.title+'""><i class="material-icons iconofunpublished">visibility_off</i><i class="show_rsle material-icons">arrow_drop_down</i></div></div>')
+                : jQuery('<div data-itemtype="'+_.type+'" data-sliderid="'+_.id+'" data-slideid="'+_.slide_id+'" class="folder_in_list rs_library_element '+folderclass+'">'+premium+'<div class="rsle_footer"><input class="title_container" value="'+_.title+'""><i class="show_rsle material-icons">keyboard_arrow_down</i></div></div>');
 
 		// ADD IMAGE UNDERLAY
 		obj.append(imgobjunder);
@@ -950,9 +1121,14 @@ define(
 			if (sliderLibrary.sliders[i].folder) {
 				for (var c in sliderLibrary.sliders[i].children) {
 					if(!sliderLibrary.sliders[i].children.hasOwnProperty(c)) continue;
-					var sindex = RVS.F.getOVSliderIndex(sliderLibrary.sliders[i].children[c]);
-					if (sindex!==-1)
-						sliderLibrary.sliders[sindex].parent = sliderLibrary.sliders[i].id;
+					//IGNORE PARENT, IF CHILDREN LIST HAS PARENT (LOOP)
+					if (sliderLibrary.sliders[i].children.indexOf(sliderLibrary.sliders[i].parent)>=0) sliderLibrary.sliders[i].parent = -1;
+					else {
+						var sindex = RVS.F.getOVSliderIndex(sliderLibrary.sliders[i].children[c]);
+
+						if (sindex!==-1)
+							sliderLibrary.sliders[sindex].parent = sliderLibrary.sliders[i].id;
+					}
 				}
 			}
 		}
@@ -1009,7 +1185,7 @@ define(
 		//CREATE ROOT FOLDER
 
 		if (sliderLibrary.selectedFolder!==-1) {
-			sliderLibrary.sfw.append('<div class="folder_wrap_level_title '+firstfwlt+'">'+RVS_LANG.toplevels+'</div>')
+			sliderLibrary.sfw.append('<div class="folder_wrap_level_title '+firstfwlt+'">'+RVS_LANG.toplevels+'</div>');
 			buildDroppableList(buildOVElement({id:-1,title:"Root",quicktype:"root", folder:true,children:[]},true),0);
 			firstfwlt="";
 		}
@@ -1033,7 +1209,6 @@ define(
 				written = true;
 				firstfwlt="";
 			}
-
 			buildDroppableList(buildOVElement({id:sliderLibrary.filters.folders[f].id,title:sliderLibrary.sliders[findex].title,folder:true,children:sliderLibrary.sliders[findex].children},true),f);
 		}
 		written = false;
@@ -1250,7 +1425,10 @@ define(
 			updateNextRequiredAddon();
 			jQuery('#decmod_dont_btn').hide();
 			jQuery('#decmod_do_btn').hide();
+		});
 
+		RVS.DOC.on('click','.rs_lib_premium_red_hover',function() {
+			RVS.F.scrollToOvRegister();
 		});
 
 		RVS.DOC.on('updateThePlugin',function() {
@@ -1945,7 +2123,7 @@ define(
 				return;
 			} else
 			if (this.id==="linktodocumentation") {
-                window.open('https://www.sliderrevolution.com/help-center/','_blank');
+                window.open('https://www.sliderrevolution.com/help-center/?utm_source=admin&utm_medium=button&utm_campaign=srusers&utm_content=faq','_blank');
                 return;
             } else
             if (this.id==="buynow_notregistered") {
@@ -1959,7 +2137,7 @@ define(
 			}, ease:"power3.out"});
 			overviewMenuScroll();
 		});
-		RVS.WIN.resize(overviewMenuResize).on('scroll',overviewMenuScroll);
+		RVS.WIN.on('resize', overviewMenuResize).on('scroll',overviewMenuScroll);
 
 		/* ENTER INTO FOLDER */
 		RVS.DOC.on('click','.enter_into_folder',function() {
@@ -2028,7 +2206,7 @@ define(
 							icon:'fiber_new',
 							title:RVS_LANG.blank_page_added,
 							maintext:RVS_LANG.blank_page_created,
-							subtext:/*RVS_LANG.visit_page+': <a class="blankpagelink" href="'+response.open+'" target="blank">'+response.open+'</a><br>'+*/(response.edit!==undefined && response.edit.length>0 ? RVS_LANG.edit_page+': <a class="blankpagelink" href="'+response.edit+'" target="blank">'+response.edit.substr(0, 60)+'...</a>' : ''),
+							subtext:(response.edit!==undefined && response.edit.length>0 ? RVS_LANG.edit_page+': <a class="blankpagelink" href="'+response.edit+'" target="blank" rel="noopener">'+response.edit.substr(0, 60)+'...</a>' : ''),
 							do:{
 								icon:"exit_to_app",
 								text:RVS_LANG.visit_page,
@@ -2125,6 +2303,8 @@ define(
 		 				RVS.F.updateDraw();
 						RVS.F.isActivated();
 						RVS.F.notifications();
+						RVS.F.showDeactivatedWarning();
+						RVS.F.activeNotActive();
 		 			}
 		 		});
 		 	} else {
@@ -2137,11 +2317,19 @@ define(
 		 				RVS.F.updateDraw();
 						RVS.F.isActivated();
 						RVS.F.notifications();
+						RVS.F.activeNotActive();
 		 			}
 		 		});
 		 	}
 		 });
 
+		RVS.F.activeNotActive = function() {
+			RVS.C.existing_sliders = RVS.C.existing_sliders===undefined ? document.getElementById('existing_sliders') : RVS.C.existing_sliders;
+			if (RVS.ENV.activated)
+				RVS.C.existing_sliders.classList.remove('rs_n_ac_n');
+			else
+				RVS.C.existing_sliders.classList.add('rs_n_ac_n');
+		}
 		 /*
 		 CHECK FOR UPDATES
 		 */
@@ -2379,7 +2567,6 @@ define(
 	function getNewGlobalObject(obj) {
 		var newGlobal = {};
 		obj = obj===undefined || obj===null ? {} : obj;
-
 		/* VERSION CHECK */
 		newGlobal.version = newGlobal.version<"6.0.0" ? "6.0.0" : newGlobal.version;
 
@@ -2393,7 +2580,8 @@ define(
             footer : true,
             defer : true,
             full : false,
-            async : true
+            async : true,
+            ytapi : true
         });
 
 		newGlobal.imgcrossOrigin = _d(obj.imgcrossOrigin,"unset");
@@ -2407,9 +2595,12 @@ define(
         newGlobal.onedpronmobile = _truefalse(obj.onedpronmobile);
         newGlobal.forceLazyLoading = _d(obj.forceLazyLoading,"smart");
         newGlobal.forceViewport = _d(obj.forceViewport,true);
+        newGlobal.lazyonbg = _d(obj.lazyonbg,false);
         newGlobal.forcedViewportDistance = _d(obj.forcedViewportDistance,"-200px");
         newGlobal.internalcaching = _truefalse(obj.internalcaching);
 
+        newGlobal.tracking = _d(obj.tracking,'1999-01-01');
+        newGlobal.trackingOnOff = newGlobal.tracking=="enabled" ? true : false;
 		newGlobal.fonturl = _d(obj.fonturl,"");
 		newGlobal.size = _d(obj.size,{
 								desktop : 1240,

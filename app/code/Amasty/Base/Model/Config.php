@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -10,6 +10,7 @@ namespace Amasty\Base\Model;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\ObjectManager;
 
 class Config extends ConfigProviderAbstract
 {
@@ -18,9 +19,13 @@ class Config extends ConfigProviderAbstract
      */
     protected $pathPrefix = 'amasty_base/';
 
+    public const IS_PRODUCTION = 'instance_registration/production_mode';
+    public const LICENSE_KEYS = 'instance_registration/license_registration';
+
     public const NOTIFICATIONS_FREQUENCY = 'notifications/frequency';
     public const NOTIFICATIONS_TYPE = 'notifications/type';
     public const NOTIFICATIONS_ADS_ENABLE = 'notifications/ads_enable';
+    public const LICENSE_NOTIFICATIONS_ENABLE = 'notifications/enable_license_notifications';
     public const LICENCE_SERVICE_API_URL = 'licence_service/api_url';
 
     public const AMASTY_MENU_ENABLE = 'menu/enable';
@@ -38,14 +43,40 @@ class Config extends ConfigProviderAbstract
      */
     private $reinitableConfig;
 
+    /**
+     * @var Serializer
+     */
+    private $serializer;
+
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         WriterInterface $configWriter,
-        ReinitableConfigInterface $reinitableConfig
+        ReinitableConfigInterface $reinitableConfig,
+        Serializer $serializer = null
     ) {
         parent::__construct($scopeConfig);
         $this->configWriter = $configWriter;
         $this->reinitableConfig = $reinitableConfig;
+        $this->serializer = $serializer ?? ObjectManager::getInstance()->get(Serializer::class);
+    }
+
+    public function isProduction(): ?bool
+    {
+        $result = $this->getValue(self::IS_PRODUCTION);
+
+        return $result === null ? $result : (bool)$result;
+    }
+
+    public function getLicenseKeys(): array
+    {
+        $value = (string)$this->getValue(self::LICENSE_KEYS);
+
+        $result = [];
+        foreach ((array)$this->serializer->unserialize($value) as $record) {
+            $result[] = $record['license_key'] ?? '';
+        }
+
+        return array_filter(array_map('trim', $result));
     }
 
     public function getEnabledNotificationTypes(): array
@@ -60,6 +91,11 @@ class Config extends ConfigProviderAbstract
     public function isAdsEnabled(): bool
     {
         return (bool)$this->getValue(self::NOTIFICATIONS_ADS_ENABLE);
+    }
+
+    public function isLicenseNotificationsEnabled(): bool
+    {
+        return (bool)$this->getValue(self::LICENSE_NOTIFICATIONS_ENABLE);
     }
 
     public function isAmastyMenuEnabled(): bool

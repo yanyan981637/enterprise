@@ -1,6 +1,10 @@
 <?php
-$coreHelper                            = $this->helper('\Magezon\Core\Helper\Data');
-$builderHelper                         = $this->helper('\Magezon\Builder\Helper\Data');
+/**
+ * @var \Magezon\NinjaMenus\Block\Menu $block
+ */
+
+$coreHelper                            = $this->helper(\Magezon\Core\Helper\Data::class);
+$builderHelper                         = $this->helper(\Magezon\Builder\Helper\Data::class);
 $menu                                  = $this->getCurrentMenu();
 $id                                    = $menu->getRandomId();
 $html                                  = $this->getProfileHtml();
@@ -57,16 +61,16 @@ $secondHoverStyles                     = $builderHelper->parseStyles($secondHove
 <?php if ($mainStyles || $mainHoverStyles || $secondStyles || $secondHoverStyles) { ?>
 <style class="mgz-style">
 	<?php if ($mainStyles) { ?>
-	#<?= $id ?>.ninjamenus.ninjamenus-desktop .level0 > a {<?= $mainStyles ?>}
+	#<?= $id ?>.ninjamenus .level0 > a, #<?= $id ?>.ninjamenus.ninjamenus-drilldown .level0 > a {<?= $mainStyles ?>}
 	<?php } ?>
 	<?php if ($mainHoverStyles) { ?>
-	#<?= $id ?>.ninjamenus.ninjamenus-desktop .level0:hover > a {<?= $mainHoverStyles ?>}
+	#<?= $id ?>.ninjamenus .level0:hover > a, #<?= $id ?>.ninjamenus.ninjamenus-drilldown .level0:hover > a {<?= $mainHoverStyles ?>}
 	<?php } ?>
 	<?php if ($secondStyles) { ?>
-	#<?= $id ?>.ninjamenus.ninjamenus-desktop .level0 .item-submenu .nav-item > a{<?= $secondStyles ?>}
+	#<?= $id ?>.ninjamenus .level0 .item-submenu .nav-item > a, #<?= $id ?>.ninjamenus-drilldown .nav-item > a{<?= $secondStyles ?>}
 	<?php } ?>
 	<?php if ($secondHoverStyles) { ?>
-	#<?= $id ?>.ninjamenus.ninjamenus-desktop .level0 .item-submenu .nav-item > a:hover,#<?= $id ?> .level0 .item-submenu .nav-item.active > a:hover {<?= $secondHoverStyles ?>}
+	#<?= $id ?>.ninjamenus .level0 .item-submenu .nav-item > a:hover,#<?= $id ?>.ninjamenus-drilldown .nav-item.active > a:hover {<?= $secondHoverStyles ?>}
 	<?php } ?>
 </style>
 <?php } ?>
@@ -80,7 +84,9 @@ $secondHoverStyles                     = $builderHelper->parseStyles($secondHove
 			$('.nav-sections').css('z-index', 999);
 			$('.ninjamenus-top-overlay').fadeIn(400);
 		}, function() {
-			$('.nav-sections').css('z-index', '');
+		    if (!$('.nav-sections').hasClass('scroll-to-fixed-fixed')) {
+                $('.nav-sections').css('z-index', '');
+            }
 			$('.ninjamenus-top-overlay').fadeOut(400);
 		});
 	})

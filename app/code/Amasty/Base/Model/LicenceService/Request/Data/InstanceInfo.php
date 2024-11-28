@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -17,9 +17,12 @@ use Magento\Framework\Api\ExtensibleDataInterface;
 class InstanceInfo extends SimpleDataObject implements ExtensibleDataInterface
 {
     public const SYSTEM_INSTANCE_KEY = 'system_instance_key';
+    public const DOMAIN = 'domain';
     public const MODULES = 'modules';
     public const DOMAINS = 'domains';
     public const PLATFORM = 'platform';
+    public const CUSTOMER_INSTANCE_KEY = 'customer_instance_key';
+    public const IS_PRODUCTION = 'is_production';
 
     /**
      * @param string|null $systemInstanceKey
@@ -36,6 +39,23 @@ class InstanceInfo extends SimpleDataObject implements ExtensibleDataInterface
     public function getSystemInstanceKey(): ?string
     {
         return $this->getData(self::SYSTEM_INSTANCE_KEY);
+    }
+
+    /**
+     * @param string|null $domain
+     * @return $this
+     */
+    public function setDomain(?string $domain): self
+    {
+        return $this->setData(self::DOMAIN, $domain);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDomain(): ?string
+    {
+        return $this->getData(self::DOMAIN);
     }
 
     /**
@@ -87,5 +107,43 @@ class InstanceInfo extends SimpleDataObject implements ExtensibleDataInterface
     public function getPlatform(): Platform
     {
         return $this->getData(self::PLATFORM);
+    }
+
+    /**
+     * @param string[] $instanceKey
+     * @return $this
+     */
+    public function setCustomerInstanceKey(array $instanceKey): self
+    {
+        return $this->setData(self::CUSTOMER_INSTANCE_KEY, $instanceKey);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCustomerInstanceKey(): array
+    {
+        return $this->getData(self::CUSTOMER_INSTANCE_KEY);
+    }
+
+    /**
+     * @param bool|null $isProduction
+     * @return $this
+     */
+    public function setIsProduction(?bool $isProduction): self
+    {
+        return $this->setData(self::IS_PRODUCTION, $isProduction);
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsProduction(): ?bool
+    {
+        $isProduction = $this->getData(self::IS_PRODUCTION);
+
+        return $isProduction === null
+            ? $isProduction
+            : (bool)$isProduction;
     }
 }

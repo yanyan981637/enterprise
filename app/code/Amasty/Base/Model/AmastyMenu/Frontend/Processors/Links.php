@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -51,8 +51,15 @@ class Links
         if ($extensionLink = $this->getExtensionsLink()) {
             $items[] = $extensionLink;
         }
+        if ($settingsLink = $this->getSettingsLink()) {
+            $items[] = $settingsLink;
+        }
         if ($marketLink = $this->getMarketplaceLink()) {
             $items[] = $marketLink;
+        }
+        // TODO: Add additional items pool
+        if ($getSupportLink = $this->getSupportLink()) {
+            $items[] = $getSupportLink;
         }
     }
 
@@ -62,6 +69,39 @@ class Links
     private function getExtensionsLink(): ?array
     {
         if (($item = $this->defaultMenu->get('Amasty_Base::extensions')) && $item->isAllowed()) {
+            return [
+                ItemsProvider::LABEL => $item->getTitle(),
+                ItemsProvider::ID => $item->getId(),
+                ItemsProvider::TYPE => ItemsProvider::TYPE_LINK,
+                ItemsProvider::URL => $item->getUrl(),
+                ItemsProvider::ADD_INFO => 'open_current'
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array|null
+     */
+    private function getSettingsLink(): ?array
+    {
+        if (($item = $this->defaultMenu->get('Amasty_Base::settings')) && $item->isAllowed()) {
+            return [
+                ItemsProvider::LABEL => $item->getTitle(),
+                ItemsProvider::ID => $item->getId(),
+                ItemsProvider::TYPE => ItemsProvider::TYPE_LINK,
+                ItemsProvider::URL => $item->getUrl(),
+                ItemsProvider::ADD_INFO => 'open_current'
+            ];
+        }
+
+        return null;
+    }
+
+    private function getSupportLink(): ?array
+    {
+        if (($item = $this->defaultMenu->get('Amasty_Base::get_support')) && $item->isAllowed()) {
             return [
                 ItemsProvider::LABEL => $item->getTitle(),
                 ItemsProvider::ID => $item->getId(),

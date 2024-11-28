@@ -13,13 +13,15 @@ use Magento\Eav\Model\ResourceModel\Entity\Attribute\Group\CollectionFactory;
 use Magento\Framework\Data\Form\FormKey;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Bundle\Model\Product\Type as BundleType;
 
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
     /**
      * @var  Magefan_TranslationPlus::product/translate/edit/form.phtml
      */
-    protected $_template = 'Magefan_TranslationPlus::product/translate/edit/form.phtml';
+    protected $_template = 'Magefan_TranslationPlus::translate/edit/form.phtml';
 
     /**
      * @var CollectionFactory
@@ -60,15 +62,16 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
      * @param array $data
      */
     public function __construct(
-        Context $context,
-        Registry $registry,
-        FormFactory $formFactory,
-        CollectionFactory $attributeGroupCollection,
-        FormKey $formKey,
+        Context                  $context,
+        Registry                 $registry,
+        FormFactory              $formFactory,
+        CollectionFactory        $attributeGroupCollection,
+        FormKey                  $formKey,
         StoreRepositoryInterface $storeRepository,
-        ProductRepository $productRepository,
-        array $data = []
-    ) {
+        ProductRepository        $productRepository,
+        array                    $data = []
+    )
+    {
         $this->attributeGroupCollection = $attributeGroupCollection;
         $this->formKey = $formKey;
         $this->storeRepository = $storeRepository;
@@ -106,7 +109,25 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
      */
     public function getProduct($storeId)
     {
-        return $this->productRepository->getById((int) $this->getRequest()->getParam('id'), false, $storeId, false);
+        return $this->productRepository->getById((int)$this->getRequest()->getParam('id'), false, $storeId, false);
+    }
+
+    /**
+     * Return current object by id
+     *
+     * @param int $storeId
+     */
+    public function getCurrentObject($storeId = null)
+    {
+        return $this->getProduct($storeId);
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjectType()
+    {
+        return 'product';
     }
 
     /**
@@ -194,12 +215,28 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             }
             $gg = array_reverse($gg);
             foreach ($gg as $group) {
-                if ($group['attribute_group_name'] == 'Images') {
+
+                if ($group['attribute_group_name'] == 'Images'
+                    || ($group['attribute_group_name'] == 'Advanced Pricing' && in_array($oProduct->getTypeId(), [ConfigurableType::TYPE_CODE,  BundleType::TYPE_CODE]))
+                ) {
                     continue;
                 }
+
                 $attributes = $oProduct->getAttributes($group->getId(), true);
                 foreach ($attributes as $key => $attribute) {
                     if ($attrCode && $attribute->getAttributeCode() != $attrCode) {
+                        unset($attributes[$key]);
+                        continue;
+                    }
+
+                    if (in_array($oProduct->getTypeId(), [ConfigurableType::TYPE_CODE,  BundleType::TYPE_CODE])) {
+                        if ($attribute->getAttributeCode() == 'price') {
+                            unset($attributes[$key]);
+                            continue;
+                        }
+                    }
+
+                    if (in_array($attribute->getFrontendInput(), ['select', 'date', 'datetime', 'boolean'])) {
                         unset($attributes[$key]);
                         continue;
                     }
@@ -209,6 +246,9 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                         || $attribute->getScope() == 'global') {
                         unset($attributes[$key]);
                     }
+
+
+
                 }
                 if ($attributes) {
                     $groupBlock = $this->getLayout()
@@ -236,7 +276,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
     public function getTemplate()
     {
         if ($this->getRequest()->getParam('attr_code')) {
-            return 'Magefan_TranslationPlus::product/translate/edit/single-attr-form.phtml';
+            return 'Magefan_TranslationPlus::translate/edit/single-attr-form.phtml';
         }
         return parent::getTemplate();
     }

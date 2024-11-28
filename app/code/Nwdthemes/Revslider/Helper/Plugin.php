@@ -11,6 +11,7 @@ class Plugin extends \Magento\Framework\App\Helper\AbstractHelper {
     const MAX_FAILS = 5;
     const PLUGIN_PREFIX = 'revslider-';
 
+    protected $_registerHelper;
     protected $_optionsHelper;
     protected $_storeManager;
     protected $_queryHelper;
@@ -27,7 +28,6 @@ class Plugin extends \Magento\Framework\App\Helper\AbstractHelper {
     private $_plugins = null;
     private $_pluginsLoaded = false;
     private $_activePlugins = null;
-    private $_registerHelper;
 
 	/**
 	 *	Constructor
@@ -297,12 +297,15 @@ class Plugin extends \Magento\Framework\App\Helper\AbstractHelper {
      * Deactivate old plugins to avoid compatibility issues
      */
     public function deactivateOldPlugins() {
+        // TODO: Re-activate when pllugin data updates will be online
+        /*
         foreach ($this->getPlugins() as $pluginName => $pluginData) {
             $requiredVersion = $pluginName == 'revslider-backup-addon/revslider-backup-addon.php' ? '2.0.2' : '3';
             if (version_compare($pluginData['Version'], $requiredVersion, '<')) {
                 $this->deactivatePlugin($pluginName);
             }
         }
+        */
     }
 
 }

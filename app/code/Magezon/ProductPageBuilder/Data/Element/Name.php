@@ -17,11 +17,11 @@ namespace Magezon\ProductPageBuilder\Data\Element;
 class Name extends \Magezon\ProductPageBuilder\Data\Element
 {
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
-	public function prepareGeneralTab()
+    public function prepareGeneralTab()
     {
-    	$general = parent::prepareGeneralTab();
+        $general = parent::prepareGeneralTab();
 
             $general->addChildren(
                 'heading_type',
@@ -73,18 +73,18 @@ class Name extends \Magezon\ProductPageBuilder\Data\Element
                 ]
             );
 
-	        $general->addChildren(
-	            'font_weight',
-	            'text',
-	            [
+            $general->addChildren(
+                'font_weight',
+                'text',
+                [
                     'sortOrder'       => 50,
                     'key'             => 'font_weight',
                     'templateOptions' => [
                         'label' => __('Font Weight')
-	                ]
-	            ]
-	        );
+                    ]
+                ]
+            );
 
-    	return $general;
+        return $general;
     }
 }

@@ -36,7 +36,7 @@ class AbstractModifier implements \Magento\Ui\DataProvider\Modifier\ModifierInte
     protected $registry;
 
     /**
-     * @var Magezon\NinjaMenus\Data\Form\Element\Data\Form\Element\Collection
+     * @var \Magezon\NinjaMenus\Data\Form\Element\Data\Form\Element\Collection
      */
     protected $_elements;
 

@@ -10,6 +10,7 @@ RVS.S.frameTrgt = "layer";
 RVS.V.frameLevels = {levels:["mask","chars","words","lines","color","sfx"]};
 RVS.LIB.FONTS = [];
 RVS.CACHE = RVS.CACHE || {};
+RVS.S.layerPosWaitingToUpdate = {};
 
 (function() {
 
@@ -38,13 +39,19 @@ RVS.CACHE = RVS.CACHE || {};
 		if (window.customLayerCss_editor ==="FAIL") return;
 		if (typeof RevMirror==="undefined") {
 			RVS.F.showWaitAMinute({fadeIn:500,text:RVS_LANG.loadingRevMirror});
-			RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.css');
-			jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.js',function() {
+			RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.min.css');
+			jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.min.js',function() {
 				setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
 				RVS.F.updateCustomCSS();
 			}).fail(function(a,b,c) {
-				setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
-				window.customLayerCss_editor = "FAIL";
+                RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.css');
+                jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.js',function() {
+                    setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
+                    RVS.F.updateCustomCSS();
+                }).fail(function(a,b,c) {
+                    setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
+                    window.customLayerCss_editor = "FAIL";
+                });
 			});
 		}  else
 		if (window.customLayerCss_editor===undefined) {
@@ -130,7 +137,9 @@ RVS.CACHE = RVS.CACHE || {};
 			opts = "";
 		for (var fontindex in RVS.LIB.FONTS) {
 			if(!RVS.LIB.FONTS.hasOwnProperty(fontindex)) continue;
-			if (RVS.LIB.FONTS[fontindex].label!=="Dont Show Me" && RVS.LIB.FONTS[fontindex].label!=="") opts += "<option value='"+RVS.LIB.FONTS[fontindex].label+"'>"+(RVS.LIB.FONTS[fontindex].label.split('"').join(''))+"</option>";
+			if (RVS.LIB.FONTS[fontindex].label!=="Dont Show Me" && RVS.LIB.FONTS[fontindex].label!=="") {
+				opts += '<option value="'+(RVS.LIB.FONTS[fontindex].label.split('"').join("'"))+'">'+(RVS.LIB.FONTS[fontindex].label.split('"').join(''))+'</option>';
+			}
 			RVS.LIB.FONTS[fontindex].labelLowerCase = RVS.LIB.FONTS[fontindex].label.toLowerCase();
 		}
 		lff[0].innerHTML = opts;
@@ -285,8 +294,7 @@ RVS.CACHE = RVS.CACHE || {};
 				lh = RVS.H[i].c;
 
 			if (l.type==="text" || l.type==="button")
-				lh.css({fontFamily:_.family});
-
+				lh.css({fontFamily:"'"+_.family+"'"});
 		}
 	};
 	/*
@@ -310,6 +318,19 @@ RVS.CACHE = RVS.CACHE || {};
 		return a;
 	};
 
+	RVS.F.drawSlideBasedPercenatages = function() {
+		requestAnimationFrame(function() {
+			if (RVS.S.ulDIMCache==undefined || RVS.S.ulDIM.width!==RVS.S.ulDIMCache.width || RVS.S.ulDIM.height!==RVS.S.ulDIMCache.height) {
+				for (var li in RVS.L) {
+					if(!RVS.L.hasOwnProperty(li) || RVS.L[li].behavior==undefined || RVS.L[li].behavior.baseAlign!=="slide" || (""+RVS.L[li].group.puid)!=="-1") continue;
+					if ((""+RVS.L[li].size.width[RVS.screen].v).indexOf("%")>=0) tpGS.gsap.set(RVS.H[li].w,{width:(RVS.F.CHOR() ?  RVS.S.lgw : Math.max(RVS.S.ulDIM.width- RVS.S.vertCarOff,RVS.S.lgw)) * (parseInt(RVS.L[li].size.width[RVS.screen].v)/100)});
+					if ((""+RVS.L[li].size.height[RVS.screen].v).indexOf("%")>=0) tpGS.gsap.set(RVS.H[li].w,{height:Math.max(RVS.S.ulDIM.height,RVS.S.lgh) * (parseInt(RVS.L[li].size.height[RVS.screen].v)/100)});
+				}
+				RVS.S.ulDIMCache = { width:RVS.S.ulDIM.width, height:RVS.S.ulDIM.height};
+			}
+		});
+	}
+
 	/*
 	DRAW A HTML LAYER
 	*/
@@ -328,8 +349,9 @@ RVS.CACHE = RVS.CACHE || {};
 
 		if (lh===undefined) return;
 		var pc = lh.c[0].className.indexOf("placeholder_on")>=0;
+			manipulate = l.subtype!==undefined && RVS.F.drawLayerExt!==undefined && RVS.F.drawLayerExt[l.subtype]!==undefined? RVS.F.drawLayerExt[l.subtype](_.uid) : false;
 
-		lh.c[0].className = "_lc_content_"+(pc ? " placeholder_on" : "")+(l.idle.style!==undefined ? " "+l.idle.style : "") + (l.runtime.internalClass!==undefined ? " "+l.runtime.internalClass : "");
+		lh.c[0].className = "_lc_content_"+(pc ? " placeholder_on" : "")+(manipulate && manipulate.CN!==undefined  ? manipulate.CN : "")+(l.idle.style!==undefined ? " "+l.idle.style : "") + (l.runtime.internalClass!==undefined ? " "+l.runtime.internalClass : "");
 
 		var	tr = {
 					textAlign:l.idle.textAlign[RVS.screen].v,
@@ -337,9 +359,9 @@ RVS.CACHE = RVS.CACHE || {};
 					transformStyle:l.timeline.split ? "preserve-3d" : "flat",  // Based on if the Layer has splitted element or not
 					//transformPerspective:l.idle.transformPerspective,
 					//transformOrigin:l.idle.originX+" "+l.idle.originY,
-					fontFamily:l.idle.fontFamily || 'Roboto',
+					fontFamily:l.idle.fontFamily!==undefined ? l.idle.fontFamily.indexOf(",")===-1 ? "'"+l.idle.fontFamily+"'" : l.idle.fontFamily : 'Roboto',
 					fontSize:parseInt(l.idle.fontSize[RVS.screen].v,0)+"px",
-					lineHeight:parseInt(l.idle.lineHeight[RVS.screen].v,0)+"px",
+					lineHeight: /*l.type==="group" ? parseInt(l.size.height[RVS.screen].v,0) + "px":*/ parseInt(l.idle.lineHeight[RVS.screen].v,0)+"px",
 					fontWeight: (l.idle.fontWeight[RVS.screen].v===undefined ? 400 : l.idle.fontWeight[RVS.screen].v),
 					color: window.RSColor.get(l.idle.color[RVS.screen].v),
 					letterSpacing:parseFloat(l.idle.letterSpacing[RVS.screen].v)+"px",
@@ -381,7 +403,7 @@ RVS.CACHE = RVS.CACHE || {};
 					skewY:l.hover.skewY,
 					scaleX:l.hover.scaleX,
 					scaleY:l.hover.scaleY,
-					borderColor:window.RSColor.get(l.hover.borderColor),
+					borderColor:window.RSColor.get(manipulate && manipulate.hoverBorderColor!==undefined ? manipulate.hoverBorderColor : l.hover.borderColor),
 					borderTopLeftRadius : l.hover.borderRadius.v[0],
 					borderTopRightRadius : l.hover.borderRadius.v[1],
 					borderBottomRightRadius : l.hover.borderRadius.v[2],
@@ -391,9 +413,8 @@ RVS.CACHE = RVS.CACHE || {};
 					borderBottomWidth:l.hover.borderWidth[2],
 					borderLeftWidth:l.hover.borderWidth[3],
 					borderStyle:l.hover.borderStyle,
-					color: window.RSColor.get(l.hover.color),
-					textDecoration:l.hover.textDecoration,
-
+					color: window.RSColor.get(manipulate && manipulate.hoverColor!==undefined ? manipulate.hoverColor : l.hover.color),
+					textDecoration:l.hover.textDecoration
 			  },
 			w_tr = l.type==="row"  ?
 					{
@@ -418,7 +439,7 @@ RVS.CACHE = RVS.CACHE || {};
 
 			//GET THE REAL COLOR VALUES
 			bgcolor = window.RSColor.get(l.idle.backgroundColor),
-			hbgcolor = window.RSColor.get(l.hover.backgroundColor),
+			hbgcolor = window.RSColor.get(manipulate && manipulate.hoverBG!==undefined ? manipulate.hoverBG : l.hover.backgroundColor),
 
 			/* SET THE BACKGROUND IMAGE FOR THE LAYER */
 			temp_bgimage = l.type==="video" ? l.media.posterUrl : l.idle.backgroundImage,
@@ -530,13 +551,14 @@ RVS.CACHE = RVS.CACHE || {};
 		w_tr.verticalAlign = "inherit";
 
 		//DISPLAY AND VERTICAL ALIGN FOR COLUMNS
-		if (l.type==="column") {
+		if (l.type==="column" || l.type==="group") {
 			w_tr.verticalAlign = l.idle.verticalAlign;
 			tr.verticalAlign = l.idle.verticalAlign;
 		}
 
 		// DISPLAY (BLOCK, INLINE BOCK) FOR LAYERS IN COLUMNS
-		if (l.group.puid!==-1 && RVS.L[l.group.puid].type==="column") {
+		let inGroupOrColumn = l.group.puid!=-1 && (RVS.L[l.group.puid].type==="column" || RVS.L[l.group.puid].type==="group");
+		if (inGroupOrColumn) {
 			w_tr.display = tr.display = l.idle.display;
 			w_tr.float = l.idle.float[RVS.screen].v;
 			w_tr.clear = l.idle.clear[RVS.screen].v;
@@ -582,10 +604,19 @@ RVS.CACHE = RVS.CACHE || {};
 		var exp = RVS.F.convertFraction(l.group.columnSize);
 
 		//COLUMN DIMENSION MUST BE HANDLED DIFFERENT
-		w_tr.width = l.type=="column" ?  (100*exp)+"%" : lh.w_width;
+		if (l.size.covermode=="fullinset" && inGroupOrColumn && l.position.position=="absolute" && l.size.width[RVS.screen].v=="100%") {
+			w_tr.marginLeft = "0px";
+			w_tr.marginRight = "0px";
+			w_tr.width = "auto";
+		} else
+		w_tr.width = l.type=="column" ?  (100*exp)+"%" :  l.behavior.baseAlign==="slide" && (""+l.group.puid)=="-1" && (""+lh.w_width).indexOf("%")>=0 ? ((RVS.F.CHOR() ?  RVS.S.lgw : Math.max(RVS.S.ulDIM.width- RVS.S.vertCarOff,RVS.S.lgw))) * (parseInt(lh.w_width)/100): lh.w_width;
+		if (l.size.covermode=="fullinset" && inGroupOrColumn && l.position.position=="absolute" && l.size.height[RVS.screen].v=="100%") {
+			w_tr.marginTop = "0px";
+			w_tr.marginBottom = "0px";
+			w_tr.height = "auto";
+		} else
+		w_tr.height = l.type=="column" || l.type=="row" ? "auto" : l.behavior.baseAlign==="slide" && (""+lh.w_height).indexOf("%")>=0 ? Math.max(RVS.S.ulDIM.height,RVS.S.lgh) * (parseInt(lh.w_height)/100): lh.w_height;
 		w_tr.maxWidth = l.type=="column" ? "0px" : w_tr.maxWidth===undefined ? "none" : w_tr.maxWidth;
-		w_tr.height = l.type=="column" || l.type=="row" ? "auto" : lh.w_height;
-
 		tr.width = l.type=="column"  || l.type=="row" ? "100%" : tr.width;
 		tr.height = l.type=="column" || l.type=="row"  ? "auto" : tr.height;
 
@@ -643,7 +674,7 @@ RVS.CACHE = RVS.CACHE || {};
 
 		//SVG SIZING
 		if (l.type==="svg" && lh.svg) {
-			var svgsettings =
+			//var svgsettings =
 
 			tpGS.gsap.set(lh.svg,(l.idle.svg.originalColor!==true ?
 				{
@@ -673,7 +704,10 @@ RVS.CACHE = RVS.CACHE || {};
 		if (!RVS.F.isNumeric(tr.height) && tr.height.indexOf("%")>=0) tr.height = "100%";
 
 		// % BASED GROUP HEIGHT
-		if (l.type==="group") if (tr.height==="100%") tpGS.gsap.set([lh.m,lh.iw,lh.lp],{height:"100%"}); else tpGS.gsap.set([lh.m,lh.iw,lh.lp],{height:"auto"});
+		if (l.type==="group") if (tr.height==="100%") tpGS.gsap.set([lh.m,lh.iw,lh.lp],{height:"100%"}); else {
+			tpGS.gsap.set(lh.iw,{height:"auto"});
+			tpGS.gsap.set([lh.m,lh.lp],{height:"100%"}); // If not set to 100% the new Relative Position breaks the height. If set to Auto, margin of Inside elements creats Gaps !
+		}
 
 		w_tr.onComplete = function() {RVS.DOC.trigger('layerDrawn',{layerid:_.uid})};
 
@@ -721,6 +755,7 @@ RVS.CACHE = RVS.CACHE || {};
 
 			//SET STYLE OF LAYER
 			tpGS.gsap.set(lh.c,tr);
+
 			tpGS.gsap.set(lh.w,w_tr);
 		//}
 
@@ -746,23 +781,30 @@ RVS.CACHE = RVS.CACHE || {};
 			RVS.F.checkCurrentLayerHoverMode({layerid:_.uid});
 			if ((lh.drawnonce===undefined) && l.type==="button" || l.type==="text") {
 				lh.drawnonce=true;
-				RVS.F.updateHTMLLayerPosition({uid:_.uid});
+				RVS.F.updateHTMLLayerPosition({uid:_.uid,wtr:w_tr});
 			}
+
 		});
 
 
 		if (RVS.S.shwLayerAnim && jQuery.inArray(_.uid,RVS.selLayers)>=0) RVS.F.playLayerAnimation({layerid:_.uid});
 
 		if (RVS.F.updateMinSliderHeights()) {
-			if (!RVS.S.drawingHTMLLayers)
+			if (!RVS.S.drawingHTMLLayers) {
 				RVS.DOC.trigger('updatesliderlayout',"layer.js-586");
-			else
+			} else {
 				RVS.S.updateMinSliderHeight_force = true;
+			}
 		}  else {
+			_.wtr = w_tr;
+			//Reposition Parent if needed
+			if (l.position.position=="relative" && RVS.L[l.group.puid]!==undefined && RVS.L[l.group.puid].type==="group") RVS.S.layerPosWaitingToUpdate[l.group.puid] = true;
 			RVS.F.updateHTMLLayerPosition(_);
 			requestAnimationFrame(function() {
+				RVS.F.updateWaitingHTMLLayerPosition();
 				requestAnimationFrame(function() {
 					RVS.F.updateHTMLLayerPosition(_);
+
 				});
 			});
 
@@ -773,6 +815,15 @@ RVS.CACHE = RVS.CACHE || {};
 		//RVS.CACHE[RVS.S.slideId][_.uid].pos = C_pos;
 
 	};
+
+	//Update Parent Group Positions if relative positioned Child exists
+	RVS.F.updateWaitingHTMLLayerPosition = function() {
+		for (var i in RVS.S.layerPosWaitingToUpdate) {
+			if (!RVS.S.layerPosWaitingToUpdate.hasOwnProperty(i)) continue;
+			RVS.F.updateHTMLLayerPosition({uid:i});
+			delete RVS.S.layerPosWaitingToUpdate[i];
+		}
+	}
 
 	RVS.F.addGradDegree = function(grad, deg) {
 			grad = grad.split('(');
@@ -833,6 +884,7 @@ RVS.CACHE = RVS.CACHE || {};
 	REORDER HTML LAYERS ON THE SLIDE
 	*/
 	RVS.F.reOrderHTMLLayers = function(_) {
+
 		RVS.C.layergrid.detach();
 		RVS.S.redrawHTMLLayersList = [];
 		// BUILD FIRST LEVEL LAYERS
@@ -840,13 +892,15 @@ RVS.CACHE = RVS.CACHE || {};
 			if(!RVS.L.hasOwnProperty(li)) continue;
 			if ((RVS.L[li].group.puid===-1 || RVS.L[li].type==="row") &&  RVS.L[li].type!=="zone") RVS.F.reOrderHTMLLayer({uid:li});
 		}
+		// Build Groups In Groups and Columns in Rows
+
 		for (li in RVS.L) {
 			if(!RVS.L.hasOwnProperty(li)) continue;
-			if (RVS.L[li].type=="column") RVS.F.reOrderHTMLLayer({uid:RVS.L[li].uid});
+			if (RVS.L[li].type=="column" || (RVS.L[li].type=="group" && RVS.L[li].group.puid!=-1 )) RVS.F.reOrderHTMLLayer({uid:RVS.L[li].uid});
 		}
 		for (li in RVS.L) {
 			if(!RVS.L.hasOwnProperty(li)) continue;
-			if (RVS.L[li].type!=="column" && RVS.L[li].group.puid!==-1) RVS.F.reOrderHTMLLayer({uid:RVS.L[li].uid});
+			if (RVS.L[li].type!=="column" && RVS.L[li].group.puid!==-1 && (RVS.L[li].type!=="group" || RVS.L[li].group.puid==-1)) RVS.F.reOrderHTMLLayer({uid:RVS.L[li].uid});
 		}
 		RVS.C.layergrid.appendTo(RVS.C.slide);
 		for (li in RVS.S.redrawHTMLLayersList) if (RVS.S.redrawHTMLLayersList.hasOwnProperty(li)) RVS.F.drawHTMLLayer({uid:RVS.S.redrawHTMLLayersList[li]});
@@ -869,17 +923,16 @@ RVS.CACHE = RVS.CACHE || {};
 				}
 				for (li in RVS.L) {
 					if(!RVS.L.hasOwnProperty(li)) continue;
-					if (RVS.L[li].type=="column") RVS.F.drawHTMLLayer({uid:RVS.L[li].uid});
+					if (RVS.L[li].type=="column" || (RVS.L[li].type=="group" && RVS.L[li].group.puid!=-1 )) RVS.F.drawHTMLLayer({uid:RVS.L[li].uid});
 				}
 				for (li in RVS.L) {
 					if(!RVS.L.hasOwnProperty(li)) continue;
-					if (RVS.L[li].type!=="column" && RVS.L[li].group.puid!==-1) RVS.F.drawHTMLLayer({uid:RVS.L[li].uid});
+					if (RVS.L[li].type!=="column" && (RVS.L[li].type!=="group"  || RVS.L[li].group.puid==-1) && RVS.L[li].group.puid!==-1) RVS.F.drawHTMLLayer({uid:RVS.L[li].uid});
 				}
 				RVS.F.checkRowsChildren();
 				RVS.S.drawingHTMLLayers=false;
 
 				if (RVS.S.updateMinSliderHeight_force ||  RVS.S.ReadyToShowAll=="wait" ) RVS.F.updatesliderlayout(undefined);
-
 				RVS.S.updateMinSliderHeight_force = false;
 			});
 		}
@@ -897,11 +950,17 @@ RVS.CACHE = RVS.CACHE || {};
 		}
 		for (li in RVS.L) {
 			if(!RVS.L.hasOwnProperty(li)) continue;
-			if (RVS.L[li].type=="column") RVS.F.buildHTMLLayer({uid:RVS.L[li].uid,ignoreDrawLayers:obj.ignoreDrawLayers});
+			if (RVS.L[li].type=="column" || (RVS.L[li].type=="group" && RVS.L[li].group.puid==-1 )) RVS.F.buildHTMLLayer({uid:RVS.L[li].uid,ignoreDrawLayers:obj.ignoreDrawLayers});
 		}
+
 		for (li in RVS.L) {
 			if(!RVS.L.hasOwnProperty(li)) continue;
-			if (RVS.L[li].type!=="column" && RVS.L[li].group.puid!==-1) RVS.F.buildHTMLLayer({uid:RVS.L[li].uid,ignoreDrawLayers:obj.ignoreDrawLayers});
+			if ((RVS.L[li].type=="group" && RVS.L[li].group.puid!==-1 )) RVS.F.buildHTMLLayer({uid:RVS.L[li].uid,ignoreDrawLayers:obj.ignoreDrawLayers});
+		}
+
+		for (li in RVS.L) {
+			if(!RVS.L.hasOwnProperty(li)) continue;
+			if (RVS.L[li].type!=="column" && (RVS.L[li].type!=="group"  || RVS.L[li].group.puid==-1) && RVS.L[li].group.puid!==-1) RVS.F.buildHTMLLayer({uid:RVS.L[li].uid,ignoreDrawLayers:obj.ignoreDrawLayers});
 		}
 		RVS.F.checkRowsChildren();
 		RVS.F.checkLockedLayers();
@@ -933,11 +992,14 @@ RVS.CACHE = RVS.CACHE || {};
 		if (_!==undefined && _.short===true) {
 			RVS.F.updateEasyInputs({container:jQuery('.layertoolbar_wrap.layer_settings_collector'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
 			RVS.F.updateEasyInputs({container:jQuery(RVS.eMode.menu), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
-			clearTimeout(RVS.S.updateEsyInputsTimer);
-			RVS.S.updateEsyInputsTimer = setTimeout(function() {
-				RVS.F.updateEasyInputs({container:jQuery('.layer_settings_collector'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
-				delete RVS.S.updateEsyInputsTimer;
-			},500);
+			//clearTimeout(RVS.S.updateEsyInputsTimer);
+
+			//RVS.S.updateEsyInputsTimer = setTimeout(function() {
+				window.requestAnimationFrame(function() {
+					RVS.F.updateEasyInputs({container:jQuery('.layer_settings_collector'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
+					delete RVS.S.updateEsyInputsTimer;
+				});
+			//},10);
 		} else {
 			RVS.F.updateEasyInputs({container:jQuery('.layer_settings_collector'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
 		}
@@ -1198,6 +1260,9 @@ RVS.CACHE = RVS.CACHE || {};
 
 				RVS.F.updateSliderObj({path:_.pre+'size.'+_.dirB+'.#size#.v',val:newV, ignoreBackup:_.ignoreBackup});
 			break;
+			case "svg":
+				RVS.F.updateSliderObj({path:_.pre+'size.'+_.direction+'.#size#.v',val:_.v});
+			break;
 		}
 	}
 
@@ -1217,6 +1282,8 @@ RVS.CACHE = RVS.CACHE || {};
 			_.uid = RVS.selLayers[lid];
 			_.l = RVS.L[_.uid];
 			_.pre = RVS.S.slideId+".layers."+_.uid+".";
+			//Protection against % height in Columns on some Elements
+			if (_.direction=="height" && (""+_.v).indexOf('%')>0 && RVS.L[_.l.group.puid]!==undefined && RVS.L[_.l.group.puid].type==="column" && (_.l.type==="shape" | _.l.type==="button" || _.l.type=="text") && parseInt(_.v)>=99) _.v = _.v.replace("%","px");
 
 			if (!_.l.size.scaleProportional)
 				RVS.F.updateSliderObj({path:_.pre+'size.'+_.direction+'.#size#.v',val:_.v});
@@ -1330,17 +1397,23 @@ RVS.CACHE = RVS.CACHE || {};
 		}
 	}
 
-	RVS.F.redrawTextLayerInnerHTML = function(uid,forcesplit) {
-		if (RVS.L[uid].type==="text" || RVS.L[uid].type==="button") {
+	RVS.F.redrawTextLayerInnerHTML = function(uid,forcesplit,idle) {
+		if (uid==undefined) return;
+		if (RVS.L[uid]!==undefined && RVS.L[uid].type==="text" || RVS.L[uid].type==="button") {
 			if(forcesplit) {
 				if (RVS.H[uid].splitText!==undefined) RVS.H[uid].splitText.revert();
 				RVS.H[uid].splitText = undefined;
 			}
-			if (RVS.L[uid].placeholder!==undefined && RVS.L[uid].placeholder.length>0 && RVS.L[uid].placeholder!==" ")
-				RVS.H[uid].c[0].innerHTML = RVS.L[uid].placeholder;
-			else
-				RVS.H[uid].c[0].innerHTML = jQuery.inArray(RVS.L[uid].idle.whiteSpace[RVS.screen].v,["normal","nowrap"])>=0 ? RVS.F.replaceMetas(RVS.L[uid].text) : RVS.F.replaceMetas(RVS.L[uid].text.replace(/\r\n|\r|\n/g,"<br />"));
-
+			if (RVS.L[uid].subtype==undefined ||  RVS.F["redrawTextLayerInnerHTML_"+RVS.L[uid].subtype]==undefined || RVS.F["redrawTextLayerInnerHTML_"+RVS.L[uid].subtype](uid)!=true) {
+				if (RVS.L[uid].placeholder!==undefined && RVS.L[uid].placeholder.length>0 && RVS.L[uid].placeholder!==" ")
+					RVS.H[uid].c[0].innerHTML = RVS.L[uid].placeholder;
+				else {
+					RVS.H[uid].c[0].innerHTML =
+							idle!==true && RVS.L[uid].toggle.set && RVS.L[uid].toggle.text!=="" && RVS.C.toggledTextButton.className.indexOf('selected')>=0 ?
+							jQuery.inArray(RVS.L[uid].idle.whiteSpace[RVS.screen].v,["normal","nowrap"])>=0 ? RVS.F.replaceMetas(RVS.L[uid].toggle.text) : RVS.F.replaceMetas(RVS.L[uid].toggle.text.replace(/\r\n|\r|\n/g,"<br />")) :
+							jQuery.inArray(RVS.L[uid].idle.whiteSpace[RVS.screen].v,["normal","nowrap"])>=0 ? RVS.F.replaceMetas(RVS.L[uid].text) : RVS.F.replaceMetas(RVS.L[uid].text.replace(/\r\n|\r|\n/g,"<br />"));
+				}
+			}
 			if (forcesplit) {
 				RVS.F.drawHTMLLayer({uid:uid,ignoreLayerAnimation:true});
 				if (RVS.L[uid].timeline.split!==undefined) RVS.F.updateLayerFrames({layerid:uid});
@@ -1348,7 +1421,9 @@ RVS.CACHE = RVS.CACHE || {};
 		}
 	};
 
-
+	RVS.DOC.on('redrawSelectedLayersInnerHTML',function() {
+			RVS.F.redrawTextLayerInnerHTML(RVS.selLayers[0],true);
+	});
 
 
 
@@ -1377,7 +1452,7 @@ RVS.CACHE = RVS.CACHE || {};
 			RVS.L[RVS.selLayers[0]].timelinecache = RVS.F.safeExtend(true,{},RVS.L[RVS.selLayers[0]].timeline);
 		}
 
-		updateTimeLineByTemplate(RVS.LIB.LAYERANIMS[_.direction][_.group].transitions[_.transition]);
+		updateTimeLineByTemplate(RVS.LIB.LAYERANIMS[_.direction][_.group].transitions[_.transition],_.transition,_.group);
 		var icon = _.direction==="loop" ? "loop" : "play_circle_filled",
 			tmpl = _.direction==="loop" ? RVS_LANG.backupTemplateLoop : RVS_LANG.backupTemplateLayerAnim,
 			bcktype = _.direction==="loop" ? "layerLoop" : "layerFrames",
@@ -1461,6 +1536,20 @@ RVS.CACHE = RVS.CACHE || {};
 			}
 		});
 	}
+
+	RVS.F.updateLayerPositionClass = function(id,forceall) {
+		if (id==undefined || RVS.H[id]==undefined || RVS.H[id].w==undefined) return;
+
+		RVS.H[id].w[0].classList.remove('_lc_i_abs');
+		RVS.H[id].w[0].classList.remove('_lc_i_rel');
+		if (RVS.L[id].group.puid==-1) RVS.L[id].position.position=="absolute";
+		if (forceall) RVS.L[id].position.ingrouppositoin = RVS.L[id].position.position;
+		if (RVS.L[RVS.L[id].group.puid]!==undefined && (RVS.L[RVS.L[id].group.puid].type==="group" || RVS.L[RVS.L[id].group.puid].type==="column")) {
+			RVS.H[id].w[0].classList.add(RVS.L[id].position.position=='relative' ? '_lc_i_rel' : '_lc_i_abs');
+		}
+
+
+	}
 	/*
 	INIT CUSTOM EVENT LISTENERS FOR TRIGGERING FUNCTIONS
 	*/
@@ -1475,8 +1564,29 @@ RVS.CACHE = RVS.CACHE || {};
 
 		 });
 
+		RVS.DOC.on('positionPositionUpdate',function(evt,data) {
+			if (data!==undefined) {
+				RVS.F.updateLayerPositionClass(data.layerid,true);
+				var of;
+				if (RVS.L[RVS.L[data.layerid].group.puid]!==undefined && (RVS.L[RVS.L[data.layerid].group.puid].type==="group" || RVS.L[RVS.L[data.layerid].group.puid].type==="column")) {
+					of = { top : RVS.H[data.layerid].w[0].offsetTop, left:RVS.H[data.layerid].w[0].offsetLeft}
+					if (RVS.C.layer_pos_x!==undefined) RVS.C.layer_pos_x.value = of.top;
+					if (RVS.C.layer_pos_y!==undefined) RVS.C.layer_pos_y.value = of.left;
+					RVS.F.updateEasyInputs({container:jQuery('.layer_settings_collector'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
+					requestAnimationFrame(function() {
+						RVS.DOC.trigger('sliderSizeChanged');
+					});
+				}
+			}
+
+		});
+
+		RVS.DOC.on('layerAlignChanged',function(evt,data) {
+		});
+
 		RVS.DOC.on('windowresized',function() {
 			RVS.F.updateCoveredLayers();
+			RVS.F.drawSlideBasedPercenatages();
 		});
 
 		RVS.DOC.on('windowresized, updatesliderlayout_main',function() {
@@ -1569,6 +1679,7 @@ RVS.CACHE = RVS.CACHE || {};
 					if(!RVS.selLayers.hasOwnProperty(lid)) continue;
 					var uid = RVS.selLayers[lid];
 					if (RVS.L[uid].type==="text" || RVS.L[uid].type==="button") {
+						if (RVS.C.toggledTextButton.className.indexOf('selected')>=0 && (!RVS.L[uid].toggle.set || RVS.L[uid].toggle.text=="")) continue;
 						if (RVS.H[uid].splitText!==undefined) RVS.H[uid].splitText.revert();
 						RVS.H[uid].splitText = undefined;
 						if (a.eventparam==="placeholder" && (a.val.length===0 || a.val==="" || a.val===" "))
@@ -1712,16 +1823,42 @@ RVS.CACHE = RVS.CACHE || {};
 			RVS.F.lockUnlockLayerRatio(ds);
 		});
 
+		RVS.F.updateInsetViews = function(uid) {
+			//if (RVS.L[uid]==undefined || RVS.L[uid])
+		};
+
+		RVS.F.updateAllInsetViews = function() {
+			for (var lid in RVS.selLayers)
+				if(RVS.selLayers.hasOwnProperty(lid)) continue;
+		}
+
 		RVS.DOC.on('layerSizePreset',function(e,ds) {
 			RVS.F.openBackupGroup({id:"layerresize",txt:"Size Preset",icon:"photo_size_select_large"});
 
 			for (var lid in RVS.selLayers) {
 				if(!RVS.selLayers.hasOwnProperty(lid)) continue;
 				var l = RVS.L[RVS.selLayers[lid]],
-					pre = RVS.S.slideId+".layers."+RVS.selLayers[lid]+".";
+					pre = RVS.S.slideId+".layers."+RVS.selLayers[lid]+".",
+					cmo = document.getElementById('layer_covermode');
+				//PROTECTION Against FULLINSET && Not in Group with Position Absolute
+				if (cmo.value=="fullinset" && (l.position.position!=="absolute" ||  RVS.L[l.group.puid]==undefined ||  RVS.L[l.group.puid].type!=="group")) {
+					cmo.value = l.size.covermode;
+					ds.val=l.size.covermode;
+					RVS.F.showInfo({content:RVS_LANG.insetrequirements, type:"warning", showdelay:0, hidedelay:2, hideon:"", event:"" });
+				}
+
+				//Protection against % based heights of layers in columns
+				if (RVS.L[l.group.puid]!==undefined && RVS.L[l.group.puid].type==="column" && (l.type==="shape" | l.type==="button" || l.type=="text")) {
+					ds.val = "custom";
+					cmo.value="custom";
+				}
+				if (RVS.L[RVS.selLayers[lid]].size.covermode=="fullinset" && cmo.value!=="fullinset") RVS.F.updateSliderObj({path:pre+'idle.margin.#size#.v',val:[0,0,0,0]});
+
 				RVS.F.updateSliderObj({path:pre+'size.covermode',val:ds.val});
-				switch (jQuery('#layer_covermode').val()) {
+
+				switch (cmo.value) {
 					case "custom":
+
 						if (RVS.L[RVS.selLayers[lid]].type==="image") {
 							RVS.F.updateSliderObj({path:pre+'size.scaleProportional',val:true});
 							var newDims = RVS.F.getProportionalSizes({	proportional:true,
@@ -1759,7 +1896,15 @@ RVS.CACHE = RVS.CACHE || {};
 						RVS.F.updateSliderObj({path:pre+'position.y.#size#.v',val:"0px"});
 						RVS.F.updateSliderObj({path:pre+'size.height.#size#.v',val:"100%"});
 					break;
+					case "fullinset":
+
+						RVS.F.updateSliderObj({path:pre+'position.x.#size#.v',val:"0px"});
+						RVS.F.updateSliderObj({path:pre+'size.width.#size#.v',val:"100%"});
+						RVS.F.updateSliderObj({path:pre+'position.y.#size#.v',val:"0px"});
+						RVS.F.updateSliderObj({path:pre+'size.height.#size#.v',val:"100%"});
+					break;
 				}
+				RVS.F.selectedLayersVisualUpdate();
 				RVS.F.drawHTMLLayer({uid:RVS.selLayers[lid]});
 			}
 
@@ -1892,7 +2037,7 @@ RVS.CACHE = RVS.CACHE || {};
 				 	RVS.L[id].timeline.frames[newframe].lines.originX = RVS.L[id].timeline.frames[after].lines.originX;
 				 	RVS.L[id].timeline.frames[newframe].lines.originY = RVS.L[id].timeline.frames[after].lines.originY;
 				 	RVS.L[id].timeline.frames[newframe].lines.originZ = RVS.L[id].timeline.frames[after].lines.originZ;
-				 } catch(e) { console.log(e);}
+				 } catch(e) { console.info(e);}
 
 				RVS.L[id].timeline.frames[newframe].color = RVS.F.safeExtend(true,{},RVS.L[id].timeline.frames[after].color);
 				RVS.L[id].timeline.frames[newframe].filter = RVS.F.safeExtend(true,{},RVS.L[id].timeline.frames[after].filter);
@@ -2182,6 +2327,7 @@ RVS.CACHE = RVS.CACHE || {};
 				RVS.F.addBodyClickListener();
 				return false;
 			}
+
 			RVS.F.changeLayerAnimation({direction:this.dataset.lindex, group:this.dataset.gindex, transition: this.dataset.tindex, fromLayerTransListe:true});
 
 			return false;
@@ -2225,7 +2371,7 @@ RVS.CACHE = RVS.CACHE || {};
 
 		RVS.DOC.on('click','.cla_answer_no',function() {
 			RVS.S.waitOnFeedback = undefined;
-			jQuery(document.body).unbind('click.revbuilderbodyclick');
+			jQuery(document.body).off('click.revbuilderbodyclick');
 			jQuery('.cla_showentername').removeClass("cla_showentername");
 			jQuery('.cla_showmessage').removeClass("cla_showmessage");
 			return false;
@@ -2312,7 +2458,7 @@ RVS.CACHE = RVS.CACHE || {};
 			}
 
 			RVS.S.waitOnFeedback = undefined;
-			jQuery(document.body).unbind('click.revbuilderbodyclick');
+			jQuery(document.body).off('click.revbuilderbodyclick');
 			jQuery('.cla_showentername').removeClass("cla_showentername");
 			jQuery('.cla_showmessage').removeClass("cla_showmessage");
 			return false;
@@ -2423,31 +2569,109 @@ RVS.CACHE = RVS.CACHE || {};
 
 		}
 		return _;
+	}
+
+	RVS.F.objChangeCompare = function(a,b,r) {
+		r = r== undefined ? { s:0, a:0} : r;
+		if (typeof a == "object") {
+			for (var i in a) {
+				if (!a.hasOwnProperty(i) || i=="timeline") continue;
+				if (typeof a[i] == "object" && b[i]!==undefined && typeof b[i]=="object")
+					r = RVS.F.objChangeCompare(a[i],b[i],r);
+				else {
+					r.a++;
+					if ((""+a[i]) == (""+b[i])) r.s++;
+				}
+			}
+		}
+		return r;
+	}
+
+	RVS.F.compareLayerAnimPresets = function(L) {
+		var simpl,presl,difa,difb,dif,lib;
+		for (var i in L) {
+			if (!L.hasOwnProperty(i) || L[i].timeline==undefined) continue;
+			simpl = undefined;
+				for (var f in L[i].timeline.frames) {
+					if ((f!=="frame_1" && f!=="frame_999" && f!=="frame_loop") || (L[i].timeline.frames[f].timeline.preset==undefined) || L[i].timeline.frames[f].timeline.presetgroup==undefined) continue;
+					lib = f=="frame_1" ? "in" : f=="frame_999" ? "out" : "loop";
+					lib = RVS.LIB.LAYERANIMS[lib][L[i].timeline.frames[f].timeline.presetgroup]!=undefined ? RVS.LIB.LAYERANIMS[lib][L[i].timeline.frames[f].timeline.presetgroup] : undefined;
+					lib = lib==undefined ? RVS.LIB.LAYERANIMS.in[L[i].timeline.frames[f].timeline.presetgroup]!=undefined ? RVS.LIB.LAYERANIMS.in[L[i].timeline.frames[f].timeline.presetgroup] :RVS.LIB.LAYERANIMS.out[L[i].timeline.frames[f].timeline.presetgroup] !== undefined ? RVS.LIB.LAYERANIMS.out[L[i].timeline.frames[f].timeline.presetgroup] : RVS.LIB.LAYERANIMS.loop[L[i].timeline.frames[f].timeline.presetgroup] : lib;
+					if (lib==undefined || lib.transitions==undefined || lib.transitions[L[i].timeline.frames[f].timeline.preset]==undefined) continue;
+					var _ = lib.transitions[L[i].timeline.frames[f].timeline.preset];
+					if (simpl==undefined) {
+						presl = RVS.F.addLayerObj(_.type,undefined,true).timeline.frames;
+						simpl = RVS.F.simplifyLayer(L[i]).timeline.frames;
+						simpl.frame_0 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({alias:RVS_LANG.enterstage,opacity:0},"frame_0"),simpl.frame_0));
+						simpl.frame_1 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({opacity:1,effect:"none",chars:{x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0},words:{	x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0},lines:{	x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0}},"frame_1"),simpl.frame_1));
+						simpl.frame_999 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({endWithSlide:true,alias:RVS_LANG.leavestage,opacity:0},"frame_999"),simpl.frame_999));
+						simpl.loop = RVS.F.safeExtend(true,defaultLoopFrame(),simpl.loop);
+					}
+					presl = RVS.F.safeExtend(true,presl,_);
+					if (f=="frame_1") {
+						presl.frame_0 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({alias:RVS_LANG.enterstage,opacity:0},"frame_0"),presl.frame_0));
+						presl.frame_1 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({opacity:1,effect:"none",chars:{x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0},words:{	x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0},lines:{	x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0}},"frame_1"),presl.frame_1));
+						difa = RVS.F.objChangeCompare(simpl.frame_0,presl.frame_0);
+						difb = RVS.F.objChangeCompare(simpl.frame_1,presl.frame_1);
+						dif = ((difa.s/difa.a) + (difb.s/difb.a)) / 2;
+					}
+
+					else if (f=="frame_999") {
+						presl.frame_999 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({endWithSlide:true,alias:RVS_LANG.leavestage,opacity:0},"frame_999"),presl.frame_999));
+						difa = RVS.F.objChangeCompare(simpl.frame_999,presl.frame_999);
+						dif = difa.s / difa.a;
+					}
+					else if (f=="frame_loop") {
+						presl.loop = RVS.F.safeExtend(true,defaultLoopFrame(),presl.loop);
+						difa = RVS.F.objChangeCompare(simpl.frame_loop,presl.frame_loop);
+						dif = difa.s / difa.a;
+					}
+					L[i].timeline.frames[f].timeline.presetBased = Math.round(dif*100);
+				}
+		}
 
 	}
 	/*
 	UPDATE TIMELINE FROM ANIMATION LIBRARY
 	*/
-	function updateTimeLineByTemplate(_) {
+	function updateTimeLineByTemplate(_,preset,group) {
 		if (_===undefined) return;
 		if (_.frame_0!==undefined) {
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_0 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({alias:RVS_LANG.enterstage,opacity:0},"frame_0"),_.frame_0));
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_0.timeline.start = RVS.L[RVS.selLayers[0]].timelinecache.frames.frame_0.timeline.start;
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_0.timeline.alias = RVS_LANG.enterstage;
+			if (group!==undefined) {
+				RVS.L[RVS.selLayers[0]].timeline.frames.frame_0.timeline.preset = preset;
+				RVS.L[RVS.selLayers[0]].timeline.frames.frame_0.timeline.presetgroup = group;
+			}
+
 		}
 		if (_.frame_1!==undefined) {
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_1 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({opacity:1,effect:"none",chars:{x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0},words:{	x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0},lines:{	x: 0,y: 0,z: 0,opacity: 1,rotationZ: 0,rotationX: 0,rotationY: 0,scaleX: 1,scaleY: 1,skewX: 0,skewY: 0}},"frame_1"),_.frame_1));
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_1.timeline.start = RVS.L[RVS.selLayers[0]].timelinecache.frames.frame_1.timeline.start;
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_1.timeline.alias = RVS_LANG.onstage;
+			if (group!==undefined) {
+				RVS.L[RVS.selLayers[0]].timeline.frames.frame_1.timeline.preset = preset;
+				RVS.L[RVS.selLayers[0]].timeline.frames.frame_1.timeline.presetgroup = group;
+			}
 		}
 		if (_.frame_999!==undefined) {
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_999 = fourLevelAnims(RVS.F.safeExtend(true,defaultFrame({endWithSlide:true,alias:RVS_LANG.leavestage,opacity:0},"frame_999"),_.frame_999));
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_999.timeline.start = RVS.L[RVS.selLayers[0]].timelinecache.frames.frame_999.timeline.start;
 			RVS.L[RVS.selLayers[0]].timeline.frames.frame_1.timeline.alias = RVS_LANG.leavestage;
+			if (group!==undefined) {
+				RVS.L[RVS.selLayers[0]].timeline.frames.frame_1.timeline.preset = preset;
+				RVS.L[RVS.selLayers[0]].timeline.frames.frame_1.timeline.presetgroup = group;
+			}
+
 		}
 		if (_.loop!==undefined) {
 			RVS.L[RVS.selLayers[0]].timeline.loop = RVS.F.safeExtend(true,defaultLoopFrame(),_.loop);
 			RVS.L[RVS.selLayers[0]].timeline.loop.start = RVS.L[RVS.selLayers[0]].timelinecache.loop.start;
+			if (group!==undefined) {
+				RVS.L[RVS.selLayers[0]].timeline.loop.preset = preset;
+				RVS.L[RVS.selLayers[0]].timeline.loop.presetgroup = group;
+			}
 		}
 
 		clearTimeout(window.timelineTemporaryUpdate);
@@ -2834,6 +3058,17 @@ RVS.CACHE = RVS.CACHE || {};
 		}
 	};
 
+	RVS.F.checkLayersRelativeAbsolute = function(IL) {
+		for (var i in IL) {
+			if (!IL.hasOwnProperty(i)) continue;
+			if (IL[i].position.position==undefined && IL[i].type!=="row") {
+				IL[i].position.position = IL[i].group.puid == -1 || IL[i].group.puid == "-1" ? "absolute" : (IL[IL[i].group.puid]!==undefined && IL[IL[i].group.puid].type==="column") ? "relative" : "absolute";
+			}
+
+		}
+		return IL;
+	}
+
 
 	RVS.F.importSelectedLayers = function(_IL) {
 
@@ -2917,9 +3152,6 @@ RVS.CACHE = RVS.CACHE || {};
 					}
 				}
 		}
-
-
-
 		RVS.F.closeBackupGroup({id:"addLayer"});
 		RVS.F.buildLayerLists({force:true, ignoreRebuildHTML:true});
 		RVS.F.updateZIndexTable();
@@ -3292,8 +3524,9 @@ RVS.CACHE = RVS.CACHE || {};
 		newLayer.addOns = obj.addOns || {};
 		newLayer.type = _d(obj.type,type);  	//text, image, video, audio, svg, shape
 		newLayer.subtype = _d(obj.subtype,"");
+		newLayer.subsubtype = _d(obj.subsubtype,"");
 		newLayer.linebreak = _d(obj.linebreak,false);
-		newLayer.text = type==="text" || type==="button" ? _d(obj.text,"New Layer") : "";
+		newLayer.text = (type==="text" || type==="button") && obj.subtype!=="forms" ? _d(obj.text,"New Layer") : "";
 		newLayer.placeholder = type==="text" || type==="button" ? _d(obj.placeholder,"") : "";
 		newLayer.alias = RVS.F.firstCharUppercase(_d(obj.alias,"New Layer"));
 		if (ignoreUID!==true && !compare) newLayer.uid = _d(obj.uid,RVS.F.getUniqueid());
@@ -3304,6 +3537,7 @@ RVS.CACHE = RVS.CACHE || {};
 		newLayer.htmltag = _d(obj.htmltag,"div");
 		newLayer.customCSS = _d(obj.customCSS,"");
 		newLayer.customHoverCSS = _d(obj.customHoverCSS,"");
+		newLayer.layerLibSrc = _d(obj.layerLibSrc,'');
 
 		switch (newLayer.type) {
 			case "text":
@@ -3363,7 +3597,6 @@ RVS.CACHE = RVS.CACHE || {};
 					mute:true,
 					nextSlideAtEnd:true,
 					preload:"auto",
-					preloadAudio:"metadata",
 					preloadWait:"0",
 					ratio:"16:9",
 					posterOnPause:false,
@@ -3462,18 +3695,14 @@ RVS.CACHE = RVS.CACHE || {};
 		newLayer.size.originalWidth = newLayer.size.originalWidth===0 || newLayer.size.originalWidth===undefined ? newLayer.size.width.d.v : newLayer.size.originalWidth;
 		newLayer.size.originalHeight = newLayer.size.originalHeight===0 || newLayer.size.originalHeight===undefined ? newLayer.size.height.d.v : newLayer.size.originalHeight;
 
-
-
-
 		newLayer.position = _d(obj.position,{
 			x: !compare && !updateDefaults ? RVS.F.cToResp({default:(50+RVS.S.rb_ScrollX),unit:"px"}) : RVS.F.cToResp({default:0,unit:"px"}),
 			y: !compare && !updateDefaults ? RVS.F.cToResp({default:(50+RVS.S.rb_ScrollY),unit:"px"}) : RVS.F.cToResp({default:(0),unit:"px"}),
 			horizontal:RVS.F.cToResp({default:"left"}),
 			vertical:RVS.F.cToResp({default:"top"}),
-			position:"absolute",
+			position: !compare ? "absolute" : "",
 			staticZ:"default"
 		});
-
 		// New Static Layers z Index
 		if (newLayer.position!==undefined && !compare) newLayer.position.staticZ=newLayer.position.staticZ===undefined ? "default" : newLayer.position.staticZ;
 
@@ -3517,6 +3746,8 @@ RVS.CACHE = RVS.CACHE || {};
 
 		});
 
+
+		newLayer.position.position = !compare ? newLayer.group!==undefined && newLayer.group.puid == -1 ? "absolute" : newLayer.position.position : "";
 
 
 
@@ -3637,6 +3868,7 @@ RVS.CACHE = RVS.CACHE || {};
 			opacity:1,
 			textDecoration:"none",
 			textTransform:"none",
+			filtersIOSFix:"d",
 
 			boxShadow:{
 						inuse:false,
@@ -3645,7 +3877,7 @@ RVS.CACHE = RVS.CACHE || {};
 						voffset:RVS.F.cToResp({default:0,val:0}),
 						blur:RVS.F.cToResp({default:0,val:0}),
 						spread:RVS.F.cToResp({default:0,val:0}),
-						color:'rgba(0,0,0,0)'
+						color:'rgba(0,0,0,0.25)'
 					},
 			textShadow:{
 					inuse:false,
@@ -3743,6 +3975,8 @@ RVS.CACHE = RVS.CACHE || {};
 			triggerMemory:"reset",
 			action:[]
 		});
+
+		newLayer.actions.inactive_actions = [];
 		newLayer.visibility = _d(obj.visibility,{
 			visible:true,
 			locked:false,
@@ -3762,6 +3996,7 @@ RVS.CACHE = RVS.CACHE || {};
 		});
 
 		if (ignoreUID!==true) RVS.S.uniqueIds.push(newLayer.uid);
+
 
 		for (var i in RVS.LIB.ADDONS) {
 			if(!RVS.LIB.ADDONS.hasOwnProperty(i)) continue;
@@ -3788,6 +4023,16 @@ RVS.CACHE = RVS.CACHE || {};
 			}
 			newLayer.customCSS = newrules;
 		}
+
+        //CLEAN UP LAYER ACTIONS HERE
+        var cleanActions = [];
+        if (newLayer.actions!==undefined) {
+            for (var j in newLayer.actions.action) if (newLayer.actions.action.hasOwnProperty(j)) {
+                if (newLayer.actions.action[j].migrateMute==undefined && newLayer.actions.action[j].rsColorPicker==undefined && newLayer.actions.action[j].get==undefined)
+                cleanActions.push(newLayer.actions.action[j]);
+            }
+            newLayer.actions.action = cleanActions;
+        }
 
 		return newLayer;
 	};

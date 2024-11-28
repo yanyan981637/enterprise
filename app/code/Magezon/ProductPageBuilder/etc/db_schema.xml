@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magezon
+ *
+ * This source file is subject to the Magezon Software License, which is available at https://www.magezon.com/license.
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ * If you wish to customize this module for your needs.
+ * Please refer to https://www.magezon.com for more information.
+ *
+ * @category  Magezon
+ * @package   Magezon_ProductPageBuilder
+ * @copyright Copyright (C) 2019 Magezon (https://www.magezon.com)
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="mgz_productpagebuilder_profile" resource="default" engine="innodb" comment="Mgz Product PageBuilder Profile Table">
+        <column xsi:type="int" name="profile_id" unsigned="false" nullable="false" identity="true"
+                comment="Profile ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Profile Name"/>
+        <column xsi:type="longtext" name="profile" nullable="true" comment="Profile Content"/>
+        <column xsi:type="smallint" name="is_active" unsigned="false" nullable="false" identity="false"
+                default="1" comment="Is Profile Active"/>
+        <column xsi:type="date" name="from_date" comment="From Date"/>
+        <column xsi:type="date" name="to_date" comment="To Date"/>
+        <column xsi:type="timestamp" name="creation_time" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Profile Creation Time"/>
+        <column xsi:type="timestamp" name="update_time" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Profile Modification Time"/>
+        <column xsi:type="varchar" name="page_layout" nullable="true" length="255" comment="Page Layout"/>
+        <column xsi:type="longtext" name="conditions_serialized" nullable="true" comment="Conditions Serialized"/>
+        <column xsi:type="varchar" name="priority" nullable="true" length="50" comment="Priority"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="profile_id"/>
+        </constraint>
+        <index referenceId="MGZ_PRODUCTPAGEBUILDER_NAME" indexType="btree">
+            <column name="name"/>
+        </index>
+    </table>
+    <table name="mgz_productpagebuilder_profile_store" resource="default" engine="innodb" comment="MGZ Product Page Builder Profile Store Table">
+        <column xsi:type="int" name="profile_id" unsigned="false" nullable="false" identity="false"
+                comment="Entity ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" identity="false"
+                comment="Store ID"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="profile_id"/>
+            <column name="store_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MGZ_PPD_PROFILE_STORE_PROFILE_ID_MGZ_PPD_PROFILE_PROFILE_ID" table="mgz_productpagebuilder_profile_store"
+                    column="profile_id" referenceTable="mgz_productpagebuilder_profile" referenceColumn="profile_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PPD_PROFILE_STORE_STORE_ID_STORE_STORE_ID" table="mgz_productpagebuilder_profile_store"
+                    column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="MGZ_PPD_PROFILE_STORE_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+    </table>
+    <table name="mgz_productpagebuilder_profile_product" resource="default" engine="innodb" comment="MGZ Product Page Builder Profile Store Table">
+        <column xsi:type="int" name="profile_id" unsigned="false" nullable="false" identity="false"
+                comment="Entity ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" identity="false"
+                comment="Store ID"/>
+        <column xsi:type="int" name="product_id" unsigned="true" nullable="false" identity="false"
+                comment="Entity ID"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="profile_id"/>
+            <column name="store_id"/>
+            <column name="product_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MGZ_PPD_PROFILE_PRODUCT_PROFILE_ID_MGZ_PPD_PROFILE_PROFILE_ID" table="mgz_productpagebuilder_profile_product"
+                    column="profile_id" referenceTable="mgz_productpagebuilder_profile" referenceColumn="profile_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PPD_PROFILE_PRODUCT_STORE_ID_STORE_STORE_ID" table="mgz_productpagebuilder_profile_product"
+                    column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MGZ_PPD_PROFILE_PRODUCT_PRODUCT_ID_CATALOG_PRODUCT_ENTITY_ENTITY_ID" table="mgz_productpagebuilder_profile_product"
+                    column="product_id" referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MGZ_PPD_PROFILE_PRODUCT_PRODUCT_ID" indexType="btree">
+            <column name="product_id"/>
+        </index>
+    </table>
+</schema>

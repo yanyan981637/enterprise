@@ -22,7 +22,9 @@ class PriceTier extends \Magezon\ProductPageBuilder\Block\Product\Element
     public function isEnabled()
     {
         $product = $this->getProduct();
-        if (!$product->getTierPrices()) return false;
+        if (!$product->getTierPrices()) {
+            return false;
+        }
         return parent::isEnabled();
     }
 }

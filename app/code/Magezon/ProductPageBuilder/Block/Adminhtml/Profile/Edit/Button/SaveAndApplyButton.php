@@ -22,7 +22,7 @@ class SaveAndApplyButton extends Generic
      * @codeCoverageIgnore
      */
     public function getButtonData()
-    {   
+    {
         $data = [];
         $isAllowed  = $this->_isAllowedAction('Magezon_ProductPageBuilder::profile_save');
         if ($isAllowed) {

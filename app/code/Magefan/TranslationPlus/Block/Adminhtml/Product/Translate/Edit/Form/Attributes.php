@@ -42,12 +42,21 @@ class Attributes extends \Magento\Catalog\Block\Adminhtml\Form
             );
             $attributes = $this->getGroupAttributes();
             $this->_setFieldset($attributes, $fieldset, ['gallery']);
+
             $tierPrice = $form->getElement('tier_price');
             if ($tierPrice) {
                 $tierPrice->setRenderer(
                     $this->getLayout()->createBlock(\Magento\Catalog\Block\Adminhtml\Product\Edit\Tab\Price\Tier::class)
                 );
             }
+
+            $urlKey = $form->getElement('url_key');
+            if ($urlKey) {
+                $urlKey->setRenderer(
+                    $this->getLayout()->createBlock(\Magento\CatalogUrlRewrite\Block\UrlKeyRenderer::class)
+                );
+            }
+
             // Add new attribute controls if it is not an image tab
             if (!$form->getElement(
                 'media_gallery'
@@ -109,8 +118,10 @@ class Attributes extends \Magento\Catalog\Block\Adminhtml\Form
             $form->addValues($values);
             if ($store->getId()=='0') {
                 $form->setFieldNameSuffix('-1');
+                $form->setHtmlIdSuffix('___1');
             } else {
                 $form->setFieldNameSuffix($store->getId());
+                $form->setHtmlIdSuffix('_' . $store->getId());
             }
             $this->_eventManager->dispatch(
                 'adminhtml_catalog_product_edit_prepare_form',
@@ -134,8 +145,11 @@ class Attributes extends \Magento\Catalog\Block\Adminhtml\Form
             'gallery' => \Magento\Catalog\Block\Adminhtml\Product\Helper\Form\Gallery::class,
             'image' => \Magento\Catalog\Block\Adminhtml\Product\Helper\Form\Image::class,
             'boolean' => \Magento\Catalog\Block\Adminhtml\Product\Helper\Form\Boolean::class,
-            //'textarea' => \Magento\Catalog\Block\Adminhtml\Helper\Form\Wysiwyg::class, // DISABLED FOR NOW (There is way to add it, more info in task 6305)
         ];
+
+        if (count($this->getGroupAttributes()) === 1) {
+            $result['textarea'] = \Magefan\TranslationPlus\Model\Data\Form\Element\Editor::class;
+        }
 
         $response = new \Magento\Framework\DataObject();
         $response->setTypes([]);

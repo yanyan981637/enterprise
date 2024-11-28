@@ -1,116 +1,116 @@
 <?php
 $product = $block->getProduct();
-$label   = $block->getProductLabel();
-$id      = 'label' . time()  . $product->getId() . $label['label_id'];
-$helper  = $this->helper('Magezon\ProductLabels\Helper\Product');
-$html    = $label['productlist_html'];
+$label = $block->getProductLabel();
+$id = 'label' . time() . $product->getId() . $label['label_id'];
+$helper = $this->helper('Magezon\ProductLabels\Helper\Product');
+$html = $label['productlist_html'];
 if ((substr($html, 0, 3) === '<p>')) {
-	$html = substr($html, 3);
+    $html = substr($html, 3);
 }
 if ((substr($html, -4) === '</p>')) {
-	$html = substr($html, 0, -4);
+    $html = substr($html, 0, -4);
 }
 $position = $label['productlist_position'];
-$target   = $action = $scripts = '';
+$target = $action = $scripts = '';
 
 $styles = 'display: none;';
 if ($label['productlist_color']) {
-	$styles .= 'color: ' . $label['productlist_color'] . ';';
+    $styles .= 'color: ' . $label['productlist_color'] . ';';
 }
 if (trim($label['productlist_width'])) {
-	$styles .= 'width: ' . trim($label['productlist_width']) . ';';
+    $styles .= 'width: ' . trim($label['productlist_width']) . ';';
 }
 $styles .= $label['productlist_style'];
-$url    = $label['productlist_url'];
+$url = $label['productlist_url'];
 
-if ($position >=3 && $position<=11) {
-	$target = '.product-item-photo';
-	$action = 'prependTo';
+if ($position >= 3 && $position <= 11) {
+    $target = '.product-item-photo';
+    $action = 'prependTo';
 }
 switch ($position) {
-	case 1:
-		$target = '.product-item-info';
-		$action = 'prependTo';
-	break;
+    case 1:
+        $target = '.product-item-info';
+        $action = 'prependTo';
+        break;
 
-	case 2:
-		$target = '.product-item-photo';
-		$action = 'insertBefore';
-	break;
+    case 2:
+        $target = '.product-item-photo';
+        $action = 'insertBefore';
+        break;
 
-	case 12:
-		$target = '.product-item-photo';
-		$action = 'insertAfter';
-	break;
+    case 12:
+        $target = '.product-item-photo';
+        $action = 'insertAfter';
+        break;
 
-	case 13:
-		$target = '.product-item-name';
-		$action = 'insertBefore';
-	break;
+    case 13:
+        $target = '.product-item-name';
+        $action = 'insertBefore';
+        break;
 
-	case 14:
-		$target = '.product-item-name';
-		$action = 'insertAfter';
-	break;
+    case 14:
+        $target = '.product-item-name';
+        $action = 'insertAfter';
+        break;
 
-	case 15:
-		$target = '.price-box';
-		$action = 'insertBefore';
-	break;
+    case 15:
+        $target = '.price-box';
+        $action = 'insertBefore';
+        break;
 
-	case 16:
-		$target = '.price-box';
-		$action = 'insertAfter';
-	break;
+    case 16:
+        $target = '.price-box';
+        $action = 'insertAfter';
+        break;
 
-	case 17:
-		$target = '.product-reviews-summary';
-		$action = 'insertBefore';
-	break;
+    case 17:
+        $target = '.product-reviews-summary';
+        $action = 'insertBefore';
+        break;
 
-	case 18:
-		$target = '.product-reviews-summary';
-		$action = 'insertAfter';
-	break;
+    case 18:
+        $target = '.product-reviews-summary';
+        $action = 'insertAfter';
+        break;
 
-	case 19:
-		$target = '.product-item-actions';
-		$action = 'prependTo';
-	break;
+    case 19:
+        $target = '.product-item-actions';
+        $action = 'prependTo';
+        break;
 
-	case 20:
-		$target = '.product-item-actions';
-		$action = 'appendTo';
-	break;
+    case 20:
+        $target = '.product-item-actions';
+        $action = 'appendTo';
+        break;
 
-	case 21:
-		$target = '.product-item-actions';
-		$action = 'insertAfter';
-	break;
+    case 21:
+        $target = '.product-item-actions';
+        $action = 'insertAfter';
+        break;
 }
 ?>
-<div id="<?= $id ?>" class="mgz-productlabels" style="<?= $styles ?>" data-mage-init='{
+<div id="<?=$id;?>" class="mgz-productlabels mgz-productlabels-label-<?=$label['label_id'];?>" style="<?=$styles;?>" data-mage-init='{
 							"Magezon_ProductLabels/js/label":{
-                                "target":"<?= $target ?>",
-                                "action":"<?= $action ?>",
-                                "position":"<?= $position ?>"
+                                "target":"<?=$target;?>",
+                                "action":"<?=$action;?>",
+                                "position":"<?=$position;?>"
                            }
                         }'>
-	<div class="mgz-productlabels_wrapper <?= $label['productlist_image'] ? 'has-img' : '' ?> <?= $html ? 'has-content' : '' ?>">
-		<?php $image = $label['productlist_image']; ?>
-		<?php if ($url) { ?>
-			<a href="<?= $url ?>" class="mgz-productlabels-link" title="<?= $label['name'] ?>">
-		<?php } ?>
-		<?php if ($image) { ?>
-			<img <?= (strpos($label['productlist_width'], 'px')!==false) ? 'width="' . str_replace(['px;', 'px', ';'], [''], $label['productlist_width']) . '"' : '' ?> class="productlabels-image" src="<?= $image ?>" alt="<?= $label['name'] ?>">
-		<?php } ?>
-		<?php if ($html) { ?>
-			<div class="productlabels-conent" <?= !$image ? 'style="position: static;"' : '' ?>>
-				<?= $helper->filter($product, $html) ?>
+	<div class="mgz-productlabels_wrapper <?=$label['productlist_image'] ? 'has-img' : '';?> <?=$html ? 'has-content' : '';?>">
+		<?php $image = $label['productlist_image'];?>
+		<?php if ($url) {?>
+			<a href="<?=$url;?>" class="mgz-productlabels-link" title="<?=$label['name'];?>">
+		<?php }?>
+		<?php if ($image) {?>
+			<img <?=(strpos($label['productlist_width'], 'px') !== false) ? 'width="' . str_replace(['px;', 'px', ';'], [''], $label['productlist_width']) . '"' : '';?> class="productlabels-image" src="<?=$image;?>" alt="<?=$label['name'];?>">
+		<?php }?>
+		<?php if ($html) {?>
+			<div class="productlabels-conent" <?=!$image ? 'style="position: static;"' : '';?>>
+				<?=$helper->filter($product, $html);?>
 			</div>
-		<?php } ?>
-		<?php if ($url) { ?>
+		<?php }?>
+		<?php if ($url) {?>
 			</a>
-		<?php } ?>
+		<?php }?>
 	</div>
 </div>

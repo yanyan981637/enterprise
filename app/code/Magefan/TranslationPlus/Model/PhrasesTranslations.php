@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Magefan\TranslationPlus\Model;
 
-use Magento\Setup\Module\I18n\ServiceLocator;
+use Magefan\TranslationPlus\Model\I18n\ServiceLocator;
 use Magento\Framework\App\Area;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -19,9 +19,12 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\File\Csv;
 use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 
 class PhrasesTranslations
 {
+
+    CONST MODULE_PATH_SEPARATOR = '__MF__';
 
     /**
      * @var StoreManagerInterface
@@ -59,6 +62,11 @@ class PhrasesTranslations
     private $file;
 
     /**
+     * @var MessageManagerInterface
+     */
+    private $massageManager;
+
+    /**
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param Emulation $emulation
@@ -66,6 +74,7 @@ class PhrasesTranslations
      * @param DirectoryList $directoryList
      * @param Csv $csv
      * @param File $file
+     * @param MessageManagerInterface $massageManager
      */
     public function __construct(
         StoreManagerInterface $storeManager,
@@ -74,7 +83,8 @@ class PhrasesTranslations
         Manager $cacheManager,
         DirectoryList $directoryList,
         Csv $csv,
-        File $file
+        File $file,
+        MessageManagerInterface $massageManager
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
@@ -83,6 +93,7 @@ class PhrasesTranslations
         $this->directoryList = $directoryList;
         $this->csv = $csv;
         $this->file = $file;
+        $this->massageManager = $massageManager;
     }
 
     /**
@@ -95,10 +106,16 @@ class PhrasesTranslations
 
         try {
             ServiceLocator::getDictionaryGenerator()->generate($this->directoryList->getRoot(), $phrasesFilePath, true);
+        } catch (\DomainException $e) {
+            if ($e->getMessage() == 'Missed phrase') {
+                $guideUrl = 'https://magefan.com/magento-2-translation-extension/missed-phrase-error';
+
+                $this->massageManager->addErrorMessage(__("Missed phrase. Please follow this guide to fix it - %1", $guideUrl));
+            }
         } catch (\Exception $e) {
 
         } finally {
-            $keys = $this->getTranslationsFromCsvFile($phrasesFilePath);
+            $translationsData = $this->getTranslationsFromCsvFile($phrasesFilePath);
 
             $storeCodes = [];
             $result = [];
@@ -123,13 +140,22 @@ class PhrasesTranslations
                 $storeCodes[$localeCode] = true;
 
                 $this->emulation->startEnvironmentEmulation($store->getId(), Area::AREA_FRONTEND, true);
-                foreach ($keys as $key) {
+                foreach ($translationsData as $translationData) {
+                    $key = $translationData['originalStr'];
+
                     if (!empty($key)) {
                         if (!isset($result[$key])) {
+                            $module = $translationData['module'];
+
+                            $module = implode(PHP_EOL, $module);
+                            $pathToString = implode(PHP_EOL, $translationData['path_to_string']);
+
                             $result[$key] = [
                                 'string' => $key,
                                 'crc_string' => crc32($key),
-                                'source' => 'phrases collector'
+                                'source' => 'phrases collector',
+                                'module' => $module,
+                                'path_to_string' => $pathToString
                             ];
                         }
 
@@ -137,6 +163,7 @@ class PhrasesTranslations
                         $result[$key][$localeCode . '_translated'] = ($result[$key][$localeCode] == $key) ? 0 : 1;
                     }
                 }
+
 
                 $this->emulation->stopEnvironmentEmulation();
             }
@@ -160,7 +187,25 @@ class PhrasesTranslations
                 $data = $this->csv->getData($csvFile);
                 if (!empty($data)) {
                     foreach (array_slice($data, 1) as $key => $value) {
-                        $result[$value[0]] = $value[0];
+                        $originalStr = $value[0];
+                        $result[$originalStr]['originalStr'] = $originalStr;
+
+                        if (!empty($value[3])) {
+                            $values = explode(self::MODULE_PATH_SEPARATOR, $value[3]);
+
+                            if (count($values) == 2) {
+                                $module = $values[0];
+                                $pathToString = $values[1];
+
+                                $pathToString = str_replace($this->directoryList->getRoot() . '/','', $pathToString);
+
+                                $result[$originalStr]['path_to_string'][$pathToString] = $pathToString;
+                            } else {
+                                $module = $values;
+                            }
+
+                            $result[$originalStr]['module'][$module] = $module;
+                        }
                     }
                 }
 

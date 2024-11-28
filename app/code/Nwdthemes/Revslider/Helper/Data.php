@@ -2,13 +2,18 @@
 
 namespace Nwdthemes\Revslider\Helper;
 
-class Data extends \Magento\Framework\App\Helper\AbstractHelper {
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Store\Model\System\Store;
+use Psr\Log\LoggerInterface;
+
+class Data extends AbstractHelper {
 
     const REVSLIDER_PRODUCT = 'revslider_magento2';
     const ASSETS_ROUTE = 'nwdthemes/revslider/public/assets/';
 
     protected static $logger;
-    protected static $loggerQueue = array();
     protected $_systemStore;
 
     public static $_GET = array();
@@ -19,8 +24,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
 	 */
 
 	public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-		\Magento\Store\Model\System\Store $systemStore
+        Context $context,
+		Store $systemStore
 	) {
 		$this->_systemStore = $systemStore;
 
@@ -28,14 +33,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
 
         self::$logger = $context->getLogger();
 
-        if (self::$loggerQueue) {
-            foreach (self::$loggerQueue as $logMessage)
-                self::$logger->info($logMessage);
-            self::$loggerQueue = array();
-        }
-
 		$requestParams = $context->getRequest()->getParams();
-
         self::$_GET = array_merge(self::$_GET, $requestParams);
         self::$_REQUEST = array_merge(self::$_REQUEST, $requestParams);
 	}
@@ -114,11 +112,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
                         ? 'class ' . get_class($arg)
                         : print_r($arg, true)));
         $logMessage = '[NWD::Revslider] ' . implode(', ', $log);
-        if (self::$logger) {
-            self::$logger->info($logMessage);
-        } else {
-            self::$loggerQueue[] = $logMessage;
+        if (! self::$logger) {
+            self::$logger = ObjectManager::getInstance()->get(LoggerInterface::class);
         }
+        self::$logger->info($logMessage);
     }
 
     /**

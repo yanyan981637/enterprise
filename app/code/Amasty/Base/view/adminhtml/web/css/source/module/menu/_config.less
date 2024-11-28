@@ -8,7 +8,7 @@
 
 & when (@media-common = true) {
     .module-version {
-        color: #ea7601;
+        color: @ambase__module-version__color;
     }
 
     .upgrade-error {
@@ -18,9 +18,9 @@
     .amasty-conflicts-title,
     .version-title,
     .module-version {
-        letter-spacing: .025em;
-        font-weight: 600;
         font-size: 1.7rem;
+        font-weight: 600;
+        letter-spacing: .025em;
     }
 
     .amasty-conflicts-title {
@@ -28,15 +28,17 @@
     }
 
     .amasty-module-version {
-        div:first-child {
-            margin-bottom: 10px;
+        div {
+            &:first-child {
+                margin-bottom: 10px;
+            }
         }
 
         .amasty-logo {
-            position: relative;
             bottom: -9px;
             display: inline-block;
             max-height: 26px;
+            position: relative;
         }
     }
 
@@ -51,35 +53,36 @@
     }
 
     tr[id*='amasty_not_instaled'] .value {
-        color: #f70606;
+        color: @ambase__config-not-installed-value__color;
     }
 
     tr[id*='amasty_is_instaled'] .value {
-        color: #0a820b;
+        color: @ambase__config-is-installed-value__color;
     }
 
-    // Start override block information Magento
+    //  Start override block information Magento
     a[id*='amasty_information'] {
         display: none !important;
     }
-    // End override block information Magento
+    //  End override block information Magento
 
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     a#_amasty_base_advertise-head {
         & {
             padding-left: 42px;
         }
 
         &:after {
-            content: '';
-            width: @ambase__advertise__fieldset-title__icon__size;
-            height: @ambase__advertise__fieldset-title__icon__size;
-            display: block;
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
             background: url('@{baseDir}Amasty_Base/images/hand.svg') no-repeat;
             background-size: contain;
+            content: '';
+            display: block;
+            height: @ambase__advertise__fieldset-title__icon__size;
+            left: 0;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: @ambase__advertise__fieldset-title__icon__size;
         }
     }
 
@@ -120,10 +123,15 @@
 
         .form-inline .config .value {
             padding-right: 4rem;
+
+            &.with-tooltip + .use-default {
+                padding-left: 2rem;
+            }
         }
     }
 
     .value.with-tooltip .select,
+    /* phpcs:ignore Magento2.Less.ClassNaming.NotAllowedSymbol */
     .value.with-tooltip .admin__control-table {
         float: left;
     }

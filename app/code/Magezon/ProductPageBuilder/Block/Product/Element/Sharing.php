@@ -21,8 +21,12 @@ class Sharing extends \Magezon\ProductPageBuilder\Block\Product\Element
      */
     public function isEnabled()
     {
-    	$element = $this->getElement();
-        if ($element->getEnableFacebookLike() || $element->getEnableFacebookShare() || $element->getEnableTwitter() || $element->getEnablePinterest()) {
+        $element = $this->getElement();
+        if ($element->getEnableFacebookLike() ||
+            $element->getEnableFacebookShare() ||
+            $element->getEnableTwitter() ||
+            $element->getEnablePinterest()
+        ) {
             return parent::isEnabled();
         }
         return false;

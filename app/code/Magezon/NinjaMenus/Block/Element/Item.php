@@ -353,18 +353,20 @@ class Item extends \Magezon\Builder\Block\Element
     	$_elements = [];
     	foreach ($categories as $item) {
     		$_category = $item['category'];
-    		$_element = [
-				'type'         => 'menu_item',
-				'submenu_type' => 'stack',
-				'id'           => 'item-cat' . $_category->getId(),
-				'title'        => $_category->getName(),
-				'item_type'    => 'custom',
-				'custom_link'  => $_category->getUrl()
-    		];
-    		if (isset($item['children']) && $item['children']) {
-				$_element['elements'] = $this->prepareSubCategories($item['children']);
-    		}
-    		$_elements[] = $_element;
+			if ($_category['include_in_menu']) {
+				$_element = [
+					'type'         => 'menu_item',
+					'submenu_type' => 'stack',
+					'id'           => 'item-cat' . $_category->getId(),
+					'title'        => $_category->getName(),
+					'item_type'    => 'custom',
+					'custom_link'  => $_category->getUrl()
+				];
+				if (isset($item['children']) && $item['children']) {
+					$_element['elements'] = $this->prepareSubCategories($item['children']);
+				}
+				$_elements[] = $_element;
+			}
     	}
     	return $_elements;
     }

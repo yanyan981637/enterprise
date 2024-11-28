@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -56,7 +56,9 @@ class Persistor
         $changedData = [];
         foreach ($data as $sysInfoName => $sysInfo) {
             $cacheValue = $this->cacheStorage->get($sysInfoName);
-            $newValue = $this->encryption->encryptArray($sysInfo);
+            $newValue = is_array($sysInfo)
+                ? $this->encryption->encryptArray($sysInfo)
+                : $this->encryption->encryptString((string)$sysInfo);
             if ($this->checker->isChangedCacheValue($cacheValue, $newValue)) {
                 $changedData[$sysInfoName] = $sysInfo;
             }
@@ -68,7 +70,9 @@ class Persistor
     public function save(array $data): void
     {
         foreach ($data as $sysInfoName => $sysInfo) {
-            $encryptionValue = $this->encryption->encryptArray($sysInfo);
+            $encryptionValue = is_array($sysInfo)
+                ? $this->encryption->encryptArray($sysInfo)
+                : $this->encryption->encryptString((string)$sysInfo);
             $this->cacheStorage->set($sysInfoName, $encryptionValue);
         }
     }

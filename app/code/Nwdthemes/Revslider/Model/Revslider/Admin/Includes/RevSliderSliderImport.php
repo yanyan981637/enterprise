@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider\Admin\Includes;
@@ -101,7 +101,8 @@ class RevSliderSliderImport extends RevSliderSlider {
 			$slider->init_by_id($this->slider_id);
 			$upd = new RevSliderPluginUpdate();
 
-			$upd->upgrade_slider_to_latest($slider);
+			$upd->set_import(true);
+            $upd->upgrade_slider_to_latest($slider);
 
 			//reinit because we just updated data which is outside of the $slider object
 			$slider = new RevSliderSliderImport();
@@ -158,11 +159,11 @@ class RevSliderSliderImport extends RevSliderSlider {
 			$error		 = $this->get_val($import_file, 'error');
 			switch($error){
 				case UPLOAD_ERR_NO_FILE:
-					$this->throw_error(__('No file sent.', 'revslider'));
+					$this->throw_error(__('No file sent.'));
                     break;
 				case UPLOAD_ERR_INI_SIZE:
 				case UPLOAD_ERR_FORM_SIZE:
-					$this->throw_error(__('Exceeded filesize limit.', 'revslider'));
+					$this->throw_error(__('Exceeded filesize limit.'));
                     break;
 				default:
 				break;
@@ -175,7 +176,7 @@ class RevSliderSliderImport extends RevSliderSlider {
 		}
 
 		if(file_exists($path) == false)
-			$this->throw_error(__('Import file not found', 'revslider'));
+			$this->throw_error(__('Import file not found'));
 
 		$wp_filesystem = FA::getFilesystemHelper();
 
@@ -231,7 +232,7 @@ class RevSliderSliderImport extends RevSliderSlider {
                     }
                 }
             }
-            if($this->slider_raw_data == '') $this->throw_error(__('slider_export.txt does not exist!', 'revslider'));
+            if($this->slider_raw_data == '') $this->throw_error(__('slider_export.txt does not exist!'));
         }
 	}
 
@@ -458,7 +459,7 @@ class RevSliderSliderImport extends RevSliderSlider {
 
 		if($this->is_template !== false){
 			if($uid_check != $this->is_template){
-				return array('success' => false, 'error' => __('Please select the correct zip file, checksum failed!', 'revslider'));
+				return array('success' => false, 'error' => __('Please select the correct zip file, checksum failed!'));
 			}
 		}else{ //someone imported a template base Slider, check if it is existing in Base Sliders, if yes, check if it was imported
 			if($uid_check !== ''){
@@ -506,11 +507,12 @@ class RevSliderSliderImport extends RevSliderSlider {
 
 		if(empty($this->slider_data)){
 			$wp_filesystem->delete($this->remove_path, true);
-			$this->throw_error(__('Wrong export slider file format! Please make sure that the uploaded file is either a zip file with a correct slider_export.txt in the root of it or an valid slider_export.txt file.', 'revslider'));
+			$this->throw_error(__('Wrong export slider file format! Please make sure that the uploaded file is either a zip file with a correct slider_export.txt in the root of it or an valid slider_export.txt file.'));
 		}
 
 		//update slider params
 		$params = $this->get_val($this->slider_data, 'params');
+		$params['imported'] = true; //set that we are an imported slider
 		if($this->exists){
 			$params['title'] = $this->get_param('title');
 			$params['alias'] = $this->get_param('alias');
@@ -587,11 +589,18 @@ class RevSliderSliderImport extends RevSliderSlider {
 
 		if(empty($this->slider_data)){
 			$wp_filesystem->delete($this->remove_path, true);
-			$this->throw_error(__('Wrong export slider file format! Please make sure that the uploaded file is either a zip file with a correct slider_export.txt in the root of it or an valid slider_export.txt file.', 'revslider'));
+			$this->throw_error(__('Wrong export slider file format! Please make sure that the uploaded file is either a zip file with a correct slider_export.txt in the root of it or an valid slider_export.txt file.'));
 		}
 
 		//update slider params
 		$params = $this->get_val($this->slider_data, 'params');
+		$params['imported'] = true; //set that we are an imported slider
+
+		//check if we are a premium slider
+		if($this->get_val($params, 'pakps', false) === true && $this->_truefalse(FA::get_option('revslider-valid', 'false')) === false){
+			$wp_filesystem->delete($this->remove_path, true);
+			$this->throw_error(__('Please register your Slider Revolution plugin to import premium templates'));
+		}
 
 		$this->old_slider_id = $this->get_val($this->slider_data, 'id', '');
 		$title = ($this->exists) ? $this->get_title() : $this->get_val($this->slider_data, 'title', 'Slider1');
@@ -1628,6 +1637,7 @@ class RevSliderSliderImport extends RevSliderSlider {
 	public function duplicate_template_slider($single_slide){
 		if($this->is_template !== false){ //duplicate the slider now, as we just imported the "template"
             $mslider = new RevSliderSlider();
+            $mslider->template_slider = true;
 			if($single_slide !== false){ //add now one Slide to the current Slider
 
 				//change slide_id to correct, as it currently is just a number beginning from 0 as we did not have a correct slide ID yet.
@@ -1650,7 +1660,7 @@ class RevSliderSliderImport extends RevSliderSlider {
 					$wp_filesystem = FA::getFilesystemHelper();
 
 					$wp_filesystem->delete($this->remove_path, true);
-					return array('success' => false, 'error' => __('could not find correct Slide to copy, please try again.', 'revslider'), 'sliderID' => $this->slider_id);
+					return array('success' => false, 'error' => __('could not find correct Slide to copy, please try again.'), 'sliderID' => $this->slider_id);
 				}
 
 			}else{

@@ -1,13 +1,13 @@
 /********************************************
  * REVOLUTION EXTENSION - VIDEO FUNCTIONS
- * @date: 28.05.2020
+ * @date: 01.06.2022
  * @requires rs6.main.js
  * @author ThemePunch
 *********************************************/
 
 (function($) {
 	"use strict";
-	var version = "6.2.14";
+	var version = "6.5.25";
 
 jQuery.fn.revolution = jQuery.fn.revolution || {};
 var _R = jQuery.fn.revolution;
@@ -20,7 +20,6 @@ jQuery.extend(true,_R, {
 	preLoadAudio : function(li,id) {
 		_R[id].videos = _R[id].videos===undefined ? {} : _R[id].videos; //Audios are also Video MP Files
 		li.find('.rs-layer-audio').each(function() {
-
 			var _nc = jQuery(this),
 				_ = _R[id].videos[_nc[0].id] = _R[id].videos[_nc[0].id]===undefined ? readVideoDatas(_nc.data(),"audio",_R.gA(li[0],"key")) : _R[id].videos[_nc[0].id],
 				obj = {};
@@ -28,16 +27,17 @@ jQuery.extend(true,_R, {
 			if (_nc.find('audio').length===0) {
 				obj.src = _.mp4 !=undefined ? _.mp4  : '';
 				obj.pre = _.pload || '';
+
 				this.id = this.id===undefined || this.id==="" ? _nc.attr('audio-layer-'+Math.round(Math.random()*199999)) : this.id;
 				obj.id = this.id;
-				obj.status = "prepared";
-				obj.start = jQuery.now();
-				obj.waittime = _.ploadwait!==undefined ? _.ploadwait*1000 : 5000;
-				if (obj.pre=="auto" || obj.pre=="canplaythrough" || obj.pre=="canplay" || obj.pre=="progress") {
+				//obj.status = "prepared";
+				//obj.start = Date.now();
+				//obj.waittime = _.ploadwait!==undefined ? _.ploadwait*1000 : 5000;
+				//if (obj.pre=="auto" || obj.pre=="canplaythrough" || obj.pre=="canplay" || obj.pre=="progress") {
 					if (_R[id].audioqueue===undefined) _R[id].audioqueue = [];
 					_R[id].audioqueue.push(obj);
 					_R.manageVideoLayer(_nc,id,_R.gA(li[0],"key"),true);
-				}
+				//}
 			}
 		});
 	},
@@ -204,7 +204,8 @@ jQuery.extend(true,_R, {
 							_.nseTriggered = false;
 						}
 						if (_.ssec!=-1 && _.ssec>ct) _.vimeoplayer.setCurrentTime(_.ssec);
-						if (_.volume=="mute" || _.volume===0 || _R.lastToggleState(_nc.data('videomutetoggledby')) || _R[id].globalmute===true) {_.volumetoken=true;_.vimeoplayer.setVolume(0);}
+						if (_.volume=="mute" || _.volume===0 || _R.lastToggleState(_nc.data('videomutetoggledby')) || _R[id].globalmute===true) {_.volumetoken=true;_.vimeoplayer.setMuted(true);}
+						//if (_R[id].sliderType!=="carousel" || !_.bgvideo) tpGS.gsap.set(_nc, { display: "block", opacity: 0 });
 						playVimeo(_);
 					}
 				} else
@@ -240,7 +241,7 @@ jQuery.extend(true,_R, {
 						}
 						if (_.ssec!=-1 && _.ssec>ct && (_.ssec<_.video.duration)) _.video.currentTime = _.ssec;
 
-						playHTML5(_);
+						playHTML5(_, undefined, id);
 					}
 				}
 			break;
@@ -285,8 +286,6 @@ jQuery.extend(true,_R, {
 			var od = w / h,
 				nvh = (_.vd * od)*100,
 				nvw = (_.vd/od)*100;
-
-
 			var vidSizeObj;
 			if (_R.get_browser()==="Edge" || _R.get_browser()==="IE") {
 				if (od>_.vd)
@@ -294,6 +293,11 @@ jQuery.extend(true,_R, {
 				else
 					vidSizeObj = {minHeight:"100%", width:nvw+"%", x:"-50%", y:"-50%", top:"50%",left:"50%",position:"absolute"};
 			} else {
+				//BG Vimeo Video should fit in Carousels with both dimension 100%
+				if (_.bgvideo && _.vimeoid!==undefined && _R[id].sliderType=="carousel") {
+					nvh = 100;
+					nvw = 100;
+				}
 				if (od>_.vd)
 					vidSizeObj = {height:(_.fitCover ? 100 : nvh)+"%", width:"100%", top: _.fitCover ? 0 : -(nvh-100)/2+"%",left:"0px",position:"absolute"};
 				else
@@ -312,7 +316,7 @@ jQuery.extend(true,_R, {
 			var yiframe = _nc.find('iframe');
 			if ((_nc.data('ytid')!=undefined  || yiframe.length>0 && yiframe.attr('src') && yiframe.attr('src').toLowerCase().indexOf('youtube')>0)) _R[id].youtubeapineeded = true;
 			if (_R[id].youtubeapineeded && !window.rs_addedyt) {
-				_R[id].youtubestarttime = jQuery.now();
+				_R[id].youtubestarttime = Date.now();
 				window.rs_addedyt=true;
 				var s = document.createElement("script"),
 					before = _R.getByTag(document,"script")[0],
@@ -330,7 +334,7 @@ jQuery.extend(true,_R, {
 			var viframe = _nc.find('iframe');
 			if ((_nc.data('vimeoid')!=undefined || viframe.length>0 && viframe.attr('src') && viframe.attr('src').toLowerCase().indexOf('vimeo')>0)) _R[id].vimeoapineeded = true;
 		  	if (_R[id].vimeoapineeded && !window.rs_addedvim) {
-				_R[id].vimeostarttime = jQuery.now();
+				_R[id].vimeostarttime = Date.now();
 				window.rs_addedvim=true;
 				var loadit = true;
                 if (loadit) {
@@ -367,6 +371,7 @@ jQuery.extend(true,_R, {
 
 		_.jsposter = _nc.find('rs-poster');
 		_.id = _nc[0].id;
+
 		_.pload = _.pload === "auto" || _.pload === "canplay" || _.pload === "canplaythrough" || _.pload === "progress" ? "auto" : _.pload;
 		_.type = (_.mp4!=undefined || _.webm!=undefined) ? "html5" : (_.ytid!=undefined && String(_.ytid).length>1) ? "youtube" : (_.vimeoid!=undefined && String(_.vimeoid).length>1) ? "vimeo" : "none";
 		_.newtype = (_.type=="html5" && _nc.find(_.audio ? "audio" : "video").length==0) ? "html5" : (_.type=="youtube" && _nc.find('iframe').length==0) ? "youtube" : (_.type=="vimeo" && _nc.find('iframe').length==0) ? "vimeo" : "none";
@@ -377,7 +382,7 @@ jQuery.extend(true,_R, {
 		// PREPARE TIMER BEHAVIOUR BASED ON AUTO PLAYED VIDEOS IN SLIDES
 		if (!_.audio && _.aplay == "1sttime" && _.pausetimer && _.bgvideo) _R.sA(_nc.closest('rs-slide')[0],"rspausetimeronce",1);
 		if (!_.audio && _.bgvideo && _.pausetimer && (_.aplay==true || _.aplay=="true" || _.aplay == "no1sttime"))  _R.sA(_nc.closest('rs-slide')[0],"rspausetimeralways",1);
-		if (_.noInt) _nc.addClass("rs-nointeraction");
+		if (_.noInt) _nc.find("*").addClass("rs-nointeraction");
 		if (_.poster!=undefined && _.poster.length>2 && !(_R.ISM && _.npom)) if (_.jsposter.length==0) _.posterMarkup += ('<rs-poster class="noSwipe" style="background-image:url('+_.poster+');"></rs-poster>');
 		var posternotyetadded = true;
 
@@ -390,9 +395,10 @@ jQuery.extend(true,_R, {
 				if (window.isSafari11==true) _R[id].slideHasIframe = true;
 				if (_.audio) _nc.addClass("rs-audio");
 				_.tag = _.audio ? "audio" : "video";
-				var _funcs = _.tag==="video" && (_R.is_mobile() || _R.isSafari11()) ? _.aplay || _.aplay==="true" ? 'muted playsinline autoplay' : _.inline ? ' playsinline' : '' : '',
-					apptxt = '<div class="html5vid rs_html5vidbasicstyles '+(_.afs===false ? "hidefullscreen" : "")+'">';
-					apptxt += '<'+_.tag+' '+_funcs+' '+(_.controls && _.controls!=="none" ? ' controls':'') +(_.bgvideo && _funcs.indexOf('autoplay')==-1 ? ' autoplay' : '')+(_.bgvideo && _funcs.indexOf('muted')==-1 ? ' muted' : '') +' style="'+(_R.get_browser()!=="Edge" ? (_.fitCover ? 'object-fit:cover;background-size:cover;' : '') + 'opacity:0;width:100%; height:100%' : '') +'" class="" '+(_.loop ? 'loop' : '')+' preload="'+_.pload+'">';
+				var _funcs = _.tag==="video" && (_R.is_mobile() || _R.isSafari11()) ? (_.aplay && _.aplay !== "no1sttime") || _.aplay==="true" ? 'muted playsinline autoplay' : _.inline ? ' playsinline' : '' : '',
+					apptxt = '<div class="html5vid rs_html5vidbasicstyles '+(_.afs===false ? "hidefullscreen" : "")+'">',
+					crossOrigin = (_.bgvideo && /^([\w]+\:)?\/\//.test(_.mp4) && (_.mp4.indexOf(location.host) === -1 || _.mp4.indexOf("." + location.host) !== -1)) && _.crossOriginVideo ? ' crossOrigin="anonymous" ' : '';
+					apptxt += '<'+_.tag+' '+_funcs+' '+(_.controls && _.controls!=="none" ? ' controls':'') + crossOrigin +(_.bgvideo && _funcs.indexOf('autoplay')==-1 ? ' autoplay' : '')+(_.bgvideo && _funcs.indexOf('muted')==-1 ? ' muted' : '') +' style="'+(_R.get_browser()!=="Edge" ? (_.fitCover ? 'object-fit:cover;background-size:cover;' : '') + 'opacity:0;width:100%; height:100%' : '') +'" class="" '+(_.loop ? 'loop' : '')+' preload="'+_.pload+'">';
 				if (_.tag === 'video' && _.webm!=undefined && _R.get_browser().toLowerCase()=="firefox") apptxt = apptxt + '<source src="'+_.webm+'" type="video/webm" />';
 				if (_.mp4!=undefined) apptxt = apptxt + '<source src="'+_.mp4+'" type="'+ (_.tag==="video" ? 'video/mp4' : _.mp4.toLowerCase().indexOf('m4a')>0 ? 'audio/x-m4a' : 'audio/mpeg')+'" />';
 				if (_.ogv!=undefined) apptxt = apptxt + '<source src="'+_.mp4+'" type="'+_.tag+'/ogg" />';
@@ -486,7 +492,7 @@ jQuery.extend(true,_R, {
 
 		// Dont Show BG Videos until it really called by
 		if (_.bgvideo) {
-			_nc[0].style.display = "none";
+			if(_.type !== "youtube" && _.type !== "vimeo")_nc[0].style.display = "none";
 			_nc[0].style.zIndex = 0;
 			tpGS.gsap.set(_nc.find('video, iframe'),{opacity:0});
 		}
@@ -535,8 +541,12 @@ vimeoVolume = function(_,p) {
 				v.getPaused().then(function(paused) {
 					if (isplaying === paused) {
 						_.volume = "mute";
-						_.volumetoken = true;
-						v.setVolume(0);
+						v.getMuted().then(function(muted){
+							if(!muted){
+								_.volumetoken = true;
+								v.setMuted(true);
+							}
+						});
 						v.play();
 					}
 				}).catch(function(e) {
@@ -546,7 +556,7 @@ vimeoVolume = function(_,p) {
 				if (isplaying) {
 					_.volume = "mute";
 					_.volumetoken = true;
-					v.setVolume(0);
+					v.setMuted(true);
 					v.play();
 				};
 				if(_R.ISM) setPlayPauseOpacity(_, 0);
@@ -578,12 +588,22 @@ ytVolume = function(_,p) {
 
 // ERROR HANDLING FOR VIDEOS BY CALLING
 
-playHTML5 = function(_,r) {
+playHTML5 = function(_,r,id) {
 	if (_.cRS!=="playVideo") return;
 	var promise = _.video.play();
-	if (promise!==undefined) promise.then( function(e) {}).catch(function(e) {
+
+	if (promise!==undefined) promise.then( function(e) {
+		if(_.twaudio === true && _R[id].globalmute!==true){
+			_.twaudio = false;
+			if(_R.clickedOnce){
+				_.video.volume = _.volcache;
+				_.volume = _.volcache;
+				_.video.muted = false;
+			}
+		}
+	}).catch(function(e) {
 		_.video.pause();
-		if (r!==true) playHTML5(_,true);
+		if (r!==true) playHTML5(_,true, id);
 
 	});
 	if(_R.ISM) setPlayPauseOpacity(_, 0);
@@ -594,7 +614,7 @@ playVimeo = function(_) {
 	var promise = _.vimeoplayer.play();
 	if (promise!==undefined) promise.then( function(e) {}).catch(function(e) {
 		_.vimeoplayer.volumetoken=true;
-		_.vimeoplayer.setVolume(0);
+		_.vimeoplayer.setMuted(true);
 		_.vimeoplayer.play();
 	});
 },
@@ -636,7 +656,7 @@ vimeoPlayerPlayEvent = function(_,_nc,id) {
 	_R[id].c.trigger('revolution.slide.onvideoplay',pushVideoData(_.vimeoplayer,"vimeo",_));
 	_R[id].stopByVideo=_.pausetimer;
 	addVidtoList(_nc,id);
-	if (_.volume=="mute" || _.volume===0 || _R.lastToggleState(_nc.data('videomutetoggledby')) || _R[id].globalmute===true) {_.volumetoken=true;_.vimeoplayer.setVolume(0);} else vimeoVolume(_,parseInt(_.volcache,0)/100 || 0.75);
+	if (_.volume=="mute" || _.volume===0 || _R.lastToggleState(_nc.data('videomutetoggledby')) || _R[id].globalmute===true) {_.volumetoken=true;_.vimeoplayer.setMuted(true);} else vimeoVolume(_,parseInt(_.volcache,0)/100 || 0.75);
 	_R.toggleState(_.videotoggledby);
 },
 
@@ -673,6 +693,7 @@ addVideoListener = function(_nc,id,startnow,seek) {
 							if (event.data == YT.PlayerState.PLAYING) {
 								_.cSS = "playing";
 								_R[id].onceVideoPlayed = true;
+								if(_.player.isMuted() === false)_.volume = _.volcache = _.player.getVolume();
 								if (_.volume=="mute" || _.volume===0 || _R.lastToggleState(_nc.data('videomutetoggledby')) || _R[id].globalmute===true) _.player.mute();
 								else ytVolume(_,parseInt(_.volcache,0) || 75);
 								_R[id].stopByVideo=true;
@@ -751,7 +772,7 @@ addVideoListener = function(_nc,id,startnow,seek) {
 						if (_.speed!=undefined || _.speed!==1) event.target.setPlaybackRate(parseFloat(_.speed));
 
 						// PLAY VIDEO IF THUMBNAIL HAS BEEN CLICKED
-						_.jsposter.unbind("click");
+						_.jsposter.off("click");
 						_.jsposter.on('click',function() {
 							//if (!_R.ISM)
 								_R.playVideo(_nc,id,true);
@@ -814,7 +835,7 @@ addVideoListener = function(_nc,id,startnow,seek) {
 
 				if(toMute) {
 					_.volumetoken=true;
-					_.vimeoplayer.setVolume(0);
+					_.vimeoplayer.setMuted(true);
 					_.volume = "mute";
 				}
 			}
@@ -848,7 +869,7 @@ addVideoListener = function(_nc,id,startnow,seek) {
 				});
 
 				if (_.startvideonow) {
-					if (_.volume==="mute") {_.volumetoken=true;_.vimeoplayer.setVolume(0);}
+					if (_.volume==="mute") {_.volumetoken=true;_.vimeoplayer.setMuted(true);}
 					_R.playVideo(_nc,id);
 					if (_.ssec!=-1) _.vimeoplayer.setCurrentTime(_.ssec);
 				} else {
@@ -919,7 +940,7 @@ addVideoListener = function(_nc,id,startnow,seek) {
 
 			});
 
-			_.jsposter.unbind("click");
+			_.jsposter.off("click");
 			_.jsposter.on('click',function() {
 				 if (!_R.ISM) {
 					_R.playVideo(_nc,id,true);
@@ -964,7 +985,7 @@ htmlvideoevents = function(_nc,id,startnow) {
 	}
 
 	//PLAY, STOP VIDEO ON CLICK OF PLAY, POSTER ELEMENTS
-	if ((!_.controls || _.audio) || _.poster !== undefined) {
+	if (((!_.controls || _.audio) || _.poster !== undefined) && !_.noInt) {
 		if (_nc.find('.tp-video-play-button').length==0 && !_R.ISM) _nc.append('<div class="tp-video-play-button"><i class="revicon-right-dir"></i><span class="tp-revstop">&nbsp;</span></div>');
 		var selector = 'video, rs-poster, .tp-video-play-button';
 		if(_.poster !== undefined && _.controls) selector = '.tp-video-play-button';
@@ -1004,7 +1025,7 @@ htmlvideoevents = function(_nc,id,startnow) {
 		_.lastCurrentTime = _.video.currentTime;
 		if (_.esec!=0 && _.esec!=-1 && _.esec<_.video.currentTime && !_.nextslidecalled) {
 			if (_.loop) {
-				playHTML5(_);
+				playHTML5(_, undefined, id);
 				_.video.currentTime = _.ssec===-1 ? 0.5 : _.ssec;
 			} else {
 				if (_.nse) {
@@ -1034,7 +1055,7 @@ htmlvideoevents = function(_nc,id,startnow) {
 		_.nextslidecalled = false;
 		_.volume = _.volume!=undefined && _.volume!="mute" ? parseFloat(_.volcache) : _.volume;
 		_.volcache = _.volcache!=undefined && _.volcache!="mute" ? parseFloat(_.volcache) : _.volcache;
-		if (!_R.is_mobile() && !_R.isSafari11()) {
+		if (!_R.is_mobile()) {
 			if (_R[id].globalmute===true) _.video.muted = true; else _.video.muted = _.volume=="mute" ? true : false;
 			_.volcache = _R.isNumeric(_.volcache) && _.volcache>1 ? _.volcache/100 : _.volcache;
 			if (_.volume=="mute") _.video.muted=true;
@@ -1111,6 +1132,11 @@ htmlvideoevents = function(_nc,id,startnow) {
 		}
 		if (_R[id].inviewport===true || _R[id].inviewport===undefined) _R[id].lastplayedvideos = [];
 	});
+
+	addEvent(_.video, 'volumechange', function(){
+		if(_.video.muted) _.volume = 'mute';
+		else _.volume = _.volcache = _.video.volume;
+	});
 },
 
 ctfs = function(_) { return _==="t" || _===true || _==="true" ? true : _==="f" || _===false || _==="false" ? false : _;},
@@ -1145,13 +1171,15 @@ readVideoDatas = function(_,type,slideid) {
 			ploadwait:5,  	// Preload Wait
 			stopAV:_.bgvideo===1 ? false : true, 	// Stop All Videos
 			noInt:false, 	// Stop All Videos
-			volcache : 75 // Basic Volume
+			volcache : 75, // Basic Volume
+			crossOriginVideo: false
 		}
 	for (var u in o) {
 		if (!o.hasOwnProperty(u)) continue;
 		var s = o[u].split(":");
 		switch(s[0]) {
 			case "v": r.volume = s[1];break;
+			case "twa": r.twaudio = s[1];break;
 			case "vd": r.volcache = s[1];break;
 			case "p": r.pload = s[1];break;
 			case "ar": r.ratio = s[1] + (s[2]!==undefined ? ":"+s[2] : "");break;
@@ -1181,6 +1209,7 @@ readVideoDatas = function(_,type,slideid) {
 			case "l": r.loopcache = s[1]; r.loop = s[1]==="loop" || s[1]==="loopandnoslidestop" ? true : s[1]==="none" ? false : ctfs(s[1]);break;
 			case "ptimer": r.pausetimer = ctfs(s[1]);break;
 			case "sat": r.waitToSlideTrans = ctfs(s[1]);break;
+			case "crossOriginVideo" : r.crossOriginVideo = ctfs(s[1]); break;
 		}
 	}
 

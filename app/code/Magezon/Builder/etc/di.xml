@@ -592,6 +592,9 @@
 					<item name="group" xsi:type="string">content</item>
 					<item name="description" xsi:type="string">Single image with CSS animation</item>
 					<item name="disabled" xsi:type="boolean">true</item>
+					<item name="requiredFields" xsi:type="array">
+						<item name="image" xsi:type="boolean">true</item>
+					</item>
 					<item name="demo_link" xsi:type="string">http://192.168.1.107/magezon/pagebuilder/single-image</item>
 				</item>
 				<item name="social_icons" xsi:type="array">

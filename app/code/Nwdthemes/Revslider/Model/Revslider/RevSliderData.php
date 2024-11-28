@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider;
@@ -41,11 +41,9 @@ class RevSliderData {
         //disable cache for admin
         if (FA::is_admin()) return call_user_func_array(array($this, $method), $args);
 
-        $found = null;
         $cache_key = $this->get_wp_cache_key($method, $args);
-        $data = FA::wp_cache_get($cache_key, self::CACHE_GROUP, false, $found);
-
-        if (!$found) {
+		$data = FA::wp_cache_get($cache_key, self::CACHE_GROUP);
+		if (false === $data) {
             $data = call_user_func_array(array($this, $method), $args);
             FA::wp_cache_set($cache_key, $data, self::CACHE_GROUP);
         }
@@ -98,7 +96,7 @@ class RevSliderData {
 			foreach($cfl as $_cfl){
 				$fonts[] = array(
 					'type'		=> 'custom',
-					'version'	=> __('Custom Fonts', 'revslider'),
+					'version'	=> __('Custom Fonts'),
 					'url'		=> $this->get_val($_cfl, 'url'),
 					'frontend'	=> $this->_truefalse($this->get_val($_cfl, 'frontend', false)),
 					'backend'	=> $this->_truefalse($this->get_val($_cfl, 'backend', true)),
@@ -110,26 +108,26 @@ class RevSliderData {
 
 		//Web Safe Fonts
 		// GOOGLE Loaded Fonts
-		$fonts[] = array('type' => 'websafe', 'version' => __('Loaded Google Fonts', 'revslider'), 'label' => 'Dont Show Me');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Loaded Google Fonts'), 'label' => 'Dont Show Me');
 
 		//Serif Fonts
-		$fonts[] = array('type' => 'websafe', 'version' => __('Serif Fonts', 'revslider'), 'label' => 'Georgia, serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Serif Fonts', 'revslider'), 'label' => '"Palatino Linotype", "Book Antiqua", Palatino, serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Serif Fonts', 'revslider'), 'label' => '"Times New Roman", Times, serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Serif Fonts'), 'label' => 'Georgia, serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Serif Fonts'), 'label' => '\'Palatino Linotype\', \'Book Antiqua\', Palatino, serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Serif Fonts'), 'label' => '\'Times New Roman\', Times, serif');
 
 		//Sans-Serif Fonts
-		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts', 'revslider'), 'label' => 'Arial, Helvetica, sans-serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts', 'revslider'), 'label' => '"Arial Black", Gadget, sans-serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts', 'revslider'), 'label' => '"Comic Sans MS", cursive, sans-serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts', 'revslider'), 'label' => 'Impact, Charcoal, sans-serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts', 'revslider'), 'label' => '"Lucida Sans Unicode", "Lucida Grande", sans-serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts', 'revslider'), 'label' => 'Tahoma, Geneva, sans-serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts', 'revslider'), 'label' => '"Trebuchet MS", Helvetica, sans-serif');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts', 'revslider'), 'label' => 'Verdana, Geneva, sans-serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts'), 'label' => 'Arial, Helvetica, sans-serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts'), 'label' => '\'Arial Black\', Gadget, sans-serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts'), 'label' => '\'Comic Sans MS\', cursive, sans-serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts'), 'label' => 'Impact, Charcoal, sans-serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts'), 'label' => '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts'), 'label' => 'Tahoma, Geneva, sans-serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts'), 'label' => '\'Trebuchet MS\', Helvetica, sans-serif');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Sans-Serif Fonts'), 'label' => 'Verdana, Geneva, sans-serif');
 
 		//Monospace Fonts
-		$fonts[] = array('type' => 'websafe', 'version' => __('Monospace Fonts', 'revslider'), 'label' => '"Courier New", Courier, monospace');
-		$fonts[] = array('type' => 'websafe', 'version' => __('Monospace Fonts', 'revslider'), 'label' => '"Lucida Console", Monaco, monospace');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Monospace Fonts'), 'label' => '\'Courier New\', Courier, monospace');
+		$fonts[] = array('type' => 'websafe', 'version' => __('Monospace Fonts'), 'label' => '\'Lucida Console\', Monaco, monospace');
 
 
 		//push all variants to the websafe fonts
@@ -142,7 +140,7 @@ class RevSliderData {
 		$googlefonts = GoogleFonts::getFonts();
 
 		foreach($googlefonts as $f => $val){
-			$fonts[] = array('type' => 'googlefont', 'version' => __('Google Fonts', 'revslider'), 'label' => $f, 'variants' => $val['variants'], 'subsets' => $val['subsets'], 'category' => $val['category']);
+			$fonts[] = array('type' => 'googlefont', 'version' => __('Google Fonts'), 'label' => $f, 'variants' => $val['variants'], 'subsets' => $val['subsets'], 'category' => $val['category']);
 		}
 
 		return FA::apply_filters('revslider_data_get_font_familys', FA::apply_filters('revslider_operations_getArrFontFamilys', $fonts));
@@ -308,52 +306,52 @@ class RevSliderData {
 		switch($type){
 			case 'flickr':
 				$custom_sizes = array(
-					'original' => __('Original', 'revslider'),
-					'large' => __('Large', 'revslider'),
-					'large-square' => __('Large Square', 'revslider'),
-					'medium' => __('Medium', 'revslider'),
-					'medium-800' => __('Medium 800', 'revslider'),
-					'medium-640' => __('Medium 640', 'revslider'),
-					'small' => __('Small', 'revslider'),
-					'small-320' => __('Small 320', 'revslider'),
-					'thumbnail' => __('Thumbnail', 'revslider'),
-					'square' => __('Square', 'revslider'),
+					'original' => __('Original'),
+					'large' => __('Large'),
+					'large-square' => __('Large Square'),
+					'medium' => __('Medium'),
+					'medium-800' => __('Medium 800'),
+					'medium-640' => __('Medium 640'),
+					'small' => __('Small'),
+					'small-320' => __('Small 320'),
+					'thumbnail' => __('Thumbnail'),
+					'square' => __('Square'),
 				);
 			break;
 			case 'instagram':
 				$custom_sizes = array(
-					'standard_resolution' => __('Standard Resolution', 'revslider'),
-					'thumbnail' => __('Thumbnail', 'revslider'),
-					'low_resolution' => __('Low Resolution', 'revslider'),
-					'original_size' => __('Original Size', 'revslider'),
-					'large' => __('Large Size', 'revslider'),
+					'standard_resolution' => __('Standard Resolution'),
+					'thumbnail' => __('Thumbnail'),
+					'low_resolution' => __('Low Resolution'),
+					'original_size' => __('Original Size'),
+					'large' => __('Large Size'),
 				);
 			break;
 			case 'twitter':
 				$custom_sizes = array(
-					'large' => __('Standard Resolution', 'revslider'),
+					'large' => __('Standard Resolution'),
 				);
 			break;
 			case 'facebook':
 				$custom_sizes = array(
-					'full' => __('Original Size', 'revslider'),
-					'thumbnail' => __('Thumbnail', 'revslider'),
+					'full' => __('Original Size'),
+					'thumbnail' => __('Thumbnail'),
 				);
 			break;
 			case 'youtube':
 				$custom_sizes = array(
-					'high' => __('High', 'revslider'),
-					'medium' => __('Medium', 'revslider'),
-					'default' => __('Default', 'revslider'),
-					'standard' => __('Standard', 'revslider'),
-					'maxres' => __('Max. Res.', 'revslider'),
+					'high' => __('High'),
+					'medium' => __('Medium'),
+					'default' => __('Default'),
+					'standard' => __('Standard'),
+					'maxres' => __('Max. Res.'),
 				);
 			break;
 			case 'vimeo':
 				$custom_sizes = array(
-					'thumbnail_large' => __('Large', 'revslider'),
-					'thumbnail_medium' => __('Medium', 'revslider'),
-					'thumbnail_small' => __('Small', 'revslider'),
+					'thumbnail_large' => __('Large'),
+					'thumbnail_medium' => __('Medium'),
+					'thumbnail_small' => __('Small'),
 				);
 			break;
 			case 'gallery':
@@ -675,7 +673,7 @@ class RevSliderData {
         $transitions = '{
             "basic":{ "icon":"aspect_ratio",
                 "fade":{
-                    "notransition":{"title":"*clear* No Transition"},
+                    "notransition":{"title":"*clear* No Transition","speed":"10","in":{"o":1},"out":{"a":false, "o":1}},
                     "fade":{"title":"*opacity* Fade In","in":{"o":0},"out":{"a":false}},
                     "crossfade":{"title":"*opacity* Cross Fade","in":{"o":0}},
                     "fadethroughdark":{"title":"*dark_mode* Via Dark","in":{"o":0},"out":{"a":false,"o":0},"p":"dark"},

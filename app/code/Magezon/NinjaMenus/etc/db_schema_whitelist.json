@@ -1,0 +1,55 @@
+{
+    "mgz_ninjamenus_menu": {
+        "column": {
+            "menu_id": true,
+            "name": true,
+            "identifier": true,
+            "type": true,
+            "mobile_type": true,
+            "profile": true,
+            "is_active": true,
+            "sticky": true,
+            "mobile_breakpoint": true,
+            "hamburger": true,
+            "hamburger_title": true,
+            "css_classes": true,
+            "custom_css": true,
+            "main_color": true,
+            "main_background_color": true,
+            "secondary_color": true,
+            "secondary_background_color": true,
+            "creation_time": true,
+            "update_time": true,
+            "main_font_size": true,
+            "main_font_weight": true,
+            "main_hover_color": true,
+            "main_hover_background_color": true,
+            "secondary_hover_color": true,
+            "secondary_hover_background_color": true,
+            "overlay": true,
+            "overlay_opacity": true,
+            "hover_delay_timeout": true
+        },
+        "index": {
+            "MGZ_NINJAMENUS_MENU_IDENTIFIER": true,
+            "MGZ_NINJAMENUS_MENU_NAME_IDENTIFIER": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "mgz_ninjamenus_menu_store": {
+        "column": {
+            "menu_id": true,
+            "store_id": true
+        },
+        "index": {
+            "MGZ_NINJAMENUS_MENU_STORE_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MGZ_NINJAMENUS_MENU_STORE_MENU_ID_MGZ_NINJAMENUS_MENU_MENU_ID": true,
+            "MGZ_NINJAMENUS_MENU_STORE_STORE_ID_STORE_STORE_ID": true
+        }
+    }
+}

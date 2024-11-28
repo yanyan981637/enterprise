@@ -16,9 +16,9 @@ namespace Magezon\ProductPageBuilder\Block\Product;
 
 class Element extends \Magezon\Builder\Block\Element
 {
-	/**
-	 * @var \Magento\Framework\App\Http\Context
-	 */
+    /**
+     * @var \Magento\Framework\App\Http\Context
+     */
     protected $httpContext;
 
     /**
@@ -32,11 +32,11 @@ class Element extends \Magezon\Builder\Block\Element
     protected $coreRegistry;
 
     /**
-     * @param \Magento\Framework\View\Element\Template\Context  $context       
-     * @param \Magento\Framework\App\Http\Context               $httpContext   
-     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency 
-     * @param \Magento\Framework\Registry                       $registry      
-     * @param array                                             $data          
+     * @param \Magento\Framework\View\Element\Template\Context  $context
+     * @param \Magento\Framework\App\Http\Context               $httpContext
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \Magento\Framework\Registry                       $registry
+     * @param array                                             $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -84,7 +84,8 @@ class Element extends \Magezon\Builder\Block\Element
             $this->getElementType(),
             $this->getElementId(),
             $this->getTemplate(),
-            $this->getProduct()->getId()
+            $this->getProduct()->getId(),
+            $this->getRequest()->getFullActionName()
         ];
     }
 
@@ -97,17 +98,19 @@ class Element extends \Magezon\Builder\Block\Element
     }
 
     /**
-     * @return \Magento\ProductPageBuilder\Model\Profile
+     * @return \Magezon\ProductPageBuilder\Model\Profile
      */
     public function getProfile()
     {
-    	return $this->coreRegistry->registry('productpagebuilder_profile');
+        return $this->coreRegistry->registry('productpagebuilder_profile');
     }
 
     public function toHtml()
     {
-    	$product = $this->getProduct();
-    	if (!$product || !$product->getId()) return;
-    	return parent::toHtml();
+        $product = $this->getProduct();
+        if (!$product || !$product->getId()) {
+            return;
+        }
+        return parent::toHtml();
     }
 }

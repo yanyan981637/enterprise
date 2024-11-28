@@ -44,6 +44,11 @@ class General extends AbstractModifier
     protected $mobileMenuType;
 
     /**
+     * @var array
+     */
+    protected $meta;
+
+    /**
      * @param Factory                                              $factoryElement    
      * @param CollectionFactory                                    $factoryCollection 
      * @param \Magento\Framework\Registry                          $registry          

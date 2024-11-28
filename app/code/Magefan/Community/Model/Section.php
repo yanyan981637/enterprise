@@ -30,6 +30,17 @@ final class Section
     private $scopeConfig;
 
     /**
+     * @var \Magefan\Community\Model\GetModuleVersion
+     */
+    private $getModuleVersion;
+
+    /**
+     * @var \Magefan\Community\Model\HyvaThemeDetection
+     */
+
+    private $hyvaThemeDetection;
+
+    /**
      * @var string
      */
     private $name;
@@ -46,20 +57,25 @@ final class Section
 
 
     /**
-     * Section constructor.
      * @param ScopeConfigInterface $scopeConfig
      * @param ProductMetadataInterface $metadata
-     * @param null $name
-     * @param null $key
+     * @param \Magefan\Community\Model\GetModuleVersion $getModuleVersion
+     * @param \Magefan\Community\Model\HyvaThemeDetection $hyvaThemeDetection
+     * @param $name
+     * @param $key
      */
     final public function __construct(
         ScopeConfigInterface $scopeConfig,
         ProductMetadataInterface $metadata,
+        GetModuleVersion $getModuleVersion,
+        HyvaThemeDetection $hyvaThemeDetection,
         $name = null,
         $key = null
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->metadata = $metadata;
+        $this->getModuleVersion = $getModuleVersion;
+        $this->hyvaThemeDetection = $hyvaThemeDetection;
         $this->name = $name;
         $this->key = $key;
     }
@@ -73,11 +89,18 @@ final class Section
     }
 
     /**
-     * @return string
+     * @param false $e
+     * @return false|string
      */
-    final public function getModule()
+    final public function getModule($e = false)
     {
-        $module = (string) $this->getConfig(self::MODULE);
+        $fs = $e ? [self::MODULE] : [self::MODULE . 'e', self::MODULE . 'p', self::MODULE];
+        foreach ($fs as $f) {
+            $module = (string)$this->getConfig($f);
+            if ($module) {
+                break;
+            }
+        }
         $url = $this->scopeConfig->getValue(
             'web/unsecure/base' . '_' . 'url',
             ScopeInterface::SCOPE_STORE,
@@ -89,6 +112,13 @@ final class Section
                 && (!$this->getConfig(self::TYPE)
                     || $this->getConfig(self::TYPE) && $this->metadata->getEdition() != 'C' . 'omm' . 'un' . 'ity'
                 )
+            ) {
+                return $module;
+            }
+
+            if ($module == ('B' . 'l' . 'o' . 'g')
+                && version_compare($this->getModuleVersion->execute('Ma' . 'ge' . 'fa' . 'n_' . $module), '2.' . '11' . '.4', '>=')
+                && $this->hyvaThemeDetection->execute()
             ) {
                 return $module;
             }
@@ -127,16 +157,17 @@ final class Section
             return !empty($data[$this->getModule()]);
         }
 
-        $id = $this->getModule();
         $k = $this->getKey();
 
-        $result = $this->validateIDK($id, $k);
-        if (!$result) {
-            $id .= 'Plus';
-            $result = $this->validateIDK($id, $k);
+        foreach ([$this->getModule(), $this->getModule(true)] as $id) {
+            foreach (['', 'Plus', 'Extra'] as $e) {
+                if ($result = $this->validateIDK($id . $e, $k)) {
+                    return true;
+                }
+            }
         }
 
-        return $result;
+        return false;
     }
 
     /**

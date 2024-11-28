@@ -141,7 +141,8 @@ class Element extends \Magento\Framework\DataObject
 		            'element_type' => $this->getType()
 		        ];
 		        if ($this->getEnableCache()) {
-					$data['enable_cache'] = $this->getEnableCache();
+		            $data['enable_cache']   = $this->getEnableCache();
+		            $data['cache_lifetime'] = $this->getCacheLifetime();
 		        }
 		        $block = $this->layout->createBlock($elemBlock, '', [
 		            'data' => $data

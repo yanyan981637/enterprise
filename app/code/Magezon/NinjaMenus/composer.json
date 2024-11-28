@@ -1,14 +1,14 @@
 {
-    "name": "magezon/module-ninjamenus",
+    "name": "magezon/module-ninja-menus",
     "description": "Magento 2 Ninja Menus",
     "require": {
-        "php": "~7.1.0|~7.2.0|~7.3.0|~7.4.0",
+        "php": "~7.1.0|~7.2.0|~7.3.0|~7.4.0|~8.1.0|~8.2.0",
         "magezon/module-core": "*",
         "magezon/module-builder": "*",
-        "magezon/module-uibuilder": "*"
+        "magezon/module-ui-builder": "*"
     },
     "type": "magento2-module",
-    "version": "2.0.1",
+    "version": "2.0.6",
     "license": [
         "OSL-3.0",
         "AFL-3.0"

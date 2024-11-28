@@ -18,6 +18,10 @@ class Config
      */
     const XML_PATH_LAST_STATIC_CONTENT_DEPLOY_DATETIME = 'mftranslation/general/date_time';
 
+    const XML_PATH_FLUSH_CACHE_ON_TRANSLATION_CHANGE = 'mftranslation/general/flush_cache_on_translation';
+
+    const XML_PATH_IGNORE_GWS_PERMISSIONS = 'mftranslation/general/ignore_gws_permissions';
+
     /**
      * @var ScopeConfigInterface
      */
@@ -41,6 +45,24 @@ class Config
     public function getStaticContentDeployDateTime(int $storeId = null): string
     {
         return (string)$this->getConfig(self::XML_PATH_LAST_STATIC_CONTENT_DEPLOY_DATETIME, $storeId);
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return string
+     */
+    public function isFlushCacheOnSaveTranslation(int $storeId = null): string
+    {
+        return $this->getConfig(self::XML_PATH_FLUSH_CACHE_ON_TRANSLATION_CHANGE, $storeId);
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return string
+     */
+    public function isIgnoreGWSPermissions(int $storeId = null): string
+    {
+        return $this->getConfig(self::XML_PATH_IGNORE_GWS_PERMISSIONS, $storeId);
     }
 
     /**

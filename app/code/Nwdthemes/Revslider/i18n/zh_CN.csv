@@ -38,7 +38,6 @@ Activation,激活
 "AddOns Outdated. Please Update","AddOns 过时了。请更新"
 "AddOns need attention","AddOns 需要注意"
 "Adding new Blank Module...",添加新的空白模块......
-Additional,额外
 "Addon Required","Addon 需要"
 "Admin Thumb",管理员拇指
 "Adv. Style",高级样式
@@ -170,7 +169,7 @@ Channel,渠道
 "Choose Video",选择视频
 Circle,圈
 Clear,明确
-"Cleared Photosets",清除照片
+"Cleared Albums",清除相册
 Click,点击
 "Click to Choose",点击选择
 Close,关
@@ -197,7 +196,6 @@ Corners,角落
 "Could not create Slider",无法创建Slider
 "Could not fetch Facebook albums",无法获取Facebook专辑
 "Could not fetch YouTube playlists",无法获取YouTube播放列表
-"Could not fetch flickr photosets",无法获取flickr照片
 Cover,覆盖
 "Cover Color",封面颜色
 "Create Blank Page",创建空白页面
@@ -262,8 +260,6 @@ Disabled,残
 "Disabling Add-On",禁用Add-On
 "Dismiss Messages",关闭消息
 Display,显示
-"Display Mode in Column",列中的显示模式
-"Display a certain photoset from a user",显示用户的某个照片集
 "Display a gallery",显示图库
 "Do It",做吧
 "Do you want to start the Update process?",您想要启动更新过程吗？
@@ -362,11 +358,9 @@ Filter,过滤
 "Filter Effect Scroll is now generally Enabled",滤镜效果滚动现在通常已启用
 Filters,过滤器
 "Find My Code",找到我的代码
-"Find information about the YouTube API key <a target=""_blank"" href=""https://developers.google.com/youtube/v3/getting-started#before-you-start"">here</a>","查找有关YouTube API密钥的信息<a target=""_blank"" href=""https://developers.google.com/youtube/v3/getting-started#before-you-start"">此处</ a >"
 "Finnished with slide change",完成幻灯片更改
 "First Slide",第一张幻灯片
 "Five Spikes",五尖刺
-"Fix during Scroll",在滚动期间修复
 "Fixed on Top",固定在顶部
 "Flickr Settings",Flickr设置
 Float,浮动
@@ -512,7 +506,6 @@ Interaction,相互作用
 "Inverse Toggled Content",反向切换内容
 "Invert Horizontal",反转水平
 "Invert Vertical",反转垂直
-Inverts,反转
 "John Doe",约翰·多伊
 "Jump to Slide",跳到Slide
 "Keep Auto Sizes",保持自动大小
@@ -683,13 +676,11 @@ Move,移动
 "New Module from Template",模板中的新模块
 "New Version Available. Please Update",新版本可用。请更新
 "New Window",新窗户
-News,新闻
 "Next Frame",下一帧
 "Next Slide",下一个Slide
 "Next Slide at End",下一个Slide在结束
 "Next Step",下一步
 "Next on Browser Focus","关于Browser Focus的下一个"
-"No API KEY - Could not fetch flickr photosets","没有API KEY  - 无法获取flickr照片集"
 "No Action Selected",没有选择行动
 "No Corner",没有角落
 "No Data Received",未收到数据
@@ -703,13 +694,10 @@ News,新闻
 "No Spikes",没有尖峰
 "No Sticky Keyframes",没有粘性关键帧
 "No Style",没有风格
-"No User URL - Could not fetch flickr photosets","没有用户URL  - 无法获取flickr照片集"
 "No data received",未收到数据
 "No file sent.",没有发送文件。
 "No further source settings needed. Content is created manually.",无需进一步的源设置。内容是手动创建的。
 "No response on action",对行动没有回应
-"No slides found, please add at least one Slide Template to the choosen language.",没有Sliders发现，请至少添加一个Slide选择语言的模板。。
-"No slides found, please add some slides","没有Sliders发现，请加一些 slides"
 None,没有
 "None of the Settings changed. There is Nothing to Save",没有任何设置更改。没有什么可以节省的
 Normal,正常
@@ -795,12 +783,10 @@ Pause,暂停
 Placeholder,占位符
 "Play Slide",玩Slide
 Playlist,播放列表
-"Please <a target=""_blank"" href=""https://dev.twitter.com/apps"">register</a> your application with Twitter<br>to get the right values","请使用Twitter <br> <a target=""_blank"" href=""https://dev.twitter.com/apps"">注册</a>您的应用程序，以获得正确的价值"
 "Please Wait a Moment",请稍等片刻
 "Please Wait...",请耐心等待...
 "Please activate Slider Revolution","请激活Slider Revolution"
 "Please add at least one Layer.",请添加至少一个图层。
-"Please follow this link to edit the Slider:",请点击此链接进行编辑Slider：
 "Please select an Addon to start with.",请选择一个Addon开头。
 "Please select the correct zip file, checksum failed!",请选择正确的zip文件，校验和失败！
 "Plugin Updates",插件更新
@@ -858,7 +844,6 @@ Random,随机
 "Random Order",随机顺序
 "Re-Download Online",在线重新下载
 ReTweets,锐推
-"Read <a target=""_blank"" href=""http://weblizar.com/get-flickr-api-key/"">here</a> how to receive your Flickr API key","阅读<a target=""_blank"" href=""http://weblizar.com/get-flickr-api-key/"">此处</a>如何接收您的Flickr API密钥"
 "Recalculate all positions, sizing etc in the slider.  This should be called i.e. if Slider was invisible and becomes visible without any window resize event.",重新计算滑块中的所有位置，大小等。这应该被调用，即如果Slider是不可见的并且在没有任何窗口调整大小事件的情况下变得可见。
 Rectangle,长方形
 "Redirecting to Overview Page",重定向到概述页面
@@ -868,7 +853,6 @@ Rectangle,长方形
 "Register Slider Revolution<br>to Unlock Premium Features","寄存器Slider Revolution<br>解锁高级功能"
 "Register this Code",注册此代码
 "Register to Unlock",注册解锁
-"Register to Unlock all Features",注册以解锁所有功能
 "Register to unlock AddOns",注册以解锁AddOns
 "Register to unlock Library",注册解锁图书馆
 "Register to unlock Premium Features",注册以解锁高级功能
@@ -949,7 +933,6 @@ Scene,现场
 Search,搜索
 "Search Icons...",搜索图标...
 "Search Modules...",搜索模块......
-"See how to find the Youtube channel ID <a target=""_blank"" href=""https://support.google.com/youtube/answer/3250431?hl=en"">here</a>","了解如何查找Youtube频道ID <a target=""_blank"" href=""https://support.google.com/youtube/answer/3250431?hl=en"">此处</a>"
 Select,选择
 "Select Album",选择相册
 "Select Playlist",选择播放列表
@@ -1050,7 +1033,6 @@ Solid,固体
 "Some AddOns have new versions available",一些AddOns有新版本可用
 "Some Layers are <strong>Locked</strong> and/or <strong>Invisible</strong>.<br>Change Status in Timeline.","某些图层<strong>已锁定</ strong>和/或<strong>不可见</ strong>。<br>更改时间轴中的状态。"
 "Some Settings in Slider <strong>Source may not complete</strong>.<br>Please Complete All Settings in Slider Sources.","一些设置Slider <strong>来源可能无法完成</ strong>。<br>请完成滑块源中的所有设置。"
-"Sorry, this Social Stream cannot be displayed.",抱歉，无法显示此社交流。
 "Sort Direction",排序方向
 "Sort by Creation",按创建排序
 "Sort by Title",按标题排序
@@ -1098,7 +1080,6 @@ Style,样式
 "Success! Please check your E-Mails to finish the subscription",成功！请检查您的电子邮件以完成订阅
 "Successfully fetched Facebook albums",成功获取Facebook专辑
 "Successfully fetched YouTube playlists",已成功获取YouTube播放列表
-"Successfully fetched flickr photosets",成功获取了flickr照片
 Support,支持
 "Swipe Dir",滑动目录
 "Swipe Settings",滑动设置
@@ -1218,7 +1199,6 @@ Uppercase,大写
 "Use Slide Loop",使用幻灯片循环
 "Use Toggle",使用切换
 User,用户
-"User Photoset",用户Photoset
 "User Public Photos",用户公开照片
 "User URL:",用户网址：
 Username,用户名
@@ -1239,7 +1219,6 @@ Video,视频
 "Video is stopped",视频已停止
 "Video stopped in slider",视频停在了slider
 Videos,影片
-"View all posts in %s",查看%s所有帖子
 "ViewPort Stop",ViewPort停止
 Views,查看
 Vimeo,Vimeo的

@@ -29,4 +29,7 @@
     <type name="Magento\Framework\Config\SchemaLocator">
         <plugin name="Magefan_TranslationPlus_Config_SchemaLocator" type="Magefan\TranslationPlus\Plugin\Config\SchemaLocator" sortOrder="1"/>
     </type>
+    <type name="Magento\Translation\Model\Js\DataProvider">
+        <plugin name="Magefan_TranslationPlus_Plugin_Magento_Translation_Model_Js_DataProvider" type="Magefan\TranslationPlus\Plugin\Magento\Translation\Model\Js\DataProvider" sortOrder="10" disabled="false"/>
+    </type>
 </config>

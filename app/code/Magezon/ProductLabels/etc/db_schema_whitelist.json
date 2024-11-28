@@ -1,0 +1,88 @@
+{
+    "mgz_productlabels_label": {
+        "column": {
+            "label_id": true,
+            "name": true,
+            "priority": true,
+            "creation_time": true,
+            "update_time": true,
+            "from_date": true,
+            "productpage_image": true,
+            "productpage_html": true,
+            "productpage_position": true,
+            "productpage_color": true,
+            "productpage_width": true,
+            "productpage_style": true,
+            "productpage_url": true,
+            "productlist_image": true,
+            "productlist_html": true,
+            "productlist_position": true,
+            "productlist_color": true,
+            "productlist_width": true,
+            "productlist_style": true,
+            "productlist_url": true,
+            "product_type": true,
+            "to_date": true,
+            "use_for_parent": true,
+            "is_active": true,
+            "conditions_serialized": true,
+            "actions_serialized": true,
+            "stock_status": true,
+            "hide_lower_priority": true,
+            "product_stock_enabled": true,
+            "rule_stock_higher": true,
+            "rule_stock_lower": true
+        },
+        "index": {
+            "MGZ_PRODUCTLABELS_LABEL_NAME": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "mgz_productlabels_label_store": {
+        "column": {
+            "label_id": true,
+            "store_id": true
+        },
+        "index": {
+            "MGZ_PRODUCTLABELS_LABEL_STORE_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MGZ_PRDLBLS_LBL_STORE_LBL_ID_MGZ_PRDLBLS_LBL_LBL_ID": true,
+            "MGZ_PRODUCTLABELS_LABEL_STORE_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "mgz_productlabels_label_customergroup": {
+        "column": {
+            "label_id": true,
+            "customer_group_id": true
+        },
+        "index": {
+            "MGZ_PRODUCTLABELS_LABEL_CUSTOMERGROUP_CUSTOMER_GROUP_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MGZ_PRDLBLS_LBL_CSTRGROUP_LBL_ID_MGZ_PRDLBLS_LBL_LBL_ID": true,
+            "MGZ_PRDLBLS_LBL_CSTRGROUP_CSTR_GROUP_ID_CSTR_GROUP_CSTR_GROUP_ID": true
+        }
+    },
+    "mgz_productlabels_label_product": {
+        "column": {
+            "label_id": true,
+            "store_id": true,
+            "product_id": true
+        },
+        "index": {
+            "MGZ_PRODUCTLABELS_LABEL_PRODUCT_PRODUCT_ID": true,
+            "MGZ_PRODUCTLABELS_LABEL_PRODUCT_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MGZ_PRDLBLS_LBL_PRD_LBL_ID_MGZ_PRDLBLS_LBL_LBL_ID": true,
+            "MGZ_PRDLBLS_LBL_PRD_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true,
+            "MGZ_PRODUCTLABELS_LABEL_PRODUCT_STORE_ID_STORE_STORE_ID": true
+        }
+    }
+}

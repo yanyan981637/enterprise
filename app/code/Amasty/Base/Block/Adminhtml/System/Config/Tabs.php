@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -23,6 +23,7 @@ class Tabs extends Template
      * Constants for data array keys
      */
     public const BASE = 'base';
+    public const ADDITIONAL_TABS = 'additional';
     public const SOLUTIONS = 'solutions';
     public const EXTENSIONS = 'extensions';
 
@@ -32,6 +33,7 @@ class Tabs extends Template
     public const PLAN_LABEL = 'plan_label';
     public const IS_ACTIVE = 'is_active';
     public const SORT_ORDER = 'sort_order';
+    public const BASE_TABS_SECTION = 'am_base_section';
 
     /**
      * @var string
@@ -89,10 +91,7 @@ class Tabs extends Template
         $result = $extensionsToRemove = [];
 
         $extensions = $this->getActiveExtensions();
-        if (isset($extensions['Amasty_Base'])) {
-            $result[self::BASE] = $extensions['Amasty_Base']; //separate from all
-            unset($extensions['Amasty_Base']);
-        }
+        $result[self::BASE] = $this->extractBaseTabs($extensions);
 
         $solutions = $this->activeSolutionsProvider->get();
         $index = 0;
@@ -130,20 +129,54 @@ class Tabs extends Template
 
         if ($amastyTab = $this->configItemsProvider->getAmastyConfigChildrenNode()) {
             foreach ($amastyTab as $section) {
-                if (!$section->isVisible()) {
+                if (!$section->isVisible() || $section->getAttribute('type') === self::BASE_TABS_SECTION) {
                     continue;
                 }
-                $result[current(explode('::', $section->getAttribute('resource')))] = [
-                    self::ITEM_NAME => $this->getLabel($section),
-                    self::ITEM_CLASS => $section->getClass(),
-                    self::ITEM_URL => $this->getSectionUrl($section),
-                    self::IS_ACTIVE => $section->getId() == $this->currentSectionId,
-                    self::SORT_ORDER => $section->getAttribute('sortOrder')
-                ];
+                $result[current(explode('::', $section->getAttribute('resource')))]
+                    = $this->getSectionConfig($section);
             }
         }
 
         return $result;
+    }
+
+    public function extractBaseTabs(array &$extensions): array
+    {
+        $result = [];
+
+        if (isset($extensions['Amasty_Base'])) {
+            $result[] = $extensions['Amasty_Base']; //separate base module from all
+            unset($extensions['Amasty_Base']);
+
+            if ($amastyTab = $this->configItemsProvider->getAmastyConfigChildrenNode()) {
+                foreach ($amastyTab as $section) {
+                    if (!$section->isVisible() || $section->getAttribute('type') !== self::BASE_TABS_SECTION) {
+                        continue;
+                    }
+                    $result[] = $this->getSectionConfig($section);
+                }
+            }
+
+            usort($result, function (array $sectionA, array $sectionB) {
+                $sortOrderA = (int)($sectionA[self::SORT_ORDER] ?? 0);
+                $sortOrderB = (int)($sectionB[self::SORT_ORDER] ?? 0);
+
+                return $sortOrderA <=> $sortOrderB;
+            });
+        }
+
+        return $result;
+    }
+
+    private function getSectionConfig(Section $section): array
+    {
+        return [
+            self::ITEM_NAME => $this->getLabel($section),
+            self::ITEM_CLASS => $section->getClass(),
+            self::ITEM_URL => $this->getSectionUrl($section),
+            self::IS_ACTIVE => $section->getId() == $this->currentSectionId,
+            self::SORT_ORDER => $section->getAttribute('sortOrder')
+        ];
     }
 
     private function getLabel(Section $section): string

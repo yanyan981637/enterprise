@@ -72,61 +72,71 @@ RVS.LIB.ACTIONTYPES = {};
 			if (jQuery.inArray(RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action,["start_in","start_out","start_frame","next_frame","prev_frame","toggle_layer","toggle_frames"])>=0)
 				if (RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].updateChildren===undefined) RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].updateChildren=true;
 
-			RVS.F.updateEasyInputs({container:jQuery('#rbm_layer_action'), path:RVS.S.slideId+".layers."+RVS.selLayers[0]+".", trigger:"init"});
-			RVS.F.upadteLayerTargetDropDowns({action:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action, targetid:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].layer_target});
-			RVS.F.updateSlideList({action:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action, targetid:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].jump_to_slide});
-			RVS.F.updateLinkTypes({action:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action, linktype:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].link_type});
-
-			// IF TARGET ID IS NOT STATIC
-			if (RVS.S.actionTrgtLayerId!==undefined && (""+RVS.S.actionTrgtLayerId).indexOf("static-")>=0) {
-
-				var _GL = RVS.SLIDER.staticSlideId!==undefined && RVS.SLIDER[RVS.SLIDER.staticSlideId]!==undefined ? RVS.SLIDER[RVS.SLIDER.staticSlideId].layers : undefined,
-					satli = (""+RVS.S.actionTrgtLayerId).replace("static-","");
-				if (_GL!==undefined && _GL[satli]!==undefined) {
-
-					//RVS.H[satli].w.addClass("actionselected");
-					if (RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action==="toggle_layer") {
-						if (RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].toggle_layer_type==="visible")
-							_GL[satli].timeline.frames.frame_1.timeline.actionTriggered = false;
-						else
-							_GL[satli].timeline.frames.frame_1.timeline.actionTriggered = true;
-						_GL[satli].timeline.frames.frame_999.timeline.actionTriggered = true;
-					}
-
-					jQuery('#overtake_frame_1_control')[0].checked = _GL[satli].timeline.frames.frame_1.timeline.actionTriggered;
-					jQuery('#overtake_frame_999_control')[0].checked = _GL[satli].timeline.frames.frame_999.timeline.actionTriggered;
-					RVS.F.turnOnOffVisUpdate({input:document.getElementById('overtake_frame_1_control')});
-					RVS.F.turnOnOffVisUpdate({input:document.getElementById('overtake_frame_999_control')});
-					jQuery('#la_triggerMemory').val(_GL[satli].actions.triggerMemory).ddTP('change');
-					RVS.F.updatePlayFrameXOnlyOnAction(null,"X");
-					RVS.F.updatePlayFrameXOnlyOnAction(null,"N");
-					RVS.F.updatePlayFrameXOnlyOnAction(null,"M");
-				}
-			} else {
-				if (RVS.L[RVS.S.actionTrgtLayerId]!==undefined) {
-
+			if (RVS.S.actionTrgtLayerId!==undefined) {
+				var LREF;
+				//FIND THE CORRECT TARGET IN STATIC OR NORMAL LAYERS
+				if ((""+RVS.S.actionTrgtLayerId).indexOf("static-")>=0 && RVS.SLIDER.staticSlideId!==undefined && RVS.SLIDER[RVS.SLIDER.staticSlideId]!==undefined && RVS.SLIDER[RVS.SLIDER.staticSlideId].layers!==undefined)
+					 LREF = RVS.SLIDER[RVS.SLIDER.staticSlideId].layers[(""+RVS.S.actionTrgtLayerId).replace("static-","")];
+				else if (RVS.L[RVS.S.actionTrgtLayerId]!==undefined) {
+					LREF = RVS.L[RVS.S.actionTrgtLayerId];
 					RVS.H[RVS.S.actionTrgtLayerId].w.addClass("actionselected");
-					if (RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action==="toggle_layer") {
-						if (RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].toggle_layer_type==="visible")
-							RVS.L[RVS.S.actionTrgtLayerId].timeline.frames.frame_1.timeline.actionTriggered = false;
-						else
-							RVS.L[RVS.S.actionTrgtLayerId].timeline.frames.frame_1.timeline.actionTriggered = true;
-						RVS.L[RVS.S.actionTrgtLayerId].timeline.frames.frame_999.timeline.actionTriggered = true;
-					}
+				}
 
-					jQuery('#overtake_frame_1_control')[0].checked = RVS.L[RVS.S.actionTrgtLayerId].timeline.frames.frame_1.timeline.actionTriggered;
-					jQuery('#overtake_frame_999_control')[0].checked = RVS.L[RVS.S.actionTrgtLayerId].timeline.frames.frame_999.timeline.actionTriggered;
+				if (LREF !==undefined) {
+					RVS.F.checkToggleLayerType(RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx], LREF,2);
+					jQuery('#overtake_frame_1_control')[0].checked = LREF.timeline.frames.frame_1.timeline.actionTriggered;
+					jQuery('#overtake_frame_999_control')[0].checked = LREF.timeline.frames.frame_999.timeline.actionTriggered;
 					RVS.F.turnOnOffVisUpdate({input:document.getElementById('overtake_frame_1_control')});
 					RVS.F.turnOnOffVisUpdate({input:document.getElementById('overtake_frame_999_control')});
-					jQuery('#la_triggerMemory').val(RVS.L[RVS.S.actionTrgtLayerId].actions.triggerMemory).ddTP('change');
+					jQuery('#la_triggerMemory').val(LREF.actions.triggerMemory).ddTP('change');
 					RVS.F.updatePlayFrameXOnlyOnAction(null,"X");
 					RVS.F.updatePlayFrameXOnlyOnAction(null,"N");
 					RVS.F.updatePlayFrameXOnlyOnAction(null,"M");
 				}
 			}
+
+			RVS.F.updateEasyInputs({container:jQuery('#rbm_layer_action'), path:RVS.S.slideId+".layers."+RVS.selLayers[0]+".", trigger:"init"});
+			RVS.F.upadteLayerTargetDropDowns({action:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action, targetid:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].layer_target});
+			RVS.F.updateSlideList({action:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action, targetid:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].jump_to_slide});
+			RVS.F.updateLinkTypes({action:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action, linktype:RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].link_type});
+
 			jQuery('#layer_action_fake').html(RVS.LIB.ACTIONTYPES[RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].action].name);
 		}
 	};
+
+	RVS.F.updateReferencigToggleLayerType = function() {
+		for (var i in RVS.L) {
+			if (RVS.L[i].actions && RVS.L[i].actions.action.length>0)
+				for (var j in RVS.L[i].actions.action) {
+					if (!RVS.L[i].actions.action.hasOwnProperty(j)) continue;
+					var action = RVS.L[i].actions.action[j];
+					if (action.action==="toggle_layer")	{
+						//FIND THE CORRECT TARGET IN STATIC OR NORMAL LAYERS
+						if ((""+action.layer_target).indexOf("static-")>=0 && RVS.SLIDER.staticSlideId!==undefined && RVS.SLIDER[RVS.SLIDER.staticSlideId]!==undefined && RVS.SLIDER[RVS.SLIDER.staticSlideId].layers!==undefined)
+							RVS.F.checkToggleLayerType(action, (RVS.SLIDER[RVS.SLIDER.staticSlideId].layers[(""+action.layer_target).replace("static-","")]), 1);
+						else
+						if (RVS.L[action.layer_target]!==undefined) RVS.F.checkToggleLayerType(action, RVS.L[action.layer_target], 1);
+					}
+				}
+
+		}
+	}
+
+	RVS.F.checkToggleLayerType = function(action, LREF, how) {
+		if (LREF!==undefined && action.action==="toggle_layer") {
+			//On Select read the current actionTriggered Type. If Exists use it, if not. set it.
+			if (LREF.timeline.frames.frame_1.timeline.actionTriggered!==undefined && how==1) {
+				action.toggle_layer_type = LREF.timeline.frames.frame_1.timeline.actionTriggered ? "hidden" : "visible";
+			} else if (action.toggle_layer_type==="visible")
+				LREF.timeline.frames.frame_1.timeline.actionTriggered = false;
+			else
+				LREF.timeline.frames.frame_1.timeline.actionTriggered = true;
+			LREF.timeline.frames.frame_999.timeline.actionTriggered = true;
+		}
+		return action;
+	}
+
+
 
 	/*
 	CHECK IF A LAYER FRAME IS TRIGGERED BY ANY OTHER LAYER
@@ -135,6 +145,18 @@ RVS.LIB.ACTIONTYPES = {};
 		var uid = parseInt(_.layerid,0);
 		return RVS.L[uid].timeline.frames[_.frame].timeline.actionTriggered;
 	};
+
+	function layerFrameTriggeredBy_subrutine_a(isstatic,trgt,uid,DS_RND) {
+		return (isstatic && trgt==="static-"+uid) || (isstatic && RVS.SLIDER.slideIDs[DS_RND]===RVS.S.slideId && parseInt(trgt,0) === parseInt(uid,0)) || (!isstatic && parseInt(trgt,0) === parseInt(uid,0));
+	}
+	function layerFrameTriggeredBy_subrutine_b(a,frame) {
+
+		return ((a.action==="start_in" && (frame==="any" || frame==="frame_1")) ||
+				(a.action==="start_out" && (frame==="any" || frame==="frame_999"))  ||
+				(a.action==="toggle_layer" && (frame==="any" || frame==="frame_1" || frame==="frame_999")) ||
+				(a.action==="toggle_frames" && (frame==="any" || a.gotoframeM===frame || a.gotoframeN===frame)) ||
+				(a.action==="start_frame" && (frame==="any" || a.gotoframe===frame)))
+	}
 
 	RVS.F.layerFrameTriggeredBy = function(o) {
 		var uid = parseInt(o.layerid,0),
@@ -148,21 +170,18 @@ RVS.LIB.ACTIONTYPES = {};
 			for (var i in layers) {
 				if ((o.all===undefined && triggeredby.length>0) || !layers.hasOwnProperty(i)) continue;
 				if (layers[i].actions !==undefined) {
+					//ACTIVE CHECKS
 					for (var j in layers[i].actions.action)	{
-						if((o.all===undefined && triggeredby.length>0) || !layers[i].actions.action.hasOwnProperty(j) || layers[i].actions.action[j].layer_target===undefined ) continue;
+						if((o.all===undefined && triggeredby.length>0) || !layers[i].actions.action.hasOwnProperty(j) || layers[i].actions.action[j].layer_target===undefined || layers[i].actions.action[j].ajaxSettings!==undefined || layers[i].actions.action[j].fn!==undefined || layers[i].actions.action[j].guid!==undefined || layers[i].actions.action[j].lastModified!==undefined) continue;
+						if (layerFrameTriggeredBy_subrutine_a(isstatic,layers[i].actions.action[j].layer_target,uid,DS_RND) && layerFrameTriggeredBy_subrutine_b(layers[i].actions.action[j],o.frame)) triggeredby.push({icon:RVS.F.getLayerIcon(layers[i].linebreak ? 'linebreak' : layers[i].type,layers[i].subtype), action:layers[i].actions.action[j].action,  uid : parseInt(layers[i].uid,0), alias:layers[i].alias, slide:o.src===undefined &&  DS_RND!==-1 ? RVS.SLIDER.slideIDs[DS_RND] : RVS.S.slideId});
 
-						if ((isstatic && layers[i].actions.action[j].layer_target==="static-"+uid) ||
-							(isstatic && RVS.SLIDER.slideIDs[DS_RND]===RVS.S.slideId && parseInt(layers[i].actions.action[j].layer_target,0) === parseInt(uid,0)) ||
-							(!isstatic && parseInt(layers[i].actions.action[j].layer_target,0) === parseInt(uid,0))) {
-							var  ac = layers[i].actions.action[j].action;
-						  	if ((ac==="start_in" && (o.frame==="any" || o.frame==="frame_1")) ||
-						  		(ac==="start_out" && (o.frame==="any" || o.frame==="frame_999"))  ||
-						  		(ac==="toggle_layer" && (o.frame==="any" || o.frame==="frame_1" || o.frame==="frame_999")) ||
-						  		(ac==="toggle_frames" && (o.frame==="any" || layers[i].actions.action[j].gotoframeM===o.frame || layers[i].actions.action[j].gotoframeN===o.frame)) ||
-						  		(ac==="start_frame" && (o.frame==="any" || layers[i].actions.action[j].gotoframe===o.frame))) {
-									triggeredby.push({icon:RVS.F.getLayerIcon(layers[i].type,layers[i].subtype), action:ac,  uid : parseInt(layers[i].uid,0), alias:layers[i].alias, slide:o.src===undefined &&  DS_RND!==-1 ? RVS.SLIDER.slideIDs[DS_RND] : RVS.S.slideId});
-						  		}
-						}
+					}
+					// INACTIVE CHECKS
+					if (layers[i].actions.inactive_actions!==undefined)
+					for (var j in layers[i].actions.inactive_actions)	{
+						if((o.all===undefined && triggeredby.length>0) || !layers[i].actions.inactive_actions.hasOwnProperty(j) || layers[i].actions.inactive_actions[j].layer_target===undefined || layers[i].actions.inactive_actions[j].ajaxSettings!==undefined || layers[i].actions.inactive_actions[j].fn!==undefined || layers[i].actions.inactive_actions[j].guid!==undefined || layers[i].actions.inactive_actions[j].lastModified!==undefined) continue;
+						if (layerFrameTriggeredBy_subrutine_a(isstatic,layers[i].actions.inactive_actions[j].layer_target,uid,DS_RND) && layerFrameTriggeredBy_subrutine_b(layers[i].actions.inactive_actions[j],o.frame)) triggeredby.push({icon:RVS.F.getLayerIcon(layers[i].linebreak ? 'linebreak' : layers[i].type,layers[i].subtype), action:layers[i].actions.inactive_actions[j].action,  uid : parseInt(layers[i].uid,0), alias:layers[i].alias, slide:o.src===undefined &&  DS_RND!==-1 ? RVS.SLIDER.slideIDs[DS_RND] : RVS.S.slideId});
+
 					}
 				}
 			}
@@ -177,6 +196,7 @@ RVS.LIB.ACTIONTYPES = {};
 		else
 			return triggeredby[0];
 	};
+
 
 
 	RVS.F.updateLayerToggleActionWaits = function() {
@@ -215,7 +235,7 @@ RVS.LIB.ACTIONTYPES = {};
 		var l = RVS.L[RVS.selLayers[0]],
 			ldw = jQuery('#layer_depending_wrap'),
 			depends = RVS.F.layerFrameTriggeredBy({all:true,layerid:RVS.selLayers[0],frame:"any"}),
-			header = '<i class="lwa_icon material-icons">'+RVS.F.getLayerIcon(l.type,l.subtype)+'</i><span class="lwa_layername">'+l.alias+'</span>';
+			header = '<i class="lwa_icon material-icons">'+RVS.F.getLayerIcon(l.linebreak ? 'linebreak' : l.type,l.subtype)+'</i><span class="lwa_layername">'+l.alias+'</span>';
 
 		ldw[0].innerHTML = "";
 
@@ -235,9 +255,49 @@ RVS.LIB.ACTIONTYPES = {};
 		RVS.F.buildActionList();
 	};
 
+
+
+	// Update The Action Relations on all Triggering Layers based on the current Layer Id
+	RVS.F.updateTriggeringActionRelations = function(lid) {
+		var dependson = RVS.F.layerFrameTriggeredBy({all:true,layerid:lid,frame:"any"});
+		for (var i in dependson) {
+			if (!dependson.hasOwnProperty(i)) continue;
+			if (dependson[i].uid!==undefined && dependson[i].action!==undefined)
+			 	RVS.F.checkActionRelations(dependson[i].uid);
+		}
+	}
+
+	//Update the Action Lists in the Layer (with LID Layer ID) to set unneeded actions Inactive
+	RVS.F.checkActionRelations = function(lid) {
+		var l = RVS.L[lid];
+		if(l === undefined) return;
+		l.actions.inactive_actions = l.actions.inactive_actions || [];
+		var	merge = [...l.actions.action,...l.actions.inactive_actions],
+			active=[],inactive=[];
+		for (var i in merge) {
+			if(!merge.hasOwnProperty(i)) continue;
+			if (merge[i].layer_target==="backgroundvideo" || merge[i].layer_target==="firstvideo") if (merge[i].action==="toggle_layer") merge[i].action="toggle_video";
+			var targetlayer = getActionTarget(merge[i]),
+				ignore = false;
+			if (targetlayer.targetid!=-1) {
+				if ((RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid]!==undefined) || (merge[i].layer_target==="backgroundvideo" || merge[i].layer_target==="firstvideo")) {
+					// KEEP IT
+				} else ignore = true;
+			}
+
+			if (!ignore) active.push(merge[i]); else inactive.push(merge[i]);
+		}
+		l.actions.action = active.slice(0);
+		l.actions.inactive_actions = inactive.slice(0);
+
+	}
+
 	RVS.F.buildActionList = function() {
 		var sla = jQuery('#selected_layer_actions'),
-			l = RVS.L[RVS.selLayers[0]];
+			l = RVS.L[RVS.selLayers[0]],
+			newlist=[];
+
+		RVS.F.checkActionRelations(RVS.selLayers[0]);
 		jQuery('.actionDependent').removeClass("actionDependent");
 		jQuery('.actionselected').removeClass("actionselected");
 		// BUILD ACTION LIST
@@ -250,7 +310,7 @@ RVS.LIB.ACTIONTYPES = {};
 			if (targetlayer.targetid!=-1) {
 				if (RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid]!==undefined) {
 					var static = targetlayer.slideid.indexOf('static') >= 0;
-					li += '<i class="sla_icon material-icons">'+RVS.F.getLayerIcon(RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid].type,RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid].subtype)+'</i><span class="sla_layername">'+RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid].alias+(static ? '(S)':'') + '</span>';
+					li += '<i class="sla_icon material-icons">'+RVS.F.getLayerIcon(RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid].linebreak ? 'linebreak' : RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid].type,RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid].subtype)+'</i><span class="sla_layername">'+RVS.SLIDER[targetlayer.slideid].layers[targetlayer.targetid].alias+(static ? '(S)':'') + '</span>';
 					if (!static) RVS.H[targetlayer.targetid].w.addClass("actionDependent");
 				}
 				else
@@ -272,6 +332,7 @@ RVS.LIB.ACTIONTYPES = {};
 			li += '<div class="single_layer_toolbar"><i class="material-icons duplicate_single_layer_action">content_copy</i><i class="material-icons delete_single_layer_action">delete_forever</i></div>';
 			li += '</li>';
 			sla.append(li);
+
  		}
  		//LAYER HAS NO ACTION YET
  		if (l.actions.action.length===0) {
@@ -319,6 +380,7 @@ RVS.LIB.ACTIONTYPES = {};
 						if (RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].modalslide!==undefined) gf[0].value = RVS.L[RVS.selLayers[0]].actions.action[RVS.S.actionIdx].modalslide;
 						//UPDATE SELECT LIST
                         gf.ddTP({placeholder:"Select From List"});
+						RVS.F.updateEasyInputs({container:jQuery('#rbm_layer_action'), path:RVS.S.slideId+".layers."+RVS.selLayers[0]+".", trigger:"init"});
                     }
 				});
 
@@ -333,8 +395,8 @@ RVS.LIB.ACTIONTYPES = {};
 		for (var i in xmn) if (xmn.hasOwnProperty(i)) {
 
             if (RVS.S.actionTrgtLayerId===undefined) return;
-            var static = RVS.S.actionTrgtLayerId.indexOf('static-')>=0,
-                layerid = RVS.S.actionTrgtLayerId.replace('static-',''),
+			var static = typeof RVS.S.actionTrgtLayerId === 'string' && RVS.S.actionTrgtLayerId.indexOf('static-')>=0,
+				layerid = typeof RVS.S.actionTrgtLayerId === 'string' ? RVS.S.actionTrgtLayerId.replace('static-','') : RVS.S.actionTrgtLayerId,
                 layer = static ? RVS.SLIDER[RVS.SLIDER.staticSlideId].layers[layerid] : RVS.L[RVS.S.actionTrgtLayerId],
                 op ="",
                 gf=jQuery('#la_gotoframe'+xmn[i]);
@@ -375,8 +437,9 @@ RVS.LIB.ACTIONTYPES = {};
 		b = b===undefined ? "X" : typeof b ==="object" ? b.eventparam : b;
 
 		if (RVS.S.actionTrgtLayerId===undefined) return;
-		var static = RVS.S.actionTrgtLayerId.indexOf('static-') >= 0,
-			layerid = RVS.S.actionTrgtLayerId.replace('static-', ''),
+
+		var static = typeof RVS.S.actionTrgtLayerId === 'string' && RVS.S.actionTrgtLayerId.indexOf('static-') >= 0,
+			layerid = typeof RVS.S.actionTrgtLayerId === 'string' ? RVS.S.actionTrgtLayerId.replace('static-', '') : RVS.S.actionTrgtLayerId,
 			layer = static ? RVS.SLIDER[RVS.SLIDER.staticSlideId].layers[layerid] : RVS.L[RVS.S.actionTrgtLayerId];
 
 		var inp = document.getElementById('overtake_frame'+b+'_control'),
@@ -403,7 +466,7 @@ RVS.LIB.ACTIONTYPES = {};
 		for (var l in RVS.L) {
 			if(!RVS.L.hasOwnProperty(l)) continue;
 			if (RVS.L[l].type!==undefined &&RVS.L[l].type!=="zone" && (!showmedia || (RVS.L[l].type==="video" || RVS.L[l].type==="audio")))
-				lalt[0].innerHTML += '<option data-icon="'+RVS.F.getLayerIcon(RVS.L[l].type)+'" value="'+RVS.L[l].uid+'">'+RVS.L[l].alias+'</option>';
+				lalt[0].innerHTML += '<option data-icon="'+RVS.F.getLayerIcon(RVS.L[l].linebreak ? 'linebreak' : RVS.L[l].type)+'" value="'+RVS.L[l].uid+'">'+RVS.L[l].alias+'</option>';
 		}
 		if ((""+RVS.S.slideId).indexOf("static_")===-1 && RVS.SLIDER.staticSlideId!==undefined && RVS.SLIDER[RVS.SLIDER.staticSlideId]!==undefined) {
 			lalt[0].innerHTML += '<optgroup label="'+RVS_LANG.globalLayers+'">';
@@ -411,7 +474,7 @@ RVS.LIB.ACTIONTYPES = {};
 			for (var l in _GL) {
 				if(!_GL.hasOwnProperty(l)) continue;
 				if (_GL[l].type!==undefined && _GL[l].type!=="zone" && (!showmedia || (_GL[l].type==="video" || _GL[l].type==="audio")))
-					lalt[0].innerHTML += '<option data-icon="'+RVS.F.getLayerIcon(_GL[l].type)+'" value="static-'+_GL[l].uid+'">'+_GL[l].alias+'</option>';
+					lalt[0].innerHTML += '<option data-icon="'+RVS.F.getLayerIcon(_GL[l].linebreak ? 'linebreak' : _GL[l].type)+'" value="static-'+_GL[l].uid+'">'+_GL[l].alias+'</option>';
 			}
 			lalt[0].innerHTML +=  '</optgroup>';
 		}
@@ -524,6 +587,7 @@ RVS.LIB.ACTIONTYPES = {};
 			{val:"menu", inputs:"#la_settings_link_menu, #la_settings_link,#la_settings_scroll_under"},
 			{val:"link", inputs:"#la_settings_link_url,#la_settings_link,#la_settings_link_type"},
 			{val:"callback", inputs:"#la_settings_callback"},
+			{val:"getAccelerationPermission", inputs:"#la_settings_getAccelerationPermissionk"},
 			{val:"scrollto", inputs:"#la_settings_scroll_to,#la_settings_scroll_under"},
 			{val:"scroll_under", inputs:"#la_settings_scroll_under"}]});
 
@@ -645,6 +709,50 @@ RVS.LIB.ACTIONTYPES = {};
 			return false;
 		});
 
+		//Clean up the broken Actions
+		RVS.F.cleanUpAllActions = function() {
+			for (var i in RVS.L) if (RVS.L.hasOwnProperty(i)) cleanUpActions(i);
+		}
+
+		RVS.F.cleanUpActions = function(i) {
+			var cleanActions = [];
+			if (RVS.L[i].actions!==undefined) {
+				for (var j in RVS.L[i].actions.action) {
+					if (RVS.L[i].actions.action[j].migrateMute==undefined && RVS.L[i].actions.action[j].rsColorPicker==undefined && RVS.L[i].actions.action[j].get==undefined)
+					cleanActions.push(RVS.L[i].actions.action[j]);
+				}
+				RVS.L[i].actions = cleanActions;
+			}
+		}
+
+		RVS.F.updateDuplicatedLayerActionDependencies = function(newid, oldid) {
+			var olddeps = RVS.F.layerFrameTriggeredBy({all:true,layerid:oldid,frame:"any"}),
+				action, exttmp, extend=[],i,j,olddepsuids=[];
+
+			for (i in olddeps) {
+				if (!olddeps.hasOwnProperty(i) || RVS.L[olddeps[i].uid]===undefined) continue;
+				if (jQuery.inArray(""+olddeps[i].uid,olddepsuids)===-1) olddepsuids.push(""+olddeps[i].uid);
+			}
+			for (i in olddepsuids) {
+				extend=[];
+				for (j in RVS.L[olddepsuids[i]].actions.action) {
+
+					if (!RVS.L[olddepsuids[i]].actions.action.hasOwnProperty(j) ||
+						jQuery.inArray(RVS.L[olddepsuids[i]].actions.action[j].action, RVS.LIB.ACTION_WITH_TRGT) == -1 ||
+						(""+RVS.L[olddepsuids[i]].actions.action[j].layer_target) !== (""+oldid)) continue;
+					else {
+						exttmp = RVS.F.safeExtend(true,{},RVS.L[olddepsuids[i]].actions.action[j]);
+						exttmp.layer_target = ""+newid;
+						extend.push(exttmp);
+					}
+				}
+				if (extend.length>0)  for ( j in extend) if(extend.hasOwnProperty(i)) {
+					RVS.L[olddeps[i].uid].actions.action.push(RVS.F.safeExtend(true,{},extend[j]));
+				}
+			}
+
+		}
+
 		// DUPLICATE NEW LAYER ACTION
 		RVS.DOC.on('click','.duplicate_single_layer_action',function() {
 			var li = jQuery(this).closest('.single_layer_action'),
@@ -744,9 +852,9 @@ RVS.LIB.ACTIONTYPES = {};
 
 		RVS.DOC.on('refreshLayerToggleState',function() {
 
-            var static = RVS.S.actionTrgtLayerId.indexOf('static-') >= 0,
-                layerid = RVS.S.actionTrgtLayerId.replace('static-', ''),
-                layer = static ? RVS.SLIDER[RVS.SLIDER.staticSlideId].layers[layerid] : RVS.L[RVS.S.actionTrgtLayerId];
+			var static = typeof RVS.S.actionTrgtLayerId === 'string' && RVS.S.actionTrgtLayerId.indexOf('static-') >= 0,
+				layerid = typeof RVS.S.actionTrgtLayerId === 'string' ? RVS.S.actionTrgtLayerId.replace('static-', '') : RVS.S.actionTrgtLayerId,
+				layer = static ? RVS.SLIDER[RVS.SLIDER.staticSlideId].layers[layerid] : RVS.L[RVS.S.actionTrgtLayerId];
 
 			if (jQuery('#toggle_layer_type').val()=="visible")
                 layer.timeline.frames.frame_1.timeline.actionTriggered = false;

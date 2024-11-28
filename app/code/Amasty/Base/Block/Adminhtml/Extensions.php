@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -15,8 +15,14 @@ use Amasty\Base\Model\AmastyMenu\ModuleTitlesResolver;
 use Amasty\Base\Model\Feed\ExtensionsProvider;
 use Amasty\Base\Model\ModuleInfoProvider;
 use Amasty\Base\Model\ModuleListProcessor;
+use Amasty\Base\Model\SysInfo\Command\LicenceService\GetCurrentLicenseValidation;
+use Amasty\Base\Model\SysInfo\Data\LicenseValidation;
+use Amasty\Base\Model\SysInfo\Data\LicenseValidation\Module;
+use Amasty\Base\Model\SysInfo\Data\LicenseValidation\Module\Message;
+use Amasty\Base\Model\SysInfo\Data\LicenseValidation\Module\VerifyStatus;
 use Magento\Backend\Block\Template;
 use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Serialize\Serializer\Json;
 
@@ -27,6 +33,7 @@ class Extensions extends Field
     /**
      * Constants for keys of data array
      */
+    public const CODE = 'code';
     public const NAME = 'name';
     public const VERSION = 'version';
     public const LAST_VERSION = 'last_version';
@@ -35,6 +42,8 @@ class Extensions extends Field
     public const IS_SOLUTION = 'is_solution';
     public const PLAN_LABEL = 'plan_label';
     public const UPGRADE_URL = 'upgrade_url';
+    public const VERIFY_STATUS = 'verify_status';
+    public const MESSAGES = 'messages';
 
     /**
      * @var string
@@ -71,6 +80,11 @@ class Extensions extends Field
      */
     private $activeSolutionsProvider;
 
+    /**
+     * @var GetCurrentLicenseValidation
+     */
+    private $currentLicenseValidation;
+
     public function __construct(
         Template\Context $context,
         ModuleListProcessor $moduleListProcessor,
@@ -79,7 +93,8 @@ class Extensions extends Field
         Json $serializer,
         ModuleTitlesResolver $moduleTitlesResolver,
         ActiveSolutionsProvider $activeSolutionsProvider,
-        array $data = []
+        array $data = [],
+        GetCurrentLicenseValidation $currentLicenseValidation = null
     ) {
         parent::__construct($context, $data);
         $this->moduleListProcessor = $moduleListProcessor;
@@ -88,6 +103,8 @@ class Extensions extends Field
         $this->serializer = $serializer;
         $this->moduleTitlesResolver = $moduleTitlesResolver;
         $this->activeSolutionsProvider = $activeSolutionsProvider;
+        $this->currentLicenseValidation = $currentLicenseValidation
+            ?: ObjectManager::getInstance()->get(GetCurrentLicenseValidation::class);
     }
 
     protected function _getElementHtml(AbstractElement $element)
@@ -126,7 +143,7 @@ class Extensions extends Field
             }
             $planLabel = $isSolution ? $activeSolutions[$moduleCode]['solution_version'] : '';
             $item = [];
-
+            $item[self::CODE] = $moduleCode;
             $item[self::NAME] = $this->moduleTitlesResolver->trimTitle(
                 htmlspecialchars_decode($module['description']),
                 $planLabel
@@ -141,7 +158,8 @@ class Extensions extends Field
 
             $result[] = $item;
         }
-        usort($result, function ($a, $b) {
+        $this->processLicenseValidationModulesStatus($result);
+        usort($result, static function ($a, $b) {
             return strcasecmp($a['name'], $b['name']);
         });
 
@@ -154,5 +172,54 @@ class Extensions extends Field
         $anchor = $this->isOriginMarketplace() ? '#product.info.details.release_notes' : '#changelog';
 
         return $moduleUrl . $seo . $anchor;
+    }
+
+    private function processLicenseValidationModulesStatus(array &$modules): void
+    {
+        $licenseValidation = $this->currentLicenseValidation->get();
+        if ($licenseValidation->isNeedCheckLicense() !== true) {
+            return;
+        }
+
+        $licenseValidationModules = $this->getLicenseModulesSortedByCode($licenseValidation);
+        foreach ($modules as &$moduleData) {
+            $licenseModule = $licenseValidationModules[$moduleData[self::CODE]] ?? null;
+            if (!$licenseModule || !$licenseModule->getVerifyStatus()) {
+                $moduleData[self::VERIFY_STATUS] = [
+                    VerifyStatus::TYPE => 'pending',
+                    VerifyStatus::STATUS => 'Pending Verification'
+                ];
+                $moduleData[self::MESSAGES][] = [
+                    Message::TYPE => 'pending',
+                    Message::CONTENT => 'Please verify the product'
+                ];
+            } else {
+                $verifyStatus = $licenseModule->getVerifyStatus();
+                $moduleData[self::VERIFY_STATUS] = [
+                    VerifyStatus::TYPE => $verifyStatus ? $verifyStatus->getType() : 'pending',
+                    VerifyStatus::STATUS => $verifyStatus ? $verifyStatus->getStatus() : 'Pending Verification'
+                ];
+                foreach ($licenseModule->getMessages() as $message) {
+                    $moduleData[self::MESSAGES][] = [
+                        Message::TYPE => $message->getType(),
+                        Message::CONTENT => $message->getContent()
+                    ];
+                }
+            }
+        }
+    }
+
+    /**
+     * @param LicenseValidation $licenseValidation
+     * @return Module[]
+     */
+    private function getLicenseModulesSortedByCode(LicenseValidation $licenseValidation): array
+    {
+        $result = [];
+        foreach ($licenseValidation->getModules() as $module) {
+            $result[$module->getCode()] = $module;
+        }
+
+        return $result;
     }
 }

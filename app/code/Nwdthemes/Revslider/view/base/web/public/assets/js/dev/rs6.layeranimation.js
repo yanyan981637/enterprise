@@ -1,6 +1,6 @@
 /************************************************
  * REVOLUTION EXTENSION LAYER ANIMATION
- * @date: 01.02.2021
+ * @date: 06.10.2022
  * @requires rs6.main.js
  * @author ThemePunch
  ************************************************/
@@ -9,7 +9,7 @@
 	"use strict";
 
 	var
-		version = "6.4.0",
+		version = "6.6.0",
 		splitTypes = ["chars", "words", "lines"],
 		HR = ["Top", "Right", "Bottom", "Left"],
 		CO = ["TopLeft", "TopRight", "BottomRight", "BottomLeft"],
@@ -38,13 +38,15 @@
 			return reset;
 		},
 
-
-
 		requestLayerUpdates: function(id, type, layerid, tPE) {
 			// Update Force Hidden Classes
 			var i, tch, hid, v;
 			if (layerid !== undefined) {
+
+
 				i = layerid;
+
+
 				//SHOW / HIDE Layers within Menus etc. where Parrent not yet started
 				if (_R[id]._L[i].pVisRequest !== _R[id]._L[i].pVisStatus) {
 					if (_R[id]._L[i]._ligid === undefined || _R[id]._L[_R[id]._L[i]._ligid].childrenAtStartNotVisible !== true) {
@@ -56,8 +58,12 @@
 						hid = "add";
 						tch = "remove";
 					}
+
+
+					if (_R[id]._L[i].type==="group" && tch=="add" && (_R[id]._L[i].pVisStatus === 1 ? 'visible' : _R[id]._L[i].pVisStatus === 0 ? 'hidden' : _R[id]._L[i].pVisStatus)=="hidden") hid="add";
 					if (tch !== undefined) _R[id]._L[i].p[0].classList[tch]("rs-forceuntouchable");
 					if (hid !== undefined) _R[id]._L[i].p[0].classList[hid]("rs-forcehidden");
+
 				}
 
 				if (_R[id]._L[i].pPointerStatus !== _R[id]._L[i].pPeventsRequest) {
@@ -110,45 +116,75 @@
 			if (_R[id].smiddleZones && _R[id].smiddleZones.length > 0)
 				for (i = 0; i < _R[id].smiddleZones.length; i++)
 					tpGS.gsap.set(_R[id].smiddleZones[i], { y: Math.round(_R[id].module.height / 2 - _R[id].smiddleZones[i].offsetHeight / 2) + "px" });
+
+
 		},
 
 		// CALCULATE SUM OF ALL ROW HEIGHTS
-		getRowHeights: function(id) {
+		getRowHeights: function(id, onli) {
+			// If no Layer calcualted yet at all, we dont need to respect the Current Row height
+			if (!_R[id].firstLayerCalculated) return { cur:0, last:0, cache:[],tz:0};
 			var mh = 0,
 				omh = 0,
 				smh = 0,
-				_actli = _R[id].pr_processing_key || _R[id].pr_active_key || 0,
-				_oldli = _R[id].pr_active_key || 0;
+				_actli = onli!==undefined ? onli : _R[id].pr_processing_key || _R[id].pr_active_key || 0,
+				_oldli = onli!==undefined ? onli : _R[id].pr_active_key || 0;
+
+			_R[id].rowMiddleHeights = _R[id].rowMiddleHeights == undefined ? {} : _R[id].rowMiddleHeights;
+			_R[id].rowMiddleHeights[_actli] = 0;
 
 			if (_R[id].rowzones && _R[id].rowzones.length > 0) {
 				if (_R[id].rowzones[_actli] !== undefined)
 					for (var a = 0; a < _R[id].rowzones[_actli].length; a++) {
 						_R[id].rowzonesHeights[_actli][a] = _R[id].rowzones[_actli][a][0].offsetHeight;
 						mh += _R[id].rowzonesHeights[_actli][a];
+						if (_R[id].rowzones[_actli][a][0].dataset.middle=="true")
+						_R[id].rowMiddleHeights[_actli] +=  _R[id].rowzonesHeights[_actli][a];
 					}
 
-				if (_oldli !== _actli)
+				if (_oldli !== _actli) {
+					_R[id].rowMiddleHeights[_oldli] = 0;
 					for (a = 0; a < _R[id].rowzones[_oldli].length; a++) {
 						_R[id].rowzonesHeights[_oldli][a] = _R[id].rowzones[_oldli][a][0].offsetHeight;
 						omh += _R[id].rowzonesHeights[_oldli][a];
+						if (_R[id].rowzones[_oldli][a][0].dataset.middle=="true") _R[id].rowMiddleHeights[_oldli] += _R[id].rowzonesHeights[_oldli][a];
 					}
+				}
 
 				//mh = omh/2>mh ? omh : mh;  // To Avoid Minimal Portfolio Website Jumps
 			}
-			if (_R[id].srowzones && _R[id].srowzones.length > 0)
-				for (a = 0; a < _R[id].srowzones.length; a++) smh += _R[id].srowzones[a][0].offsetHeight;
+			if (_R[id].srowzones && _R[id].srowzones.length > 0) {
+				_R[id].rowMiddleHeights.static = 0;
+				for (a = 0; a < _R[id].srowzones.length; a++) {
+					smh += _R[id].srowzones[a][0].offsetHeight;
+					if (_R[id].srowzones[a][0].dataset.middle=="true") _R[id].rowMiddleHeights.static += _R[id].srowzones[a][0].offsetHeight;
+				}
+			}
 
 			mh = mh < smh ? smh : mh;
 
-			return { cur: mh, last: omh };
+			var cache =  _R[id].rowHeights===undefined ? [] :  _R[id].rowHeights.cache,
+				tz = new Date().getTime();
+
+			if (_R[id].rowHeights!==undefined && tz-_R[id].rowHeights.tz<300) {
+				//Check if we are in Loop
+				if (_R[id].rowHeights.cache.length>5) {
+					mh = _R[id].rowHeights.cache[_R[id].rowHeights.cache.length-1]===mh ? _R[id].rowHeights.cache[_R[id].rowHeights.cache.length-2] : _R[id].rowHeights.cache[_R[id].rowHeights.cache.length-1];
+					tz = _R[id].rowHeights.tz;
+				}
+			} else {
+				cache = [];
+			}
+
+			return { cur: mh, last: omh, cache:cache, tz:tz };
 
 		},
 
 		getGridOffset: function(id, slideIndex, basealign, isstatic) {
 			var gw = basealign === "grid" ? _R[id].canv.width : _R[id].sliderType === "carousel" && !isstatic ? _R[id].carousel.slide_width : _R[id].canv.width,
 				gh = _R[id].useFullScreenHeight ? _R[id].module.height : basealign === "grid" ? _R[id].content.height : _R[id].sliderType === "carousel" && !isstatic ? _R[id].canv.height : _R[id].module.height, //_R[id].carousel.slide_height :  _R[id].module.height;
-				offsety = basealign === "slide" ? 0 : Math.max(0, _R[id].sliderLayout == "fullscreen" ? _R[id].module.height / 2 - (_R.iHE(id) * (_R[id].keepBPHeight ? 1 : _R[id].CM.h)) / 2 : (_R[id].autoHeight || (_R[id].minHeight != undefined && _R[id].minHeight > 0) || _R[id].keepBPHeight) ? _R[id].canv.height / 2 - (_R.iHE(id) * _R[id].CM.h) / 2 : 0),
-				offsetx = basealign === "slide" ? 0 : Math.max(0, (_R[id].sliderType === "carousel" ? 0 : _R[id].canv.width / 2 - (_R.iWA(id, slideIndex) * _R[id].CM.w) / 2));
+				offsety = basealign === "slide" || (_R[id].sliderType=="carousel" && _R[id].carousel.orientation=="v")  ? 0 : Math.max(0, _R[id].sliderLayout == "fullscreen" ? _R[id].module.height / 2 - (_R.iHE(id) * (_R[id].keepBPHeight ? 1 : _R[id].CM.h)) / 2 : (_R[id].autoHeight || (_R[id].minHeight != undefined && _R[id].minHeight > 0) || _R[id].keepBPHeight) ? _R[id].canv.height / 2 - (_R.iHE(id) * _R[id].CM.h) / 2 : 0),
+				offsetx = basealign === "slide" ? 0 : Math.max(0, (_R[id].sliderType === "carousel" && _R[id].carousel.orientation!=='v'? 0 : _R[id].canv.width / 2 - (_R.iWA(id, slideIndex) * _R[id].CM.w) / 2));
 			if (basealign !== "slide" && _R[id].sliderType === "carousel" && isstatic && _R[id].carousel !== undefined && _R[id].carousel.horizontal_align !== undefined)
 				offsetx = Math.max(0, (_R[id].carousel.horizontal_align === "center" ? 0 + (_R[id].module.width - (_R.iWA(id, 'static') * _R[id].CM.w)) / 2 : _R[id].carousel.horizontal_align === "right" ? (_R[id].module.width - (_R[id].gridwidth[_R[id].level] * _R[id].CM.w)) : offsetx));
 
@@ -224,23 +260,28 @@
 					_.c = L;
 
 					_.p = _R[id]._Lshortcuts[layer.id].p;
-					_.lp = _R[id]._Lshortcuts[layer.id].lp;
-					_.m = _R[id]._Lshortcuts[layer.id].m;
+					_.lp = _.reqWrp.loop ? _R[id]._Lshortcuts[layer.id].lp : undefined;
+					_.m =  _.reqWrp.mask ? _R[id]._Lshortcuts[layer.id].m : undefined;
 
 					_.triggercache = _.triggercache === undefined ? "reset" : _.triggercache;
 					_.rsp_bd = _.rsp_bd === undefined ? _.type === "column" || _.type === "row" ? "off" : "on" : _.rsp_bd;
 					_.rsp_o = _.rsp_o === undefined ? "on" : _.rsp_o;
 					_.basealign = _.basealign === undefined ? "grid" : _.basealign;
-
-					_.group = _.type !== "group" && _R.closestNode(L[0], 'RS-GROUP-WRAP') !== null /*L.closest('rs-group-wrap').length>0*/ ? "group" : _.type !== "column" && _R.closestNode(L[0], 'RS-COLUMN') !== null /*L.closest('rs-column').length>0*/ ? "column" : _.type !== "row" && _R.closestNode(L[0], 'RS-ROW') !== null /*L.closest("rs-row").length>0 */ ? "row" : undefined;
-					_._lig = _.group === "group" ? jQuery(_R.closestNode(L[0], 'RS-GROUP')) /*L.closest('rs-group')*/ : _.group === "column" ? jQuery(_R.closestNode(L[0], 'RS-COLUMN')) /*L.closest('rs-column')*/ : _.group === "row" ? jQuery(_R.closestNode(L[0], 'RS-ROW')) : undefined;
+					let tmpgrp;
+					_.group = (_.type !== "group" && ((tmpgrp = _R.closestNode(L[0], 'RS-GROUP')) !== null))  || (_.type === "group" && ((tmpgrp = _R.closestNode(L[0].parentNode, 'RS-GROUP')) !== null)) ? "group" : _.type !== "column" && ((tmpgrp = _R.closestNode(L[0], 'RS-COLUMN')) !== null)  ? "column" : _.type !== "row" && ((tmpgrp = _R.closestNode(L[0], 'RS-ROW')) !== null)  ? "row" : undefined;
+					_._lig = tmpgrp!==null && tmpgrp!==undefined ? jQuery(tmpgrp) : undefined;
 					_._ligid = _._lig !== undefined ? _._lig[0].id : undefined;
+
 					_._column = L[0].tagName === "RS-COLUMN" ? jQuery(_R.closestNode(L[0], 'RS-COLUMN-WRAP')) /*L.closest("rs-column-wrap")*/ : "none";
 					_._row = L[0].tagName === "RS-COLUMN" ? jQuery(_R.closestNode(L[0], 'RS-ROW')) /*L.closest("rs-row") */ : false;
 					_._ingroup = _.group === "group";
 					_._incolumn = _.group === "column";
 					_._inrow = _.group === "row";
 					_.fsom = _.fsom=="true" || _.fsom==true;
+					_.fullinset = ""+_.fullinset=="true" ? true : false;
+
+					_.position = _.pos!==undefined ? _.pos=="r" ? "relative" : "absolute" : _._incolumn ? "relative" : "absolute";
+
 
 					// EXTEND SBA IF PARRENT ELLEMENT IS ALREADY SBA
 					if ((_._ingroup || _._incolumn) && _._lig[0].className.indexOf('rs-sba') >= 0 && !(_.animationonscroll === false && _.frames.loop !== undefined) && _.animOnScrollForceDisable !== true) { _.animationonscroll = true;
@@ -270,7 +311,7 @@
 					_.layertype = _.type === "image" ? "image" : L[0].className.indexOf("rs-layer-video") >= 0 || L[0].className.indexOf("rs-layer-audio") >= 0 || (_.deepiframe.length > 0 && (_.deepiframe[0].src.toLowerCase().indexOf('youtube') > 0 || _.deepiframe[0].src.toLowerCase().indexOf('vimeo') > 0)) || _.deepmedia.length > 0 ? "video" : "html";
 					if (_.deepiframe.length > 0) _R.sA(_.deepiframe[0], "layertype", _.layertype);
 
-					if (_.type === "column") {
+					if (_.type === "column" && _.cbgexists) {
 						_.cbg = jQuery(_R.getByTag(_.p[0], "RS-COLUMN-BG")[0]);
 						_.cbgmask = jQuery(_R.getByTag(_.p[0], "RS-CBG-MASK-WRAP")[0]);
 					}
@@ -283,7 +324,7 @@
 					// Check for two special Metas ->
 					// total_slide_count and current_slide_index
 					if (_.type === "text") {
-						_.c[0].innerHTML = _.c[0].innerHTML.replace('{{total_slide_count}}', _R[id].realslideamount);
+						if(_.c[0].innerHTML.indexOf('{{total_slide_count}}') !== -1) _.c[0].innerHTML = _.c[0].innerHTML.replace('{{total_slide_count}}', _R[id].realslideamount);
 
 						if (_.c[0].innerHTML.indexOf('{{current_slide_index}}') >= 0) {
 							if (_._isstatic) {
@@ -320,19 +361,12 @@
 							if (!_.border.hasOwnProperty(u)) continue;
 							s = _.border[u].split(":");
 							switch (s[0]) {
-								case "boc":
-									_.bordercolor = s[1];
-									break;
-								case "bow":
-									_.borderwidth = _R.revToResp(s[1], 4, 0);
-									break;
-								case "bos":
-									_.borderstyle = _R.revToResp(s[1], 4, 0);
-									break;
-								case "bor":
-									_.borderradius = _R.revToResp(s[1], 4, 0);
-									break;
+								case "boc":_.bordercolor = s[1];break;
+								case "bow":_.borderwidth = _R.revToResp(s[1], 4, 0);break;
+								case "bos":_.borderstyle = _R.revToResp(s[1], 4, 0);break;
+								case "bor":_.borderradius = _R.revToResp(s[1], 4, 0);break;
 							}
+
 						}
 					}
 
@@ -351,133 +385,95 @@
 						_.btrans = { rX: 0, rY: 0, rZ: 0, o: 1 };
 						btr = btr.split(";"); for (u in btr) { if (!btr.hasOwnProperty(u)) continue;
 							s = btr[u].split(":"); switch (s[0]) {
-								case "rX":
-									_.btrans.rX = s[1]; break;
-								case "rY":
-									_.btrans.rY = s[1]; break;
-								case "rZ":
-									_.btrans.rZ = s[1]; break;
-								case "o":
-									_.btrans.o = s[1]; break; } } }
+								case "rX":_.btrans.rX = s[1]; break;
+								case "rY":_.btrans.rY = s[1]; break;
+								case "rZ":_.btrans.rZ = s[1]; break;
+								case "o":_.btrans.o = s[1]; break;
+								case "iosfx":_.iOSFix = s[1] == "default" ? "d" : s[1] == "r" ? "rotationX" : s[1]; break; } } }
 
 					// GET BOX SHADOW
 					if (_.tsh !== undefined) { _.tshadow = { c: "rgba(0,0,0,0.25)", v: 0, h: 0, b: 0 };
 						_.tsh = _.tsh.split(";"); for (u in _.tsh) { if (!_.tsh.hasOwnProperty(u)) continue;
 							s = _.tsh[u].split(":"); switch (s[0]) {
-								case "c":
-									_.tshadow.c = s[1]; break;
-								case "h":
-									_.tshadow.h = s[1]; break;
-								case "v":
-									_.tshadow.v = s[1]; break;
-								case "b":
-									_.tshadow.b = s[1]; break; } } }
+								case "c":_.tshadow.c = s[1]; break;
+								case "h":_.tshadow.h = s[1]; break;
+								case "v":_.tshadow.v = s[1]; break;
+								case "b":_.tshadow.b = s[1]; break; } } }
 					if (_.tst !== undefined) { _.tstroke = { c: "rgba(0,0,0,0.25)", w: 1 };
 						_.tst = _.tst.split(";"); for (u in _.tst) { if (!_.tst.hasOwnProperty(u)) continue;
 							s = _.tst[u].split(":"); switch (s[0]) {
-								case "c":
-									_.tstroke.c = s[1]; break;
-								case "w":
-									_.tstroke.w = s[1]; break; } } }
+								case "c":_.tstroke.c = s[1]; break;
+								case "w":_.tstroke.w = s[1]; break; } } }
 					if (_.bsh !== undefined) { _.bshadow = { e: "c", c: "rgba(0,0,0,0.25)", v: 0, h: 0, b: 0, s: 0 };
 						_.bsh = _.bsh.split(";"); for (u in _.bsh) { if (!_.bsh.hasOwnProperty(u)) continue;
 							s = _.bsh[u].split(":"); switch (s[0]) {
-								case "c":
-									_.bshadow.c = s[1]; break;
-								case "h":
-									_.bshadow.h = s[1]; break;
-								case "v":
-									_.bshadow.v = s[1]; break;
-								case "b":
-									_.bshadow.b = s[1]; break;
-								case "s":
-									_.bshadow.s = s[1]; break;
-								case "e":
-									_.bshadow.e = s[1]; break; } } }
+								case "c":_.bshadow.c = s[1]; break;
+								case "h":_.bshadow.h = s[1]; break;
+								case "v":_.bshadow.v = s[1]; break;
+								case "b":_.bshadow.b = s[1]; break;
+								case "s":_.bshadow.s = s[1]; break;
+								case "e":_.bshadow.e = s[1]; break; } } }
 
 					// GET AND SPLIT THE DIMENSION PARAMETERS
 					if (_.dim !== undefined) { _.dim = _.dim.split(";"); for (u in _.dim) { if (!_.dim.hasOwnProperty(u)) continue;
 							s = _.dim[u].split(":"); switch (s[0]) {
-								case "w":
-									_.width = s[1]; break;
-								case "h":
-									_.height = s[1]; break;
-								case "maxw":
-									_.maxwidth = s[1]; break;
-								case "maxh":
-									_.maxheight = s[1]; break;
-								case "minw":
-									_.minwidth = s[1]; break;
-								case "minh":
-									_.minheight = s[1]; break; } } }
+								case "w":_.width = s[1]; break;
+								case "h":_.height = s[1]; break;
+								case "maxw":_.maxwidth = s[1]; break;
+								case "maxh":_.maxheight = s[1]; break;
+								case "minw":_.minwidth = s[1]; break;
+								case "minh":_.minheight = s[1]; break; } } }
 
 
 					// GET AND SPLIT POSITION PARAMETERS
 					if (_.xy !== undefined && _.type !== "row" && _.type !== "column") { _.xy = _.xy.split(";"); for (u in _.xy) { if (!_.xy.hasOwnProperty(u)) continue;
 							s = _.xy[u].split(":"); switch (s[0]) {
-								case "x":
-									_.x = s[1].replace("px", ""); break;
-								case "y":
-									_.y = s[1].replace("px", ""); break;
-								case "xo":
-									_.hoffset = s[1].replace("px", ""); break;
-								case "yo":
-									_.voffset = s[1].replace("px", ""); break; } } }
+								case "x":_.x = s[1].replace("px", ""); break;
+								case "y":_.y = s[1].replace("px", ""); break;
+								case "xo":_.hoffset = s[1].replace("px", ""); break;
+								case "yo":_.voffset = s[1].replace("px", ""); break; } } }
 
 					// GET TEXT VALUES
 					if ((!_._isnotext) && _.text !== undefined) { _.text = _.text.split(";"); for (u in _.text) { if (!_.text.hasOwnProperty(u)) continue;
 							s = _.text[u].split(":"); switch (s[0]) {
-								case "w":
-									_.whitespace = s[1]; break;
-								case "td":
-									_.textDecoration = s[1]; break;
-								case "c":
-									_.clear = s[1]; break;
-								case "f":
-									_.float = s[1]; break;
-								case "s":
-									_.fontsize = s[1]; break;
-								case "l":
-									_.lineheight = s[1]; break;
-								case "ls":
-									_.letterspacing = s[1]; break;
-								case "fw":
-									_.fontweight = s[1]; break;
-								case "a":
-									_.textalign = s[1]; break; } } }
+								case "w":_.whitespace = s[1]; break;
+								case "td":_.textDecoration = s[1]; break;
+								case "c":_.clear = s[1]; break;
+								case "f":_.float = s[1]; break;
+								case "s":_.fontsize = s[1]; break;
+								case "l":_.lineheight = s[1]; break;
+								case "ls":_.letterspacing = s[1]; break;
+								case "fw":_.fontweight = s[1]; break;
+								case "a":_.textalign = s[1]; break; } } }
+					else
+					if (_._isgroup && _.text !== undefined) { _.text = _.text.split(";"); for (u in _.text) { if (!_.text.hasOwnProperty(u)) continue;
+							s = _.text[u].split(":");switch (s[0]) {
+								//case "l":_.lineheight = s[1]; break;
+								case "a":_.textalign = s[1]; break; } } }
+					else
 					if (_.type === "column" && _.textDecoration !== undefined) delete _.textDecoration;
 					// GET FLOAT VALUES
 					if (_.flcr !== undefined) { _.flcr = _.flcr.split(";"); for (u in _.flcr) { if (!_.flcr.hasOwnProperty(u)) continue;
 							s = _.flcr[u].split(":"); switch (s[0]) {
-								case "c":
-									_.clear = s[1]; break;
-								case "f":
-									_.float = s[1]; break; } } }
+								case "c":_.clear = s[1]; break;
+								case "f":_.float = s[1]; break; } } }
 
 
 					// GET PADDING VALUES
 					if (_.padding !== undefined) { _.padding = _.padding.split(";"); for (u in _.padding) { if (!_.padding.hasOwnProperty(u)) continue;
 							s = _.padding[u].split(":"); switch (s[0]) {
-								case "t":
-									_.paddingtop = s[1]; break;
-								case "b":
-									_.paddingbottom = s[1]; break;
-								case "l":
-									_.paddingleft = s[1]; break;
-								case "r":
-									_.paddingright = s[1]; break; } } }
+								case "t":_.paddingtop = s[1]; break;
+								case "b":_.paddingbottom = s[1]; break;
+								case "l":_.paddingleft = s[1]; break;
+								case "r":_.paddingright = s[1]; break; } } }
 
 					// GET MARGIN VALUES
 					if (_.margin !== undefined) { _.margin = _.margin.split(";"); for (u in _.margin) { if (!_.margin.hasOwnProperty(u)) continue;
 							s = _.margin[u].split(":"); switch (s[0]) {
-								case "t":
-									_.margintop = s[1]; break;
-								case "b":
-									_.marginbottom = s[1]; break;
-								case "l":
-									_.marginleft = s[1]; break;
-								case "r":
-									_.marginright = s[1]; break; } } }
+								case "t":_.margintop = s[1]; break;
+								case "b":_.marginbottom = s[1]; break;
+								case "l":_.marginleft = s[1]; break;
+								case "r":_.marginright = s[1]; break; } } }
 
 					// SPIKE MASK ON ELEMENTS
 					if (_.spike !== undefined) _.spike = getSpikePath(_.spike);
@@ -496,9 +492,9 @@
 					}
 					// 0.114 - 0.25
 
-
 					//CONVERT TEXT VALUES
 					_.textalign = convToCLR(_.textalign);
+
 					_.vbility = _R.revToResp(_.vbility, _R[id].rle, true);
 
 					_.hoffset = _R.revToResp(_.hoffset, _R[id].rle, 0);
@@ -553,11 +549,21 @@
 								cp = gw / gh;
 
 							if ((ip > cp && ip <= 1) || (ip < cp && ip > 1))
-								_.imgOBJ = { width: "100%", height: "auto", left: elx === "c" || elx === "center" ? "50%" : elx === "left" || elx === "l" ? "0" : "auto", right: elx === "r" || elx === "right" ? "0" : "auto", top: ely === "c" || ely === "center" ? "50%" : ely === "top" || ely === "t" ? "0" : "auto", bottom: ely === "b" || ely === "bottom" ? "0" : "auto", x: elx === "c" || elx === "center" ? "-50%" : "0", y: ely === "c" || elx === "center" ? "-50%" : "0" };
+								_.imgOBJ = { width: "100%", height: "auto",
+											left: elx === "c" || elx === "center" ? "50%" : elx === "left" || elx === "l" ? "0" : "auto",
+											right: elx === "r" || elx === "right" ? "0" : "auto",
+											top: ely === "c" || ely === "center" || ely==="middle" || ely==="m" ? "50%" : ely === "top" || ely === "t" ? "0" : "auto",
+											bottom: ely === "b" || ely === "bottom" ? "0" : "auto",
+											x: elx === "c" || elx === "center" || elx==="middle" || elx==="m" ? "-50%" : "0",
+											y: ely === "c" || ely === "center" || ely==="middle" || ely==="m" ? "-50%" : "0" };
 							else
-								_.imgOBJ = { height: "100%", width: "auto", left: elx === "c" || elx === "center" ? "50%" : elx === "left" || elx === "l" ? "0" : "auto", right: elx === "r" || elx === "right" ? "0" : "auto", top: ely === "c" || ely === "center" ? "50%" : ely === "top" || ely === "t" ? "0" : "auto", bottom: ely === "b" || ely === "bottom" ? "0" : "auto", x: elx === "c" || elx === "center" ? "-50%" : "0", y: ely === "c" || elx === "center" ? "-50%" : "0" };
-
-
+								_.imgOBJ = { height: "100%", width: "auto",
+											left: elx === "c" || elx === "center" ? "50%" : elx === "left" || elx === "l" ? "0" : "auto",
+											right: elx === "r" || elx === "right" ? "0" : "auto",
+											top: ely === "c" || ely === "center" || ely==="middle" || ely==="m" ? "50%" : ely === "top" || ely === "t" ? "0" : "auto",
+											bottom: ely === "b" || ely === "bottom" ? "0" : "auto",
+											x: elx === "c" || elx === "center" || elx==="middle" || elx==="m" ? "-50%" : "0",
+											y: ely === "c" || ely === "center" || ely==="middle" || ely==="m" ? "-50%" : "0" };
 
 						} else {
 							// FALL BACK IF WIDTH/HEIGHT IS AUTO AND IMAGE IS ON ROOT
@@ -637,6 +643,11 @@
 					_.eow = L.outerWidth(true);
 					_.eoh = L.outerHeight(true);
 
+
+					//GROUP WITH AUTO HEIGHTS NEED TO BE CALCULATED BY WRAPPERS
+					if (_.eoh==0 && _.type=="group" && _.height[_R[id].level]=="auto") _.eoh = _.p[0].offsetHeight;
+
+
 					// CHECK FOR CURRENT SLIDE INDEX META
 					if (_.metas !== undefined && _.metas.csi !== undefined && _.metas.csi.change !== _R[id].focusedSlideIndex) {
 						_.metas.csi.change = _R[id].focusedSlideIndex;
@@ -681,14 +692,16 @@
 					var vofs = _.rsp_o === "on" ? parseInt(_.voffset[_R[id].level], 0) * _R[id].CM.w : parseInt(_.voffset[_R[id].level], 0),
 						hofs = _.rsp_o === "on" ? parseInt(_.hoffset[_R[id].level], 0) * _R[id].CM.h : parseInt(_.hoffset[_R[id].level], 0),
 						crw = _.basealign === "grid" ? _R.iWA(id, o.slideIndex) * _R[id].CM.w : gw,
-						crh = _.basealign === "grid" ? _R.iHE(id) * (_R[id].keepBPHeight || _R[id].currentRowsHeight > _R[id].gridheight[_R[id].level] ? 1 : _R[id].CM.h) : gh;
+						crh = _.basealign === "grid" || (_R[id].sliderType=="carousel" && _R[id].carousel.orientation === "v")  ? _R.iHE(id) * (_R[id].keepBPHeight || _R[id].currentRowsHeight > _R[id].gridheight[_R[id].level] ? 1 : _R[id].CM.h) : gh;
 
-					if (_R[id].gridEQModule == true || (_._lig !== undefined && _.type !== "row" && _.type !== "column" && _.type !== "group")) {
+					if (_R[id].gridEQModule == true || (_._lig !== undefined && _.type !== "row" && _.type !== "column" && (_.type !== "group" || _._ingroup))) {
 						crw = _._lig !== undefined ? _._lig.width() : _R[id].module.width;
 						crh = _._lig !== undefined ? _._lig.height() : _R[id].module.height;
 						offsetx = 0;
 						offsety = 0;
 					}
+
+					if (_R[id].keepBPHeight && crh == _R[id].module.height) offsety = 0;
 
 					// Soft Protection for Video Height if Video has no Dimenstion yet.
 					if (_.type === "video" && _.vidOBJ != undefined) {
@@ -698,18 +711,14 @@
 
 
 
-					elx = elx === "c" || elx === "m" || elx === "center" || elx === "middle" ? (crw / 2 - _.eow / 2) + hofs : elx === "l" || elx === "left" ? hofs : elx === "r" || elx === "right" ? (crw - _.eow) - hofs : _.rsp_o !== "off" ? elx * _R[id].CM.w : elx;
-					ely = ely === "m" || ely === "c" || ely === "center" || ely === "middle" ? (crh / 2 - _.eoh / 2) + vofs : ely === "t" || ely == "top" ? vofs : ely === "b" || ely == "bottom" ? (crh - _.eoh) - vofs : _.rsp_o !== "off" ? ely * _R[id].CM.w : ely;
+					elx = _.position=="relative" ? 0 : elx === "c" || elx === "m" || elx === "center" || elx === "middle" ? (crw / 2 - _.eow / 2) + hofs : elx === "l" || elx === "left" ? hofs : elx === "r" || elx === "right" ? (crw - _.eow) - hofs : _.rsp_o !== "off" ? elx * _R[id].CM.w : elx;
+					ely = _.position=="relative" ? 0 : ely === "m" || ely === "c" || ely === "center" || ely === "middle" ? (crh / 2 - _.eoh / 2) + vofs : ely === "t" || ely == "top" ? vofs : ely === "b" || ely == "bottom" ? (crh - _.eoh) - vofs : _.rsp_o !== "off" ? ely * _R[id].CM.w : ely;
 
 					elx = _._slidelink ? 0 : _R[id].rtl && ("" + _.width[_R[id].level]).indexOf("%") == -1 ? parseInt(elx) + _.eow : elx;
 
 
-					_.calcx = (parseInt(elx, 0) + offsetx);
-					_.calcy = (parseInt(ely, 0) + offsety);
-
-
-
-
+					_.calcx = _.position=="relative" && (_.type==="group" || _._incolumn)  ? 0 : (parseInt(elx, 0) + offsetx);
+					_.calcy = _.position=="relative" && (_.type==="group" || _._incolumn) ? 0 : (parseInt(ely, 0) + offsety);
 
 					// SET TOP/LEFT POSITION OF LAYER
 					if (_.type !== "row" && _.type !== "column") _.OBJUPD.POBJ = { zIndex: _.zindex, top: _.calcy, left: _.calcx, overwrite: "auto" };
@@ -732,7 +741,7 @@
 
 
 
-					if (_.blendmode !== undefined) _.OBJUPD.POBJ.mixBlendMode = _.blendmode;
+					if (_.blendmode !== undefined) _.OBJUPD.POBJ.mixBlendMode = _.blendmode==="color" && window.isSafari11 ? "color-burn" : _.blendmode;
 
 					// LOOP ANIMATION WIDTH/HEIGHT
 					if (_.frames.loop !== undefined || _.imgInFirefox) _.OBJUPD.LPOBJ = { width: _.eow, height: _.eoh }; //tpGS.gsap.set(_.lp,{width:_.eow,height:_.eoh});
@@ -783,6 +792,69 @@
 
 		},
 
+		/********************************************************
+			-	CONVERT TRANSFORM VALUES FOR HOVER ANIMATION -
+		*********************************************************/
+		convertHoverTransform : function(_, el, idle) {
+			var a = _R.clone(_.transform),
+				nb, l;
+			if (a.originX || a.originY || a.originZ) {
+				a.transformOrigin = (a.originX === undefined ? "50%" : a.originX) + " " + (a.originY === undefined ? "50%" : a.originY) + " " + (a.originZ === undefined ? "50%" : a.originZ);
+				delete a.originX;
+				delete a.originY;
+				delete a.originZ;
+			}
+
+			if (_ !== undefined && _.filter !== undefined) {
+				a.filter = buildFilter(_.filter);
+				a['-webkit-filter'] = a.filter;
+			}
+
+			a.color = a.color === undefined ? 'rgba(255,255,255,1)' : a.color;
+			a.force3D = "auto";
+
+			if (a.borderRadius !== undefined) {
+				nb = a.borderRadius.split(" ");
+				l = nb.length;
+				a.borderTopLeftRadius = nb[0];
+				a.borderTopRightRadius = nb[1];
+				a.borderBottomRightRadius = nb[2];
+				a.borderBottomLeftRadius = nb[3];
+				delete a.borderRadius;
+			}
+
+			if (a.borderWidth !== undefined) {
+				nb = a.borderWidth.split(" "),
+					l = nb.length;
+				a.borderTopWidth = nb[0];
+				a.borderRightWidth = nb[1];
+				a.borderBottomWidth = nb[2];
+				a.borderLeftWidth = nb[3];
+				delete a.borderWidth;
+			}
+
+			if (idle.bg === undefined || idle.bg.indexOf('url') === -1) {
+				var elGradient = idle.bgCol.search('gradient') !== -1,
+					aGradient = a.backgroundImage && typeof a.backgroundImage === 'string' && a.backgroundImage.search('gradient') !== -1;
+
+				if (aGradient && elGradient) {
+					if (gradDegree(idle.bgCol) !== 180 && gradDegree(a.backgroundImage) == 180) a.backgroundImage = addGradDegree(a.backgroundImage, 180);
+					a.backgroundImage = tpGS.getSSGColors(idle.bgCol, a.backgroundImage, (a.gs === undefined ? "fading" : a.gs)).to;
+				} else
+				if (aGradient && !elGradient)
+					a.backgroundImage = tpGS.getSSGColors(idle.bgCol, a.backgroundImage, (a.gs === undefined ? "fading" : a.gs)).to;
+				else
+				if (!aGradient && elGradient) {
+					a.backgroundImage = tpGS.getSSGColors(idle.bgCol, a.backgroundColor, (a.gs === undefined ? "fading" : a.gs)).to;
+				}
+			}
+
+			delete a.gs;
+
+
+			return a;
+		},
+
 
 
 		/********************************************************
@@ -814,12 +886,14 @@
 
 		updateLayersOnFullStage: function(id) {
 			if (_R[id].caches.calcResponsiveLayersList.length > 0) {
-				if (_R[id].slideHasIframe !== true && _R[id].fullScreenMode !== true) { if (_R[id].sliderType === "carousel") _R[id].carousel.wrap.detach();
-					else _R[id].canvas.detach(); }
+				if (_R[id].slideHasIframe !== true && _R[id].fullScreenMode !== true && _R[id].skipAttachDetach!==true) {
+					if (_R[id].sliderType === "carousel") _R[id].carousel.wrap.detach(); else _R[id].canvas.detach();
+				}
 				for (var i = 0; i < _R[id].caches.calcResponsiveLayersList.length; i++)
 					if (_R[id].caches.calcResponsiveLayersList[i] !== undefined) calcResponsiveLayer(_R[id].caches.calcResponsiveLayersList[i]);
-				if (_R[id].slideHasIframe !== true && _R[id].fullScreenMode !== true) { if (_R[id].sliderType === "carousel") _R[id].c[0].appendChild(_R[id].carousel.wrap[0]);
-					else _R[id].c[0].appendChild(_R[id].canvas[0]); }
+				if (_R[id].slideHasIframe !== true && _R[id].fullScreenMode !== true && _R[id].skipAttachDetach!==true) {
+					if (_R[id].sliderType === "carousel") _R[id].c[0].appendChild(_R[id].carousel.wrap[0]);else _R[id].c[0].appendChild(_R[id].canvas[0]);
+				}
 			}
 		},
 
@@ -843,7 +917,7 @@
 			}
 
 			var key = obj.slide !== "individual" ? _R.gA(_R[id].slides[obj.slide], "key") : "individual",
-				index = _R[id].pr_processing_key || _R[id].pr_active_key || 0;
+				index = _R[id].pr_processing_key !== undefined ? _R[id].pr_processing_key : _R[id].pr_active_key !== undefined ? _R[id].pr_active_key : 0;
 			_R[id].focusedSlideIndex = index;
 			_R[id].caches.calcResponsiveLayersList = [];
 
@@ -881,6 +955,7 @@
 			_R[id].levelInLayers = _R[id].level;
 
 			var cache = { id: id, skey: key, slide: obj.slide, key: key, mode: obj.mode, index: index };
+
 			// MODIFICATED REQUEST ANIMATION BASED START OF ANIMATION
 			window.requestAnimationFrame(function() {
 				//_R[obj.id].heightInLayers = undefined;
@@ -913,7 +988,9 @@
 				_R.initLayer({ id: obj.id, skey: obj.key, slideIndex: obj.slide, mode: "updateposition" });
 				_R.initLayer({ id: obj.id, skey: "static", slideIndex: 'static', mode: "updateposition" });
 				if (obj.mode === "start" || obj.mode === "preset") _R.manageNavigation(obj.id);
+				window.requestAnimationFrame(function() { _R.putRowsInPosition(obj.id);});
 			}
+
 		},
 
 		updateLayerDimensions: function(obj) {
@@ -961,8 +1038,8 @@
 				ignoreframes = false,
 				calledframereached = false,
 				sl = "none",
+				jumpToCacheTime = false,
 				tPE;
-
 
 			if ((obj.caller === "containerResized_2" || obj.caller === "swapSlideProgress_2") && _.animationRendered !== true) return;
 			_.animationRendered = true;
@@ -973,38 +1050,70 @@
 			//STATIC LAYERS CAN BE IGNORED IN SOME CASES
 			if (_._isstatic) {
 
-				var cs = _R[id].sliderType === "carousel" && _R[id].carousel.oldfocused !== undefined ? _R[id].carousel.oldfocused : _R[id].pr_lastshown_key === undefined ? 1 : parseInt(_R[id].pr_lastshown_key, 0) + 1,
-					ns = _R[id].sliderType === "carousel" ? _R[id].pr_next_key === undefined ? cs === 0 ? 1 : cs : parseInt(_R[id].pr_next_key, 0) + 1 : _R[id].pr_processing_key === undefined ? cs : parseInt(_R[id].pr_processing_key, 0) + 1,
+				var cs = _R[id].sliderType === "carousel" && _R[id].carousel.oldfocused !== undefined ? parseInt(_R[id].carousel.oldfocused) + 1 : _R[id].focusedSlideIndex === undefined ? 0 : parseInt(_R[id].focusedSlideIndex, 0) + 1,
+					ns = _R[id].sliderType === "carousel" ?
+						_R[id].pr_next_key === undefined ?
+							cs == 0 ? 1 : cs
+							: parseInt(_R[id].pr_next_key, 0) + 1 :
+							_R[id].pr_processing_key === undefined ? cs==0 ? 1 : cs : parseInt(_R[id].pr_processing_key, 0) + 1,
 					inrangecs = cs >= _.startslide && cs <= _.endslide,
-					inrangens = ns >= _.startslide && ns <= _.endslide;
-				sl = cs === _.endslide && obj.mode === "continue" ? true : obj.mode !== "continue" && cs !== _.endslide ? false : "none";
+					inrangens = ns >= _.startslide && ns <= _.endslide,
+					leaveNotAtEnd =  _.frames.frame_999!==undefined &&_.frames.frame_999.timeline!==undefined &&  _.frames.frame_999.timeline.waitoncall!==true && (cs===_.endslide || cs===_.endslide-1);
+
+
+				// OPENING MODAL / REOPENING MODAL  SHOULD PLAY THE GLOBAL LAYERS AGAIN
+				if (_R[id].modal!==undefined && (obj.mode=="start" || obj.mode=="continue")) {
+					if (obj.mode==="continue" && _R[id].modal.lastModalCall=="close") inrangens = false;
+					if (obj.mode==="start" && (_R[id].modal.lastModalCall==="show" || _R[id].modal.lastModalCall==="init") &&  _R[id].modal.lastModalCall!==_.lastModalCall) {
+						_.triggeredFrame = undefined;
+						_.triggercache = "reset";
+						if (_.timeline!==undefined && _.timeline.currentLabel()!==undefined && _.timeline.currentLabel().indexOf('frame_999')==-1) _.timeline.pause(0);
+					}
+					_.lastModalCall = _R[id].modal.lastModalCall;
+				}
+
+
+				sl = obj.mode==="start" && leaveNotAtEnd ? true  : cs === _.endslide && obj.mode === "continue" ? true : obj.mode !== "continue" && cs !== _.endslide ? false : "none";
+
+				if (_.animatedFrame==="frame_999" && (_.animatingFrame==="done" | _.animatingFrame==undefined)) _.lastRequestedMainFrame = "frame_999";
+
+
+				if (_.timeline!==undefined && _.timeline.currentLabel()!==undefined && _.timeline.currentLabel().indexOf('frame_999')==-1) {
+					jumpToCacheTime = true;
+				}
 
 				if (obj.allforce === true || sl === true) {
 					//Force to Redo Whatever we need to do
+					if (obj.mode==="continue" && inrangens && leaveNotAtEnd && _.timeline!==undefined) {
+						if (_.timeline.currentLabel().indexOf('frame_999')>=0) _.timeline.pause(_.timeline.previousLabel());
+						else _.timeline.pause(_.timeline.currentLabel());
+						return;
+					}
 					if (obj.mode === "continue" && obj.frame === "frame_999" && (inrangens || _.lastRequestedMainFrame === undefined)) return;
 
 				} else {
-
-
 					if (obj.mode === "preset" && (_.elementHovered || !inrangens)) return;
 					if (obj.mode === "rebuild" && !inrangecs && !inrangens) return;
+					// In case Element animates before Slide End out, we need to check the Real Frame Position
 					if (obj.mode === "start" && inrangens && _.lastRequestedMainFrame === "frame_1") return;
 					if ((obj.mode === "start" || obj.mode === "preset") && _.lastRequestedMainFrame === "frame_999" && _.leftstage !== true) return;
-					if (obj.mode === "continue" && obj.frame === "frame_999" && (inrangens || _.lastRequestedMainFrame === undefined)) return;
+					if ((obj.mode === "continue") && obj.frame === "frame_999" && (inrangens || _.lastRequestedMainFrame === undefined)) return;
 					if (obj.mode === "start" && !inrangens) return;
-
+					if (obj.mode === "rebuild" && _.elementHovered && _._isstatic && _.hovertimeline) return;
+					//if (obj.mode === "continue" && _R[id].sliderType === "carousel" && ((cs==0 && ns==0 && !isNaN(_.lastRequestedMainFrame)) || (obj.frame=="frame_999" && inrangens))) return;
 				}
 
 			} else if (obj.mode === "start" && _.triggercache !== "keep") _.triggeredFrame = undefined;
-
-
-
+			if (L[0].id=="kri") console.log(obj.mode+"  "+_.triggeredFrame);
 			if (obj.mode === "start") {
 				if (_.layerLoop !== undefined) _.layerLoop.count = 0;
-				obj.frame = _.triggeredFrame === undefined ? 0 : _.triggeredFrame;
+				obj.frame = _.triggeredFrame === undefined ? jumpToCacheTime ? undefined : 0 : _.triggeredFrame;
 			}
 
-			if ((obj.mode !== "continue" && obj.mode !== "trigger") && _.timeline !== undefined && (!_._isstatic || _.leftstage !== true)) _.timeline.pause(0); //(!_._isstatic || _.leftstage!==true) is Fix for Closed Menu due Togglelayer action which reopens if this not exists
+			if ((obj.mode !== "continue" && obj.mode !== "trigger") && _.timeline !== undefined && (!_._isstatic || _.leftstage !== true)) {
+				_.timeline.pause(0); //(!_._isstatic || _.leftstage!==true) is Fix for Closed Menu due Togglelayer action which reopens if this not exists
+			}
+
 			if ((obj.mode === "continue" || obj.mode === "trigger") && _.timeline !== undefined) _.timeline.pause();
 
 			_.timeline = tpGS.gsap.timeline({ paused: true });
@@ -1070,7 +1179,10 @@
 				if ((ignoreframes === "skiprest") || (_.frames[fi].timeline.callstate !== "called" && ignoreframes && obj.toframe !== fi)) continue;
 
 
+
 				if (fi === "frame_999" && (sl === false) && (obj.mode === "continue" || obj.mode === "start" || obj.mode === "rebuild")) continue;
+
+
 
 				_.fff = fi === fifame && (obj.mode !== "trigger" || _.currentframe === "frame_999" || _.currentframe === "frame_0" || _.currentframe === undefined);
 				if (obj.mode === "trigger" && obj.frame === "frame_1" && _.leftstage === false) _.fff = false; // Fix When 1st Layer triggered after frame_999 started but not yet animated out !!
@@ -1079,10 +1191,6 @@
 					_.frames[fi].timeline.callstate = "called";
 					_.currentframe = fi;
 				}
-
-
-
-
 
 				var _frameObj = _.frames[fi],
 					_fromFrameObj = _.fff ? _.frames.frame_0 : undefined,
@@ -1147,7 +1255,7 @@
 
 				// ANIMATE CHARS, WORDS, LINES
 				if (_.splitText !== undefined && _.splitText !== false) {
-					for (var i in splitTypes) {
+					for (var i in splitTypes) if (splitTypes.hasOwnProperty(i)) {
 						if (_frameObj[splitTypes[i]] !== undefined && !_.quickRendering) {
 							var sObj = _.splitText[splitTypes[i]],
 								sanim = convertTransformValues({ id: id, frame: _frameObj, source: splitTypes[i], ease: origEase, layer: L, splitAmount: sObj.length, target: fi + "_" + splitTypes[i] }),
@@ -1214,7 +1322,7 @@
 
 				if (_.useMaskAnimation || _.forceFsom) {
 					if (_.useMaskAnimation) ftl.add(tpGS.gsap.to(_.m, 0.001, { overflow: "hidden" }), 0); else ftl.add(tpGS.gsap.to(_.m, 0.001, { overflow: "visible" }), 0);
-					if (_.type === "column" && _.useMaskAnimation) ftl.add(tpGS.gsap.to(_.cbgmask, 0.001, { overflow: "hidden" }), 0);
+					if (_.type === "column" && _.cbgexists && _.useMaskAnimation) ftl.add(tpGS.gsap.to(_.cbgmask, 0.001, { overflow: "hidden" }), 0);
 					if (_.btrans) {
 						if (frommask) { frommask.rotationX = _.btrans.rX;
 							frommask.rotationY = _.btrans.rY;
@@ -1226,9 +1334,9 @@
 						mask.opacity = _.btrans.o;
 					}
 					if (_.fff)
-						ftl.add(tpGS.gsap.fromTo([_.m, _.cbgmask], speed, _R.clone(frommask), _R.clone(mask)), 0.001);
+						ftl.add(tpGS.gsap.fromTo((_.m!==undefined && _.cbgmask!==undefined ? [_.m, _.cbgmask] : _.m!==undefined ? _.m : _.cbgmask), speed, _R.clone(frommask), _R.clone(mask)), 0.001);
 					else
-						ftl.add(tpGS.gsap.to([_.m, _.cbgmask], speed, _R.clone(mask)), 0.001);
+						ftl.add(tpGS.gsap.to((_.m!==undefined && _.cbgmask!==undefined ? [_.m, _.cbgmask] : _.m!==undefined ? _.m : _.cbgmask), speed, _R.clone(mask)), 0.001);
 				} else {
 					if (_.btrans !== undefined) {
 						var mtrans = { x: 0, y: 0, filter: "none", opacity: _.btrans.o, rotationX: _.btrans.rX, rotationY: _.btrans.rY, rotationZ: _.btrans.rZ, overflow: "visible" }
@@ -1236,9 +1344,12 @@
 							_.maskHasPerspective = true;
 							mtrans.transformPerspective = tPE;
 						}
+
 						ftl.add(tpGS.gsap.to(_.m, 0.001, mtrans), 0);
-					} else
-						ftl.add(tpGS.gsap.to(_.m, 0.001, { clearProps: "transform", overflow: "visible" }), 0);
+					} else {
+
+						ftl.add(tpGS.gsap.to(_.m, 0.001, { clearProps: "transform", overflow: (_.ofHidOnHov=="hidden") ? "hidden" : "visible"}), 0);
+					}
 				}
 
 				anim.force3D = "auto";
@@ -1251,9 +1362,10 @@
 
 					// safari bug fix
 					if (_R[id].BUG_safari_clipPath && (from.clipPath || anim.clipPath || _.spike)) {
-						if (!from.z || !parseInt(from.z, 10)) from.z = -0.0001;
-						if (!anim.z || !parseInt(anim.z, 10)) anim.z = 0;
+						//if (!from.z || !parseInt(from.z, 10)) from.z = -0.0001;
+						//if (!anim.z || !parseInt(anim.z, 10)) anim.z = 0;
 					}
+					speed = speed>0 ? speed - 0.001 : speed;
 					if (_.cbg !== undefined && _.type === "column") ftl.fromTo(aObj, speed, reduceColumn(from), reduceColumn(anim), 0);
 					else ftl.fromTo(aObj, speed, from, anim, 0);
 					ftl.invalidate();
@@ -1263,7 +1375,7 @@
 					if (_.frame !== "frame_999") anim.visibility = "visible";
 					if (_.cbg !== undefined) ftl.to(_.cbg, speed, anim, 0);
 					// safari bug fix
-					if (_R[id].BUG_safari_clipPath && (anim.clipPath || _.spike) && (!anim.z || !parseInt(anim.z, 10))) anim.z = 0 - Math.random() * 0.01;
+					//if (_R[id].BUG_safari_clipPath && (anim.clipPath || _.spike) && (!anim.z || !parseInt(anim.z, 10))) anim.z = 0 - Math.random() * 0.01;
 					if (_.cbg !== undefined && _.type === "column") ftl.to(aObj, speed, reduceColumn(anim), 0);
 					else ftl.to(aObj, speed, anim, 0);
 				}
@@ -1275,7 +1387,7 @@
 
 				var pos = (obj.mode === "trigger" || ((ignoreframes === true || ignoreframes === "skiprest") && obj.mode === "rebuild")) && obj.frame !== fi && _frameObj.timeline.start !== undefined && _R.isNumeric(_frameObj.timeline.start) ?
 					"+=" + parseInt(_frameObj.timeline.startRelative, 0) / 1000 :
-					_frameObj.timeline.start === "+=0" || _frameObj.timeline.start === undefined ? "+=0.05" : parseInt(_frameObj.timeline.start, 0) / 1000;
+					_frameObj.timeline.start === "+=0" || _frameObj.timeline.start === undefined ? "+=0.001" : parseInt(_frameObj.timeline.start, 0) / 1000;
 
 
 				_.timeline.addLabel(fi, pos);
@@ -1376,25 +1488,14 @@
 				_.hoverframeadded = true;
 				var hoverspeed = _.frames.frame_hover.timeline.speed / 1000;
 				hoverspeed = hoverspeed === 0 ? 0.00001 : hoverspeed;
-
+				_.cachedHoverSpeed = hoverspeed;
 				//SET HOVER ANIMATION
 				if (!_.hoverlistener) {
 					_.hoverlistener = true;
-					_R.document.on("mouseenter mousemove", (_.type === "column" ? "#" + _.cbg[0].id + "," : "") + "#" + _.c[0].id, function(e) {
-
+					_R.document.on("mouseenter mousemove", (_.type === "column" && _.cbg!==undefined ? "#" + _.cbg[0].id + "," : "") + "#" + _.c[0].id, function(e) {
+						_.mouseIsOver = true;
+						if (_.ignoreHoverFrames==true) return;
 						if (e.type === "mousemove" && _.ignoremousemove === true) return;
-
-
-						// possible solution to "hover not working on initial load"
-						// with a new "overrride frames" option applied
-						/*
-						if(!_.readyForHover && _.frame_hover.override) {
-
-							_.timeline.progress(1);
-							_.readyForHover = true;
-
-						}
-						*/
 						if (_.animationonscroll || _.readyForHover) {
 							_.elementHovered = true;
 							// only create new hover timeline if it doesn't already exist
@@ -1402,29 +1503,37 @@
 
 							if (_.hovertimeline.progress() == 0 && (_.lastHoveredTimeStamp === undefined || ((new Date().getTime() - _.lastHoveredTimeStamp) > 150))) { //changed limit from 1500 to 150 for a shorter delay. "Bug" after animation hover is not directly available
 								_.ignoremousemove = true; // Moved ingoremouse here, since first we can ignore it when the animation really runs 1st time.
-								_.hovertimeline.to([_.m, _.cbgmask], hoverspeed, { overflow: (_.frames.frame_hover.mask ? "hidden" : "visible") }, 0);
-								if (_.type === "column") _.hovertimeline.to(_.cbg, hoverspeed, _R.clone(convertHoverTransform(_.frames.frame_hover, _.cbg, { bgCol: _.bgcol, bg: _.styleProps.background })), 0);
+								_.ofHidOnHov = (_.frames.frame_hover.mask ? "hidden" : "visible");
+								_.hovertimeline.to((_.m!==undefined && _.cbgmask!==undefined ? [_.m, _.cbgmask] : _.m!==undefined ? _.m : _.cbgmask) , hoverspeed, { overflow: _.ofHidOnHov }, 0);
+								if (_.type === "column" && _.cbg!=undefined) _.hovertimeline.to(_.cbg, hoverspeed, _R.clone(_R.convertHoverTransform(_.frames.frame_hover, _.cbg, { bgCol: _.bgcol, bg: _.styleProps.background })), 0);
 								if ((_.type === "text" || _.type === "button") && _.splitText !== undefined && _.splitText !== false) _.hovertimeline.to([_.splitText.lines, _.splitText.words, _.splitText.chars], hoverspeed, { color: _.frames.frame_hover.color, ease: _.frames.frame_hover.transform.ease }, 0);
 								if (_.type === "column")
-									_.hovertimeline.to(_.c, hoverspeed, reduceColumn(_R.clone(convertHoverTransform(_.frames.frame_hover, _.c, { bgCol: _.bgcol, bg: _.styleProps.background }))), 0);
-								else
-									_.hovertimeline.to(_.c, hoverspeed, _R.clone(convertHoverTransform(_.frames.frame_hover, _.c, { bgCol: _.bgcol, bg: _.styleProps.background })), 0);
+									_.hovertimeline.to(_.c, hoverspeed, reduceColumn(_R.clone(_R.convertHoverTransform(_.frames.frame_hover, _.c, { bgCol: _.bgcol, bg: _.styleProps.background }))), 0);
+								else {
+									_.hovertimeline.to(_.c, hoverspeed, _R.clone(_R.convertHoverTransform(_.frames.frame_hover, _.c, { bgCol: _.bgcol, bg: _.styleProps.background })), 0);
+
+								}
 								if (_.type === "svg") {
 									_.svgHTemp = _R.clone(_.svgH);
+									delete _.svgHTemp.svgAll;
 
 									// hover colors can exist on the different responsive levels
 									var fillColor = Array.isArray(_.svgHTemp.fill) ? _.svgHTemp.fill[_R[id].level] : _.svgHTemp.fill;
 									_.svgHTemp.fill = fillColor;
-
 									_.hovertimeline.to(_.svg, hoverspeed, _.svgHTemp, 0);
+									if(_.svg.length <= 0) _.svg = L.find("svg");
+									if(_.svgPath.length <= 0) _.svgPath = _.svg.find(!_.svgI.svgAll ? 'path' : 'path, circle, ellipse, line, polygon, polyline, rect');
 									_.hovertimeline.to(_.svgPath, hoverspeed, { fill: fillColor }, 0);
 								}
 							}
+							//_.hovertimeline.eventCallback('onStart',function(par) {}, [{ id: id,  _: _,}])
 							_.hovertimeline.play();
 						}
 						_.lastHoveredTimeStamp = new Date().getTime();
 					});
-					_R.document.on("mouseleave", (_.type === "column" ? "#" + _.cbg[0].id + "," : "") + "#" + _.c[0].id, function() {
+					_R.document.on("mouseleave", (_.type === "column" && _.cbg!==undefined ? "#" + _.cbg[0].id + "," : "") + "#" + _.c[0].id, function() {
+						_.mouseIsOver = false;
+						if (_.ignoreHoverFrames==true) return;
 						_.elementHovered = false;
 						if ((_.animationonscroll || _.readyForHover) && _.hovertimeline !== undefined) {
 							_.hovertimeline.reverse();
@@ -1438,6 +1547,7 @@
 
 			// Added _.currentframe to save last played Frame in Static Layer -> Slide change will nor restart animation of already triggered layers in groups when drawn on Static
 			if (!renderJustFrom) _.lastRequestedMainFrame = obj.mode === "start" ? "frame_1" : obj.mode === "continue" ? obj.frame === undefined ? _.currentframe : obj.frame : _.lastRequestedMainFrame;
+
 
 			if (obj.totime !== undefined) _.tSTART = obj.totime;
 			else
@@ -1581,34 +1691,53 @@
 			_R[_.id]._L[_.L[0].id].pVisRequest = 1;
 
 			var data = { layer: _.L };
+
+			_R[_.id]._L[_.L[0].id].tweenOnStart = true;
+			_R[_.id]._L[_.L[0].id].animatingFrame = _.frame;
 			_R[_.id]._L[_.L[0].id].ignoremousemove = false;
 			_R[_.id]._L[_.L[0].id].leftstage = false;
 			_R[_.id]._L[_.L[0].id].readyForHover = false;
+			_R[_.id]._L[_.L[0].id].tweenDirection =_R[_.id]._L[_.L[0].id].animationonscroll == true || _R[_.id]._L[_.L[0].id].animationonscroll == "true" ? _R[_.id]._L[_.L[0].id].animteToTimeCache>_R[_.id]._L[_.L[0].id].animteToTime ? -1 : 1 : undefined;
 
-			if (_R[_.id]._L[_.L[0].id].layerLoop !== undefined)
-				if (_R[_.id]._L[_.L[0].id].layerLoop.from === _.frame) _R[_.id]._L[_.L[0].id].layerLoop.count++;
+			if (_R[_.id]._L[_.L[0].id].layerLoop !== undefined) if (_R[_.id]._L[_.L[0].id].layerLoop.from === _.frame) _R[_.id]._L[_.L[0].id].layerLoop.count++;
+
+			// BACKWARDS MOVING ANIMATION
+			if (_R[_.id]._L[_.L[0].id].tweenDirection!==undefined && _R[_.id]._L[_.L[0].id].tweenDirection==-1 && (_.frame === "frame_0" || _.frame=="frame_1") && !(_R[_.id]._L[_.L[0].id].type === "column" || _R[_.id]._L[_.L[0].id].type === "row" || _R[_.id]._L[_.L[0].id].type === "group"))  {
+				_R[_.id]._L[_.L[0].id].leftstage = true;
+				_R[_.id]._L[_.L[0].id].pVisRequest = 0; //Hidden
+				_R[_.id]._L[_.L[0].id].pPeventsRequest = "none"
+				window.requestAnimationFrame(function() { _R.requestLayerUpdates(_.id, 'leftstage', _.L[0].id); });
+			} else {
 
 				// Safari do not render Image transform well if its opacity === 0 !?
-			if (_.frame === "frame_1" && window.RSBrowser === "Safari" && _R[_.id]._L[_.L[0].id].safariRenderIssue === undefined) {
-				tpGS.gsap.set([_R[_.id]._L[_.L[0].id].c], { opacity: 1 });
-				_R[_.id]._L[_.L[0].id].safariRenderIssue = true;
+				if (_.frame === "frame_1" && window.RSBrowser === "Safari" && _R[_.id]._L[_.L[0].id].safariRenderIssue === undefined) {
+					tpGS.gsap.set([_R[_.id]._L[_.L[0].id].c], { opacity: 1 });
+					_R[_.id]._L[_.L[0].id].safariRenderIssue = true;
+				}
+
+				if (_.frame !== "frame_999") {
+					_R[_.id]._L[_.L[0].id].startedAnimOnce = true;
+					_R[_.id]._L[_.L[0].id].pPeventsRequest = _R[_.id]._L[_.L[0].id].noPevents ? "none" : "auto";
+				}
+
+				data.eventtype = _.frame === "frame_0" || _.frame === "frame_1" ? "enterstage" : _.frame === "frame_999" ? "leavestage" : "framestarted";
+				//FORWARDS, BACKWARDS ON SCROLL BASED ANIMATION
+
+
+			// window.requestAnimationFrame(function() {
+				if (_R[_.id]._L[_.L[0].id]._ingroup && _R[_.id]._L[_R[_.id]._L[_.L[0].id]._lig[0].id].frames.frame_1.timeline.waitoncall !== true) _R[_.id]._L[_R[_.id]._L[_.L[0].id]._lig[0].id].pVisRequest = 1;
+					_R.requestLayerUpdates(_.id, data.eventtype, _.L[0].id, _R[_.id]._L[_.L[0].id].frames[_.frame] !== undefined && _R[_.id]._L[_.L[0].id].frames[_.frame].timeline !== undefined && _R[_.id]._L[_.L[0].id].frames[_.frame].timeline.usePerspective == false ? _.tPE : "ignore");
+			// });
 			}
 
-			if (_.frame !== "frame_999") {
-				_R[_.id]._L[_.L[0].id].startedAnimOnce = true;
-				_R[_.id]._L[_.L[0].id].pPeventsRequest = _R[_.id]._L[_.L[0].id].noPevents ? "none" : "auto";
-			}
-
-			data.eventtype = _.frame === "frame_0" || _.frame === "frame_1" ? "enterstage" : _.frame === "frame_999" ? "leavestage" : "framestarted";
-		   // window.requestAnimationFrame(function() {
-			   if (_R[_.id]._L[_.L[0].id]._ingroup && _R[_.id]._L[_R[_.id]._L[_.L[0].id]._lig[0].id].frames.frame_1.timeline.waitoncall !== true) _R[_.id]._L[_R[_.id]._L[_.L[0].id]._lig[0].id].pVisRequest = 1;
-				_R.requestLayerUpdates(_.id, data.eventtype, _.L[0].id, _R[_.id]._L[_.L[0].id].frames[_.frame] !== undefined && _R[_.id]._L[_.L[0].id].frames[_.frame].timeline !== undefined && _R[_.id]._L[_.L[0].id].frames[_.frame].timeline.usePerspective == false ? _.tPE : "ignore");
-		   // });
 			data.id = _.id;
 			data.layerid = _.L[0].id;
 			data.layertype = _R[_.id]._L[_.L[0].id].type;
 			data.frame_index = _.frame;
 			data.layersettings = _R[_.id]._L[_.L[0].id];
+
+
+
 			_R[_.id].c.trigger("revolution.layeraction", [data]);
 			if (data.eventtype === "enterstage") _R.toggleState(_R[_.id]._L[_.L[0].id].layertoggledby);
 			if (_.frame === "frame_1") _R.animcompleted(_.L, _.id);
@@ -1616,7 +1745,9 @@
 		},
 
 		tweenOnUpdate = function(_) {
-
+			_R[_.id]._L[_.L[0].id].animatingFrame = _.frame;
+			_R[_.id]._L[_.L[0].id].tweenOnStart = false;
+			_R[_.id]._L[_.L[0].id].tweenOnEnd = false;
 			if (_.frame === "frame_999") {
 				_R[_.id]._L[_.L[0].id].pVisRequest = 1;
 				_R[_.id]._L[_.L[0].id].pPeventsRequest = _R[_.id]._L[_.L[0].id].noPevents ? "none" : "auto";
@@ -1648,6 +1779,11 @@
 				tpGS.gsap.set(_R[_.id]._L[_.L[0].id].c[0], { opacity: cachemw, delay: 0.1 });
 			}
 
+			_R[_.id]._L[_.L[0].id].animatingFrame = "done";
+			_R[_.id]._L[_.L[0].id].animatedFrame = _.frame;
+			_R[_.id]._L[_.L[0].id].tweenOnStart = false;
+			_R[_.id]._L[_.L[0].id].tweenOnEnd = true;
+			_R[_.id]._L[_.L[0].id].tweenDirection =_R[_.id]._L[_.L[0].id].animationonscroll == true || _R[_.id]._L[_.L[0].id].animationonscroll == "true" ? _R[_.id]._L[_.L[0].id].animteToTimeCache>_R[_.id]._L[_.L[0].id].animteToTime ? -1 : 1 : undefined;
 
 			var data = {};
 			data.layer = _.L;
@@ -1671,7 +1807,7 @@
 
 			if (data.eventtype === "leftstage" && _R[_.id].videos !== undefined && _R[_.id].videos[_.L[0].id] !== undefined && _R.stopVideo) _R.stopVideo(_.L, _.id);
 
-			if (_R[_.id]._L[_.L[0].id].type === "column") tpGS.gsap.to(_R[_.id]._L[_.L[0].id].cbg, 0.01, { visibility: "visible" });
+			if (_R[_.id]._L[_.L[0].id].type === "column" && _R[_.id]._L[_.L[0].id].cbg!==undefined) tpGS.gsap.to(_R[_.id]._L[_.L[0].id].cbg, 0.01, { visibility: "visible" });
 
 			if (data.eventtype === "leftstage") {
 				_R.unToggleState(_.layertoggledby);
@@ -1719,63 +1855,7 @@
 		},
 
 
-		convertHoverTransform = function(_, el, idle) {
-			var a = _R.clone(_.transform),
-				nb, l;
-			if (a.originX || a.originY || a.originZ) {
-				a.transformOrigin = (a.originX === undefined ? "50%" : a.originX) + " " + (a.originY === undefined ? "50%" : a.originY) + " " + (a.originZ === undefined ? "50%" : a.originZ);
-				delete a.originX;
-				delete a.originY;
-				delete a.originZ;
-			}
 
-			if (_ !== undefined && _.filter !== undefined) {
-				a.filter = buildFilter(_.filter);
-				a['-webkit-filter'] = a.filter;
-			}
-
-			a.color = a.color === undefined ? 'rgba(255,255,255,1)' : a.color;
-			a.force3D = "auto";
-
-			if (a.borderRadius !== undefined) {
-				nb = a.borderRadius.split(" ");
-				l = nb.length;
-				a.borderTopLeftRadius = nb[0];
-				a.borderTopRightRadius = nb[1];
-				a.borderBottomRightRadius = nb[2];
-				a.borderBottomLeftRadius = nb[3];
-				delete a.borderRadius;
-			}
-
-			if (a.borderWidth !== undefined) {
-				nb = a.borderWidth.split(" "),
-					l = nb.length;
-				a.borderTopWidth = nb[0];
-				a.borderRightWidth = nb[1];
-				a.borderBottomWidth = nb[2];
-				a.borderLeftWidth = nb[3];
-				delete a.borderWidth;
-			}
-
-			if (idle.bg === undefined || idle.bg.indexOf('url') === -1) {
-				var elGradient = idle.bgCol.search('gradient') !== -1,
-					aGradient = a.backgroundImage && typeof a.backgroundImage === 'string' && a.backgroundImage.search('gradient') !== -1;
-
-				if (aGradient && elGradient) {
-					if (gradDegree(idle.bgCol) !== 180 && gradDegree(a.backgroundImage) == 180) a.backgroundImage = addGradDegree(a.backgroundImage, 180);
-					a.backgroundImage = tpGS.getSSGColors(idle.bgCol, a.backgroundImage, (a.gs === undefined ? "fading" : a.gs)).to;
-				} else
-				if (aGradient && !elGradient)
-					a.backgroundImage = tpGS.getSSGColors(idle.bgCol, a.backgroundImage, (a.gs === undefined ? "fading" : a.gs)).to;
-				else
-				if (!aGradient && elGradient) {
-					a.backgroundImage = tpGS.getSSGColors(idle.bgCol, a.backgroundColor, (a.gs === undefined ? "fading" : a.gs)).to;
-				}
-			}
-
-			delete a.gs;
-			return a;
-		},
 
 		addGradDegree = function(grad, deg) {
 			grad = grad.split('(');
@@ -1911,7 +1991,7 @@
 			if (t === "lines") atr = atr === "x" ? "lX" : atr === "y" ? "lY" : atr === "dir" ? "lD" : atr;
 			if (r[atr] === undefined || r[atr] === false) return a;
 			else
-			if (r !== undefined && r[atr] === true) return a === "t" || a === "top" ? "b" : a === "b" || a === "bottom" ? "t" : a === "l" || a === "left" ? "r" : a === "r" || a === "right" ? "l" : (a * -1);
+			if (r !== undefined && r[atr] === true) return a === "t" || a === "top" ? "b" : a === "b" || a === "bottom" ? "t" : a === "l" || a === "left" ? "r" : a === "r" || a === "right" ? "l" : (parseFloat(a) * -1) + ((""+a).indexOf("px")>=0 ? "px" : (""+a).indexOf("%")>=0 ? "%" : "");
 		},
 
 
@@ -2010,56 +2090,30 @@
 
 			// CLIPPING EFFECTS
 			if (!_R[obj.id].BUG_ie_clipPath && a.clip !== undefined && _.clipPath !== undefined && _.clipPath.use) {
+				a.clipB = a.clipB==undefined ? 100 : a.clipB;
 				var cty = _.clipPath.type == "rectangle",
 					cl = parseInt(a.clip, 0),
 					clb = 100 - parseInt(a.clipB, 0),
 					ch = Math.round(cl / 2);
 				switch (_.clipPath.origin) {
-					case "invh":
-						a.clipPath = "polygon(0% 0%, 0% 100%, " + cl + "% 100%, " + cl + "% 0%, 100% 0%, 100% 100%, " + clb + "% 100%, " + clb + "% 0%, 0% 0%)";
-						break;
-					case "invv":
-						a.clipPath = "polygon(100% 0%, 0% 0%, 0% " + cl + "%, 100% " + cl + "%, 100% 100%, 0% 100%, 0% " + clb + "%, 100% " + clb + "%, 100% 0%)";
-						break;
-					case "cv":
-						a.clipPath = cty ? "polygon(" + (50 - ch) + "% 0%, " + (50 + ch) + "% 0%, " + (50 + ch) + "% 100%, " + (50 - ch) + "% 100%)" : "circle(" + cl + "% at 50% 50%)";
-						break;
-					case "ch":
-						a.clipPath = cty ? "polygon(0% " + (50 - ch) + "%, 0% " + (50 + ch) + "%, 100% " + (50 + ch) + "%, 100% " + (50 - ch) + "%)" : "circle(" + cl + "% at 50% 50%)";
-						break;
-					case "l":
-						a.clipPath = cty ? "polygon(0% 0%, " + cl + "% 0%, " + cl + "% 100%, 0% 100%)" : "circle(" + cl + "% at 0% 50%)";
-						break;
-					case "r":
-						a.clipPath = cty ? "polygon(" + (100 - cl) + "% 0%, 100% 0%, 100% 100%, " + (100 - cl) + "% 100%)" : "circle(" + cl + "% at 100% 50%)";
-						break;
-					case "t":
-						a.clipPath = cty ? "polygon(0% 0%, 100% 0%, 100% " + cl + "%, 0% " + cl + "%)" : "circle(" + cl + "% at 50% 0%)";
-						break;
-					case "b":
-						a.clipPath = cty ? "polygon(0% 100%, 100% 100%, 100% " + (100 - cl) + "%, 0% " + (100 - cl) + "%)" : "circle(" + cl + "% at 50% 100%)";
-						break;
-					case "lt":
-						a.clipPath = cty ? "polygon(0% 0%," + (2 * cl) + "% 0%, 0% " + (2 * cl) + "%)" : "circle(" + cl + "% at 0% 0%)";
-						break;
-					case "lb":
-						a.clipPath = cty ? "polygon(0% " + (100 - 2 * cl) + "%, 0% 100%," + (2 * cl) + "% 100%)" : "circle(" + cl + "% at 0% 100%)";
-						break;
-					case "rt":
-						a.clipPath = cty ? "polygon(" + (100 - 2 * cl) + "% 0%, 100% 0%, 100% " + (2 * cl) + "%)" : "circle(" + cl + "% at 100% 0%)";
-						break;
-					case "rb":
-						a.clipPath = cty ? "polygon(" + (100 - 2 * cl) + "% 100%, 100% 100%, 100% " + (100 - 2 * cl) + "%)" : "circle(" + cl + "% at 100% 100%)";
-						break;
-					case "clr":
-						a.clipPath = cty ? "polygon(0% 0%, 0% " + cl + "%, " + (100 - cl) + "% 100%, 100% 100%, 100% " + (100 - cl) + "%, " + cl + "% 0%)" : "circle(" + cl + "% at 50% 50%)";
-						break;
-					case "crl":
-						a.clipPath = cty ? "polygon(0% " + (100 - cl) + "%, 0% 100%, " + cl + "% 100%, 100% " + cl + "%, 100% 0%, " + (100 - cl) + "% 0%)" : "circle(" + cl + "% at 50% 50%)";
-						break;
+					case "invh":a.clipPath = "polygon(0% 0%, 0% 100%, " + cl + "% 100%, " + cl + "% 0%, 100% 0%, 100% 100%, " + clb + "% 100%, " + clb + "% 0%, 0% 0%)";break;
+					case "invv":a.clipPath = "polygon(100% 0%, 0% 0%, 0% " + cl + "%, 100% " + cl + "%, 100% 100%, 0% 100%, 0% " + clb + "%, 100% " + clb + "%, 100% 0%)";break;
+					case "cv":a.clipPath = cty ? "polygon(" + (50 - ch) + "% 0%, " + (50 + ch) + "% 0%, " + (50 + ch) + "% 100%, " + (50 - ch) + "% 100%)" : "circle(" + cl + "% at 50% 50%)";break;
+					case "ch":a.clipPath = cty ? "polygon(0% " + (50 - ch) + "%, 0% " + (50 + ch) + "%, 100% " + (50 + ch) + "%, 100% " + (50 - ch) + "%)" : "circle(" + cl + "% at 50% 50%)";break;
+					case "l":a.clipPath = cty ? "polygon(0% 0%, " + cl + "% 0%, " + cl + "% 100%, 0% 100%)" : "circle(" + cl + "% at 0% 50%)";break;
+					case "r":a.clipPath = cty ? "polygon(" + (100 - cl) + "% 0%, 100% 0%, 100% 100%, " + (100 - cl) + "% 100%)" : "circle(" + cl + "% at 100% 50%)";break;
+					case "t":a.clipPath = cty ? "polygon(0% 0%, 100% 0%, 100% " + cl + "%, 0% " + cl + "%)" : "circle(" + cl + "% at 50% 0%)";break;
+					case "b":a.clipPath = cty ? "polygon(0% 100%, 100% 100%, 100% " + (100 - cl) + "%, 0% " + (100 - cl) + "%)" : "circle(" + cl + "% at 50% 100%)";break;
+					case "lt":a.clipPath = cty ? "polygon(0% 0%," + (2 * cl) + "% 0%, 0% " + (2 * cl) + "%)" : "circle(" + cl + "% at 0% 0%)";break;
+					case "lb":a.clipPath = cty ? "polygon(0% " + (100 - 2 * cl) + "%, 0% 100%," + (2 * cl) + "% 100%)" : "circle(" + cl + "% at 0% 100%)";break;
+					case "rt":a.clipPath = cty ? "polygon(" + (100 - 2 * cl) + "% 0%, 100% 0%, 100% " + (2 * cl) + "%)" : "circle(" + cl + "% at 100% 0%)";break;
+					case "rb":a.clipPath = cty ? "polygon(" + (100 - 2 * cl) + "% 100%, 100% 100%, 100% " + (100 - 2 * cl) + "%)" : "circle(" + cl + "% at 100% 100%)";break;
+					case "clr":a.clipPath = cty ? "polygon(0% 0%, 0% " + cl + "%, " + (100 - cl) + "% 100%, 100% 100%, 100% " + (100 - cl) + "%, " + cl + "% 0%)" : "circle(" + cl + "% at 50% 50%)";break;
+					case "crl":a.clipPath = cty ? "polygon(0% " + (100 - cl) + "%, 0% 100%, " + cl + "% 100%, 100% " + cl + "%, 100% 0%, " + (100 - cl) + "% 0%)" : "circle(" + cl + "% at 50% 50%)";break;
 				}
 				if (_R.isFirefox(obj.id) !== true) a["-webkit-clip-path"] = a.clipPath;
 				a["clip-path"] = a.clipPath;
+
 				//a.overflow = "hidden" // MAYBE ADD TO AVOID SKEW ISSUES IN LOOPED AND MASKED LAYERS
 				delete a.clip;
 				delete a.clipB;
@@ -2073,13 +2127,12 @@
 				if (obj.frame !== undefined && (obj.frame.filter !== undefined || obj.forcefilter)) {
 					a.filter = buildFilter(obj.frame.filter);
 					a['-webkit-filter'] = a.filter;
-					a['backdrop-filter'] = buildBackdropFilter(obj.frame.filter);
-					if (window.isSafari11) a['-webkit-backdrop-filter'] = a['backdrop-filter'];
+					if(_R.useBackdrop) if (window.isSafari11)  a['-webkit-backdrop-filter'] = buildBackdropFilter(obj.frame.filter); else a['backdrop-filter'] = buildBackdropFilter(obj.frame.filter);
 
 					//SAFARI BLUR FILTER FIX - Was rotationX but it negative influence Black Friday Letter Zooms
 					// z - had issues with iPad
 					// x - has issue on blurred element and mask
-					if (window.isSafari11 && a.filter !== undefined && a.x === undefined && obj.frame.filter !== undefined && obj.frame.filter.blur !== undefined) a.x = 0.0001;
+					if (window.isSafari11 && a.filter !== undefined && a[_.iOSFix==undefined || _.iOSFix=="d" ? _.type=="shape" ? "z" : "x" : _.iOSFix] === undefined && obj.frame.filter !== undefined && obj.frame.filter.blur !== undefined) a[_.iOSFix==undefined || _.iOSFix=="d" ? _.type=="shape" ? "z" : "x" : _.iOSFix] = 0.0001;
 				}
 				if (jQuery.inArray(obj.source, ["chars", "words", "lines"]) >= 0 && (obj.frame[obj.source].blur !== undefined || obj.forcefilter)) {
 					a.filter = buildFilter(obj.frame[obj.source]);
@@ -2102,7 +2155,7 @@
 
 		getCycles = function(anim) {
 			var _;
-			for (var a in anim) {
+			for (var a in anim) if (anim.hasOwnProperty(a)) {
 				if (typeof anim[a] === "string" && anim[a].indexOf("|") >= 0) {
 					_ = anim[a].replace("[", "").replace("]", "").split("|");
 					anim[a] = function(index) { return tpGS.gsap.utils.wrap(_, index) };
@@ -2180,211 +2233,78 @@
 				var v = _[i].split(":");
 
 				switch (v[0]) {
-					case "u":
-						n.use = v[1] === "true" || v[1] === "t" ? true : fasle;
-						break;
-						// BASIC VALUES
-					case "c":
-						color = v[1];
-						break;
-					case "fxc":
-						n.fxc = v[1];
-						break;
-					case "bgc":
-						bgcolor = v[1];
-						break;
-					case "auto":
-						n.auto = v[1] === "t" || v[1] === undefined || v[1] === "true" ? true : false;
-						break;
+					case "u":n.use = v[1] === "true" || v[1] === "t" ? true : fasle;break;
+					// BASIC VALUES
+					case "c":color = v[1];break;
+					case "fxc":n.fxc = v[1];break;
+					case "bgc":bgcolor = v[1];break;
+					case "auto":n.auto = v[1] === "t" || v[1] === undefined || v[1] === "true" ? true : false;break;
+					// FRAME VALUES
+					case "o":n.opacity = v[1];break;
+					case "oX":n.originX = v[1];break;
+					case "oY":n.originY = v[1];break;
+					case "oZ":n.originZ = v[1];break;
+					case "sX":n.scaleX = v[1];break;
+					case "sY":n.scaleY = v[1];break;
+					case "skX":n.skewX = v[1];break;
+					case "skY":n.skewY = v[1];break;
+					case "rX":n.rotationX = v[1];if (v[1] != 0 && v[1] !== "0deg") _R.addSafariFix(id);break;
+					case "rY":n.rotationY = v[1];if (v[1] != 0 && v[1] !== "0deg") _R.addSafariFix(id);break;
+					case "rZ":n.rotationZ = v[1];break;
+					case "sc":n.color = v[1];break;
+					case "se":n.effect = v[1];break;
+					case "bos":n.borderStyle = v[1];break;
+					case "boc":n.borderColor = v[1];break;
+					case "td":n.textDecoration = v[1];break;
+					case "zI":n.zIndex = v[1];break;
+					case "tp":n.transformPerspective = _R[id].perspectiveType === "isometric" ? 0 : _R[id].perspectiveType === "global" ? _R[id].perspective : v[1];break;
+					case "cp":n.clip = parseInt(v[1], 0);break;
+					case "cpb":n.clipB = parseInt(v[1], 0);break;//case "fpr": n.fpr = v[1]==="t" || v[1]==="true" || v[1]===true ? true : false; break;
 
-						// FRAME VALUES
-					case "o":
-						n.opacity = v[1];
-						break;
-					case "oX":
-						n.originX = v[1];
-						break;
-					case "oY":
-						n.originY = v[1];
-						break;
-					case "oZ":
-						n.originZ = v[1];
-						break;
-					case "sX":
-						n.scaleX = v[1];
-						break;
-					case "sY":
-						n.scaleY = v[1];
-						break;
-					case "skX":
-						n.skewX = v[1];
-						break;
-					case "skY":
-						n.skewY = v[1];
-						break;
-					case "rX":
-						n.rotationX = v[1];
-						if (v[1] != 0 && v[1] !== "0deg") _R.addSafariFix(id);
-						break;
-					case "rY":
-						n.rotationY = v[1];
-						if (v[1] != 0 && v[1] !== "0deg") _R.addSafariFix(id);
-						break;
-					case "rZ":
-						n.rotationZ = v[1];
-						break;
-					case "sc":
-						n.color = v[1];
-						break;
-					case "se":
-						n.effect = v[1];
-						break;
-					case "bos":
-						n.borderStyle = v[1];
-						break;
-					case "boc":
-						n.borderColor = v[1];
-						break;
-					case "td":
-						n.textDecoration = v[1];
-						break;
-					case "zI":
-						n.zIndex = v[1];
-						break;
-					case "tp":
-						n.transformPerspective = _R[id].perspectiveType === "isometric" ? 0 : _R[id].perspectiveType === "global" ? _R[id].perspective : v[1];
-						break;
-					case "cp":
-						n.clip = parseInt(v[1], 0);
-						break;
-					case "cpb":
-						n.clipB = parseInt(v[1], 0);
-						break;
-						//case "fpr": n.fpr = v[1]==="t" || v[1]==="true" || v[1]===true ? true : false; break;
+					// TIMELINE LOOP VALUES
+					case "aR":t.autoRotate = (v[1] == "t" ? true : false);break;
+					case "rA":t.radiusAngle = v[1];break;
+					case "yyf":t.yoyo_filter = (v[1] == "t" ? true : false);break;
+					case "yym":t.yoyo_move = (v[1] == "t" ? true : false);break;
+					case "yyr":t.yoyo_rotate = (v[1] == "t" ? true : false);break;
+					case "yys":t.yoyo_scale = (v[1] == "t" ? true : false);break;
+					case "crd":t.curved = (v[1] == "t" ? true : false);break;
+					//RESPONSIVE VALUES
+					case "x":n.x = caller === "reverse" ? v[1] === "t" || v[1] === true || v[1] == 'true' ? true : false : caller === "loop" ? parseInt(v[1], 0) : _R.revToResp(v[1], _R[id].rle);break;
+					case "y":n.y = caller === "reverse" ? v[1] === "t" || v[1] === true || v[1] == 'true' ? true : false : caller === "loop" ? parseInt(v[1], 0) : _R.revToResp(v[1], _R[id].rle);break;
+					case "z":n.z = caller === "loop" ? parseInt(v[1], 0) : _R.revToResp(v[1], _R[id].rle);if (v[1] != 0) _R.addSafariFix(id);break;
+					case "bow":n.borderWidth = _R.revToResp(v[1], 4, 0).toString().replace(/,/g, " ");break;
+					case "bor":n.borderRadius = _R.revToResp(v[1], 4, 0).toString().replace(/,/g, " ");break;
+					//USE HOVER MASK
+					case "m":n.mask = v[1] === "t" ? true : v[1] === "f" ? false : v[1];break;
+					case "iC":n.instantClick = v[1] === "t" ? true : v[1] === "f" ? false : v[1];break;
+					//CONVERTED VALUES
+					case "xR":n.xr = parseInt(v[1], 0);_R.addSafariFix(id);break;
+					case "yR":n.yr = parseInt(v[1], 0);_R.addSafariFix(id);break;
+					case "zR":n.zr = parseInt(v[1], 0);break;
+					case "iosfx": if(v[1]!=="default" && v[1]!=="d") f.iosfx = v[1]; break;
+					case "blu":if (caller === "loop") n.blur = parseInt(v[1], 0);else f.blur = parseInt(v[1], 0);break;
+					case "gra":if (caller === "loop") n.grayscale = parseInt(v[1], 0);else f.grayscale = parseInt(v[1], 0);break;
+					case "bri":if (caller === "loop") n.brightness = parseInt(v[1], 0);else f.brightness = parseInt(v[1], 0);break;
+					// BACKDROP FILTERS
+					case "bB":f.b_blur = parseInt(v[1], 0);break;
+					case "bG":f.b_grayscale = parseInt(v[1], 0);break;
+					case "bR":f.b_brightness = parseInt(v[1], 0);break;
+					case "bI":f.b_invert = parseInt(v[1], 0);break;
+					case "bS":f.b_sepia = parseInt(v[1], 0);break;
 
+					case "sp":t.speed = parseInt(v[1], 0);break;
+					case "d":n.delay = parseInt(v[1], 0);break;
+					case "crns":t.curviness = parseInt(v[1], 0);break;
+					//SPECIAL HANDLINGS
+					case "st":t.start = (v[1] === "w" || v[1] === "a" ? "+=0" : v[1]);t.waitoncall = (v[1] === "w" || v[1] === "a");break;
+					case "sA":t.startAbsolute = v[1];break;
+					case "sR":t.startRelative = v[1];break;
 
-						// TIMELINE LOOP VALUES
-					case "aR":
-						t.autoRotate = (v[1] == "t" ? true : false);
-						break;
-					case "rA":
-						t.radiusAngle = v[1];
-						break;
-					case "yyf":
-						t.yoyo_filter = (v[1] == "t" ? true : false);
-						break;
-					case "yym":
-						t.yoyo_move = (v[1] == "t" ? true : false);
-						break;
-					case "yyr":
-						t.yoyo_rotate = (v[1] == "t" ? true : false);
-						break;
-					case "yys":
-						t.yoyo_scale = (v[1] == "t" ? true : false);
-						break;
-					case "crd":
-						t.curved = (v[1] == "t" ? true : false);
-						break;
+					case "e":if (wtl) t.ease = v[1];else n.ease = v[1];break;
 
-						//RESPONSIVE VALUES
-					case "x":
-						n.x = caller === "reverse" ? v[1] === "t" || v[1] === true || v[1] == 'true' ? true : false : caller === "loop" ? parseInt(v[1], 0) : _R.revToResp(v[1], _R[id].rle);
-						break;
-					case "y":
-						n.y = caller === "reverse" ? v[1] === "t" || v[1] === true || v[1] == 'true' ? true : false : caller === "loop" ? parseInt(v[1], 0) : _R.revToResp(v[1], _R[id].rle);
-						break;
-					case "z":
-						n.z = caller === "loop" ? parseInt(v[1], 0) : _R.revToResp(v[1], _R[id].rle);
-						if (v[1] != 0) _R.addSafariFix(id);
-						break;
-					case "bow":
-						n.borderWidth = _R.revToResp(v[1], 4, 0).toString().replace(/,/g, " ");
-						break;
-					case "bor":
-						n.borderRadius = _R.revToResp(v[1], 4, 0).toString().replace(/,/g, " ");
-						break;
-
-						//USE HOVER MASK
-					case "m":
-						n.mask = v[1] === "t" ? true : v[1] === "f" ? false : v[1];
-						break;
-					case "iC":
-						n.instantClick = v[1] === "t" ? true : v[1] === "f" ? false : v[1];
-						break;
-
-						//CONVERTED VALUES
-					case "xR":
-						n.xr = parseInt(v[1], 0);
-						_R.addSafariFix(id);
-						break;
-					case "yR":
-						n.yr = parseInt(v[1], 0);
-						_R.addSafariFix(id);
-						break;
-					case "zR":
-						n.zr = parseInt(v[1], 0);
-						break;
-					case "blu":
-						if (caller === "loop") n.blur = parseInt(v[1], 0);
-						else f.blur = parseInt(v[1], 0);
-						break;
-					case "gra":
-						if (caller === "loop") n.grayscale = parseInt(v[1], 0);
-						else f.grayscale = parseInt(v[1], 0);
-						break;
-					case "bri":
-						if (caller === "loop") n.brightness = parseInt(v[1], 0);
-						else f.brightness = parseInt(v[1], 0);
-						break;
-
-						// BACKDROP FILTERS
-					case "bB":
-						f.b_blur = parseInt(v[1], 0);
-						break;
-					case "bG":
-						f.b_grayscale = parseInt(v[1], 0);
-						break;
-					case "bR":
-						f.b_brightness = parseInt(v[1], 0);
-						break;
-					case "bI":
-						f.b_invert = parseInt(v[1], 0);
-						break;
-					case "bS":
-						f.b_sepia = parseInt(v[1], 0);
-						break;
-
-					case "sp":
-						t.speed = parseInt(v[1], 0);
-						break;
-					case "d":
-						n.delay = parseInt(v[1], 0);
-						break;
-					case "crns":
-						t.curviness = parseInt(v[1], 0);
-						break;
-
-						//SPECIAL HANDLINGS
-					case "st":
-						t.start = (v[1] === "w" || v[1] === "a" ? "+=0" : v[1]);
-						t.waitoncall = (v[1] === "w" || v[1] === "a");
-						break;
-					case "sA":
-						t.startAbsolute = v[1];
-						break;
-					case "sR":
-						t.startRelative = v[1];
-						break;
-
-					case "e":
-						if (wtl) t.ease = v[1];
-						else n.ease = v[1];
-						break;
-
-						//DEFAULT
-					default:
-						if (v[0].length > 0) n[v[0]] = v[1] === "t" ? true : v[1] === "f" ? false : v[1];
-						break;
+					//DEFAULT
+					default:if (v[0].length > 0) n[v[0]] = v[1] === "t" ? true : v[1] === "f" ? false : v[1];break;
 				}
 			}
 
@@ -2509,7 +2429,6 @@
 			// GET HOVER DATAS
 			if (_.frame_hover !== undefined || _.svgh !== undefined) {
 				n.frame_hover = gFrPar((_.frame_hover === undefined ? "" : _.frame_hover), id);
-
 				if (_R.ISM && (n.frame_hover.transform.instantClick == 'true' || n.frame_hover.transform.instantClick == true)) delete n.frame_hover;
 				else {
 					delete n.frame_hover.transform.instantClick;
@@ -2527,11 +2446,13 @@
 					delete n.frame_hover.transform.mask;
 					//CHECK FOR DEFAULT BORDER STYLING:
 					if (n.frame_hover.transform !== undefined) {
+
 						if (n.frame_hover.transform.borderWidth || n.frame_hover.transform.borderStyle) n.frame_hover.transform.borderColor = n.frame_hover.transform.borderColor === undefined ? "transparent" : n.frame_hover.transform.borderColor;
 						if (n.frame_hover.transform.borderStyle !== "none" && n.frame_hover.transform.borderWidth === undefined) n.frame_hover.transform.borderWidth = _R.revToResp(0, 4, 0).toString().replace(/,/g, " ");
 						if (_.bordercolor === undefined && n.frame_hover.transform.borderColor !== undefined) _.bordercolor = "transparent";
 						if (_.borderwidth === undefined && n.frame_hover.transform.borderWidth !== undefined) _.borderwidth = _R.revToResp(n.frame_hover.transform.borderWidth, 4, 0);
 						if (_.borderstyle === undefined && n.frame_hover.transform.borderStyle !== undefined) _.borderstyle = _R.revToResp(n.frame_hover.transform.borderStyle, 4, 0);
+
 					}
 				}
 			}
@@ -2588,7 +2509,7 @@
 			_.useFilter = { blur: false, grayscale: false, brightness: false, b_blur: false, b_grayscale: false, b_brightness: false, b_invert: false, b_sepia: false };
 
 			for (var i in n)
-				if (n[i].filter !== undefined) {
+				if (n.hasOwnProperty(i) && n[i].filter !== undefined) {
 					_.resetfilter = true;
 					_.useFilter = useFilter(_.useFilter, n[i].filter);
 				}
@@ -2598,7 +2519,7 @@
 				n.frame_0.filter = _R.clone(n.frame_0.filter);
 				n.frame_0.filter = resetSingleFilter(_.useFilter, _R.clone(n.frame_0.filter));
 				for (var i in n)
-					if (n[i].filter !== undefined && i !== "frame_1" && i !== "frame_0") {
+					if (n.hasOwnProperty(i) && n[i].filter !== undefined && i !== "frame_1" && i !== "frame_0") {
 						n[i].filter = _R.clone(n[i].filter);
 						n[i].filter = resetSingleFilter(_.useFilter, _R.clone(n[i].filter));
 					}
@@ -2765,18 +2686,26 @@
 
 				d.fontSize = _R.revToResp(gp ? dpc.fontsize === undefined ? parseInt(_R[id].computedStyle[pc[0].id].fontSize, 0) || 20 : dpc.fontsize : d.fontsize === undefined ? (level !== "rekursive" ? 20 : "inherit") : d.fontsize, _R[id].rle);
 				d.fontWeight = _R.revToResp(gp ? dpc.fontweight === undefined ? _R[id].computedStyle[pc[0].id].fontWeight || "inherit" : dpc.fontweight : d.fontweight === undefined ? _R[id].computedStyle[L[0].id].fontWeight || "inherit" : d.fontweight, _R[id].rle);
-				d.whiteSpace = _R.revToResp(gp ? dpc.whitespace === undefined ? "nowrap" : dpc.whitespace : d.whitespace === undefined ? "nowrap" : d.whitespace, _R[id].rle);
+				d.whiteSpace =  _R.revToResp(gp ? dpc.whitespace === undefined ? "nowrap" : dpc.whitespace : d.whitespace === undefined ? "nowrap" : d.whitespace, _R[id].rle);
+
 				d.textAlign = _R.revToResp(gp ? dpc.textalign === undefined ? "left" : dpc.textalign : d.textalign === undefined ? "left" : d.textalign, _R[id].rle);
 				d.letterSpacing = _R.revToResp(gp ? dpc.letterspacing === undefined ? parseInt(_R[id].computedStyle[pc[0].id].letterSpacing, 0) || "inherit" : dpc.letterspacing : d.letterspacing === undefined ? parseInt(_R[id].computedStyle[L[0].id].letterSpacing === "normal" ? 0 : _R[id].computedStyle[L[0].id].letterSpacing, 0) || "inherit" : d.letterspacing, _R[id].rle);
 				d.textDecoration = gp ? dpc.textDecoration === undefined ? "none" : dpc.textDecoration : d.textDecoration === undefined ? "none" : d.textDecoration;
 				lhdef = 25;
-				lhdef = pc !== undefined && L[0].tagName === "I" ? "inherit" : lhdef;
+
+				lhdef = pc !== undefined && (L[0].tagName === "I" || L[0].tagName === "STRONG") ? "inherit" : lhdef;
 				if (d.tshadow !== undefined) {
 					d.tshadow.b = _R.revToResp(d.tshadow.b, _R[id].rle);
 					d.tshadow.h = _R.revToResp(d.tshadow.h, _R[id].rle);
 					d.tshadow.v = _R.revToResp(d.tshadow.v, _R[id].rle);
 				}
 			}
+
+			if (d.type==="group") {
+				d.whiteSpace = "normal";
+				d.textAlign = _R.revToResp(gp ? dpc.textalign === undefined ? "left" : dpc.textalign : d.textalign === undefined ? "left" : d.textalign, _R[id].rle);
+			}
+
 
 			if (d.bshadow !== undefined) {
 				d.bshadow.b = _R.revToResp(d.bshadow.b, _R[id].rle);
@@ -2801,18 +2730,22 @@
 				lhdef, _R[id].rle);
 
 
+
 			d.zIndex = gp ? dpc.zindex === undefined ? parseInt(_R[id].computedStyle[pc[0].id].zIndex, 0) || "inherit" : dpc.zindex : d.zindex === undefined ? parseInt(_R[id].computedStyle[L[0].id].zIndex, 0) || "inherit" : d.zindex;
 
 			for (i = 0; i < 4; i++) {
 				d['padding' + HR[i]] = _R.revToResp(d['padding' + hr[i]] === undefined ? parseInt(_R[id].computedStyle[L[0].id]['padding' + HR[i]], 0) || 0 : d['padding' + hr[i]], _R[id].rle);
 				d['margin' + HR[i]] = _R.revToResp(d['margin' + hr[i]] === undefined ? parseInt(_R[id].computedStyle[L[0].id]['margin' + HR[i]], 0) || 0 : d['margin' + hr[i]], _R[id].rle);
 				d['border' + HR[i] + 'Width'] = d.borderwidth === undefined ? parseInt(_R[id].computedStyle[L[0].id]['border' + HR[i] + 'Width'], 0) || 0 : d.borderwidth[i];
+
 				d['border' + HR[i] + 'Color'] = d.bordercolor === undefined ? _R[id].computedStyle[L[0].id]["border-" + hr[i] + "-color"] : d.bordercolor;
 				d['border' + CO[i] + 'Radius'] = _R.revToResp(d.borderradius === undefined ? _R[id].computedStyle[L[0].id]['border' + CO[i] + 'Radius'] || 0 : d.borderradius[i], _R[id].rle);
 			}
 
 
+
 			d.borderStyle = _R.revToResp(d.borderstyle === undefined ? _R[id].computedStyle[L[0].id].borderStyle || 0 : d.borderstyle, _R[id].rle);
+
 
 			if (level !== "rekursive") {
 				d.color = _R.revToResp(d.color === undefined ? "#ffffff" : d.color, _R[id].rle, undefined, "||");
@@ -2828,6 +2761,11 @@
 				d.height = _R.revToResp(L[0].height, _R[id].rle);
 			}
 
+			if(d._incolumn){
+				for(var i = 0; i < d.height.length; i++){
+					if(d.height[i].indexOf('%') !== -1 && parseFloat(d.height[i]) > 98) d.height[i] = d.height[i].replace('%', 'px');
+				}
+			}
 
 			d.styleProps = {
 				"background": L[0].style.background,
@@ -2851,12 +2789,14 @@
 			}
 
 			if (notNeeded(d.borderStyle, 'none')) {
+
 				delete d.borderStyle;
 				for (i = 0; i < 4; i++) {
 					delete d['border' + HR[i] + 'Width'];
 					delete d['border' + HR[i] + 'Color'];
 				}
 			}
+
 
 		},
 
@@ -2894,8 +2834,11 @@
 				if (_['padding' + HR[i]]) ret['padding' + HR[i]] = _['padding' + HR[i]][l];
 				if (_['margin' + HR[i]]) ret['margin' + HR[i]] = parseInt(_['margin' + HR[i]][l]);
 				if (_['border' + CO[i] + 'Radius']) ret['border' + CO[i] + 'Radius'] = _['border' + CO[i] + 'Radius'][l];
-				if (_['border' + HR[i] + 'Color']) ret['border' + HR[i] + 'Color'] = _['border' + HR[i] + 'Color'];
-				if (_['border' + HR[i] + 'Width']) ret['border' + HR[i] + 'Width'] = parseInt(_['border' + HR[i] + 'Width']);
+
+				if (ret.borderStyle!==undefined && ret.borderStyle!=="none") {
+					if (_['border' + HR[i] + 'Color']) ret['border' + HR[i] + 'Color'] = _['border' + HR[i] + 'Color'];
+					if (_['border' + HR[i] + 'Width']) ret['border' + HR[i] + 'Width'] = parseInt(_['border' + HR[i] + 'Width']);
+				}
 			}
 
 			if (!_._isnotext) {
@@ -2905,11 +2848,19 @@
 				ret.letterSpacing = parseInt(_.letterSpacing[l]) || 0;
 				ret.textAlign = _.textAlign[l];
 				ret.whiteSpace = _.whiteSpace[l];
-				ret.whiteSpace = ret.whiteSpace === "normal" && ret.width === "auto" && _._incolumn !== true ? "nowrap" : ret.whiteSpace;
+				//if (_.x!==undefined && _.x[_R[id].level]=="r" && ret.width === "auto" && ret.whiteSpace === "normal" && ((_._incolumn !== true  && _._ingroup !== true) || _.position!=="relative")) ret.whiteSpace = "nowrap";
+				ret.whiteSpace = ret.whiteSpace === "normal" && ret.width === "auto" &&  ((_._incolumn !== true  && _._ingroup !== true) || _.position!=="relative")? "nowrap" : ret.whiteSpace;
 				ret.display = _.display;
 				if (_.tshadow !== undefined) ret.textShadow = "" + parseInt(_.tshadow.h[l], 0) + "px " + parseInt(_.tshadow.v[l], 0) + "px " + _.tshadow.b[l] + " " + _.tshadow.c;
 				if (_.tstroke !== undefined) ret.textStroke = "" + parseInt(_.tstroke.w[l], 0) + "px " + _.tstroke.c;
 			}
+
+			if (_.type==="group") {
+				ret.whiteSpace = _.whiteSpace;
+				ret.textAlign = _.textAlign[l];
+				ret.display = _.display;
+			}
+
 
 			if (_.bshadow !== undefined) ret.boxShadow = "" + parseInt(_.bshadow.h[l], 0) + "px " + parseInt(_.bshadow.v[l], 0) + "px " + parseInt(_.bshadow.b[l], 0) + "px " + parseInt(_.bshadow.s[l], 0) + "px " + _.bshadow.c;
 
@@ -2927,6 +2878,16 @@
 			return a;
 		},
 
+		fixInnerBorderRadius = function(a) {
+			var _ = _R.clone(a);
+			_.top  = 0 - ((parseInt(_.borderTopWidth) || 0) +  (parseInt(_.borderBottomWidth) || 0))  / 2 + "px";
+			_.left  = 0 - ((parseInt(_.borderLeftWidth) || 0) +  (parseInt(_.borderRightWidth) || 0))  / 2 + "px";
+			_.borderStyle = _.borderTopWidth!==undefined || _.borderBottomWidth!==undefined || _.borderLeftWidth!==undefined || _.borderRightWidth!==undefined ? "solid" : "none";
+			_.borderColor ="transparent";
+			_.boxSizing = "content-box";
+			return _;
+		},
+
 		notzero = function(a) {
 			return a !== undefined && a !== null && parseInt(a, 0) !== 0;
 		},
@@ -2934,17 +2895,17 @@
 		/////////////////////////////////////////////////////////////////
 		//	-	CALCULATE THE RESPONSIVE SIZES OF THE CAPTIONS	-	  //
 		/////////////////////////////////////////////////////////////////
-		calcResponsiveLayer = function(obj) {
+		calcResponsiveLayer = function(inobj) {
 
 
 			var i,
 				S, a, b, c, d,
 				frams, prop,
-				L = obj.a,
-				id = obj.b,
-				level = obj.c,
-				responsive = obj.d,
-				slideIndex = obj.e,
+				L = inobj.a,
+				id = inobj.b,
+				level = inobj.c,
+				responsive = inobj.d,
+				slideIndex = inobj.e,
 				winw, winh, LOBJ = {},
 				MOBJ = {},
 				_ = _R[id]._L[L[0].id],
@@ -2960,10 +2921,18 @@
 
 			slideIndex = slideIndex === "individual" ? _.slideIndex : slideIndex;
 
-			var obj = getLayerResponsiveValues(L, id, obj.RSL),
+			var obj = getLayerResponsiveValues(L, id, inobj.RSL),
 				bw = responsive === "off" ? 1 : _R[id].CM.w,
 				objCache;
 			if (_._isnotext === undefined) _._isnotext = obj.RSL !== undefined && obj.RSL[0] !== undefined && obj.RSL[0].length > 0 ? _R.gA(obj.RSL[0], '_isnotext') : _._isnotext;
+
+			// PROTECTION AGAINST LAYERS HEIGHT % BASED in COLUMNS
+			if (_._incolumn && (_.type==="shape" || _.type==="text" || _.type==="button") && (""+obj.height).indexOf('%'>0)) {
+				obj.height = obj.height;
+			}
+
+
+
 
 			_.OBJUPD = _.OBJUPD == undefined ? {} : _.OBJUPD;
 			_.caches = _.caches == undefined ? {} : _.caches;
@@ -2991,7 +2960,7 @@
 				for (i = 0; i < 4; i++) {
 					if (obj['border' + CO[i] + 'Radius'] !== undefined) S['border' + CO[i] + 'Radius'] = obj['border' + CO[i] + 'Radius'];
 					if (obj['padding' + HR[i]] !== undefined) S['padding' + HR[i]] = Math.round(obj['padding' + HR[i]] * bw) + "px";
-					if (obj['margin' + HR[i]] !== undefined && !_._incolumn) S['margin' + HR[i]] = _.type === "row" ? 0 : Math.round(obj['margin' + HR[i]] * bw) + "px";
+					if (obj['margin' + HR[i]] !== undefined && (!_._incolumn && (!_._ingroup || _.position=="absolute"))) S['margin' + HR[i]] = _.type === "row" ? 0 : Math.round(obj['margin' + HR[i]] * bw) + "px";
 				}
 				if (_.spike !== undefined) S["clip-path"] = S["-webkit-clip-path"] = _.spike;
 				if (obj.boxShadow) S.boxShadow = obj.boxShadow;
@@ -2999,6 +2968,7 @@
 
 				if (_.type !== "column") {
 					if (obj.borderStyle !== undefined && obj.borderStyle !== "none" && (obj.borderTopWidth !== 0 || obj.borderBottomWidth > 0 || obj.borderLeftWidth > 0 || obj.borderRightWidth > 0)) {
+
 						S.borderTopWidth = Math.round(obj.borderTopWidth * bw) + "px";
 						S.borderBottomWidth = Math.round(obj.borderBottomWidth * bw) + "px";
 						S.borderLeftWidth = Math.round(obj.borderLeftWidth * bw) + "px";
@@ -3008,14 +2978,12 @@
 						S.borderBottomColor = obj.borderBottomColor;
 						S.borderLeftColor = obj.borderLeftColor;
 						S.borderRightColor = obj.borderRightColor;
-
 					} else {
 						if (obj.borderStyle === "none") S.borderStyle = "none";
-						S.borderTopColor = obj.borderTopColor;
-						S.borderBottomColor = obj.borderBottomColor;
-						S.borderLeftColor = obj.borderLeftColor;
-						S.borderRightColor = obj.borderRightColor;
-
+						if (obj.borderTopColor!==undefined) S.borderTopColor = obj.borderTopColor;
+						if (obj.borderBottomColor!==undefined) S.borderBottomColor = obj.borderBottomColor;
+						if (obj.borderLeftColor!==undefined) S.borderLeftColor = obj.borderLeftColor;
+						if (obj.borderRightColor!==undefined) S.borderRightColor = obj.borderRightColor;
 					}
 				}
 
@@ -3031,15 +2999,20 @@
 					}
 					S.lineHeight = Math.round(obj.lineHeight * bw) + "px";
 					S.textAlign = (obj.textAlign);
-
 				}
 
-				if (_.type === "column") {
+				//FIX Video Border Radius Issue on some GPU
+				if (_.type==="video" && _.html5vid && _.deepmedia!==undefined && _.deepmedia[0]!==undefined && _.deepmedia[0].parentNode!=undefined && (notzero(obj.borderTopLeftRadius) || notzero(obj.borderTopRightRadius) || notzero(obj.borderBottomLeftRadius) || notzero(obj.borderBottomRightRadius))) {
+					tpGS.gsap.set(_.deepmedia[0].parentNode, fixInnerBorderRadius(S));
+				}
+
+				if (_.type === "column" && _.cbg!==undefined) {
 					if (_.cbg_set === undefined) {
 						_.cbg_set = _.styleProps["background-color"];
 						_.cbg_set = _.cbg_set == "" || _.cbg_set === undefined || _.cbg_set.length == 0 ? "transparent" : _.cbg_set;
 
-						_.cbg_img = L.css('backgroundImage');
+						_.cbg_img = L[0].dataset.bglazy!==undefined ? 'url("'+L[0].dataset.bglazy+'")' : L.css('backgroundImage');
+
 						if (_.cbg_img !== "" && _.cbg_img !== undefined && _.cbg_img !== "none") {
 							_.cbg_img_r = L.css('backgroundRepeat');
 							_.cbg_img_p = L.css('backgroundPosition');
@@ -3063,16 +3036,16 @@
 
 				if (L[0].nodeName == "IFRAME" && _R.gA(L[0], "layertype") === "html") {
 					winw = obj.basealign == "slide" ? _R[id].module.width : _R.iWA(id, slideIndex);
-					winh = obj.basealign == "slide" ? _R[id].module.height : _R.iHE(id); //*(_R[id].keepBPHeight || _R[id].currentRowsHeight>_R[id].gridheight[_R[id].level] ? 1 :_R[id].CM.h)
+					winh = obj.basealign == "slide" || (_R[id].sliderType=="carousel" && _R[id].carousel.orientation === "v") ? _R[id].module.height : _R.iHE(id); //*(_R[id].keepBPHeight || _R[id].currentRowsHeight>_R[id].gridheight[_R[id].level] ? 1 :_R[id].CM.h)
 					S.width = !_R.isNumeric(obj.width) && obj.width.indexOf("%") >= 0 ? (_._isstatic && !_._incolumn && !_._ingroup) ? winw * parseInt(obj.width, 0) / 100 : obj.width : minmaxconvert(obj.width, bw, "auto", winw, "auto");
 					S.height = !_R.isNumeric(obj.height) && obj.height.indexOf("%") >= 0 ? (_._isstatic && !_._incolumn && !_._ingroup) ? winh * parseInt(obj.height, 0) / 100 : obj.height : minmaxconvert(obj.height, bw, "auto", winw, "auto");
 				}
 
 				LOBJ = jQuery.extend(true, LOBJ, S);
-
+				_R[id].firstLayerCalculated = true;
 				if (level != "rekursive") {
 					winw = obj.basealign == "slide" ? _R[id].module.width : _R.iWA(id, slideIndex);
-					winh = obj.basealign == "slide" ? _R[id].module.height : _R.iHE(id); //*(_R[id].keepBPHeight || _R[id].currentRowsHeight>_R[id].gridheight[_R[id].level] ? 1 :_R[id].CM.h)
+					winh = obj.basealign == "slide" || (_R[id].sliderType=="carousel" && _R[id].carousel.orientation === "v") ? _R[id].module.height : _R.iHE(id); //*(_R[id].keepBPHeight || _R[id].currentRowsHeight>_R[id].gridheight[_R[id].level] ? 1 :_R[id].CM.h)
 
 
 					var swid = !_R.isNumeric(obj.width) && obj.width.indexOf("%") >= 0 ? (_._isstatic && !_._incolumn && !_._ingroup) ? winw * parseInt(obj.width, 0) / 100 : obj.width : minmaxconvert(obj.width, bw, "auto", winw, "auto"),
@@ -3108,23 +3081,42 @@
 
 					} else
 					if (!_R.isNumeric(obj.width) && obj.width.indexOf("%") >= 0) {
-						POBJ.minWidth = _.basealign === "slide" || _._ingroup === true ? swid : (_R.iWA(id, slideIndex) * _R[id].CM.w) * parseInt(swid) / 100 + "px";
+
+						if ((_._isgroup && _.position==="absolute") || (_._ingroup===true || _._incolumn==true) && (_.position==="relative") || (_.reqWrp!==undefined && (!_.reqWrp.loop || !_.reqWrp.mask)))
+							POBJ.width = _.basealign === "slide" || _._ingroup === true || _._isstatic ? swid : (_R.iWA(id, slideIndex) * _R[id].CM.w) * parseInt(swid) / 100 + "px";
+						else
+							POBJ.minWidth = _.basealign === "slide" || _._ingroup === true || _._isstatic? swid : (_R.iWA(id, slideIndex) * _R[id].CM.w) * parseInt(swid) / 100 + "px";
+
 						LPOBJ.width = "100%";
 						MOBJ.width = "100%";
 					}
 
+					//if (obj.width=="auto") POBJ.maxWidth = "100%"
+
+
+
+					if (_._ingroup===true && _.position==="relative") {
+						POBJ.float = obj.float;
+						POBJ.lineHeight=obj.lineHeight+"px";
+						LOBJ.verticalAlign = "top";
+						MOBJ.verticalAlign = "top";
+						LPOBJ.verticalAlign = "top";
+						POBJ.verticalAlign = "inherit";
+					}
+
 					if (!_R.isNumeric(obj.height) && obj.height.indexOf("%") >= 0) {
-						POBJ.minHeight = _.basealign === "slide" || _._ingroup === true ? shei : (_R.iHE(id) * ( /*_R[id].keepBPHeight ||*/ _R[id].currentRowsHeight > _R[id].gridheight[_R[id].level] ? 1 : _R[id].CM.w)) * parseInt(shei) / 100 + "px";
+						POBJ.minHeight = _.basealign === "slide" || _._ingroup === true ||  _._isstatic ? shei : (_R.iHE(id) * ( /*_R[id].keepBPHeight ||*/ _R[id].currentRowsHeight > _R[id].gridheight[_R[id].level] ? 1 : _R[id].CM.w)) * parseInt(shei) / 100 + "px";
+						if ((_.reqWrp!==undefined && !_.reqWrp.loop && !_.reqWrp.mask)) POBJ.height = POBJ.minHeight;
 						LPOBJ.height = "100%";
 						MOBJ.height = "100%";
 						POBJ_HEIGHT_PERCENTAGE = true;
 					}
-
 					if (!_._isnotext) {
+
 						Sr.whiteSpace = obj.whiteSpace;
 						Sr.textAlign = obj.textAlign;
 						Sr.textDecoration = obj.textDecoration;
-					}
+					} else if (_.type == "group") Sr.whiteSpace = "normal";
 					if (obj.color != "npc" && obj.color !== undefined) Sr.color = obj.color;
 
 					if (_._ingroup) {
@@ -3155,9 +3147,24 @@
 
 					if (_._isgroup) {
 						if (!_R.isNumeric(Sr.width) && Sr.width.indexOf("%") >= 0) Sr.width = "100%";
-						POBJ.height = POBJ_HEIGHT_PERCENTAGE ? "100%" : Sr.height;
-
+						//Groups on Top Level must have a Height, and Child Object must have 100% Height
+						if (_.position=="absolute" && !_._ingroup && !_._incolumn && POBJ_HEIGHT_PERCENTAGE) {
+							POBJ.height = POBJ.minHeight;
+							Sr.height = "100%";
+						} else
+							POBJ.height = POBJ_HEIGHT_PERCENTAGE ? "100%" : Sr.height;
+						Sr.lineHeight = obj.lineHeight===undefined || POBJ_HEIGHT_PERCENTAGE ? "initial" : obj.lineHeight + "px";
+						Sr.verticalAlign = _.verticalalign;
+						Sr.textAlign = obj.textAlign;
+						for (i = 0; i < 4; i++)
+							if (LOBJ['border' + CO[i] + 'Radius'] !== undefined) {
+								MOBJ['border' + CO[i] + 'Radius'] = LOBJ['border' + CO[i] + 'Radius'];
+							}
+						if (_.position=="relative" && obj.display!==undefined) POBJ.display = obj.display
+						if (obj.width=="auto") MOBJ.position = "relative";
 					}
+
+
 
 					LOBJ = jQuery.extend(true, LOBJ, Sr);
 
@@ -3165,9 +3172,13 @@
 						// patch, as this value can sometimes exist as a string
 						if (typeof _.svgI.fill === 'string') _.svgI.fill = [_.svgI.fill];
 
+
 						_.svgTemp = _R.clone(_.svgI);
-						if (_.svgTemp.fill !== undefined) {
+						delete _.svgTemp.svgAll;
+						if (_.svgTemp.fill !== undefined && (_.elementHovered && _._isstatic)!==true) {  // IGNORE IF WE ARE IN STATIC LAYERS AND ON HOVER MODE !!
 							_.svgTemp.fill = _.svgTemp.fill[_R[id].level];
+							if(_.svg.length <= 0) _.svg = L.find("svg");
+							if(_.svgPath.length <= 0) _.svgPath = _.svg.find(!_.svgI.svgAll ? 'path' : 'path, circle, ellipse, line, polygon, polyline, rect');
 							tpGS.gsap.set(_.svgPath, { fill: _.svgI.fill[_R[id].level] });
 						}
 						tpGS.gsap.set(_.svg, _.svgTemp);
@@ -3179,9 +3190,16 @@
 					for (i = 0; i < 4; i++)
 						if (obj['margin' + HR[i]] !== undefined) POBJ['padding' + HR[i]] = (obj['margin' + HR[i]] * bw) + "px";
 
+				// LAYERS WITH RELATIVE POSITIONS IN GROUP NEED TO HAVE MARGINS ON THE WRAPPER
+				if (_._ingroup && _.position=="relative") {
+					for (i = 0; i < 4; i++)
+						if (obj['margin' + HR[i]] !== undefined) POBJ['margin' + HR[i]] = (obj['margin' + HR[i]] * bw) + "px";
+						if (_.type==="shape" && MOBJ.width=="100%" && MOBJ.height=="100%") MOBJ.position = "absolute";
+				}
+
 				if (_.type === "column" && _.cbg && _.cbg.length > 0) {
 					// DYNAMIC HEIGHT AUTO CALCULATED BY BROWSER
-					if (_.cbg_img_s !== undefined) _.cbg[0].style.backgroundSize = _.cbg_img_s;
+					if (_.cbg_img_s !== undefined && _.cbg!==undefined) _.cbg[0].style.backgroundSize = _.cbg_img_s;
 					S = {};
 					if (_.styleProps.cursor !== "") S.cursor = _.styleProps.cursor;
 					if (_.cbg_set !== "" && _.cbg_set !== "transparent") S.backgroundColor = _.cbg_set;
@@ -3215,7 +3233,8 @@
 						_.caches.cbgmaskS = a; }
 				}
 
-
+				if (_.reqWrp!==undefined && !_.reqWrp.loop && !_.reqWrp.mask &&  LOBJ.width=="100%" && LOBJ.height=="100%")
+					LOBJ.position = "absolute"; // If no Mask and loop added, content need to be positioned to top leftcorner with absolute to have dimension, Parent has only min-width and min-height !!
 
 				if (POBJ.maxWidth === "auto") POBJ.maxWidth = "inherit";
 				if (POBJ.maxHeight === "auto") POBJ.maxHeight = "inherit";
@@ -3223,6 +3242,22 @@
 				if (MOBJ.maxHeight === "auto") MOBJ.maxHeight = "inherit";
 				if (LPOBJ.maxWidth === "auto") LPOBJ.maxWidth = "inherit";
 				if (LPOBJ.maxHeight === "auto") LPOBJ.maxHeight = "inherit";
+
+
+				//SPECIAL CASES FOR INSET SIZES WITH 100% + MARGIN
+				if (_.fullinset && _._ingroup==true && _.position==="absolute") {
+					POBJ.width = "auto";
+					POBJ.minHeight = "auto";
+					POBJ.height = "auto";
+					POBJ.left =  LOBJ.marginLeft!==undefined && LOBJ.marginLeft!=="0px" ? LOBJ.marginLeft : "0px";
+					POBJ.right = LOBJ.marginRight!==undefined && LOBJ.marginRight!=="0px" ? LOBJ.marginRight : "0px";
+					POBJ.top =  LOBJ.marginTop!==undefined && LOBJ.marginTop!=="0px" ? LOBJ.marginTop : "0px";
+					POBJ.bottom = LOBJ.marginBottom!==undefined && LOBJ.marginBottom!=="0px" ? LOBJ.marginBottom : "0px";
+					delete LOBJ.marginLeft;
+					delete LOBJ.marginRight;
+					delete LOBJ.marginTop;
+					delete LOBJ.marginBottom;
+				}
 
 				// PRESETS
 				// VIDEO OBJECT INFLUENCE ON LAYER
@@ -3236,7 +3271,7 @@
 					if (_.OBJUPD.lppmOBJ.minWidth !== undefined) {
 						LPOBJ.minWidth = _.OBJUPD.lppmOBJ.minWidth;
 						MOBJ.minWidth = _.OBJUPD.lppmOBJ.minWidth;
-						POBJ.minWidth = _.OBJUPD.lppmOBJ.minWidth;
+						//POBJ.minWidth = _.OBJUPD.lppmOBJ.minWidth;
 					}
 					if (_.OBJUPD.lppmOBJ.minHeight !== undefined) {
 						LPOBJ.minHeight = _.OBJUPD.lppmOBJ.minHeight;
@@ -3244,11 +3279,40 @@
 						POBJ.minHeight = _.OBJUPD.lppmOBJ.minHeight;
 					}
 				}
+
+				//In Column Group width 100% should adjust Group Mask to 100% Also
+				if (_._incolumn && _.type=="group" && POBJ!==undefined && POBJ.minWidth=="100%") {
+					MOBJ.width = "100%";
+				}
+
+				//Special Solution for thFixed to get lpobj at relative groups also relativ
+				if (_._isgroup && _.thFixed && _.reqWrp!==undefined && _.reqWrp.loop && _.reqWrp.mask && obj.width=="auto") {
+					LPOBJ.position="relative";
+				}
+
+
+
+
+				//In Group 100%Height with Elements without Mask and Loop Wrapper need to set 100% Height
+				if (_._ingroup && !_.reqWrp.loop && !_.reqWrp.mask  && _.position=="absolute" && POBJ.minHeight=="100%") POBJ.height = "100%";
+				//HOOK SETTINGS OF LAYERS IF NEEDED
+				for (var hooki in _R[id].calcResponsiveLayerHooks) {
+					var returns = _R[id].calcResponsiveLayerHooks[hooki]({id:id,L:L,obj:obj,_:_,inobj:inobj,LOBJ:LOBJ, LPOBJ:LPOBJ, MOBJ:MOBJ, POBJ:POBJ});
+					if (returns==undefined) continue;
+					if (returns.obj!==undefined) obj = jQuery.extend(true,obj,returns.obj);
+					if (returns.LOBJ!==undefined) LOBJ = jQuery.extend(true,LOBJ,returns.LOBJ);
+					if (returns.LPOBJ!==undefined) LPOBJ = jQuery.extend(true,LPOBJ,returns.LPOBJ);
+					if (returns.MOBJ!==undefined) MOBJ = jQuery.extend(true,MOBJ,returns.MOBJ);
+					if (returns.POBJ!==undefined) POBJ = jQuery.extend(true,POBJ,returns.POBJ);
+				}
+
+
+
+
 				a = JSON.stringify(LOBJ);
 				b = JSON.stringify(LPOBJ);
 				c = JSON.stringify(MOBJ);
 				d = JSON.stringify(POBJ);
-
 
 				//IMG Object Update If Necessary
 				if (_.imgOBJ !== undefined && (_.caches.imgOBJ === undefined || _.caches.imgOBJ.width !== _.imgOBJ.width || _.caches.imgOBJ.height !== _.imgOBJ.height || _.caches.imgOBJ.left !== _.imgOBJ.left || _.caches.imgOBJ.right !== _.imgOBJ.right || _.caches.imgOBJ.top !== _.imgOBJ.top || _.caches.imgOBJ.bottom !== _.imgOBJ.bottom)) {
@@ -3257,6 +3321,8 @@
 					tpGS.gsap.set(_.img, _.imgOBJ);
 				}
 
+
+
 				//UPDATE MEDIA OBJ IF NEEDED
 				if (_.mediaOBJ !== undefined && (_.caches.mediaOBJ === undefined || _.caches.mediaOBJ.width !== _.mediaOBJ.width || _.caches.mediaOBJ.height !== _.mediaOBJ.height || _.caches.mediaOBJ.display !== _.mediaOBJ.display)) {
 					_.caches.mediaOBJ = _R.clone(_.mediaOBJ);
@@ -3264,12 +3330,12 @@
 				}
 
 
+
 				if (a != _R[id].emptyObject && a != _.caches.LOBJ) { tpGS.gsap.set(L, LOBJ);
 					_.caches.LOBJ = a; }
-				if (b != _R[id].emptyObject && b != _.caches.LPOBJ) { tpGS.gsap.set(_.lp, LPOBJ);
+				if (_.lp!==undefined && b != _R[id].emptyObject && b != _.caches.LPOBJ) { tpGS.gsap.set(_.lp, LPOBJ);
 					_.caches.LPOBJ = b; }
-				if (c != _R[id].emptyObject && c != _.caches.MOBJ) { tpGS.gsap.set(_.m, MOBJ);
-					_.caches.MOBJ = c; }
+				if (c != _R[id].emptyObject && c != _.caches.MOBJ) { tpGS.gsap.set(_.m, MOBJ);_.caches.MOBJ = c; }
 				if (d != _R[id].emptyObject && d != _.caches.POBJ) { tpGS.gsap.set(_.p, POBJ);
 					_.caches.POBJ = d;
 					_.caches.POBJ_LEFT = POBJ.left;

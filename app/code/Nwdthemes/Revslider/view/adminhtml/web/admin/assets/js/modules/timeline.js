@@ -380,7 +380,7 @@
 				RVS.TL.inDrag = true;
 				RVS.TL.tS.classList.add("frame_in_drag");
 
-				RVS.TL.timeBeforeFrameChange = RVS.TL[RVS.S.slideId].main.time();
+				RVS.TL.timeBeforeFrameChange = RVS.TL[RVS.S.slideId].main==undefined ? 0 : RVS.TL[RVS.S.slideId].main.time();
 				cLayer = ui.element===undefined ? { licontainer:document.getElementById('tllayerlist_element_'+RVS.S.slideId+"_"+ui.helper[0].dataset.layerid) , layerid:ui.helper[0].dataset.layerid, frame:ui.helper[0].dataset.frame, type:ui.helper[0].dataset.layertype, bg:ui.helper[0].dataset.bg}
 								: { layerid:ui.element[0].dataset.layerid, frame:ui.element[0].dataset.frame, type:ui.element[0].dataset.layertype, bg:ui.element[0].dataset.bg};
 				if (cLayer.bg!=="true") {
@@ -1112,7 +1112,7 @@
 		RVS.DOC.on('mouseenter','.timeline_left_container, .context_left, .timeline_right_container',function(e,a) {RVS.TL.ht.hide();});
 		RVS.DOC.on('mouseenter','#timeline_settings',function(e,a) {
 			RVS.DOC.trigger('previewStopLayerAnimation');
-			if (!RVS.TL.over && RVS.TL[RVS.S.slideId].main && RVS.TL.cache!==undefined && RVS.TL.cache.main!==undefined && RVS.TL.cache.main!==0) RVS.F.goToIdle();
+			if (!RVS.TL.over && RVS.TL[RVS.S.slideId] && RVS.TL[RVS.S.slideId].main && RVS.TL.cache!==undefined && RVS.TL.cache.main!==undefined && RVS.TL.cache.main!==0) RVS.F.goToIdle();
 			//RVS.F.updateTimeLine({state:"time",time:RVS.TL.cache.main, timeline:"main"});
 			RVS.TL.over = true;
 		});
@@ -1260,6 +1260,22 @@
 							type:RVS.L[li].type,
 							endWithSlide:RVS.L[li].timeline.frames.frame_999.timeline.endWithSlide,
 							frames:{frame_999:RVS.L[li].timeline.frames.frame_999.timeline.start}
+					};
+		}
+		return kids;
+	};
+
+	RVS.F.getSlideLayersEndWithSlide = function(slide) {
+		if (RVS.SLIDER[slide]==undefined) return {};
+		var kids = {};
+		for (var li in RVS.SLIDER[slide].layers) {
+			if(!RVS.SLIDER[slide].layers.hasOwnProperty(li)) continue;
+			//if (RVS.SLIDER[slide].layers[li].timeline.frames.frame_999.timeline.endWithSlide)
+				if (li!=="top" && li!=="bottom" && li!=="middle")
+					kids[li] = {
+							type:RVS.SLIDER[slide].layers[li].type,
+							endWithSlide:RVS.SLIDER[slide].layers[li].timeline.frames.frame_999.timeline.endWithSlide,
+							frames:{frame_999:RVS.SLIDER[slide].layers[li].timeline.frames.frame_999.timeline.start}
 					};
 		}
 		return kids;
@@ -1431,6 +1447,7 @@
 				origEase = anim.ease;
 
 
+
 			// SET COLOR ON LAYER (TO AND FROM)
 			if (_frameObj.color!==undefined && _frameObj.color.use)
 				anim.color = window.RSColor.get(_frameObj.color.color);
@@ -1525,7 +1542,6 @@
 				mask.rotationZ = l.idle.rotationZ;
 				mask.opacity = l.idle.opacity;
 				mask.transformPerspective = tPE;
-
 				if (fi===firstframe) {
 					frommask.rotationX = l.idle.rotationX;
 					frommask.rotationY = l.idle.rotationY;
@@ -1535,8 +1551,20 @@
 				} else {
 					_frame.timeline.add(tpGS.gsap.to([lh.m,lh.bgmask],speed,mask),0);
 				}
+				lh.maskAnimFirst = true;
 			} else {
-				_frame.timeline.add(tpGS.gsap.to(lh.m,0.001,{transformPerspective:tPE, filter:"none", x:0, y:0, opacity:l.idle.opacity, rotationX:l.idle.rotationX,  rotationY:l.idle.rotationY, rotationZ:l.idle.rotationZ, overflow:"visible"}),0);
+				if (parseInt(l.idle.rotationX,0)===0 && parseInt(l.idle.rotationY,0)==0 && parseInt(l.idle.rotationZ,0)==0) {
+					if (lh.maskAnimFirst || lh.maskAnimFirst==undefined) {
+						lh.m.style.transform = "none";
+						lh.m.style.filter = "none";
+						lh.m.style.overflow = 'visible';
+						lh.maskAnimFirst = false;
+					}
+					lh.m.style.opacity = l.idle.opacity;
+				} else {
+					lh.maskAnimFirst = true;
+					_frame.timeline.add(tpGS.gsap.to(lh.m,0.001,{transformPerspective: tPE, filter:"none", x:0, y:0, opacity:l.idle.opacity, rotationX:l.idle.rotationX,  rotationY:l.idle.rotationY, rotationZ:l.idle.rotationZ, overflow:"visible"}),0);
+				}
 			}
 
 
@@ -1547,7 +1575,7 @@
 			// ANIMATE ELEMENT
 			if (fi===firstframe) {
 				delete from.clipB;
-
+				delete from.transformPerspective;
 				if (lh.bg!==undefined) _frame.timeline.fromTo(lh.bg,speed,from,anim,0);
 				if (lh.bg!==undefined && l.type==="column")
 					_frame.timeline.fromTo(aObj,speed,reduceColumn(from),reduceColumn(anim),0);
@@ -1600,6 +1628,7 @@
 
 		// RENDER HOVER ANIMATION
 		if ((l.hover.usehover=='true' || l.hover.usehover==true || l.hover.usehover=="desktop") && lh.htr) {
+			if (lh.hover!==undefined) lh.hover.kill();
 			lh.hover = new tpGS.TimelineMax();
 			lh.hover.pause();
 			lh.htr.ease = l.hover.ease;
@@ -1634,10 +1663,10 @@
 				//lh.uid = _.layerid;
 				lh.hoverlistener= true;
 				lh.w.on('mouseenter',function() {
-					if (this.dataset.uid!==undefined && RVS.L[this.dataset.uid].hover.usehover!='true') return;
+					if (this.dataset.uid!==undefined && RVS.L[this.dataset.uid].hover.usehover!=true && RVS.L[this.dataset.uid].hover.usehover!='true') return;
 					lh.hover.play();
 				}).on('mouseleave', function() {
-					if (this.dataset.uid!==undefined && RVS.L[this.dataset.uid].hover.usehover!='true') RVS.H[this.dataset.uid].hover.time(0).pause();
+					if (this.dataset.uid!==undefined && RVS.L[this.dataset.uid].hover.usehover!=true && RVS.L[this.dataset.uid].hover.usehover!='true') RVS.H[this.dataset.uid].hover.time(0).pause();
 					if (RVS.eMode.mode!=="hover" || !lh.w.hasClass("selected")) lh.hover.reverse();
 				});
 
@@ -1650,7 +1679,7 @@
 		}	else
 		if (lh.hoverlistener) {
 			lh.hoverlistener= false;
-			lh.w.unbind('hover');
+			lh.w.off('hover');
 		}
 
 
@@ -1718,7 +1747,7 @@
 			lh.timeline.add(looptime,lssstart);
 		} else {
 			loopmove = new tpGS.TimelineMax({});
-			loopmove.set(lh.lp,{'-webkit-filter':'blur(0px) grayscale(0%) brightness(100%)', 'filter':'blur(0px) grayscale(0%) brightness(100%)', x:0,y:0,z:0, scale:1,skewX:0, skewY:0, rotationX:0, rotationY:0,rotationZ:0, transformPerspective:tPE, transformOrigin:"50% 50%", opacity:1});
+			loopmove.set(lh.lp,{'-webkit-filter':'none', 'filter':'none', x:0,y:0,z:0, scale:1,skewX:0, skewY:0, rotationX:0, rotationY:0,rotationZ:0, transformPerspective:tPE, transformOrigin:"50% 50%", opacity:1});
 			lh.timeline.add(loopmove,0);
 		}
 
@@ -2201,14 +2230,17 @@
 
 		RVS.DOC.on('updateMaxTime',function(e,ep) {
 			RVS.F.updateMaxTime({pos:true, cont:true});
-			var _ = RVS.F.getLayersEndWithSlide(),
-				slideMaxTime = RVS.F.getSlideLength();
-
-			for (var li in _) {
-				if(!_.hasOwnProperty(li)) continue;
-				if (_[li].endWithSlide) {
-					RVS.L[li].timeline.frames.frame_999.timeline.start = slideMaxTime*10;
-					RVS.F.updateLayerFrame({layerid:li, frame:"frame_999",maxtime:slideMaxTime});
+			for (var slideindex in RVS.SLIDER.slideIDs) {
+				var slide = RVS.SLIDER.slideIDs[slideindex];
+				if (slide===undefined || (""+slide).indexOf('static')>=0) continue;
+					slideMaxTime = RVS.F.getSlideLength(slide);
+					var _ = RVS.F.getSlideLayersEndWithSlide(slide);
+				for (var li in _) {
+					if(!_.hasOwnProperty(li)) continue;
+					if (_[li].endWithSlide) {
+						RVS.SLIDER[slide].layers[li].timeline.frames.frame_999.timeline.start = slideMaxTime*10;
+						if (""+slide==""+RVS.S.slideId) RVS.F.updateLayerFrame({layerid:li, frame:"frame_999",maxtime:slideMaxTime});
+					}
 				}
 			}
 		});

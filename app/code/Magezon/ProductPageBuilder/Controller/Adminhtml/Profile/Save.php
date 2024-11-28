@@ -17,6 +17,7 @@ namespace Magezon\ProductPageBuilder\Controller\Adminhtml\Profile;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magezon\ProductPageBuilder\Model\Processor;
+use Magento\Framework\Filter\FilterInput;
 
 class Save extends \Magento\Backend\App\Action
 {
@@ -48,10 +49,11 @@ class Save extends \Magento\Backend\App\Action
     protected $processor;
 
     /**
-     * @param \Magento\Backend\App\Action\Context                   $context       [description]
-     * @param \Magento\Framework\Stdlib\DateTime\Filter\Date        $dateFilter    [description]
-     * @param \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor [description]
-     * @param \Magento\Framework\App\Cache\TypeListInterface        $cacheTypeList [description]
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Framework\Stdlib\DateTime\Filter\Date $dateFilter
+     * @param \Magento\Framework\App\Request\DataPersistorInterface $dataPersistor
+     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param Processor $processor
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -102,7 +104,7 @@ class Save extends \Magento\Backend\App\Action
                     $filterValues['to_date'] = $this->dateFilter;
                 }
                 if ($filterValues) {
-                    $inputFilter = new \Zend_Filter_Input(
+                    $inputFilter = new FilterInput(
                         $filterValues,
                         [],
                         $data
@@ -137,7 +139,11 @@ class Save extends \Magento\Backend\App\Action
                     $duplicate->save();
                     $this->messageManager->addSuccessMessage(__('You duplicated the profile'));
                     $this->cleanFullpageCache();
-                    return $resultRedirect->setPath('*/*/edit', ['profile_id' => $duplicate->getId(), '_current' => true]);
+                    return $resultRedirect->setPath(
+                        '*/*/edit',
+                        ['profile_id' => $duplicate->getId(),
+                            '_current' => true]
+                    );
                 }
 
                 $this->cleanFullpageCache();
@@ -145,7 +151,7 @@ class Save extends \Magento\Backend\App\Action
                     return $resultRedirect->setPath('*/*/*');
                 }
 
-                return $resultRedirect->setPath('*/*/edit', ['profile_id' => $model->getId(), '_current' => true]);
+                return $resultRedirect->setPath('*/*/', ['profile_id' => $model->getId(), '_current' => true]);
             } catch (LocalizedException $e) {
                 $this->messageManager->addExceptionMessage($e->getPrevious() ?:$e);
             } catch (\Exception $e) {

@@ -2,6 +2,8 @@
 
 namespace Nwdthemes\Revslider\Model\Revslider\ExternalSources\EspressoDev;
 
+use \Nwdthemes\Revslider\Model\FrameworkAdapter as FA;
+
 class InstagramBasicDisplay
 {
     const API_URL = 'https://graph.instagram.com/';

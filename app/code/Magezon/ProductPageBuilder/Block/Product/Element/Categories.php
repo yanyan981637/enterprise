@@ -22,12 +22,12 @@ class Categories extends \Magezon\ProductPageBuilder\Block\Product\Element
     protected $_categoryTreeFactory;
 
     /**
-     * @param \Magento\Framework\View\Element\Template\Context          $context             
-     * @param \Magento\Framework\App\Http\Context                       $httpContext         
-     * @param \Magento\Framework\Pricing\PriceCurrencyInterface         $priceCurrency       
-     * @param \Magento\Framework\Registry                               $registry            
-     * @param \Magento\Catalog\Model\ResourceModel\Category\TreeFactory $categoryTreeFactory 
-     * @param array                                                     $data                
+     * @param \Magento\Framework\View\Element\Template\Context          $context
+     * @param \Magento\Framework\App\Http\Context                       $httpContext
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface         $priceCurrency
+     * @param \Magento\Framework\Registry                               $registry
+     * @param \Magento\Catalog\Model\ResourceModel\Category\TreeFactory $categoryTreeFactory
+     * @param array                                                     $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -49,7 +49,7 @@ class Categories extends \Magezon\ProductPageBuilder\Block\Product\Element
         $parent  = $this->_storeManager->getStore()->getRootCategoryId();
         $product = $this->getProduct();
         $tree    = $this->_categoryTreeFactory->create();
-        $nodes   = $tree->loadNode($parent)->loadChildren(0)->getChildren();
+        //$nodes   = $tree->loadNode($parent)->loadChildren(0)->getChildren();
         $tree->addCollectionData(null, false, $parent, false, false);
         $collection = $tree->getCollection();
         $collection->addIsActiveFilter();

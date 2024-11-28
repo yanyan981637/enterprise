@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -60,7 +60,7 @@ class RequestManagerTest extends TestCase
 
     public function testRegisterInstance(): void
     {
-        list($curlMock, $domain, $url, $postParams, $registeredInstanceMock) = $this->registerInstanceInit();
+        [$curlMock, $domain, $url, $postParams, $registeredInstanceMock] = $this->registerInstanceInit(200);
 
         $curlMock
             ->expects($this->once())
@@ -73,26 +73,26 @@ class RequestManagerTest extends TestCase
 
     public function testRegisterInstanceOnException(): void
     {
-        list($curlMock, $domain, $url, $postParams) = $this->registerInstanceInit();
+        [$curlMock, $domain, $url, $postParams] = $this->registerInstanceInit(500);
 
         $curlMock
             ->expects($this->once())
             ->method('request')
-            ->with($url, $postParams)
-            ->willThrowException(new LocalizedException(__('Invalid request.')));
+            ->with($url, $postParams);
 
         $this->expectException(LocalizedException::class);
         $this->model->registerInstance($domain);
     }
 
-    private function registerInstanceInit(): array
+    private function registerInstanceInit(int $responseCode): array
     {
         $domain = 'https://amasty.com';
         $path = '/api/v1/instance/registration';
         $url = 'https://amasty-licence.com' . $path;
         $postParams = json_encode(['domain' => $domain]);
         $curlMock = $this->createPartialMock(Curl::class, ['request']);
-        $registeredInstanceMock = $this->createMock(RegisteredInstance::class);
+        $registeredInstanceMock = $this->createPartialMock(RegisteredInstance::class, []);
+        $registeredInstanceMock->setData(['code' => $responseCode]);
 
         $this->curlFactoryMock
             ->expects($this->once())
@@ -109,7 +109,7 @@ class RequestManagerTest extends TestCase
 
     public function testUpdateInstanceInfo(): void
     {
-        list($curlMock, $instanceInfoMock, $url, $instanceInfoString) = $this->updateInstanceInfoInit();
+        [$curlMock, $instanceInfoMock, $url, $instanceInfoString] = $this->updateInstanceInfoInit(200);
 
         $curlMock
             ->expects($this->once())
@@ -121,29 +121,34 @@ class RequestManagerTest extends TestCase
 
     public function testUpdateInstanceInfoOnException(): void
     {
-        list($curlMock, $instanceInfoMock, $url, $instanceInfoString) = $this->updateInstanceInfoInit();
+        [$curlMock, $instanceInfoMock, $url, $instanceInfoString] = $this->updateInstanceInfoInit(500);
 
         $curlMock
             ->expects($this->once())
             ->method('request')
-            ->with($url, $instanceInfoString)
-            ->willThrowException(new LocalizedException(__('Invalid request.')));
+            ->with($url, $instanceInfoString);
 
         $this->expectException(LocalizedException::class);
         $this->model->updateInstanceInfo($instanceInfoMock);
     }
 
-    private function updateInstanceInfoInit(): array
+    private function updateInstanceInfoInit(int $responseCode): array
     {
-        $instanceInfoString = json_encode(['systemInstanceKey' => 'key', 'modules' => [], 'domains' => []]);
         $instanceInfo = [
             'systemInstanceKey' => 'key',
             'modules' => [],
-            'domains' => []
+            'domains' => [],
+            'customerInstanceKey' => [],
+            'isProduction' => null
         ];
+        $instanceInfoString = json_encode($instanceInfo);
+
         $path = '/api/v1/instance_client/' . $instanceInfo['systemInstanceKey'] . '/collect';
         $url = 'https://amasty-licence.com' . $path;
         $curlMock = $this->createPartialMock(Curl::class, ['request']);
+        $registeredInstanceMock = $this->createPartialMock(RegisteredInstance::class, []);
+        $registeredInstanceMock->setData(['code' => $responseCode]);
+        $curlMock->method('request')->willReturn($registeredInstanceMock);
         $instanceInfoMock = $this->createPartialMock(
             InstanceInfo::class,
             ['getSystemInstanceKey', 'toArray']
@@ -178,36 +183,48 @@ class RequestManagerTest extends TestCase
 
     public function testPing(): void
     {
-        list($curlMock, $systemInstanceKey, $url) = $this->pingInit();
+        [$curlMock, $instanceInfoMock, $url, $instanceInfoString] = $this->pingInit(200);
 
         $curlMock
             ->expects($this->once())
             ->method('request')
-            ->with($url);
+            ->with($url, $instanceInfoString);
 
-        $this->model->ping($systemInstanceKey);
+        $this->model->pingRequest($instanceInfoMock);
     }
 
     public function testPingOnException(): void
     {
-        list($curlMock, $systemInstanceKey, $url) = $this->pingInit();
+        [$curlMock, $instanceInfoMock, $url, $instanceInfoString] = $this->pingInit(500);
 
         $curlMock
             ->expects($this->once())
             ->method('request')
-            ->with($url)
-            ->willThrowException(new LocalizedException(__('Invalid request.')));
+            ->with($url, $instanceInfoString);
 
-        $this->expectException(LocalizedException::class);
-        $this->model->ping($systemInstanceKey);
+        $response = $this->model->pingRequest($instanceInfoMock);
+        $this->assertEquals(500, $response->getData('code'));
     }
 
-    private function pingInit(): array
+    private function pingInit(int $responseCode): array
     {
-        $systemInstanceKey = 'key';
-        $path = '/api/v1/instance_client/' . $systemInstanceKey . '/ping';
+        $instanceInfo = [
+            'systemInstanceKey' => 'key',
+            'customerInstanceKey' => ['test-key'],
+            'isProduction' => true
+        ];
+        $instanceInfoString = json_encode($instanceInfo);
+
+        $path = '/api/v1/instance_client/' . $instanceInfo['systemInstanceKey'] . '/ping';
         $url = 'https://amasty-licence.com' . $path;
         $curlMock = $this->createPartialMock(Curl::class, ['request']);
+        $registeredInstanceMock = $this->createPartialMock(RegisteredInstance::class, []);
+        $registeredInstanceMock->setData(['code' => $responseCode]);
+        $curlMock->method('request')->willReturn($registeredInstanceMock);
+        $instanceInfoMock = $this->createConfiguredMock(
+            InstanceInfo::class,
+            ['getSystemInstanceKey' => $instanceInfo['systemInstanceKey'], 'toArray' => $instanceInfo]
+        );
 
         $this->curlFactoryMock
             ->expects($this->once())
@@ -219,6 +236,85 @@ class RequestManagerTest extends TestCase
             ->with($path)
             ->willReturn($url);
 
-        return [$curlMock, $systemInstanceKey, $url];
+        $this->simpleDataObjectConverterMock
+            ->expects($this->once())
+            ->method('convertKeysToCamelCase')
+            ->willReturn($instanceInfo);
+
+        return [$curlMock, $instanceInfoMock, $url, $instanceInfoString];
+    }
+
+    public function testVerify(): void
+    {
+        [$curlMock, $instanceInfoMock, $url, $instanceInfoString] = $this->verifyInit(200);
+
+        $curlMock
+            ->expects($this->once())
+            ->method('request')
+            ->with($url, $instanceInfoString);
+
+        $this->model->verify($instanceInfoMock);
+    }
+
+    public function testVerifyOnException(): void
+    {
+        [$curlMock, $instanceInfoMock, $url, $instanceInfoString] = $this->verifyInit(500);
+
+        $curlMock
+            ->expects($this->once())
+            ->method('request')
+            ->with($url, $instanceInfoString);
+
+        $response = $this->model->verify($instanceInfoMock);
+        $this->assertEquals(500, $response->getData('code'));
+    }
+
+    private function verifyInit(int $responseCode): array
+    {
+        $instanceInfo = [
+            'systemInstanceKey' => 'key',
+            'modules' => [],
+            'domains' => [],
+            'customerInstanceKey' => ['test-key'],
+            'isProduction' => true
+        ];
+        $instanceInfoString = json_encode($instanceInfo);
+
+        $path = '/api/v1/instance_client/' . $instanceInfo['systemInstanceKey'] . '/verify';
+        $url = 'https://amasty-licence.com' . $path;
+        $curlMock = $this->createPartialMock(Curl::class, ['request']);
+        $registeredInstanceMock = $this->createPartialMock(RegisteredInstance::class, []);
+        $registeredInstanceMock->setData(['code' => $responseCode]);
+        $curlMock->method('request')->willReturn($registeredInstanceMock);
+        $instanceInfoMock = $this->createPartialMock(
+            InstanceInfo::class,
+            ['getSystemInstanceKey', 'toArray']
+        );
+
+        $this->curlFactoryMock
+            ->expects($this->once())
+            ->method('create')
+            ->willReturn($curlMock);
+        $this->urlBuilderMock
+            ->expects($this->once())
+            ->method('build')
+            ->with($path)
+            ->willReturn($url);
+
+        $instanceInfoMock
+            ->expects($this->once())
+            ->method('getSystemInstanceKey')
+            ->willReturn($instanceInfo['systemInstanceKey']);
+        $instanceInfoMock
+            ->expects($this->once())
+            ->method('toArray')
+            ->willReturn($instanceInfo);
+
+        $this->simpleDataObjectConverterMock
+            ->expects($this->once())
+            ->method('convertKeysToCamelCase')
+            ->willReturn($instanceInfo);
+
+        return [$curlMock, $instanceInfoMock, $url, $instanceInfoString];
     }
 }

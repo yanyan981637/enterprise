@@ -14,6 +14,7 @@
 //  ----------------------------------------------
 
 & when (@media-common = true) {
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     #menu-menuamasty-base-menu .ambase-submenu {
         & {
             bottom: 0;
@@ -75,7 +76,7 @@
 
         .ambase-plan-label {
             & {
-                color: #e75d23;
+                color: @ambase__plan-label__color;
             }
 
             &:after {
@@ -135,11 +136,11 @@
         .ambase-menu-item.ambase-link.-link,
         .ambase-link.-link {
             & {
-                color: #198fec;
+                color: @ambase__submenu-link__color;
             }
 
             &:hover {
-                color: darken(#198fec, 10%);
+                color: darken(@ambase__submenu-link__color-hover, 10%);
             }
 
             &:after {
@@ -192,7 +193,7 @@
         }
 
         .ambase-notice {
-            color: #a59d96;
+            color: @ambase__submenu-notice__color;
             margin-left: 15px;
             padding: 10px 0;
         }

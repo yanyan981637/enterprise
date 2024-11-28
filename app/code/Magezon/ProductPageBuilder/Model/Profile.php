@@ -14,6 +14,9 @@
 
 namespace Magezon\ProductPageBuilder\Model;
 
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+
 class Profile extends \Magento\Rule\Model\AbstractModel
 {
     /**#@+
@@ -40,18 +43,20 @@ class Profile extends \Magento\Rule\Model\AbstractModel
      * @var \Magento\CatalogRule\Model\Rule\Action\CollectionFactory
      */
     protected $actionCollectionFactory;
-    
+
     /**
-     * @param \Magento\Framework\Model\Context                             $context                 
-     * @param \Magento\Framework\Registry                                  $registry                
-     * @param \Magento\Framework\Data\FormFactory                          $formFactory             
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface         $localeDate              
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource                
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection      
-     * @param \Magento\CatalogRule\Model\Rule\Condition\CombineFactory     $combineFactory          
-     * @param \Magento\CatalogRule\Model\Rule\Action\CollectionFactory     $actionCollectionFactory 
-     * @param array                                                        $relatedCacheTypes       
-     * @param array                                                        $data                    
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Data\FormFactory $formFactory
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Magento\CatalogRule\Model\Rule\Condition\CombineFactory $combineFactory
+     * @param \Magento\CatalogRule\Model\Rule\Action\CollectionFactory $actionCollectionFactory
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
+     * @param ExtensionAttributesFactory|null $extensionFactory
+     * @param AttributeValueFactory|null $customAttributeFactory
+     * @param \Magento\Framework\Serialize\Serializer\Json|null $serializer
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -62,9 +67,11 @@ class Profile extends \Magento\Rule\Model\AbstractModel
         \Magento\CatalogRule\Model\Rule\Action\CollectionFactory $actionCollectionFactory,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $relatedCacheTypes = [],
-        array $data = []
-    ) {
+        array $data = [],
+        ExtensionAttributesFactory $extensionFactory = null,
+        AttributeValueFactory $customAttributeFactory = null,
+        \Magento\Framework\Serialize\Serializer\Json $serializer = null
+    ){
         parent::__construct(
             $context,
             $registry,
@@ -72,7 +79,10 @@ class Profile extends \Magento\Rule\Model\AbstractModel
             $localeDate,
             $resource,
             $resourceCollection,
-            $data
+            $data,
+            $extensionFactory,
+            $customAttributeFactory,
+            $serializer
         );
         $this->combineFactory          = $combineFactory;
         $this->actionCollectionFactory = $actionCollectionFactory;
@@ -107,7 +117,7 @@ class Profile extends \Magento\Rule\Model\AbstractModel
     {
         return [self::CACHE_TAG . '_' . $this->getId(), self::CACHE_TAG];
     }
-    
+
     /**
      * Getter for rule conditions collection
      *

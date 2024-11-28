@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -13,6 +13,7 @@ namespace Amasty\Base\Test\Unit\Model\SysInfo\Command\LicenceService;
 use Amasty\Base\Model\LicenceService\Api\RequestManager;
 use Amasty\Base\Model\LicenceService\Response\Data\RegisteredInstance as ResponseRegisteredInstance;
 use Amasty\Base\Model\SysInfo\Command\LicenceService\RegisterLicenceKey;
+use Amasty\Base\Model\SysInfo\Command\LicenceService\RegisterLicenceKey\ProcessReRegistration;
 use Amasty\Base\Model\SysInfo\Data\RegisteredInstance;
 use Amasty\Base\Model\SysInfo\Data\RegisteredInstance\Instance;
 use Amasty\Base\Model\SysInfo\RegisteredInstanceRepository;
@@ -49,18 +50,25 @@ class RegisterLicenceKeyTest extends TestCase
      */
     private $converterMock;
 
+    /**
+     * @var ProcessReRegistration|MockObject
+     */
+    private $reRegistrationMock;
+
     protected function setUp(): void
     {
         $this->registeredInstanceRepositoryMock = $this->createMock(RegisteredInstanceRepository::class);
         $this->requestManagerMock = $this->createMock(RequestManager::class);
         $this->domainProviderMock = $this->createMock(Provider::class);
         $this->converterMock = $this->createMock(Converter::class);
+        $this->reRegistrationMock = $this->createMock(ProcessReRegistration::class);
 
         $this->model = new RegisterLicenceKey(
             $this->registeredInstanceRepositoryMock,
             $this->requestManagerMock,
             $this->domainProviderMock,
-            $this->converterMock
+            $this->converterMock,
+            $this->reRegistrationMock
         );
     }
 
@@ -134,9 +142,8 @@ class RegisterLicenceKeyTest extends TestCase
             ->willReturn($instanceMock);
 
         $this->registeredInstanceRepositoryMock
-            ->expects($this->once())
             ->method('get')
-            ->willReturn($registeredInstanceMock);
+            ->willReturn($this->createMock(RegisteredInstance::class), $registeredInstanceMock);
         $registeredInstanceMock
             ->expects($this->once())
             ->method('setCurrentInstance')
@@ -186,7 +193,6 @@ class RegisterLicenceKeyTest extends TestCase
             ->willThrowException($exception);
 
         $this->registeredInstanceRepositoryMock
-            ->expects($this->once())
             ->method('get')
             ->willReturn($registeredInstanceMock);
         $registeredInstanceMock

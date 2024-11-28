@@ -1,11 +1,17 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
 namespace Amasty\Base\Debug;
+
+use Amasty\Base\Debug\System\AmastyFormatter;
+use Amasty\Base\Debug\System\LogBeautifier;
+use Magento\Framework\App\ObjectManager;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
 
 /**
  * For Remote Debug
@@ -16,7 +22,7 @@ namespace Amasty\Base\Debug;
 class Log
 {
     /**
-     * @var \Magento\Framework\Logger\Monolog
+     * @var Logger
      */
     private static $loggerInstance;
 
@@ -30,7 +36,7 @@ class Log
         if (VarDump::isAllowed()) {
             foreach (func_get_args() as $var) {
                 self::logToFile(
-                    System\LogBeautifier::getInstance()->beautify(
+                    LogBeautifier::getInstance()->beautify(
                         VarDump::dump($var)
                     )
                 );
@@ -78,7 +84,7 @@ class Log
                     'file' => $route['file'] . ':' . $route['line']
                 ];
             }
-            self::logToFile(System\LogBeautifier::getInstance()->beautify(VarDump::dump($backtrace)));
+            self::logToFile(LogBeautifier::getInstance()->beautify(VarDump::dump($backtrace)));
         }
     }
 
@@ -91,7 +97,7 @@ class Log
     }
 
     /**
-     * @return \Magento\Framework\Logger\Monolog
+     * @return Logger
      */
     private static function getLogger()
     {
@@ -103,17 +109,17 @@ class Log
 
     private static function configureInstance()
     {
-        $logDir = \Magento\Framework\App\ObjectManager::getInstance()
+        $logDir = ObjectManager::getInstance()
             ->get('\Magento\Framework\Filesystem\DirectoryList')
             ->getPath('log');
-        $handler = new \Monolog\Handler\RotatingFileHandler($logDir . DIRECTORY_SEPARATOR . self::$fileToLog, 2);
+        $handler = new RotatingFileHandler($logDir . DIRECTORY_SEPARATOR . self::$fileToLog, 2);
 
         $output = "\n----------------------------------------------------------------------------\n%datetime%\n
 %message%
 ----------------------------------------------------------------------------\n\n";
-        $formatter = new System\AmastyFormatter($output);
+        $formatter = new AmastyFormatter($output);
 
         $handler->setFormatter($formatter);
-        self::$loggerInstance = new \Magento\Framework\Logger\Monolog('amasty_logger', [$handler]);
+        self::$loggerInstance = new Logger('amasty_logger', [$handler]);
     }
 }

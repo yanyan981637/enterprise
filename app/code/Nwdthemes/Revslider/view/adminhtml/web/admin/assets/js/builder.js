@@ -156,13 +156,13 @@ RVS.S.emptyLayerObj={};
 		RVS.SLIDER.slideIDs.push(_.slideid);
 		RVS.S.slideId = _.slideid;
 		RVS.F.addToSlideList({id:_.slideid,ignoreSort:true});
-
 	},
 
 
 	// INITIALISE SLIDER PARAMETERS FROM DB
 	initSlider = function(initParams) {
 		//var initParams = JSON.parse(jsonSlider);
+		if(initParams.layout && initParams.layout.bg && Array.isArray(initParams.layout.bg) && initParams.layout.bg.length <= 0) delete initParams.layout.bg;
 		RVS.SLIDER.settings = RVS.F.setSlider(initParams);
 	},
 
@@ -210,7 +210,6 @@ RVS.S.emptyLayerObj={};
 	init = function() {
 
 		// GENERATE NOT GENERATED META DATAS LIKE IMAGES
-		RVS.F.generateAttachmentMetaData();
 		RVS.S.slideId = RVS.F.getEditorUrl();
 
 		if (""+RVS.S.slideId.indexOf('slider-')>=0) {
@@ -510,6 +509,7 @@ RVS.S.emptyLayerObj={};
 
 		// SLIDE SELECTOR
 		RVS.DOC.on('click','.slide_list_element, .slide_list_child_element',function() {
+            if (""+this.dataset.ref===RVS.S.slideId) return;
 			RVS.F.showWaitAMinute({fadeIn:0,text:RVS_LANG.preparingNextSlide});
 			var ref = this.dataset.ref;
 

@@ -9,7 +9,7 @@
             data-bind="enable: $data.update.length,
                 click: $data.useGridFilter.bind($data, 'update'),
                 css: {'-active' : $data.isActive($data.stateValues.update)}">
-        <span data-bind="i18n: 'Update to the Latest Versions'"></span>
+        <span data-bind="i18n: 'Needs to be Updated'"></span>
         <!-- ko if: $data.update.length -->
             <span class="ambase-counter" data-bind="text: $data.update.length"></span>
         <!-- /ko -->

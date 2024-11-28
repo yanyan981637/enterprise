@@ -16,33 +16,33 @@ namespace Magezon\ProductPageBuilder\Data\Element;
 
 class Attribute extends \Magezon\ProductPageBuilder\Data\Element
 {
-	/**
-	 * @var \Magezon\ProductPageBuilder\Model\Source\ProductAttribute
-	 */
-	protected $productAttribute;
+    /**
+     * @var \Magezon\ProductPageBuilder\Model\Source\ProductAttribute
+     */
+    protected $productAttribute;
 
-	/**
-	 * @param \Magezon\Builder\Data\FormFactory                         $formFactory      
-	 * @param \Magezon\Builder\Helper\Data                              $dataHelper       
-	 * @param \Magezon\ProductPageBuilder\Model\Source\ProductAttribute $productAttribute 
-	 * @param array                                                     $data             
-	 */
+    /**
+     * @param \Magezon\Builder\Data\FormFactory                         $formFactory
+     * @param \Magezon\Builder\Helper\Data                              $dataHelper
+     * @param \Magezon\ProductPageBuilder\Model\Source\ProductAttribute $productAttribute
+     * @param array                                                     $data
+     */
     public function __construct(
         \Magezon\Builder\Data\FormFactory $formFactory,
         \Magezon\Builder\Helper\Data $dataHelper,
         \Magezon\ProductPageBuilder\Model\Source\ProductAttribute $productAttribute,
         array $data = []
     ) {
-    	parent::__construct($formFactory, $dataHelper, $data);
-    	$this->productAttribute = $productAttribute;
+        parent::__construct($formFactory, $dataHelper, $data);
+        $this->productAttribute = $productAttribute;
     }
 
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
-	public function prepareGeneralTab()
+    public function prepareGeneralTab()
     {
-    	$general = parent::prepareGeneralTab();
+        $general = parent::prepareGeneralTab();
 
             $general->addChildren(
                 'attribute',

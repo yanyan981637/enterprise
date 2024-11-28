@@ -7,7 +7,7 @@
   var defineProperty = Object.defineProperty, is = function(a,b) { return isNaN(a)? isNaN(b): a === b; };
 
 
-  //Polyfill global objects
+  //filler global objects
   if (typeof WeakMap == 'undefined') {
     exports.WeakMap = createCollection({
       // WeakMap#delete(key:void*):boolean

@@ -131,7 +131,12 @@ class Product extends \Magento\Framework\App\Helper\AbstractHelper
 
         if (strpos($html, '{SAVE_PERCENT}') !== false) {
             $roundingMethod = $this->helperData->getConfig('general/rounding_method');
-            $percent        = ($regularPrice - $specialPrice) * 100 / $regularPrice;
+            //$percent        = ($regularPrice - $specialPrice) * 100 / $regularPrice;
+            if ($regularPrice > 0 && $specialPrice > 0) {
+                $percent = ($regularPrice - $specialPrice) * 100 / $regularPrice;
+            } else {
+                $percent = 0;
+            }
             switch ($roundingMethod) {
                 case 'round':
                     $percent = round($percent);
@@ -145,7 +150,7 @@ class Product extends \Magento\Framework\App\Helper\AbstractHelper
                     $percent = ceil($percent);
                     break;
             }
-            if ($percent == 0) { $percent = ''; }
+            //if ($percent == 0) { $percent = ''; }
             $html = str_replace('{SAVE_PERCENT}', $percent, $html);
         }
 

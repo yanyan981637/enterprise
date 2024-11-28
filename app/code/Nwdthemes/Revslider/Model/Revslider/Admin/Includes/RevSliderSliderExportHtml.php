@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider\Admin\Includes;
@@ -26,6 +26,7 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 	public $path_assets_raw_vid	= 'assets';
 	public $export_real		= true;
 
+	public $slider_output	= false;
 	public $slider_html		= '';
 	public $export_font		= '';
 	public $export_scripts	= '';
@@ -56,7 +57,7 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 	 **/
 	public function export_slider_html($slider_id){
 		if($slider_id == 'empty_output'){
-			echo __('Wrong request!', 'revslider');
+			echo __('Wrong request!');
 			exit;
 		}
 
@@ -72,17 +73,24 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 			$slider->init_by_id($slider_id);
 		}
 
+		if($slider->get_param('pakps', false) === true && $this->_truefalse(FA::get_option('revslider-valid', 'false')) === false){
+			echo __('Wrong request!');
+			exit;
+		}
+
+		$slider = FA::apply_filters('revslider_doing_html_export', $slider, $slider_id, $this);
+
 		$this->slider_title	= $slider->get_title();
 		$this->slider_alias	= $slider->get_alias();
 
 		$this->layouttype	= $slider->get_param('layouttype');
 
-		$output = new RevSliderOutput();
+		$this->slider_output = new RevSliderOutput();
 
 		ob_start();
-		$output->set_slider_id($slider_id);
-		$output->set_markup_export(true);
-		$output->add_slider_base();
+		$this->slider_output->set_slider_id($slider_id);
+		$this->slider_output->set_markup_export(true);
+		$this->slider_output->add_slider_base();
 
 		$this->slider_html = ob_get_contents();
 		ob_clean();
@@ -130,6 +138,7 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 	 **/
 	public function replace_export_html_urls(){
 		$added				= array();
+		$replace			= array();
 		$upload_dir			= $this->get_upload_path();
 		$upload_dir_multi	= FA::wp_upload_dir();
 		$cont_url			= $this->get_val($upload_dir_multi, 'baseurl');
@@ -140,8 +149,9 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 		if(defined('WHITEBOARD_PLUGIN_URL')){
 			$search[] = WHITEBOARD_PLUGIN_URL;
 		}
-
 		$search	= FA::apply_filters('revslider_html_export_replace_urls', $search);
+		$replace = FA::apply_filters('revslider_html_export_path_replace_urls', $replace);
+
 		if(!empty($search)){
 			foreach($search as $s){
 				$s = $this->remove_http($s);
@@ -242,6 +252,24 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 									$add = '/';
 								}
 							}
+							if(!empty($replace)){
+								foreach($replace as $_path){
+									if(is_file($_path.$_file)){
+										$mf = str_replace('//', '/', $_path.$_file);
+
+										//we need to be special with svg files
+										$__file = basename($_file);
+
+										if(!$this->usepcl){
+											$this->zip->addFile($mf, $use_path_raw.'/'.$__file);
+										}else{
+											$v_list = $this->pclzip->add($mf, PCLZIP_OPT_REMOVE_PATH, str_replace(basename($mf), '', $mf), PCLZIP_OPT_ADD_PATH, $use_path_raw.'/');
+										}
+										$remove = true;
+										$add = '/';
+									}
+								}
+							}
 						}
 
 						if($remove == true){
@@ -325,7 +353,9 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 				$this->pclzip->add(Framework::$RS_PLUGIN_PATH.'public/assets/fonts/revicons/revicons.woff2', PCLZIP_OPT_REMOVE_PATH, Framework::$RS_PLUGIN_PATH.'public/assets/');
 			}
 
-			$notice_text = __('Using this data is only allowed with a valid licence of the jQuery Slider Revolution Plugin, which can be found at: https://www.themepunch.com/links/slider_revolution_jquery', 'revslider');
+            $this->slider_html = FA::apply_filters('revslider_export_html_file_inclusion', $this->slider_html, $this);
+
+			$notice_text = __('Using this data is only allowed with a valid licence of the jQuery Slider Revolution Plugin, which can be found at: https://www.themepunch.com/links/slider_revolution_jquery');
 			if(!$this->usepcl){
 				$this->zip->addFromString('NOTICE.txt', $notice_text); //add slider settings
 			}else{
@@ -451,7 +481,7 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 				if($static_css !== ''){
 					$css = new RevSliderCssParser();
                     $css = RevSliderGlobals::instance()->get('RevSliderCssParser');
-					echo '<style type="text/css">';
+					echo '<style>';
 					echo $css->compress_css($static_css);
 					echo '</style>'."\n";
 				}
@@ -463,7 +493,7 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 				<link rel="stylesheet" type="text/css" href="<?php echo $this->path_css; ?>navigation.css">
 
 				<!-- FONT AND STYLE FOR BASIC DOCUMENTS, NO NEED FOR FURTHER USAGE IN YOUR PROJECTS-->
-				<link href="http://fonts.googleapis.com/css?family=Roboto%3A700%2C300" rel="stylesheet" property="stylesheet" type="text/css" media="all" />
+				<link href="https://fonts.googleapis.com/css?family=Roboto%3A700%2C300" rel="stylesheet" property="stylesheet" type="text/css" media="all" />
 				<link rel="stylesheet" type="text/css" href="../../assets/css/noneed.css">
 				<?php
 			}
@@ -486,7 +516,7 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 				<!-- Add your site or application content here -->
 				<section class="header">
 					<span class="logo" style="float:left"></span>
-					<a class="button" style="float:right" target="_blank" href="https://www.themepunch.com/revsliderjquery-doc/slider-revolution-jquery-5-x-documentation/"><i class="pe-7s-help2"></i>Online Documentation</a>
+					<a class="button" style="float:right" target="_blank" rel="noopener" href="https://www.themepunch.com/revsliderjquery-doc/slider-revolution-jquery-5-x-documentation/"><i class="pe-7s-help2"></i>Online Documentation</a>
 					<div class="clearfix"></div>
 				</section>
 			</article>
@@ -496,7 +526,7 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 			?>
 			<article class="small-history">
 				<h2 class="textaligncenter" style="margin-bottom:25px;">Your Slider Revolution jQuery Plugin</h2>
-				<p>Slider Revolution is an innovative, responsive Slider Plugin that displays your content the beautiful way. Whether it's a <strong>Slider, Carousel, Hero Scene</strong> or even a whole <strong>Front Page</strong>.<br>The <a href="https://www.themepunch.com/links/slider_revolution_jquery_visual_editor" target="_blank">visual drag &amp; drop editor</a> will help you to create your Sliders and tell your own stories in no time!</p>
+				<p>Slider Revolution is an innovative, responsive Slider Plugin that displays your content the beautiful way. Whether it's a <strong>Slider, Carousel, Hero Scene</strong> or even a whole <strong>Front Page</strong>.<br>The <a href="https://www.themepunch.com/links/slider_revolution_jquery_visual_editor" target="_blank" rel="noopener">visual drag &amp; drop editor</a> will help you to create your Sliders and tell your own stories in no time!</p>
 			</article>
 			<?php
 			}
@@ -516,7 +546,7 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 			?>
 			<article class="small-history bottom-history" style="background:#f5f7f9;">
 				<h2 class="textaligncenter" style="margin-bottom:25px;">Your Slider Revolution jQuery Plugin</h2>
-				<p>Slider Revolution is an innovative, responsive Slider Plugin that displays your content the beautiful way. Whether it's a <strong>Slider, Carousel, Hero Scene</strong> or even a whole <strong>Front Page</strong>.<br>The <a href="https://www.themepunch.com/links/slider_revolution_jquery_visual_editor" target="_blank">visual drag &amp; drop editor</a> will help you to create your Sliders and tell your own stories in no time!</p>
+				<p>Slider Revolution is an innovative, responsive Slider Plugin that displays your content the beautiful way. Whether it's a <strong>Slider, Carousel, Hero Scene</strong> or even a whole <strong>Front Page</strong>.<br>The <a href="https://www.themepunch.com/links/slider_revolution_jquery_visual_editor" target="_blank" rel="noopener">visual drag &amp; drop editor</a> will help you to create your Sliders and tell your own stories in no time!</p>
 			</article>
 				<?php
 			}
@@ -525,21 +555,21 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
 			<article class="small-history bottom-history">
 				<i class="fa-icon-question tp-headicon"></i>
 				<h2 class="textaligncenter" style="margin-bottom:25px;">Find the Documentation ?</h2>
-				<p>We would always recommend to use our<a target="_blank" href="https://www.themepunch.com/revsliderjquery-doc/slider-revolution-jquery-5-x-documentation/"> online documentation</a> however you can find also our embeded local documentation zipped in the Documentation folder. Online Documentation and FAQ Page is regulary updated. You will find More examples, Visit us also at <a href="http://themepunch.com">http://themepunch.com</a> ! </p>
+				<p>We would always recommend to use our<a target="_blank" rel="noopener" href="https://www.themepunch.com/revsliderjquery-doc/slider-revolution-jquery-5-x-documentation/"> online documentation</a> however you can find also our embeded local documentation zipped in the Documentation folder. Online Documentation and FAQ Page is regulary updated. You will find More examples, Visit us also at <a href="https://themepunch.com">https://themepunch.com</a> ! </p>
 				<div class="tp-smallinfo">Learn how to build your Slider!</div>
 			</article>
 
 			<article class="small-history bottom-history" style="background:#f5f7f9;">
 				<i class="fa-icon-arrows tp-headicon"></i>
 				<h2 class="textaligncenter" style="margin-bottom:25px;">Navigation Examples !</h2>
-				<p>You find many Examples for All Skins and Positions of Navigation examples in the <a target="_blank" href="file:../Navigation">examples/Navigation folder</a>. Based on these prepared examples you can build your own navigation skins. Feel free to copy and paste the markups after your requests in your own documents.</p>
+				<p>You find many Examples for All Skins and Positions of Navigation examples in the <a target="_blank" rel="noopener" href="file:../Navigation">examples/Navigation folder</a>. Based on these prepared examples you can build your own navigation skins. Feel free to copy and paste the markups after your requests in your own documents.</p>
 				<div class="tp-smallinfo">Customize the interaction with your visitor!</div>
 			</article>
 
 			<article class="small-history bottom-history">
 				<i class="fa-icon-cog tp-headicon"></i>
 				<h2 class="textaligncenter" style="margin-bottom:25px;">Layer and Slide Transitions</h2>
-				<p>We prepared a small List of Transition and a light weight Markup Builder in the <a target="_blank" href="file:../Transitions"> examples/Transitions folder</a>. This will help you to get an overview how the Slider and Layer Transitions works. Copy the Markups of the generated Slide and Layer Animation Examples and paste it into your own Documents.</p>
+				<p>We prepared a small List of Transition and a light weight Markup Builder in the <a target="_blank" rel="noopener" href="file:../Transitions"> examples/Transitions folder</a>. This will help you to get an overview how the Slider and Layer Transitions works. Copy the Markups of the generated Slide and Layer Animation Examples and paste it into your own Documents.</p>
 				<div class="tp-smallinfo">Eye Catching Effects!</div>
 
 			</article>
@@ -557,10 +587,12 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
         if(!empty(Framework::$rs_css_collection)){
             $custom_css = implode("\n".Framework::RS_T2, Framework::$rs_css_collection);
             $css = RevSliderGlobals::instance()->get('RevSliderCssParser');
-            echo '<style type="text/css">';
+            echo '<style>';
             echo $css->compress_css($custom_css);
             echo '</style>'."\n";
         }
+
+        FA::do_action('revslider_export_html_write_footer', $this);
         ?>
         </body>
         <?php
@@ -572,36 +604,36 @@ class RevSliderSliderExportHtml extends RevSliderSliderExport {
                         <h3>Slider Revolution</h3>
                         <a href="https://revolution.themepunch.com/jquery/#features" target="_self">Features</a>
                         <a href="https://revolution.themepunch.com/examples-jquery/" target="_self">Usage Examples</a>
-                        <a href="https://www.themepunch.com/revsliderjquery-doc/slider-revolution-jquery-5-x-documentation/" target="_blank">Online Documentation</a>
+                        <a href="https://www.themepunch.com/revsliderjquery-doc/slider-revolution-jquery-5-x-documentation/" target="_blank" rel="noopener">Online Documentation</a>
                     </div>
                     <div class="footerwidget">
                         <h3>Resources</h3>
-                        <a href="https://www.themepunch.com/support-center/" target="_blank">FAQ Database</a>
-                        <a href="https://themepunch.com" target="_blank">ThemePunch.com</a>
-                        <a href="https://themepunch.us9.list-manage.com/subscribe?u=a5738148e5ec630766e28de16&amp;id=3e718acc63" target="_blank">Newsletter</a>
-                        <a href="https://www.themepunch.com/products/" target="_blank">Plugins</a>
-                        <a href="https://www.themepunch.com/products/" target="_blank">Themes</a>
+                        <a href="https://www.themepunch.com/support-center/" target="_blank" rel="noopener">FAQ Database</a>
+                        <a href="https://themepunch.com" target="_blank" rel="noopener">ThemePunch.com</a>
+                        <a href="https://themepunch.us9.list-manage.com/subscribe?u=a5738148e5ec630766e28de16&amp;id=3e718acc63" target="_blank" rel="noopener">Newsletter</a>
+                        <a href="https://www.themepunch.com/products/" target="_blank" rel="noopener">Plugins</a>
+                        <a href="https://www.themepunch.com/products/" target="_blank" rel="noopener">Themes</a>
                     </div>
                     <div class="footerwidget">
                         <h3>More Versions</h3>
-                        <a href="https://revolution.themepunch.com" target="_blank">WordPress</a>
-                        <a href="https://www.themepunch.com/links/slider_revolution_prestashop" target="_blank">Prestashop</a>
-                        <a href="https://www.themepunch.com/links/slider_revolution_magento" target="_blank">Magento</a>
-                        <a href="https://www.themepunch.com/links/slider_revolution_opencart" target="_blank">OpenCart</a>
+                        <a href="https://revolution.themepunch.com" target="_blank" rel="noopener">WordPress</a>
+                        <a href="https://www.themepunch.com/links/slider_revolution_prestashop" target="_blank" rel="noopener">Prestashop</a>
+                        <a href="https://www.themepunch.com/links/slider_revolution_magento" target="_blank" rel="noopener">Magento</a>
+                        <a href="https://www.themepunch.com/links/slider_revolution_opencart" target="_blank" rel="noopener">OpenCart</a>
                     </div>
                     <div class="footerwidget social">
                         <h3>Follow Us</h3>
                         <ul>
-                            <li><a href="https://www.facebook.com/wordpress.slider.revolution" target="_blank" class="so_facebook" data-rel="tooltip" data-animation="false" data-placement="bottom" data-original-title="Facebook"><i class="s_icon fa-icon-facebook "></i></a>
+                            <li><a href="https://www.facebook.com/wordpress.slider.revolution" target="_blank" rel="noopener" class="so_facebook" data-rel="tooltip" data-animation="false" data-placement="bottom" data-original-title="Facebook"><i class="s_icon fa-icon-facebook "></i></a>
                             </li>
-                            <li><a href="https://twitter.com/revslider" target="_blank" class="so_twitter" data-rel="tooltip" data-animation="false" data-placement="bottom" data-original-title="Twitter"><i class="s_icon fa-icon-twitter"></i></a>
+                            <li><a href="https://twitter.com/revslider" target="_blank" rel="noopener" class="so_twitter" data-rel="tooltip" data-animation="false" data-placement="bottom" data-original-title="Twitter"><i class="s_icon fa-icon-twitter"></i></a>
                             </li>
                         </ul>
                     </div>
                     <div class="clearfix"></div>
                 </div>
             </footer>
-            <script type="text/javascript" src="../../assets/warning.js"></script>
+            <script src="../../assets/warning.js"></script>
             <?php
         }
 		?>

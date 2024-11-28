@@ -43,10 +43,12 @@ class Recurring implements InstallSchemaInterface
      */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context): void
     {
+        /*
         $this->config->saveConfig(
             \Magefan\TranslationPlus\Model\Config::XML_PATH_LAST_STATIC_CONTENT_DEPLOY_DATETIME,
             date('Y-m-d H:i:s')
         );
         $this->cacheManager->clean(['config']);
+        */
     }
 }

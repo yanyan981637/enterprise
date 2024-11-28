@@ -11,7 +11,6 @@
  * @package   Magezon_UiBuilder
  * @copyright Copyright (C) 2018 Magezon (https://www.magezon.com)
  */
-
 namespace Magezon\UiBuilder\Data\Form\Element;
 
 use Magezon\UiBuilder\Data\Form;
@@ -49,9 +48,10 @@ class Collection implements \ArrayAccess, \IteratorAggregate
      *
      * @return \ArrayIterator
      */
-    public function getIterator(): \Traversable
+    #[\ReturnTypeWillChange]
+    public function getIterator()
     {
-        return new \ArrayIterator($this->_data);
+        return new \ArrayIterator($this->_elements);
     }
 
     /**
@@ -61,9 +61,10 @@ class Collection implements \ArrayAccess, \IteratorAggregate
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($key, $value): void
+    #[\ReturnTypeWillChange]
+    public function offsetSet($key, $value)
     {
-        $this->_data[$key] = $value;
+        $this->_elements[$key] = $value;
     }
 
     /**
@@ -72,9 +73,10 @@ class Collection implements \ArrayAccess, \IteratorAggregate
      * @param mixed $key
      * @return AbstractElement
      */
-    public function offsetGet($key): mixed
+    #[\ReturnTypeWillChange]
+    public function offsetGet($key)
     {
-        return $this->_data[$key] ?? null;
+        return $this->_elements[$key];
     }
 
     /**
@@ -83,9 +85,10 @@ class Collection implements \ArrayAccess, \IteratorAggregate
      * @param mixed $key
      * @return void
      */
-    public function offsetUnset($key): void
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($key)
     {
-        unset($this->_data[$key]);
+        unset($this->_elements[$key]);
     }
 
     /**
@@ -94,9 +97,10 @@ class Collection implements \ArrayAccess, \IteratorAggregate
      * @param mixed $key
      * @return boolean
      */
-    public function offsetExists($key): bool
+    #[\ReturnTypeWillChange]
+    public function offsetExists($key)
     {
-        return isset($this->_data[$key]);
+        return isset($this->_elements[$key]);
     }
 
     public function getContainer()
@@ -176,6 +180,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->_elements);

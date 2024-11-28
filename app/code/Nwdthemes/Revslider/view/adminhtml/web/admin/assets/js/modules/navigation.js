@@ -104,13 +104,19 @@
 		if (RVS.nav.editor==="FAIL") return;
 		if (typeof RevMirror==="undefined" || RevMirror===undefined) {
 			RVS.F.showWaitAMinute({fadeIn:500,text:RVS_LANG.loadingRevMirror});
-			RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.css');
-			jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.js',function() {
+			RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.min.css');
+			jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.min.js',function() {
 				setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
 				RVS.F.openNavigationEditor();
 			}).fail(function(a,b,c) {
-				setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
-				window.nav.editor = "FAIL";
+                RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.css');
+                jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.js',function() {
+                    setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
+                    RVS.F.openNavigationEditor();
+                }).fail(function(a,b,c) {
+                    setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
+                    window.nav.editor = "FAIL";
+                });
 			});
 		} else {
 
@@ -484,11 +490,12 @@
 			jQuery('#rs_ne_cssmeta_config').show();
 			jQuery('#rs_ne_cssmeta_values').hide();
 			RVS.nav.currentPlaceholder = this.dataset.placeholder;
-			jQuery('#rs_ne_meta_type').val(RVS.nav.currentSkin.placeholders[RVS.nav.currentPlaceholder].type).change();
+			jQuery('#rs_ne_meta_type').val(RVS.nav.currentSkin.placeholders[RVS.nav.currentPlaceholder].type).ddTP('change').change();
 			document.getElementById('rs_ne_def_meta_title').value = RVS.nav.currentSkin.placeholders[RVS.nav.currentPlaceholder].title;
 			document.getElementById('rs_ne_def_meta_handle').value = RVS.nav.currentPlaceholder;
 			switch (RVS.nav.currentSkin.placeholders[RVS.nav.currentPlaceholder].type) {
 				case "color":
+				//document.getElementById('rs_ne_def_meta_color_val_wrap')
 					jQuery('#rs_ne_def_meta_color_val').val(RVS.nav.currentSkin.placeholders[RVS.nav.currentPlaceholder].data).rsColorPicker("refresh");
 				break;
 				case "icon":
@@ -706,7 +713,7 @@
 
 
 			RVS.S.waitOnFeedback = undefined;
-			jQuery(document.body).unbind('click.revbuilderbodyclick');
+			jQuery(document.body).off('click.revbuilderbodyclick');
 			buildEditorList(skin[0].dataset.type);
 			setToSave();
 
@@ -735,7 +742,7 @@
 			if (skin[0].dataset.mode==="rename") {
 				RVS.nav[skin[0].dataset.type][skin[0].dataset.handle].name = inp.val();
 				RVS.S.waitOnFeedback = undefined;
-				jQuery(document.body).unbind('click.revbuilderbodyclick');
+				jQuery(document.body).off('click.revbuilderbodyclick');
 				buildEditorList(skin[0].dataset.type);
 				setToSave();
 				return false;
@@ -744,7 +751,7 @@
 				if (skin.hasClass("rs_ne_meta_value_btn")) {
 					delete RVS.nav.currentSkin.placeholders[skin[0].dataset.placeholder];
 					RVS.S.waitOnFeedback = undefined;
-					jQuery(document.body).unbind('click.revbuilderbodyclick');
+					jQuery(document.body).off('click.revbuilderbodyclick');
 					buildNavsMetaList();
 					RVS.F.drawEditorNavigation();
 				} else {
@@ -752,7 +759,7 @@
 					if (RVS.nav.cache[skin[0].dataset.type][skin[0].dataset.handle]!==undefined) RVS.nav.toDelete.push(skin[0].dataset.handle);
 					delete RVS.nav[skin[0].dataset.type][skin[0].dataset.handle];
 					RVS.S.waitOnFeedback = undefined;
-					jQuery(document.body).unbind('click.revbuilderbodyclick');
+					jQuery(document.body).off('click.revbuilderbodyclick');
 					buildEditorList(skin[0].dataset.type);
 				}
 				setToSave();
@@ -764,7 +771,7 @@
 		RVS.DOC.on('click','.rs_ne_nskin_no',function() {
 			var skin = jQuery(this).closest('.rs_ne_listelement');
 			RVS.S.waitOnFeedback = undefined;
-			jQuery(document.body).unbind('click.revbuilderbodyclick');
+			jQuery(document.body).off('click.revbuilderbodyclick');
 			if (skin.hasClass("rs_ne_meta_value_btn"))
 				buildNavsMetaList();
 			else
@@ -949,9 +956,9 @@
 			switch (field.type) {
 				case "font-family":
 					var	select = RVS.F.cE({t:'select',cN:"navstyleinput searchbox tos2 presetToCustom "+classext, id:prefix+fields, ds:{evt:"redrawNavigation",evtparam:obj.type,theme:"minl120",r:rpre+'nav.'+obj.type+'.presets.'+fields}});
-					select.value = v;
 					onelong.appendChild(select);
 					for (var fontindex in RVS.LIB.FONTS) if(RVS.LIB.FONTS.hasOwnProperty(fontindex) && RVS.LIB.FONTS[fontindex].label!=="Dont Show Me") select.appendChild(RVS.F.CO( RVS.LIB.FONTS[fontindex].label, RVS.LIB.FONTS[fontindex].label));
+					select.value = v;
 				break;
 				case "icon":
 				case "custom":

@@ -2,6 +2,8 @@
 " should not be empty"," should not be empty"
 "&copy; Copyright & License Info","&copy; Copyright & License Info"
 "&laquo; Previous","&laquo; Previous"
+&lt;A&gt;,&lt;A&gt;
+&lt;RS-LAYER&gt;,&lt;RS-LAYER&gt;
 "&lt;a&gt; Tag Link","&lt;a&gt; Tag Link"
 &lt;h1&gt;,&lt;h1&gt;
 &lt;h2&gt;,&lt;h2&gt;
@@ -17,11 +19,12 @@
 "(Re)Load URL","(Re)Load URL"
 "(i.e. lazy-src for WP Rocket)","(i.e. lazy-src for WP Rocket)"
 "(i.e. lazy-src)","(i.e. lazy-src)"
-"(ie. cms_page_view,catalog_product_view,about-us)","(ie. cms_page_view,catalog_product_view,about-us)"
+"(ie. homepage,cms_page_view,catalog_product_view,about-us)","(ie. homepage,cms_page_view,catalog_product_view,about-us)"
 "(ie. http://fonts.useso.com/css?family for chinese Environment)","(ie. http://fonts.useso.com/css?family for chinese Environment)"
 "(x%, y%)","(x%, y%)"
 "* All settings adjusted by the guide can be changed later.<br>Click the <strong>Help Icon</strong> to find options & documentation","* All settings adjusted by the guide can be changed later.<br>Click the <strong>Help Icon</strong> to find options & documentation"
 ", making it even easier for developers to customize, share, and re-use outside of Slider Revolution.",", making it even easier for developers to customize, share, and re-use outside of Slider Revolution."
+".. however, as soon as you reactivate your license, our top-rated support team will<br>ensure that your website is fully functional.",".. however, as soon as you reactivate your license, our top-rated support team will<br>ensure that your website is fully functional."
 "1 License Key per Website","1 License Key per Website"
 "1 License Key per Website!","1 License Key per Website!"
 "1 Purchase Code per Website","1 Purchase Code per Website"
@@ -33,6 +36,7 @@
 "1on1 Support","1on1 Support"
 "1st Frame","1st Frame"
 "1st Row Title","1st Row Title"
+2D,2D
 "2D Rotation","2D Rotation"
 "2D Rotation Offset","2D Rotation Offset"
 "2d rotation movement for the displacement map","2d rotation movement for the displacement map"
@@ -62,14 +66,14 @@
 "<b>Layer width bleeds out of Grid:</b><br>-Auto Layer width has been removed<br>-Line Break set to Content Based","<b>Layer width bleeds out of Grid:</b><br>-Auto Layer width has been removed<br>-Line Break set to Content Based"
 "<b>Stroke 7 Icon Font Set</b> by www.pixeden.com <br>Get your Freebie Iconset at","<b>Stroke 7 Icon Font Set</b> by www.pixeden.com <br>Get your Freebie Iconset at"
 "<h2>In case you’re using Google Web Fonts (default) or playing videos or sounds via YouTube or Vimeo in Slider Revolution we recommend to add the corresponding text phrase to your privacy police:</h2>
-		<h3>YouTube</h3> <p>Our website uses plugins from YouTube, which is operated by Google. The operator of the pages is YouTube LLC, 901 Cherry Ave., San Bruno, CA 94066, USA.</p> <p>If you visit one of our pages featuring a YouTube plugin, a connection to the YouTube servers is established. Here the YouTube server is informed about which of our pages you have visited.</p> <p>If you\'re logged in to your YouTube account, YouTube allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your YouTube account.</p> <p>YouTube is used to help make our website appealing. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>Further information about handling user data, can be found in the data protection declaration of YouTube under <a href=""https://www.google.de/intl/de/policies/privacy"" target=""_blank"">https://www.google.de/intl/de/policies/privacy</a>.</p>
-		<h3>Vimeo</h3> <p>Our website uses features provided by the Vimeo video portal. This service is provided by Vimeo Inc., 555 West 18th Street, New York, New York 10011, USA.</p> <p>If you visit one of our pages featuring a Vimeo plugin, a connection to the Vimeo servers is established. Here the Vimeo server is informed about which of our pages you have visited. In addition, Vimeo will receive your IP address. This also applies if you are not logged in to Vimeo when you visit our plugin or do not have a Vimeo account. The information is transmitted to a Vimeo server in the US, where it is stored.</p> <p>If you are logged in to your Vimeo account, Vimeo allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your Vimeo account.</p> <p>For more information on how to handle user data, please refer to the Vimeo Privacy Policy at <a href=""https://vimeo.com/privacy"" target=""_blank"">https://vimeo.com/privacy</a>.</p>
-		<h3>Google Web Fonts</h3> <p>For uniform representation of fonts, this page uses web fonts provided by Google. When you open a page, your browser loads the required web fonts into your browser cache to display texts and fonts correctly.</p> <p>For this purpose your browser has to establish a direct connection to Google servers. Google thus becomes aware that our web page was accessed via your IP address. The use of Google Web fonts is done in the interest of a uniform and attractive presentation of our plugin. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>If your browser does not support web fonts, a standard font is used by your computer.</p> <p>Further information about handling user data, can be found at <a href=""https://developers.google.com/fonts/faq"" target=""_blank"">https://developers.google.com/fonts/faq</a> and in Google\'s privacy policy at <a href=""https://www.google.com/policies/privacy/"" target=""_blank"">https://www.google.com/policies/privacy/</a>.</p>
+		<h3>YouTube</h3> <p>Our website uses plugins from YouTube, which is operated by Google. The operator of the pages is YouTube LLC, 901 Cherry Ave., San Bruno, CA 94066, USA.</p> <p>If you visit one of our pages featuring a YouTube plugin, a connection to the YouTube servers is established. Here the YouTube server is informed about which of our pages you have visited.</p> <p>If you\'re logged in to your YouTube account, YouTube allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your YouTube account.</p> <p>YouTube is used to help make our website appealing. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>Further information about handling user data, can be found in the data protection declaration of YouTube under <a href=""https://www.google.de/intl/de/policies/privacy"" target=""_blank"" rel=""noopener"">https://www.google.de/intl/de/policies/privacy</a>.</p>
+		<h3>Vimeo</h3> <p>Our website uses features provided by the Vimeo video portal. This service is provided by Vimeo Inc., 555 West 18th Street, New York, New York 10011, USA.</p> <p>If you visit one of our pages featuring a Vimeo plugin, a connection to the Vimeo servers is established. Here the Vimeo server is informed about which of our pages you have visited. In addition, Vimeo will receive your IP address. This also applies if you are not logged in to Vimeo when you visit our plugin or do not have a Vimeo account. The information is transmitted to a Vimeo server in the US, where it is stored.</p> <p>If you are logged in to your Vimeo account, Vimeo allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your Vimeo account.</p> <p>For more information on how to handle user data, please refer to the Vimeo Privacy Policy at <a href=""https://vimeo.com/privacy"" target=""_blank"" rel=""noopener"">https://vimeo.com/privacy</a>.</p>
+		<h3>Google Web Fonts</h3> <p>For uniform representation of fonts, this page uses web fonts provided by Google. When you open a page, your browser loads the required web fonts into your browser cache to display texts and fonts correctly.</p> <p>For this purpose your browser has to establish a direct connection to Google servers. Google thus becomes aware that our web page was accessed via your IP address. The use of Google Web fonts is done in the interest of a uniform and attractive presentation of our plugin. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>If your browser does not support web fonts, a standard font is used by your computer.</p> <p>Further information about handling user data, can be found at <a href=""https://developers.google.com/fonts/faq"" target=""_blank"" rel=""noopener"">https://developers.google.com/fonts/faq</a> and in Google\'s privacy policy at <a href=""https://www.google.com/policies/privacy/"" target=""_blank"" rel=""noopener"">https://www.google.com/policies/privacy/</a>.</p>
 		<h3>SoundCloud</h3><p>On our pages, plugins of the SoundCloud social network (SoundCloud Limited, Berners House, 47-48 Berners Street, London W1T 3NF, UK) may be integrated. The SoundCloud plugins can be recognized by the SoundCloud logo on our site.</p>
 			<p>When you visit our site, a direct connection between your browser and the SoundCloud server is established via the plugin. This enables SoundCloud to receive information that you have visited our site from your IP address. If you click on the “Like” or “Share” buttons while you are logged into your SoundCloud account, you can link the content of our pages to your SoundCloud profile. This means that SoundCloud can associate visits to our pages with your user account. We would like to point out that, as the provider of these pages, we have no knowledge of the content of the data transmitted or how it will be used by SoundCloud. For more information on SoundCloud’s privacy policy, please go to https://soundcloud.com/pages/privacy.</p><p>If you do not want SoundCloud to associate your visit to our site with your SoundCloud account, please log out of your SoundCloud account.</p>","<h2>In case you’re using Google Web Fonts (default) or playing videos or sounds via YouTube or Vimeo in Slider Revolution we recommend to add the corresponding text phrase to your privacy police:</h2>
-		<h3>YouTube</h3> <p>Our website uses plugins from YouTube, which is operated by Google. The operator of the pages is YouTube LLC, 901 Cherry Ave., San Bruno, CA 94066, USA.</p> <p>If you visit one of our pages featuring a YouTube plugin, a connection to the YouTube servers is established. Here the YouTube server is informed about which of our pages you have visited.</p> <p>If you\'re logged in to your YouTube account, YouTube allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your YouTube account.</p> <p>YouTube is used to help make our website appealing. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>Further information about handling user data, can be found in the data protection declaration of YouTube under <a href=""https://www.google.de/intl/de/policies/privacy"" target=""_blank"">https://www.google.de/intl/de/policies/privacy</a>.</p>
-		<h3>Vimeo</h3> <p>Our website uses features provided by the Vimeo video portal. This service is provided by Vimeo Inc., 555 West 18th Street, New York, New York 10011, USA.</p> <p>If you visit one of our pages featuring a Vimeo plugin, a connection to the Vimeo servers is established. Here the Vimeo server is informed about which of our pages you have visited. In addition, Vimeo will receive your IP address. This also applies if you are not logged in to Vimeo when you visit our plugin or do not have a Vimeo account. The information is transmitted to a Vimeo server in the US, where it is stored.</p> <p>If you are logged in to your Vimeo account, Vimeo allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your Vimeo account.</p> <p>For more information on how to handle user data, please refer to the Vimeo Privacy Policy at <a href=""https://vimeo.com/privacy"" target=""_blank"">https://vimeo.com/privacy</a>.</p>
-		<h3>Google Web Fonts</h3> <p>For uniform representation of fonts, this page uses web fonts provided by Google. When you open a page, your browser loads the required web fonts into your browser cache to display texts and fonts correctly.</p> <p>For this purpose your browser has to establish a direct connection to Google servers. Google thus becomes aware that our web page was accessed via your IP address. The use of Google Web fonts is done in the interest of a uniform and attractive presentation of our plugin. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>If your browser does not support web fonts, a standard font is used by your computer.</p> <p>Further information about handling user data, can be found at <a href=""https://developers.google.com/fonts/faq"" target=""_blank"">https://developers.google.com/fonts/faq</a> and in Google\'s privacy policy at <a href=""https://www.google.com/policies/privacy/"" target=""_blank"">https://www.google.com/policies/privacy/</a>.</p>
+		<h3>YouTube</h3> <p>Our website uses plugins from YouTube, which is operated by Google. The operator of the pages is YouTube LLC, 901 Cherry Ave., San Bruno, CA 94066, USA.</p> <p>If you visit one of our pages featuring a YouTube plugin, a connection to the YouTube servers is established. Here the YouTube server is informed about which of our pages you have visited.</p> <p>If you\'re logged in to your YouTube account, YouTube allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your YouTube account.</p> <p>YouTube is used to help make our website appealing. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>Further information about handling user data, can be found in the data protection declaration of YouTube under <a href=""https://www.google.de/intl/de/policies/privacy"" target=""_blank"" rel=""noopener"">https://www.google.de/intl/de/policies/privacy</a>.</p>
+		<h3>Vimeo</h3> <p>Our website uses features provided by the Vimeo video portal. This service is provided by Vimeo Inc., 555 West 18th Street, New York, New York 10011, USA.</p> <p>If you visit one of our pages featuring a Vimeo plugin, a connection to the Vimeo servers is established. Here the Vimeo server is informed about which of our pages you have visited. In addition, Vimeo will receive your IP address. This also applies if you are not logged in to Vimeo when you visit our plugin or do not have a Vimeo account. The information is transmitted to a Vimeo server in the US, where it is stored.</p> <p>If you are logged in to your Vimeo account, Vimeo allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your Vimeo account.</p> <p>For more information on how to handle user data, please refer to the Vimeo Privacy Policy at <a href=""https://vimeo.com/privacy"" target=""_blank"" rel=""noopener"">https://vimeo.com/privacy</a>.</p>
+		<h3>Google Web Fonts</h3> <p>For uniform representation of fonts, this page uses web fonts provided by Google. When you open a page, your browser loads the required web fonts into your browser cache to display texts and fonts correctly.</p> <p>For this purpose your browser has to establish a direct connection to Google servers. Google thus becomes aware that our web page was accessed via your IP address. The use of Google Web fonts is done in the interest of a uniform and attractive presentation of our plugin. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>If your browser does not support web fonts, a standard font is used by your computer.</p> <p>Further information about handling user data, can be found at <a href=""https://developers.google.com/fonts/faq"" target=""_blank"" rel=""noopener"">https://developers.google.com/fonts/faq</a> and in Google\'s privacy policy at <a href=""https://www.google.com/policies/privacy/"" target=""_blank"" rel=""noopener"">https://www.google.com/policies/privacy/</a>.</p>
 		<h3>SoundCloud</h3><p>On our pages, plugins of the SoundCloud social network (SoundCloud Limited, Berners House, 47-48 Berners Street, London W1T 3NF, UK) may be integrated. The SoundCloud plugins can be recognized by the SoundCloud logo on our site.</p>
 			<p>When you visit our site, a direct connection between your browser and the SoundCloud server is established via the plugin. This enables SoundCloud to receive information that you have visited our site from your IP address. If you click on the “Like” or “Share” buttons while you are logged into your SoundCloud account, you can link the content of our pages to your SoundCloud profile. This means that SoundCloud can associate visits to our pages with your user account. We would like to point out that, as the provider of these pages, we have no knowledge of the content of the data transmitted or how it will be used by SoundCloud. For more information on SoundCloud’s privacy policy, please go to https://soundcloud.com/pages/privacy.</p><p>If you do not want SoundCloud to associate your visit to our site with your SoundCloud account, please log out of your SoundCloud account.</p>"
 "A Carousel is a Slider with multiple Slides<br>visible at the same time.<br>There are lots of options to customize the Carousel.","A Carousel is a Slider with multiple Slides<br>visible at the same time.<br>There are lots of options to customize the Carousel."
@@ -119,6 +123,7 @@
 "API Key","API Key"
 "API Source","API Source"
 "Above Entire Slider","Above Entire Slider"
+Absolute,Absolute
 "Access Permissions","Access Permissions"
 "Access Secret","Access Secret"
 "Access Token","Access Token"
@@ -127,7 +132,7 @@
 "Action Frame Start","Action Frame Start"
 "Action Needed","Action Needed"
 "Action Type","Action Type"
-"Action required for Slider Revolution AddOns: Please <a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/"" target=""_blank"">install</a>/<a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/register-plugin/"" target=""_blank"">activate</a>/<a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/update-plugin/"" target=""_blank"">update</a> Slider Revolution</a>","Action required for Slider Revolution AddOns: Please <a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/"" target=""_blank"">install</a>/<a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/register-plugin/"" target=""_blank"">activate</a>/<a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/update-plugin/"" target=""_blank"">update</a> Slider Revolution</a>"
+"Action required for Slider Revolution AddOns: Please <a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/"" target=""_blank"" rel=""noopener"">install</a>/<a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/register-plugin/"" target=""_blank"">activate</a>/<a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/update-plugin/"" target=""_blank"">update</a> Slider Revolution</a>","Action required for Slider Revolution AddOns: Please <a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/"" target=""_blank"" rel=""noopener"">install</a>/<a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/register-plugin/"" target=""_blank"">activate</a>/<a href=""https://www.sliderrevolution.com/manual-section/manual/getting-started/quick-setup/update-plugin/"" target=""_blank"">update</a> Slider Revolution</a>"
 Actions,Actions
 "Activate Add-On","Activate Add-On"
 "Activate Before/After","Activate Before/After"
@@ -135,10 +140,10 @@ Actions,Actions
 "Activate License","Activate License"
 "Activate Responsive Viewports","Activate Responsive Viewports"
 "Activate Slider Revolution for <a href=""https://www.sliderrevolution.com/premium-slider-revolution/"" target=""_blank"">premium benefits (e.g. live updates)</a>.","Activate Slider Revolution for <a href=""https://www.sliderrevolution.com/premium-slider-revolution/"" target=""_blank"">premium benefits (e.g. live updates)</a>."
-"Activate Slider Revolution to","Activate Slider Revolution to"
 "Activate To Update","Activate To Update"
 "Activate mouse hover styles/transitions","Activate mouse hover styles/transitions"
 Activated,Activated
+"Activated Addons","Activated Addons"
 "Activates a responsive height for the Slider","Activates a responsive height for the Slider"
 "Activating Add-On","Activating Add-On"
 Activation,Activation
@@ -233,7 +238,6 @@ AddOns,AddOns
 "AddOns Outdated. Please Update","AddOns Outdated. Please Update"
 "AddOns need attention","AddOns need attention"
 "Adding new Blank Module...","Adding new Blank Module..."
-Additional,Additional
 "Addon Required","Addon Required"
 Addons,Addons
 "Adds a border to the bubble.  Enter ""0"" for no border","Adds a border to the bubble.  Enter ""0"" for no border"
@@ -275,6 +279,7 @@ Alignment,Alignment
 All,All
 "All Layers","All Layers"
 "All Premium Features unlocked","All Premium Features unlocked"
+"All of the premium features including templates, media assets,<br>and add-ons have been removed from your website.","All of the premium features including templates, media assets,<br>and add-ons have been removed from your website."
 "Allocate space on the page for the Slider to prevent page content jumps when the Slider loads","Allocate space on the page for the Slider to prevent page content jumps when the Slider loads"
 "Allow Fullscreen","Allow Fullscreen"
 "Allow for content to be visible outside the Slider's bounding box","Allow for content to be visible outside the Slider's bounding box"
@@ -318,6 +323,7 @@ Animate,Animate
 "Animate Particle Size","Animate Particle Size"
 "Animate Size","Animate Size"
 "Animate Text Color","Animate Text Color"
+"Animate a Layer to a predefined Frame","Animate a Layer to a predefined Frame"
 "Animate characters, words or lines of text","Animate characters, words or lines of text"
 "Animate on Stage Click","Animate on Stage Click"
 "Animate on-click","Animate on-click"
@@ -379,6 +385,7 @@ Animation,Animation
 "Animation saved","Animation saved"
 Anonymous,Anonymous
 "Anti Gravity","Anti Gravity"
+"Any Modal Opens","Any Modal Opens"
 "Any custom product attribute","Any custom product attribute"
 "Aply a grayscale filter to Layers as the page scrolls into and out of view","Aply a grayscale filter to Layers as the page scrolls into and out of view"
 "App Secret","App Secret"
@@ -470,6 +477,7 @@ Autoplay,Autoplay
 "Autoplay Direction","Autoplay Direction"
 "Autoplay Effect","Autoplay Effect"
 "Autoplay Speed","Autoplay Speed"
+"Autorotate progress will get stopped if user clicks on slider","Autorotate progress will get stopped if user clicks on slider"
 "Available Font Weights","Available Font Weights"
 "Available Version","Available Version"
 "Axis X Title","Axis X Title"
@@ -584,6 +592,7 @@ Blur,Blur
 "Blur Start","Blur Start"
 "Blur To","Blur To"
 "Blur Value","Blur Value"
+Body,Body
 "Body Class","Body Class"
 Border,Border
 "Border & Shadow","Border & Shadow"
@@ -674,6 +683,7 @@ Buttons,Buttons
 "Buy License Key","Buy License Key"
 "Buy another License","Buy another License"
 "By default only SVG path gets custom style, Enabling this option will style all svg elements like ellipse, polygon etc","By default only SVG path gets custom style, Enabling this option will style all svg elements like ellipse, polygon etc"
+"By default videos are not requested with CORS header and you may get CORS error (Cross-Origin Request Blocked), to resolve it please enable this option. If your third party server does not deliver videos with CORS permission then you will get CORS error. In that case either use videos from same server as your website's origin or enable CORS permissions for videos on third party server.","By default videos are not requested with CORS header and you may get CORS error (Cross-Origin Request Blocked), to resolve it please enable this option. If your third party server does not deliver videos with CORS permission then you will get CORS error. In that case either use videos from same server as your website's origin or enable CORS permissions for videos on third party server."
 "CC0 Creative Commons","CC0 Creative Commons"
 CSS,CSS
 "CSS Clear","CSS Clear"
@@ -723,6 +733,10 @@ Capitalize,Capitalize
 Caraousel,Caraousel
 Carousel,Carousel
 "Carousel Layout","Carousel Layout"
+"Carousel Orientation","Carousel Orientation"
+"Carousel Skew","Carousel Skew"
+"Carousel SkewY","Carousel SkewY"
+"Carousel Snap","Carousel Snap"
 Categories,Categories
 Categories:,Categories:
 "Category does not exist","Category does not exist"
@@ -746,6 +760,7 @@ Center,Center
 "Change to the next Slide when the video ends","Change to the next Slide when the video ends"
 "Change to the next Slide when the video/audio ends","Change to the next Slide when the video/audio ends"
 "Change to the next or previous Slide on user-interaction","Change to the next or previous Slide on user-interaction"
+"Changes carousel orientation to allow you to drag either horizontally or vertically","Changes carousel orientation to allow you to drag either horizontally or vertically"
 "Changes that you made may not be saved.","Changes that you made may not be saved."
 "Changing Screen Size","Changing Screen Size"
 Channel,Channel
@@ -826,11 +841,11 @@ Charts,Charts
 "Charts z Index","Charts z Index"
 "Check Requirements","Check Requirements"
 "Check for Updates","Check for Updates"
-"Check the FAQ on <a target=""_blank"" href=""https://www.sliderrevolution.com/faq/facebook-stream-setup-instructions-access-token/"">how to generate</a> Access Token and get Page ID.","Check the FAQ on <a target=""_blank"" href=""https://www.sliderrevolution.com/faq/facebook-stream-setup-instructions-access-token/"">how to generate</a> Access Token and get Page ID."
+"Check the FAQ on <a target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/faq/facebook-stream-setup-instructions-access-token/"">how to generate</a> Access Token and get Page ID.","Check the FAQ on <a target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/faq/facebook-stream-setup-instructions-access-token/"">how to generate</a> Access Token and get Page ID."
 "Choose 'All' to LazyLoad all images in the Slider when the Slider first loads, 'Smart' to only LazyLoad the prev/next Slide's images, and 'Single' to only LazyLoad the current Slide's images.","Choose 'All' to LazyLoad all images in the Slider when the Slider first loads, 'Smart' to only LazyLoad the prev/next Slide's images, and 'Single' to only LazyLoad the current Slide's images."
 "Choose 'No Follow' to discourage search engines from indexing index the link","Choose 'No Follow' to discourage search engines from indexing index the link"
 "Choose 'Post' to pull in a range of posts, 'Specific Post' to pull in posts by ID, or 'Current Post' to populate the Slider with the current post's content","Choose 'Post' to pull in a range of posts, 'Specific Post' to pull in posts by ID, or 'Current Post' to populate the Slider with the current post's content"
-"Choose 'Rectangle' or 'Circle' for traditional wipes from the sides, center or corners, and 'Inverts' for curtain-type reveals","Choose 'Rectangle' or 'Circle' for traditional wipes from the sides, center or corners, and 'Inverts' for curtain-type reveals"
+"Choose 'Rectangle' or 'Circle' for traditional wipes from the sides, center or corners, and 'Custom Mask' for curtain-type reveals","Choose 'Rectangle' or 'Circle' for traditional wipes from the sides, center or corners, and 'Custom Mask' for curtain-type reveals"
 "Choose 'Slider' to align based on the Slider's full display, or 'Content' to align against the Slider's grid area","Choose 'Slider' to align based on the Slider's full display, or 'Content' to align against the Slider's grid area"
 "Choose 'none' to disable user-interaction.  Useful for enabling clicks on content placed beneath the Layer.","Choose 'none' to disable user-interaction.  Useful for enabling clicks on content placed beneath the Layer."
 "Choose Image","Choose Image"
@@ -898,6 +913,7 @@ Charts,Charts
 "Choose the maximum number of Posts that should be included in the Slider","Choose the maximum number of Posts that should be included in the Slider"
 "Choose the number of columns and their <a href='https://www.w3schools.com/tags/att_td_colspan.asp' target='_blank'>colspan</a> for the selected row","Choose the number of columns and their <a href='https://www.w3schools.com/tags/att_td_colspan.asp' target='_blank'>colspan</a> for the selected row"
 "Choose the order in which the posts should appear in the Slider","Choose the order in which the posts should appear in the Slider"
+"Choose the page target object which scrolls in your theme so its scroll position can be animated while snapping","Choose the page target object which scrolls in your theme so its scroll position can be animated while snapping"
 "Choose the playlist to pull in from the YouTube account","Choose the playlist to pull in from the YouTube account"
 "Choose the published state of the Slide.  Choose 'Unpublished' to work on the Slide in a draft status.","Choose the published state of the Slide.  Choose 'Unpublished' to work on the Slide in a draft status."
 "Choose to animate the Layer's animation timeline as the Module scrolls into and out of view","Choose to animate the Layer's animation timeline as the Module scrolls into and out of view"
@@ -951,7 +967,7 @@ Clear,Clear
 "Clear all generated Frames. It can not be undone","Clear all generated Frames. It can not be undone"
 "Clear your Browser Cache","Clear your Browser Cache"
 Clear/Windy,Clear/Windy
-"Cleared Photosets","Cleared Photosets"
+"Cleared Albums","Cleared Albums"
 Click,Click
 "Click Mode","Click Mode"
 "Click to Choose","Click to Choose"
@@ -1007,6 +1023,7 @@ Configuration,Configuration
 Container,Container
 Content,Content
 "Content Based","Content Based"
+"Content Behavior","Content Behavior"
 "Content Size/Position","Content Size/Position"
 "Content and Width Based","Content and Width Based"
 "Continue Playing","Continue Playing"
@@ -1030,7 +1047,8 @@ Corners,Corners
 "Could not delete the frames","Could not delete the frames"
 "Could not fetch Facebook albums","Could not fetch Facebook albums"
 "Could not fetch YouTube playlists","Could not fetch YouTube playlists"
-"Could not fetch flickr photosets","Could not fetch flickr photosets"
+"Could not fetch flickr album","Could not fetch flickr album"
+"Could not fetch flickr albums","Could not fetch flickr albums"
 "Could not retrieve the frames","Could not retrieve the frames"
 "Could not upload the frame","Could not upload the frame"
 Country,Country
@@ -1041,8 +1059,10 @@ Cover,Cover
 "Creation Ascending","Creation Ascending"
 Credits,Credits
 Cross,Cross
+"Cross Origin Video","Cross Origin Video"
 "Cross Transition","Cross Transition"
 "Cross-origin image defaults","Cross-origin image defaults"
+"CrossOrigin Video","CrossOrigin Video"
 Cube,Cube
 "Current <li> Index","Current <li> Index"
 "Current Color","Current Color"
@@ -1074,6 +1094,7 @@ Custom,Custom
 "Custom Inline & Hover CSS","Custom Inline & Hover CSS"
 "Custom JavaScript","Custom JavaScript"
 "Custom Lottie File","Custom Lottie File"
+"Custom Mask","Custom Mask"
 "Custom Presets","Custom Presets"
 "Custom SVG File","Custom SVG File"
 "Custom SVG Original Color","Custom SVG Original Color"
@@ -1206,8 +1227,10 @@ Desktop,Desktop
 "Desktop Swipe Enabled","Desktop Swipe Enabled"
 "Desktop Viewport","Desktop Viewport"
 "Desktop Width","Desktop Width"
+"Determines how much % of slider should be visible when slider should change slide on scroll","Determines how much % of slider should be visible when slider should change slide on scroll"
 "Determines how much movement will occur for the Panorama ""Throw"" control","Determines how much movement will occur for the Panorama ""Throw"" control"
 "Determines the tilt of the hand as the Layer is drawn/moved","Determines the tilt of the hand as the Layer is drawn/moved"
+"Determines visiblity of previous and next slides. A value of 100px will show 50px of previous and next slides. If value is set in percent for example 50% then 25% of previous slide will be visible, and 25% of next slide.","Determines visiblity of previous and next slides. A value of 100px will show 50px of previous and next slides. If value is set in percent for example 50% then 25% of previous slide will be visible, and 25% of next slide."
 "Device Pixel Ratio","Device Pixel Ratio"
 "Diagonal 1","Diagonal 1"
 "Diagonal 2","Diagonal 2"
@@ -1251,8 +1274,7 @@ Disappear,Disappear
 "Dismiss Messages","Dismiss Messages"
 Display,Display
 "Display Frame","Display Frame"
-"Display Mode in Column","Display Mode in Column"
-"Display a certain photoset from a user","Display a certain photoset from a user"
+"Display a certain album from a user","Display a certain album from a user"
 "Display a gallery","Display a gallery"
 "Display a group\'s photos","Display a group\'s photos"
 "Display a special effect when the user clicks anywhere in the Slide","Display a special effect when the user clicks anywhere in the Slide"
@@ -1310,7 +1332,6 @@ Distortion,Distortion
 "Do you want to add them to the ""custom"" category or create a new category?","Do you want to add them to the ""custom"" category or create a new category?"
 "Do you want to start the Update process?","Do you want to start the Update process?"
 Docs,Docs
-"Docs & FAQs","Docs & FAQs"
 Documentation,Documentation
 "Don't Force Fullwidth","Don't Force Fullwidth"
 "Don't show tooltips again","Don't show tooltips again"
@@ -1501,6 +1522,7 @@ End,End
 "End Offset","End Offset"
 "End Position X","End Position X"
 "End Position Y","End Position Y"
+"End Range","End Range"
 "End Time","End Time"
 "End X Position","End X Position"
 "End Y Position","End Y Position"
@@ -1569,6 +1591,8 @@ End,End
 "Enter your Twitter User Name/Handle for the API query","Enter your Twitter User Name/Handle for the API query"
 "Enter your YouTube API key.  <a href='https://developers.google.com/youtube/v3/getting-started#before-you-start' target='_blank'>Learn more</a>","Enter your YouTube API key.  <a href='https://developers.google.com/youtube/v3/getting-started#before-you-start' target='_blank'>Learn more</a>"
 "Enter/Exit Fullscreen","Enter/Exit Fullscreen"
+"Entire carousel will horizontally skew based on angle set and based on current speed of carousel","Entire carousel will horizontally skew based on angle set and based on current speed of carousel"
+"Entire carousel will vertically skew based on angle set and based on current speed of carousel","Entire carousel will vertically skew based on angle set and based on current speed of carousel"
 Environment,Environment
 "Error downloading layers","Error downloading layers"
 "Error downloading layers data","Error downloading layers data"
@@ -1661,16 +1685,19 @@ Filter,Filter
 Filters,Filters
 "Find My Code","Find My Code"
 "Find My Key","Find My Key"
-"Find information about the YouTube API key <a target=""_blank"" href=""https://developers.google.com/youtube/v3/getting-started#before-you-start"">here</a>","Find information about the YouTube API key <a target=""_blank"" href=""https://developers.google.com/youtube/v3/getting-started#before-you-start"">here</a>"
+"Find information about the YouTube API key <a target=""_blank"" rel=""noopener"" href=""https://developers.google.com/youtube/v3/getting-started#before-you-start"">here</a>","Find information about the YouTube API key <a target=""_blank"" rel=""noopener"" href=""https://developers.google.com/youtube/v3/getting-started#before-you-start"">here</a>"
 "Finnished with slide change","Finnished with slide change"
 First,First
 "First Slide","First Slide"
 "First Slide Animation","First Slide Animation"
 "First Slide Transition Duration","First Slide Transition Duration"
 "First Slide Transition Type","First Slide Transition Type"
+"First Steps, Docs & FAQs","First Steps, Docs & FAQs"
 "Five Spikes","Five Spikes"
+Fix,Fix
+"Fix All Addons","Fix All Addons"
 "Fix Soft Edges","Fix Soft Edges"
-"Fix during Scroll","Fix during Scroll"
+"Fix not Installed Addons","Fix not Installed Addons"
 "Fixed Label","Fixed Label"
 "Fixed Values","Fixed Values"
 "Fixed on Top","Fixed on Top"
@@ -1769,6 +1796,7 @@ Front,Front
 "Front End","Front End"
 Full,Full
 "Full Height","Full Height"
+"Full Inset","Full Inset"
 "Full Screen","Full Screen"
 "Full Width","Full Width"
 Full-Screen,Full-Screen
@@ -1817,7 +1845,7 @@ Global,Global
 "Global Style Presets","Global Style Presets"
 "Global Value ! Option to find under Slider Settings - Parallax Tab","Global Value ! Option to find under Slider Settings - Parallax Tab"
 Globals,Globals
-"Go To My Dashboard","Go To My Dashboard"
+"Go To Frame","Go To Frame"
 "Go To Next Layer","Go To Next Layer"
 "Go To Slide","Go To Slide"
 "Go To Slide with ID","Go To Slide with ID"
@@ -1881,6 +1909,7 @@ Height,Height
 "Help Center","Help Center"
 "Help Directory","Help Directory"
 "Help Mode","Help Mode"
+"Help Us Make Slider Revolution Better!","Help Us Make Slider Revolution Better!"
 "Helps to create more natural movement as the hand draws/moves the Layer into place","Helps to create more natural movement as the hand draws/moves the Layer into place"
 "Hero Scene","Hero Scene"
 Hidden,Hidden
@@ -1939,6 +1968,7 @@ Horizontal,Horizontal
 "Horizontal Large","Horizontal Large"
 "Horizontal Lines","Horizontal Lines"
 "Horizontal Marker","Horizontal Marker"
+"Horizontal Mask","Horizontal Mask"
 "Horizontal Medium","Horizontal Medium"
 "Horizontal Offset","Horizontal Offset"
 "Horizontal Small","Horizontal Small"
@@ -1956,7 +1986,7 @@ Hover,Hover
 "How to?","How to?"
 "How would you like your content to resize?","How would you like your content to resize?"
 Humidity,Humidity
-"I don‘t have a login. How to get access?","I don‘t have a login. How to get access?"
+"I agree to share data related to my Slider Revolution usage<br>with the development team to help improve the plugin.","I agree to share data related to my Slider Revolution usage<br>with the development team to help improve the plugin."
 "I have a License Key","I have a License Key"
 "I have a Purchase Code","I have a Purchase Code"
 ICON,ICON
@@ -1988,7 +2018,6 @@ Idle,Idle
 "If you want to use Slider Revolution on another domain, you need to use a different license key.","If you want to use Slider Revolution on another domain, you need to use a different license key."
 "If you want to use your license key on another domain, please<br> deregister it in the members area or use a different key.","If you want to use your license key on another domain, please<br> deregister it in the members area or use a different key."
 "If you want to use your purchase code on<br>another domain, please deregister it first or","If you want to use your purchase code on<br>another domain, please deregister it first or"
-Ignore,Ignore
 "Ignore Lazy Loading","Ignore Lazy Loading"
 "Ignore Mobile Height Changes","Ignore Mobile Height Changes"
 Image,Image
@@ -2086,6 +2115,7 @@ Install,Install
 "Install Template Package","Install Template Package"
 "Install Template Package & Addon(s)","Install Template Package & Addon(s)"
 Installed,Installed
+"Installed Addons","Installed Addons"
 "Installed Version","Installed Version"
 "Installing Add-On","Installing Add-On"
 "Installing Template","Installing Template"
@@ -2111,7 +2141,6 @@ Interactivity,Interactivity
 "Invert Scroll","Invert Scroll"
 "Invert Vertical","Invert Vertical"
 "Invert the drawing of the Polyfold shape","Invert the drawing of the Polyfold shape"
-Inverts,Inverts
 "Isolated T-storms","Isolated T-storms"
 "Isolated Thunderstorms","Isolated Thunderstorms"
 "Isometric (Global)","Isometric (Global)"
@@ -2128,6 +2157,7 @@ Inverts,Inverts
 "John Doe","John Doe"
 "Jump to Slide","Jump to Slide"
 "Keep Aspect Ratio (Justify)","Keep Aspect Ratio (Justify)"
+"Keep Aspect Ratio(Justify)","Keep Aspect Ratio(Justify)"
 "Keep Auto Sizes","Keep Auto Sizes"
 "Keep Breakpoint Heights","Keep Breakpoint Heights"
 "Keep Last State","Keep Last State"
@@ -2137,6 +2167,7 @@ Inverts,Inverts
 "Keep Spinner until all Frames loaded","Keep Spinner until all Frames loaded"
 "Keep Style","Keep Style"
 "Keep as it is","Keep as it is"
+"Keep aspect ratio of the Carousel Items to use the same height with auto width.","Keep aspect ratio of the Carousel Items to use the same height with auto width."
 "Keep disabled if slider has dynamic content, e.g. shortcodes","Keep disabled if slider has dynamic content, e.g. shortcodes"
 "Ken Burns","Ken Burns"
 "Ken Burns / Pan Zoom","Ken Burns / Pan Zoom"
@@ -2210,6 +2241,7 @@ Layer,Layer
 "Layer is Global","Layer is Global"
 "Layer is Selectable","Layer is Selectable"
 "Layer options","Layer options"
+"Layer positions has been reset","Layer positions has been reset"
 "Layer with Action","Layer with Action"
 Layers,Layers
 "Layers Importing","Layers Importing"
@@ -2225,6 +2257,7 @@ Layers,Layers
 "Layers from Slides that are visible in the carousel will always be visible by default (Layer animations will be disabled)","Layers from Slides that are visible in the carousel will always be visible by default (Layer animations will be disabled)"
 "Layers will resize in a linear fashion, as the module size changes. You only need to configure one screen size.","Layers will resize in a linear fashion, as the module size changes. You only need to configure one screen size."
 Layout,Layout
+"Lazy Load on BG Images","Lazy Load on BG Images"
 "Lazy Loading","Lazy Loading"
 "Learn how to activate an AddOn for the Slider","Learn how to activate an AddOn for the Slider"
 "Learn how to add/remove navigation elements to control the Slider","Learn how to add/remove navigation elements to control the Slider"
@@ -2324,6 +2357,7 @@ Load,Load
 "Load Backup","Load Backup"
 "Load Loop Template","Load Loop Template"
 "Load Settings","Load Settings"
+"Load YouTube API early","Load YouTube API early"
 "Load a settings template for the Distortion effect","Load a settings template for the Distortion effect"
 "Load from Google","Load from Google"
 "Load the Slider's JS files in the page's body to help resolve conflicts","Load the Slider's JS files in the page's body to help resolve conflicts"
@@ -2410,7 +2444,9 @@ MPEG,MPEG
 "Magnify the curve by this value.  1 = no magnification.  2 = twice the curve, etc.","Magnify the curve by this value.  1 = no magnification.  2 = twice the curve, etc."
 "Main Slide Background","Main Slide Background"
 "Main Style","Main Style"
-"Manage Your Licenses","Manage Your Licenses"
+"Make sure that a valid product id / category is selected in ""Module General Options -> Content -> Product Selection"".","Make sure that a valid product id / category is selected in ""Module General Options -> Content -> Product Selection""."
+"Make sure that the stream settings are properly selected in ""Module General Options -> Content -> Stream Settings"".","Make sure that the stream settings are properly selected in ""Module General Options -> Content -> Stream Settings""."
+"Make sure to add slides to the slider","Make sure to add slides to the slider"
 Manual,Manual
 "Manual Custom Sizes","Manual Custom Sizes"
 "Manual Import","Manual Import"
@@ -2448,6 +2484,7 @@ Masking,Masking
 "Max Width","Max Width"
 "Max Width 100%","Max Width 100%"
 "Max Zoom","Max Zoom"
+"Max. Allowed Package (16M)","Max. Allowed Package (16M)"
 "Max. Amplitude","Max. Amplitude"
 "Max. BG DPR","Max. BG DPR"
 "Max. Opacity","Max. Opacity"
@@ -2496,6 +2533,7 @@ Middle,Middle
 "Min. Size","Min. Size"
 "Min. Speed","Min. Speed"
 "Min. Strength","Min. Strength"
+"Min/Max Width & Height","Min/Max Width & Height"
 Minimum,Minimum
 "Minimum Height","Minimum Height"
 "Minimum Opacity","Minimum Opacity"
@@ -2596,6 +2634,7 @@ Move,Move
 "Move From Top","Move From Top"
 "Move Hand","Move Hand"
 "Move Hand Image","Move Hand Image"
+"Move Layer into a Group and set Position to Absolute before selecting Full Inset","Move Layer into a Group and set Position to Absolute before selecting Full Inset"
 "Move Radius","Move Radius"
 "Move from","Move from"
 "Move the image down on user-interaction.  Use 'Start' and 'End' for mouseenter/mouseleave events","Move the image down on user-interaction.  Use 'Start' and 'End' for mouseenter/mouseleave events"
@@ -2608,6 +2647,7 @@ Move,Move
 Movement,Movement
 "Movement Radisu of Layer","Movement Radisu of Layer"
 Mpeg,Mpeg
+"Multiple Children Selected","Multiple Children Selected"
 "Multiple Layerselection not Supported<br>in Animation Mode","Multiple Layerselection not Supported<br>in Animation Mode"
 "Multiple Lines","Multiple Lines"
 "Multiple Selection","Multiple Selection"
@@ -2618,7 +2658,6 @@ Mpeg,Mpeg
 "Mute or Unmute the sound from a video or audio Layer on user-interaction","Mute or Unmute the sound from a video or audio Layer on user-interaction"
 "Mute/Unmute Media","Mute/Unmute Media"
 "N"" wait\'s on Action","N"" wait\'s on Action"
-NEW,NEW
 Name,Name
 "Nav Editor","Nav Editor"
 "Nav Image Dimensions","Nav Image Dimensions"
@@ -2634,13 +2673,13 @@ Navigation,Navigation
 "Navigation preset deleted","Navigation preset deleted"
 "Navigation preset saved/updated","Navigation preset saved/updated"
 "Need Attention by removing","Need Attention by removing"
+Needs:,Needs:
 "New Blank Module","New Blank Module"
 "New Folder","New Folder"
 "New Line Delay","New Line Delay"
 "New Module from Template","New Module from Template"
 "New Version Available. Please Update","New Version Available. Please Update"
 "New Window","New Window"
-News,News
 "Next &raquo;","Next &raquo;"
 "Next Frame","Next Frame"
 "Next Slide","Next Slide"
@@ -2651,7 +2690,7 @@ News,News
 "Next Tip","Next Tip"
 "Next on Browser Focus","Next on Browser Focus"
 "Next/Previous Slide","Next/Previous Slide"
-"No API KEY - Could not fetch flickr photosets","No API KEY - Could not fetch flickr photosets"
+"No API KEY - Could not fetch flickr albums","No API KEY - Could not fetch flickr albums"
 "No Action Selected","No Action Selected"
 "No Animation","No Animation"
 "No Change","No Change"
@@ -2672,7 +2711,7 @@ News,News
 "No Spikes","No Spikes"
 "No Sticky Keyframes","No Sticky Keyframes"
 "No Style","No Style"
-"No User URL - Could not fetch flickr photosets","No User URL - Could not fetch flickr photosets"
+"No User URL - Could not fetch flickr albums","No User URL - Could not fetch flickr albums"
 "No Video Selected. Please select a Video first","No Video Selected. Please select a Video first"
 "No backups found for the selected Slide","No backups found for the selected Slide"
 "No data received","No data received"
@@ -2682,9 +2721,8 @@ News,News
 "No frames generated yet","No frames generated yet"
 "No further source settings needed. Content is created manually.","No further source settings needed. Content is created manually."
 "No response on action","No response on action"
-"No slides found, please add at least one Slide Template to the choosen language.","No slides found, please add at least one Slide Template to the choosen language."
-"No slides found, please add some slides","No slides found, please add some slides"
 "No valid file sent.","No valid file sent."
+"No, thanks.","No, thanks."
 None,None
 "None of the Settings changed. There is Nothing to Save","None of the Settings changed. There is Nothing to Save"
 Normal,Normal
@@ -2692,6 +2730,7 @@ Normal,Normal
 "Not Available, read FAQ","Not Available, read FAQ"
 "Not Enough space between Frames.","Not Enough space between Frames."
 "Not Installed","Not Installed"
+"Not Installed Addons","Not Installed Addons"
 "Not Retina Ready","Not Retina Ready"
 "Not Used","Not Used"
 "Not yet Connected","Not yet Connected"
@@ -2841,6 +2880,7 @@ Overlay,Overlay
 "Overlay Size","Overlay Size"
 Overline,Overline
 "Override Style on Slide","Override Style on Slide"
+Overshoot,Overshoot
 Oversized,Oversized
 "Overwrite Template ?","Overwrite Template ?"
 "Own Modules","Own Modules"
@@ -2864,6 +2904,7 @@ PACKAGE,PACKAGE
 "PM Thundershowers","PM Thundershowers"
 "PM Thunderstorms","PM Thunderstorms"
 "PNG Objects from the Slider Revolution Library <b>must only</b> be used with a","PNG Objects from the Slider Revolution Library <b>must only</b> be used with a"
+"PREMIUM TEMPLATE","PREMIUM TEMPLATE"
 Padding,Padding
 "Padding Bottom","Padding Bottom"
 "Padding Left","Padding Left"
@@ -2872,6 +2913,8 @@ Padding,Padding
 "Padding/spacing applied to the wrapping container for the drag/reveal navigation arrows","Padding/spacing applied to the wrapping container for the drag/reveal navigation arrows"
 "Page Color","Page Color"
 "Page ID","Page ID"
+"Page Loading Optimization","Page Loading Optimization"
+"Page Scroll","Page Scroll"
 "Page URL","Page URL"
 "Page is reloading...","Page is reloading..."
 Paintbrush,Paintbrush
@@ -2977,7 +3020,6 @@ Permissions,Permissions
 Perspective,Perspective
 Pexels,Pexels
 "Phone Viewport","Phone Viewport"
-Photoset,Photoset
 "Pick Origin","Pick Origin"
 "Pick an Item","Pick an Item"
 "Pick another Dimension","Pick another Dimension"
@@ -2995,15 +3037,19 @@ Placeholder,Placeholder
 "Play/Pause Media","Play/Pause Media"
 "Play/Pause the Slider on user-interaction","Play/Pause the Slider on user-interaction"
 Playlist,Playlist
-"Please <a target=""_blank"" href=""https://dev.twitter.com/apps"">register</a> your application with Twitter<br>to get the right values","Please <a target=""_blank"" href=""https://dev.twitter.com/apps"">register</a> your application with Twitter<br>to get the right values"
+"Please <a target=""_blank"" rel=""noopener"" href=""https://dev.twitter.com/apps"">register</a> your application with Twitter<br>to get the right values","Please <a target=""_blank"" rel=""noopener"" href=""https://dev.twitter.com/apps"">register</a> your application with Twitter<br>to get the right values"
 "Please Wait a Moment","Please Wait a Moment"
 "Please Wait...","Please Wait..."
 "Please activate Slider Revolution","Please activate Slider Revolution"
 "Please add at least one Layer.","Please add at least one Layer."
 "Please check the listed license files for details about how you can use the ""FontAwesome"" and ""Stroke 7 Icon"" font sets for commercial projects, open source projects, or really just about whatever you want.","Please check the listed license files for details about how you can use the ""FontAwesome"" and ""Stroke 7 Icon"" font sets for commercial projects, open source projects, or really just about whatever you want."
-"Please check this FAQ on how to <a target=""_blank"" href=""https://www.sliderrevolution.com/faq/instagram-stream-setup-instructions-with-access-token/"">generate</a> your Instagram Access Token in Facebook manually.","Please check this FAQ on how to <a target=""_blank"" href=""https://www.sliderrevolution.com/faq/instagram-stream-setup-instructions-with-access-token/"">generate</a> your Instagram Access Token in Facebook manually."
+"Please check this FAQ on how to <a target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/faq/instagram-stream-setup-instructions-with-access-token/"">generate</a> your Instagram Access Token in Facebook manually.","Please check this FAQ on how to <a target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/faq/instagram-stream-setup-instructions-with-access-token/"">generate</a> your Instagram Access Token in Facebook manually."
 "Please enable Spinner in Global Settings","Please enable Spinner in Global Settings"
-"Please follow this link to edit the Slider:","Please follow this link to edit the Slider:"
+"Please follow this link to edit the slider:","Please follow this link to edit the slider:"
+"Please note you don’t have access to Premium 1-on-1 support<br>right now ...","Please note you don’t have access to Premium 1-on-1 support<br>right now ..."
+"Please register the Slider Revolution plugin to use premium templates.","Please register the Slider Revolution plugin to use premium templates."
+"Please register your Slider Revolution plugin to import premium templates","Please register your Slider Revolution plugin to import premium templates"
+"Please rename the folder using only Latin letters, numbers, underscores and dashes.","Please rename the folder using only Latin letters, numbers, underscores and dashes."
 "Please respect all other icon fonts licenses for fonts not included directly into Slider Revolution.","Please respect all other icon fonts licenses for fonts not included directly into Slider Revolution."
 "Please select an Addon to start with.","Please select an Addon to start with."
 "Please select the correct zip file, checksum failed!","Please select the correct zip file, checksum failed!"
@@ -3068,6 +3114,7 @@ Pre,Pre
 "Preference Updated","Preference Updated"
 Preload,Preload
 "Preload Delay","Preload Delay"
+Premium,Premium
 "Prepared for slide change","Prepared for slide change"
 "Preparing Data...","Preparing Data..."
 "Preparing Fields...","Preparing Fields..."
@@ -3079,9 +3126,11 @@ Preset,Preset
 "Preset not found","Preset not found"
 "Preset not found in default navigations","Preset not found in default navigations"
 Presets,Presets
+"Press the button below to install & activate<br>all addons required by your modules.","Press the button below to install & activate<br>all addons required by your modules."
 Pressure,Pressure
 "Prev Size","Prev Size"
 "Prev. Slide as jQuery Object","Prev. Slide as jQuery Object"
+"Prev/Next Visibility","Prev/Next Visibility"
 Preview,Preview
 "Preview Backup","Preview Backup"
 "Preview Image","Preview Image"
@@ -3118,6 +3167,7 @@ Publish,Publish
 "Publish Start Date","Publish Start Date"
 Published,Published
 "Published Status","Published Status"
+"Pull Content, dyn. Bottom Margin","Pull Content, dyn. Bottom Margin"
 "Pull in products with a regular price equal to or below this number","Pull in products with a regular price equal to or below this number"
 "Pull in products with a sale price equal to or below this number","Pull in products with a sale price equal to or below this number"
 "Pull in products with this minimum price","Pull in products with this minimum price"
@@ -3136,6 +3186,7 @@ Quality,Quality
 "Quick Style Editor","Quick Style Editor"
 "Quick Style Headline","Quick Style Headline"
 "Quit Guide","Quit Guide"
+"REGISTER LICENSE TO UNLOCK","REGISTER LICENSE TO UNLOCK"
 "RTL Direction","RTL Direction"
 Radius,Radius
 Rain,Rain
@@ -3180,7 +3231,7 @@ Range,Range
 Re-Tweets,Re-Tweets
 ReTweets,ReTweets
 "Reactive Area","Reactive Area"
-"Read <a target=""_blank"" href=""http://weblizar.com/get-flickr-api-key/"">here</a> how to receive your Flickr API key","Read <a target=""_blank"" href=""http://weblizar.com/get-flickr-api-key/"">here</a> how to receive your Flickr API key"
+"Read <a target=""_blank"" rel=""noopener"" href=""http://weblizar.com/get-flickr-api-key/"">here</a> how to receive your Flickr API key","Read <a target=""_blank"" rel=""noopener"" href=""http://weblizar.com/get-flickr-api-key/"">here</a> how to receive your Flickr API key"
 "Recalculate all positions, sizing etc in the slider.  This should be called i.e. if Slider was invisible and becomes visible without any window resize event.","Recalculate all positions, sizing etc in the slider.  This should be called i.e. if Slider was invisible and becomes visible without any window resize event."
 Recommended,Recommended
 Rectangle,Rectangle
@@ -3192,14 +3243,16 @@ Refresh,Refresh
 "Reg. Price From","Reg. Price From"
 "Reg. Price To","Reg. Price To"
 Region,Region
+"Register Licence Key","Register Licence Key"
 "Register License Key","Register License Key"
+"Register Plugin to unlock all features","Register Plugin to unlock all features"
 "Register Purchase Code","Register Purchase Code"
+"Register Slider Revolution to","Register Slider Revolution to"
 "Register Slider Revolution<br>to Unlock Premium Features","Register Slider Revolution<br>to Unlock Premium Features"
 "Register this Code","Register this Code"
 "Register this License Key","Register this License Key"
 "Register to Unlock","Register to Unlock"
 "Register to Unlock All Premium Features","Register to Unlock All Premium Features"
-"Register to Unlock all Features","Register to Unlock all Features"
 "Register to unlock AddOns","Register to unlock AddOns"
 "Register to unlock Library","Register to unlock Library"
 "Register to unlock Premium Features","Register to unlock Premium Features"
@@ -3213,6 +3266,7 @@ Registered,Registered
 Regular,Regular
 Rel,Rel
 "Relating on Pop Up after Time and Scroll Position ","Relating on Pop Up after Time and Scroll Position "
+Relative,Relative
 "Release to Add Layer","Release to Add Layer"
 "Release to Upload file","Release to Upload file"
 "Reload Page","Reload Page"
@@ -3252,6 +3306,7 @@ Reset,Reset
 "Reset the size/position of all Layers to their desktop values for each viewport inside the editor","Reset the size/position of all Layers to their desktop values for each viewport inside the editor"
 Resize,Resize
 "Resize Between Devices","Resize Between Devices"
+"Resize and Drag is not available if Layer Size set to Inset","Resize and Drag is not available if Layer Size set to Inset"
 "Respect Aspect Ratio","Respect Aspect Ratio"
 "Respect Ratio","Respect Ratio"
 "Respect Timeline Start","Respect Timeline Start"
@@ -3415,6 +3470,7 @@ Scroll,Scroll
 "Scroll Progress Start","Scroll Progress Start"
 "Scroll Seek","Scroll Seek"
 "Scroll Stop","Scroll Stop"
+"Scroll Target","Scroll Target"
 "Scroll To ID","Scroll To ID"
 "Scroll Video","Scroll Video"
 "Scroll Video Extraction End","Scroll Video Extraction End"
@@ -3430,11 +3486,12 @@ Scroll,Scroll
 "Scrollvideo Type","Scrollvideo Type"
 "Se a character limit  if the post's excerpt is included in the Slide","Se a character limit  if the post's excerpt is included in the Slide"
 Search,Search
+"Search Addons...","Search Addons..."
 "Search Icons...","Search Icons..."
 "Search Keywords, e.g. ""Background","Search Keywords, e.g. ""Background"
 "Search Modules...","Search Modules..."
 "Search for an Option","Search for an Option"
-"See how to find the Youtube channel ID <a target=""_blank"" href=""https://support.google.com/youtube/answer/3250431?hl=en"">here</a>","See how to find the Youtube channel ID <a target=""_blank"" href=""https://support.google.com/youtube/answer/3250431?hl=en"">here</a>"
+"See how to find the Youtube channel ID <a target=""_blank"" rel=""noopener"" href=""https://support.google.com/youtube/answer/3250431?hl=en"">here</a>","See how to find the Youtube channel ID <a target=""_blank"" rel=""noopener"" href=""https://support.google.com/youtube/answer/3250431?hl=en"">here</a>"
 Seek,Seek
 Select,Select
 "Select ""Whiteboard","Select ""Whiteboard"
@@ -3481,6 +3538,7 @@ Sensibility,Sensibility
 "Set animation renderer. Default is SVG, which successfully renders most animations. Canvas sometimes fails to render layer correctly but in most cases gives a lot better performance","Set animation renderer. Default is SVG, which successfully renders most animations. Canvas sometimes fails to render layer correctly but in most cases gives a lot better performance"
 "Set as Editor View","Set as Editor View"
 "Set by Layer Visibility","Set by Layer Visibility"
+"Set carousel to spin in 2d or 3d space, change angle settings to determine direction of the spin.","Set carousel to spin in 2d or 3d space, change angle settings to determine direction of the spin."
 "Set ease speed to smoothly transition between frames as mouse moves on layer","Set ease speed to smoothly transition between frames as mouse moves on layer"
 "Set ease speed to smoothly transition between frames as page is scrolled","Set ease speed to smoothly transition between frames as page is scrolled"
 "Set end value for progress between 0-1, from where scroll action progress should end","Set end value for progress between 0-1, from where scroll action progress should end"
@@ -3544,6 +3602,8 @@ Sensibility,Sensibility
 "Set/Change Slide Background","Set/Change Slide Background"
 "Set/change the image for the Layer","Set/change the image for the Layer"
 "Set/remove the video's preview image for the video","Set/remove the video's preview image for the video"
+"Sets the angle between two slides for spin effect. In 2D spin, angle determines spin direction. In 3D spin, angle determines if slides will spin inwards or outwards in 3D space.","Sets the angle between two slides for spin effect. In 2D spin, angle determines spin direction. In 3D spin, angle determines if slides will spin inwards or outwards in 3D space."
+"Sets the threshold within which slider will snap into position while scrolling, threshold is calculated based on slider's distance from top and bottom","Sets the threshold within which slider will snap into position while scrolling, threshold is calculated based on slider's distance from top and bottom"
 "Setting this option to contain will fit animation inside layer. Setting it to cover will cover entire layer but parts of animation may get clipped out of layer","Setting this option to contain will fit animation inside layer. Setting it to cover will cover entire layer but parts of animation may get clipped out of layer"
 "Setting this option to true will change playback to yoyo, animation will play forward and then backward","Setting this option to true will change playback to yoyo, animation will play forward and then backward"
 Settings,Settings
@@ -3600,6 +3660,7 @@ Show,Show
 "Show Values","Show Values"
 "Show a simple image instead of the Slider on mobile, IE8 or both","Show a simple image instead of the Slider on mobile, IE8 or both"
 "Show a specific Slide first when the Slider first loads","Show a specific Slide first when the Slider first loads"
+"Show all Addons","Show all Addons"
 "Show all Modules","Show all Modules"
 "Show if mouse over Slider","Show if mouse over Slider"
 "Show in Editor","Show in Editor"
@@ -3653,6 +3714,7 @@ Size,Size
 "Size after Optimization","Size after Optimization"
 "Size will adapt to the same size as the web page's content","Size will adapt to the same size as the web page's content"
 Sizing,Sizing
+"Skew X","Skew X"
 "Skew/distort the Layer horizontally by this amount for the selected animation frame.  Accepts positive and negative values.","Skew/distort the Layer horizontally by this amount for the selected animation frame.  Accepts positive and negative values."
 "Skew/distort the Layer horizontally by this amount on mouse hover.  Accepts positive and negative values.","Skew/distort the Layer horizontally by this amount on mouse hover.  Accepts positive and negative values."
 "Skew/distort the Layer vertically by this amount for the selected animation frame.  Accepts positive and negative values.","Skew/distort the Layer vertically by this amount for the selected animation frame.  Accepts positive and negative values."
@@ -3759,6 +3821,7 @@ Slider,Slider
 "Slider Revolution API methods and events","Slider Revolution API methods and events"
 "Slider Revolution Add-Ons <b>must only</b> be used with a","Slider Revolution Add-Ons <b>must only</b> be used with a"
 "Slider Revolution Addons","Slider Revolution Addons"
+"Slider Revolution Analytics Sharing","Slider Revolution Analytics Sharing"
 "Slider Revolution Block Settings","Slider Revolution Block Settings"
 "Slider Revolution Media Gallery","Slider Revolution Media Gallery"
 "Slider Revolution Plugin updated Failure:","Slider Revolution Plugin updated Failure:"
@@ -3813,7 +3876,10 @@ Small,Small
 "Small Image URL","Small Image URL"
 Smart,Smart
 "Smart Resize","Smart Resize"
+"Snap Threshold","Snap Threshold"
+"Snap carousel to slides based on slides alignment settings.","Snap carousel to slides based on slides alignment settings."
 "Snap to X Alignment","Snap to X Alignment"
+"Snap to Y Alignment","Snap to Y Alignment"
 Snow,Snow
 "Snow Grains","Snow Grains"
 "Snow Late","Snow Late"
@@ -3832,12 +3898,14 @@ Solid,Solid
 "Some AddOns have new versions available","Some AddOns have new versions available"
 "Some Layers are <strong>Locked</strong> and/or <strong>Invisible</strong>.<br>Change Status in Timeline.","Some Layers are <strong>Locked</strong> and/or <strong>Invisible</strong>.<br>Change Status in Timeline."
 "Some Settings in Slider <strong>Source may not complete</strong>.<br>Please Complete All Settings in Slider Sources.","Some Settings in Slider <strong>Source may not complete</strong>.<br>Please Complete All Settings in Slider Sources."
-"Sorry, this Social Stream cannot be displayed.","Sorry, this Social Stream cannot be displayed."
+"Some slide transitions do not support filters. If problems occur, please try a different slide transition / filter pairing","Some slide transitions do not support filters. If problems occur, please try a different slide transition / filter pairing"
 "Sort Direction","Sort Direction"
 "Sort Filmstrip Slide","Sort Filmstrip Slide"
 "Sort Posts By","Sort Posts By"
 "Sort Products By:","Sort Products By:"
 "Sort by Creation","Sort by Creation"
+"Sort by Date","Sort by Date"
+"Sort by Popularity","Sort by Popularity"
 "Sort by Title","Sort by Title"
 "Sort the posts in ascending or descending order","Sort the posts in ascending or descending order"
 "Sorting & Settings","Sorting & Settings"
@@ -3865,6 +3933,8 @@ Speed,Speed
 "Sphere Radius","Sphere Radius"
 "Spike Masks","Spike Masks"
 "Spike Width","Spike Width"
+Spin,Spin
+"Spin Angle","Spin Angle"
 Spinner,Spinner
 "Spinner / Preloader","Spinner / Preloader"
 "Spinner Color","Spinner Color"
@@ -3894,6 +3964,7 @@ Start,Start
 "Start Offset","Start Offset"
 "Start Position X","Start Position X"
 "Start Position Y","Start Position Y"
+"Start Range","Start Range"
 "Start Slider","Start Slider"
 "Start Time","Start Time"
 "Start X Position","Start X Position"
@@ -3927,11 +3998,12 @@ Stop,Stop
 "Stop Follow Mouse","Stop Follow Mouse"
 "Stop Media","Stop Media"
 "Stop Other Media","Stop Other Media"
-"Stop Page Scrolling","Stop Page Scrolling"
+"Stop Progress On Click","Stop Progress On Click"
 "Stop Slider Progress","Stop Slider Progress"
 "Stop after N Loops","Stop after N Loops"
 "Stop at Slide","Stop at Slide"
 "Stop on Hover","Stop on Hover"
+"Stop on click","Stop on click"
 "Stop the slider's progress after a set amount of loops","Stop the slider's progress after a set amount of loops"
 "Stop the slider's progress when a certain Slide is viewed","Stop the slider's progress when a certain Slide is viewed"
 "Stop/pause other video/audio in the Slide when the currently selected Video Layer begins to play","Stop/pause other video/audio in the Slide when the currently selected Video Layer begins to play"
@@ -3957,7 +4029,7 @@ Styling,Styling
 "Success! Please check your E-Mails to finish the subscription","Success! Please check your E-Mails to finish the subscription"
 "Successfully fetched Facebook albums","Successfully fetched Facebook albums"
 "Successfully fetched YouTube playlists","Successfully fetched YouTube playlists"
-"Successfully fetched flickr photosets","Successfully fetched flickr photosets"
+"Successfully fetched flickr albums","Successfully fetched flickr albums"
 Suf,Suf
 Suggested,Suggested
 Suggestion,Suggestion
@@ -3973,7 +4045,6 @@ Support,Support
 "Swipe Orientation","Swipe Orientation"
 "Swipe Settings","Swipe Settings"
 "Swipe Velocity","Swipe Velocity"
-"Switch license key registrations, download plugins and get discounts!","Switch license key registrations, download plugins and get discounts!"
 "Switch slider to next slide.","Switch slider to next slide."
 "Switch slider to previous slide.","Switch slider to previous slide."
 "Switch to the slide which is defined as parameter.","Switch to the slide which is defined as parameter."
@@ -4474,6 +4545,8 @@ Text,Text
 "The “Vimeo Stream” content source is used to display a full stream of videos from a user/album/group/channel.<br> If you want to display a single vimeo video, please select the content source “Default Slider” and add a video layer in the slide editor.","The “Vimeo Stream” content source is used to display a full stream of videos from a user/album/group/channel.<br> If you want to display a single vimeo video, please select the content source “Default Slider” and add a video layer in the slide editor."
 "The “YouTube Stream” content source is used to display a full stream of videos from a channel/playlist.<br> If you want to display a single youtube video, please select the content source “Default Slider” and add a video layer in the slide editor.","The “YouTube Stream” content source is used to display a full stream of videos from a channel/playlist.<br> If you want to display a single youtube video, please select the content source “Default Slider” and add a video layer in the slide editor."
 "ThemePunch Server","ThemePunch Server"
+"There is a problem with some of your<br>Slider Revolution modules","There is a problem with some of your<br>Slider Revolution modules"
+"These modules are using <a class=""smalllink"" target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/expand-possibilities-with-addons/?utm_source=admin&utm_medium=button&utm_campaign=srusers&utm_content=addons"">addons</a> which are deactivated or not installed:","These modules are using <a class=""smalllink"" target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/expand-possibilities-with-addons/?utm_source=admin&utm_medium=button&utm_campaign=srusers&utm_content=addons"">addons</a> which are deactivated or not installed:"
 "Third-party lazy loading data","Third-party lazy loading data"
 "This Column used as Horizontal (""X"") Data Source","This Column used as Horizontal (""X"") Data Source"
 "This Guide will help you with the basic configuration *<br>of your Slider Revolution 6 Module.","This Guide will help you with the basic configuration *<br>of your Slider Revolution 6 Module."
@@ -4482,7 +4555,9 @@ Text,Text
 "This action can not be undone !!","This action can not be undone !!"
 "This can be Undone only within the Current session.","This can be Undone only within the Current session."
 "This field holds the CSV source data used to generate a table of data, which is turn converted into the chart. Each new line generates a new row of data. Within a line, each comma separated value corresponds with a column of data. The first line in the field should be a comma separated list providing names for each of those columns. You'll see the provided names listed under the 'X Axis Content' option, where you can select which data column you want to display horizontally along the bottom of the chart. All data columns other than the one selected under 'X Axis Content' will display on the chart as graphs.","This field holds the CSV source data used to generate a table of data, which is turn converted into the chart. Each new line generates a new row of data. Within a line, each comma separated value corresponds with a column of data. The first line in the field should be a comma separated list providing names for each of those columns. You'll see the provided names listed under the 'X Axis Content' option, where you can select which data column you want to display horizontally along the bottom of the chart. All data columns other than the one selected under 'X Axis Content' will display on the chart as graphs."
+"This is a Premium template from the Slider Revolution <a target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/examples/"">template library</a>. It can only be used on this website with a <a target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/manual/quick-setup-register-your-plugin/?utm_source=admin&utm_medium=button&utm_campaign=srusers&utm_content=registermanual"">registered license key</a>.","This is a Premium template from the Slider Revolution <a target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/examples/"">template library</a>. It can only be used on this website with a <a target=""_blank"" rel=""noopener"" href=""https://www.sliderrevolution.com/manual/quick-setup-register-your-plugin/?utm_source=admin&utm_medium=button&utm_campaign=srusers&utm_content=registermanual"">registered license key</a>."
 "This option defines how much depth a 3D animated effect appears to have. Increasing the value make the far side of the effect look further away.","This option defines how much depth a 3D animated effect appears to have. Increasing the value make the far side of the effect look further away."
+"This option mimics physics when you drag and throw carousel quickly, carousel will smoothly go past the predicted slide and animate back to target slide using ease set by user.","This option mimics physics when you drag and throw carousel quickly, carousel will smoothly go past the predicted slide and animate back to target slide using ease set by user."
 "This value should match the video's original aspect ratio","This value should match the video's original aspect ratio"
 "This will delete all frames from the library and clear the folder. The process can not be undone.","This will delete all frames from the library and clear the folder. The process can not be undone."
 "This will delete the Category and move the elements in the default ""All"" category.","This will delete the Category and move the elements in the default ""All"" category."
@@ -4609,6 +4684,7 @@ TypeWriter,TypeWriter
 "Typewriter General","Typewriter General"
 "Typing Behavior","Typing Behavior"
 "Typing Speed","Typing Speed"
+URGENT,URGENT
 URL,URL
 "Unbind all listeners, remove current animations and delete containers. Ready for Garbage collection.","Unbind all listeners, remove current animations and delete containers. Ready for Garbage collection."
 "Under Mask","Under Mask"
@@ -4697,11 +4773,11 @@ Use,Use
 "Useful for allocating space for a page's menu or footer.  Enter a px or % value.","Useful for allocating space for a page's menu or footer.  Enter a px or % value."
 "Useful for solving a conflict when the current theme runs filters over the page's main content","Useful for solving a conflict when the current theme runs filters over the page's main content"
 User,User
+"User Album","User Album"
 "User Handle","User Handle"
 "User Interaction","User Interaction"
 "User Interaction values will animate from the ""Animation Settings"" values","User Interaction values will animate from the ""Animation Settings"" values"
 "User Name","User Name"
-"User Photoset","User Photoset"
 "User Public Photos","User Public Photos"
 "User URL","User URL"
 "User URL:","User URL:"
@@ -4726,6 +4802,7 @@ Vertical,Vertical
 "Vertical Large","Vertical Large"
 "Vertical Lines","Vertical Lines"
 "Vertical Marker","Vertical Marker"
+"Vertical Mask","Vertical Mask"
 "Vertical Medium","Vertical Medium"
 "Vertical Offset","Vertical Offset"
 "Vertical Small","Vertical Small"
@@ -4757,7 +4834,7 @@ Video,Video
 Videos,Videos
 "Videos from","Videos from"
 "View Direction","View Direction"
-"View all posts in %s","View all posts in %s"
+"View our detailled data collection policy","View our detailled data collection policy"
 "ViewPort Distance if Forced","ViewPort Distance if Forced"
 "ViewPort Stop","ViewPort Stop"
 Views,Views
@@ -4783,10 +4860,16 @@ Wait,Wait
 Wait/Pause,Wait/Pause
 Warning,Warning
 "Warning - ID: %s exists already and was converted to: %s","Warning - ID: %s exists already and was converted to: %s"
-"Way Down at","Way Down at"
-"Way Up at","Way Up at"
+"We can help you restore everything right now, all you have to do is choose one of<br>the options below:","We can help you restore everything right now, all you have to do is choose one of<br>the options below:"
+"We can\'t delete the file right now.","We can\'t delete the file right now."
 "We can\'t upload the file right now.","We can\'t upload the file right now."
+"We can\'t upload the file to the current folder right now. Please try another folder.","We can\'t upload the file to the current folder right now. Please try another folder."
+"We cannot create a new directory.","We cannot create a new directory."
+"We cannot create the folder under the selected directory.","We cannot create the folder under the selected directory."
+"We cannot delete directory %1.","We cannot delete directory %1."
+"We cannot delete the selected directory.","We cannot delete the selected directory."
 "We could not detect a size.","We could not detect a size."
+"We found a directory with the same name. Please try another folder name.","We found a directory with the same name. Please try another folder name."
 Weather,Weather
 "Weather Configuration saved","Weather Configuration saved"
 "Weather Defaults","Weather Defaults"
@@ -4821,8 +4904,10 @@ Width,Width
 "Wind Chill","Wind Chill"
 "Wind Direction","Wind Direction"
 "Wind Speed","Wind Speed"
+Window,Window
 "Window Height","Window Height"
 "Wintry Mix","Wintry Mix"
+"Wondering why this happened? Click here!","Wondering why this happened? Click here!"
 WooCommerce,WooCommerce
 Word,Word
 "Word Delay Pattern","Word Delay Pattern"
@@ -4854,6 +4939,7 @@ Write,Write
 "X From","X From"
 "X% Y%","X% Y%"
 "X-Axis Source","X-Axis Source"
+Y,Y
 "Y From","Y From"
 "Y-Axis Split","Y-Axis Split"
 "Yes, Delete","Yes, Delete"
@@ -4861,8 +4947,10 @@ Write,Write
 "Yes, Delete Slide","Yes, Delete Slide"
 "Yes, Delete Slider","Yes, Delete Slider"
 "Yes, Export Slider","Yes, Export Slider"
+"Yes, that‘s fine!","Yes, that‘s fine!"
 "You are running Slider Revolution ","You are running Slider Revolution "
 "You can add the new <b>Slider Revolution Widget Instance</b> and configure it to be displayed on the specific part of the page.","You can add the new <b>Slider Revolution Widget Instance</b> and configure it to be displayed on the specific part of the page."
+"You can always change this agreement with one click in the Global Settings.","You can always change this agreement with one click in the Global Settings."
 "You can modify, copy and distribute the photos. All without asking for permission or setting a link to the source. So, attribution is not required.","You can modify, copy and distribute the photos. All without asking for permission or setting a link to the source. So, attribution is not required."
 "You can modify, copy and distribute the videos. All without asking for permission or setting a link to the source. So, attribution is not required.","You can modify, copy and distribute the videos. All without asking for permission or setting a link to the source. So, attribution is not required."
 "You will be redirected to Facebook and then back to the editor. Current settings will be auto saved.","You will be redirected to Facebook and then back to the editor. Current settings will be auto saved."
@@ -4882,6 +4970,7 @@ YouTube,YouTube
 "Your <a href='https://dev.twitter.com/apps' target='_blank'>Twitter App's</a> Consumer Key","Your <a href='https://dev.twitter.com/apps' target='_blank'>Twitter App's</a> Consumer Key"
 "Your <a href='https://dev.twitter.com/apps' target='_blank'>Twitter App's</a> Consumer Secret","Your <a href='https://dev.twitter.com/apps' target='_blank'>Twitter App's</a> Consumer Secret"
 "Your <a href='https://developers.facebook.com/docs/apps/register' target='_blank'>Facebook App's</a> App Secret","Your <a href='https://developers.facebook.com/docs/apps/register' target='_blank'>Facebook App's</a> App Secret"
+"Your Slider Revolution License Has Been Deactivated!","Your Slider Revolution License Has Been Deactivated!"
 Youtube,Youtube
 Yoyo,Yoyo
 "Yoyo Filters","Yoyo Filters"
@@ -4892,6 +4981,7 @@ Yoyo,Yoyo
 "Z Position","Z Position"
 "Z Rotation","Z Rotation"
 Z-Index,Z-Index
+"Zlib Library","Zlib Library"
 Zoom,Zoom
 "Zoom Easing","Zoom Easing"
 "Zoom End Percentage","Zoom End Percentage"
@@ -4944,6 +5034,8 @@ https://,https://
 "i.e. 0:15","i.e. 0:15"
 "i.e. 1200","i.e. 1200"
 "i.e. 2:41","i.e. 2:41"
+"iOS Fix by","iOS Fix by"
+"iOS Gyroscope Permission","iOS Gyroscope Permission"
 "in Editor","in Editor"
 "is too large file size, editing it may slowdown page loading time.","is too large file size, editing it may slowdown page loading time."
 "jQuery No Conflict Mode","jQuery No Conflict Mode"
@@ -4958,7 +5050,6 @@ https://,https://
 or,or
 "registered license key","registered license key"
 "registered purchase code","registered purchase code"
-"retrieving categories error: ","retrieving categories error: "
 "right bottom","right bottom"
 "right center","right center"
 "right top","right top"
@@ -4975,6 +5066,7 @@ to,to
 "to be generated","to be generated"
 "under the license","under the license"
 "wait' to initialize the Slider when its inside the viewport, or 'pause' the Slider's progress until its inside the viewport","wait' to initialize the Slider when its inside the viewport, or 'pause' the Slider's progress until its inside the viewport"
+x,x
 x1,x1
 x1.5,x1.5
 x2,x2
@@ -4982,5 +5074,6 @@ x3,x3
 x4,x4
 "xxxx xxxx xxxx xxxx","xxxx xxxx xxxx xxxx"
 "youtube, vimeo, html5","youtube, vimeo, html5"
+z,z
 z-Index,z-Index
 zIndex,zIndex

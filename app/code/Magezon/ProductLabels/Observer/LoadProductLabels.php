@@ -46,17 +46,23 @@ class LoadProductLabels implements ObserverInterface
     protected $_productTypeConfigurable;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    protected $date;
+
+    /**
      * @var \Magezon\ProductLabels\Helper\Data
      */
     protected $helperData;
 
     /**
-     * @param \Magezon\ProductLabels\Model\ResourceModel\Label\CollectionFactory $labelCollectionFactory         
-     * @param \Magento\Customer\Model\Session                                    $customerSession                
-     * @param \Magento\Store\Model\StoreManagerInterface                         $_storeManager                  
-     * @param \Magento\Framework\App\ResourceConnection                          $resource                       
-     * @param \Magento\ConfigurableProduct\Model\Product\Type\Configurable       $catalogProductTypeConfigurable 
-     * @param \Magezon\ProductLabels\Helper\Data                                 $helperData                     
+     * @param \Magezon\ProductLabels\Model\ResourceModel\Label\CollectionFactory $labelCollectionFactory
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Store\Model\StoreManagerInterface $_storeManager
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Magento\ConfigurableProduct\Model\Product\Type\Configurable $catalogProductTypeConfigurable
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
+     * @param \Magezon\ProductLabels\Helper\Data $helperData
      */
     public function __construct(
         \Magezon\ProductLabels\Model\ResourceModel\Label\CollectionFactory $labelCollectionFactory,
@@ -64,14 +70,16 @@ class LoadProductLabels implements ObserverInterface
         \Magento\Store\Model\StoreManagerInterface $_storeManager,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\ConfigurableProduct\Model\Product\Type\Configurable $catalogProductTypeConfigurable,
+        \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Magezon\ProductLabels\Helper\Data $helperData
     ) {
-        $this->labelCollectionFactory   = $labelCollectionFactory;
-        $this->customerSession          = $customerSession;
-        $this->_storeManager            = $_storeManager;
-        $this->_resource                = $resource;
+        $this->labelCollectionFactory = $labelCollectionFactory;
+        $this->customerSession = $customerSession;
+        $this->_storeManager = $_storeManager;
+        $this->_resource = $resource;
         $this->_productTypeConfigurable = $catalogProductTypeConfigurable;
-        $this->helperData               = $helperData;
+        $this->date = $date;
+        $this->helperData = $helperData;
     }
     /**
      * Add price index data for catalog product collection
@@ -84,9 +92,9 @@ class LoadProductLabels implements ObserverInterface
     {
         if ($this->helperData->isEnable()) {
             $collection = $observer->getEvent()->getCollection();
-            $groupId    = $this->customerSession->getCustomerGroupId();
-            $_store     = $this->_storeManager->getStore();
-            $items      = $collection->getItems();
+            $groupId = $this->customerSession->getCustomerGroupId();
+            $_store = $this->_storeManager->getStore();
+            $items = $collection->getItems();
 
             if (count($items)) {
                 $productIds = [];
@@ -95,10 +103,10 @@ class LoadProductLabels implements ObserverInterface
                     if ($_item->getTypeId() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE) {
                         $productTypeInstance = $_item->getTypeInstance();
                         $productTypeInstance->setStoreFilter($_store->getId(), $_item);
-                        $usedProducts        = $productTypeInstance->getUsedProductCollection($_item)
-                        ->addAttributeToSelect(
-                            ['name', 'price',  'special_price', 'special_from_date', 'special_to_date']
-                        );
+                        $usedProducts = $productTypeInstance->getUsedProductCollection($_item)
+                            ->addAttributeToSelect(
+                                ['name', 'price', 'special_price', 'special_from_date', 'special_to_date']
+                            );
                         foreach ($usedProducts as $_child) {
                             $productIds[] = $_child->getId();
                         }
@@ -113,11 +121,11 @@ class LoadProductLabels implements ObserverInterface
                         $_item->setData('productlabels_usedproducts', $usedProducts);
                     }
                 }
-                $connection       = $this->_resource->getConnection();
-                $select           = $connection->select()->from($this->_resource->getTableName('mgz_productlabels_label_product'))
-                ->where('product_id IN (' . implode(",", $productIds) . ')')
-                ->where('store_id = ' . $_store->getId());
-                $labelRelations    = (array) $connection->fetchAll($select);
+                $connection = $this->_resource->getConnection();
+                $select = $connection->select()->from($this->_resource->getTableName('mgz_productlabels_label_product'))
+                    ->where('product_id IN (' . implode(",", $productIds) . ')')
+                    ->where('store_id = ' . $_store->getId());
+                $labelRelations = (array) $connection->fetchAll($select);
 
                 $labelIds = [];
                 foreach ($labelRelations as $_re) {
@@ -125,26 +133,40 @@ class LoadProductLabels implements ObserverInterface
                         $labelIds[] = $_re['label_id'];
                     }
                 }
+                $date = $this->date->gmtDate('Y-m-d');
                 $labelCollection = $this->labelCollectionFactory->create();
                 $labelCollection->addFieldToFilter('is_active', \Magezon\ProductLabels\Model\Label::STATUS_ENABLED)
-                ->addStoreFilter($_store)
-                ->addFieldToFilter('main_table.label_id', ['in' => $labelIds])
-                ->addCustomerGroupFilter($groupId)
-                ->setOrder('priority', 'DESC')
-                ->setOrder('label_id', 'DESC');
+                    ->addStoreFilter($_store)
+                    ->addFieldToFilter('main_table.label_id', ['in' => $labelIds])
+                    ->addCustomerGroupFilter($groupId)
+                    ->addCustomerGroupFilter($groupId)
+                    ->addFieldToFilter('from_date', [
+                        'or' => [
+                            0 => ['lteq' => $date],
+                            1 => ['is' => new \Zend_Db_Expr('null')],
+                        ],
+                    ])
+                    ->addFieldToFilter('to_date', [
+                        'or' => [
+                            0 => ['gt' => $date],
+                            1 => ['is' => new \Zend_Db_Expr('null')],
+                        ],
+                    ])
+                    ->setOrder('priority', 'DESC')
+                    ->setOrder('label_id', 'DESC');
 
                 foreach ($collection as $_item) {
                     $usedProducts = $_item->getData('productlabels_usedproducts');
-                    $labels       = [];
+                    $labels = [];
                     if (!empty($usedProducts)) {
                         $isBreak = false;
                         foreach ($usedProducts as $_child) {
                             foreach ($labelCollection as $_label) {
                                 foreach ($labelRelations as $_re) {
                                     if ($_re['product_id'] == $_child->getId() && $_label->getUseForParent() && $_label->getId() == $_re['label_id']) {
-                                        $_data                      = $_label->getData();
+                                        $_data = $_label->getData();
                                         $_data['productlist_image'] = $_label->getProductlistImage();
-                                        $labels[]                   = $_data;
+                                        $labels[] = $_data;
                                         if ($_label->getHideLowerPriority()) {
                                             break;
                                         }
@@ -157,9 +179,9 @@ class LoadProductLabels implements ObserverInterface
                     foreach ($labelCollection as $_label) {
                         foreach ($labelRelations as $_re) {
                             if ($_re['product_id'] == $_item->getId() && $_label->getId() == $_re['label_id']) {
-                                $_data                      = $_label->getData();
+                                $_data = $_label->getData();
                                 $_data['productlist_image'] = $_label->getProductlistImage();
-                                $labels[]                   = $_data;
+                                $labels[] = $_data;
 
                                 if ($_label->getHideLowerPriority()) {
                                     break;

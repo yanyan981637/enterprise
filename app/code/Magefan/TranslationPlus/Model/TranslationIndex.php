@@ -26,6 +26,7 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Config\Model\ResourceModel\Config;
 use Magefan\TranslationPlus\Model\JsTranslation;
 use Magefan\TranslationPlus\Model\PhrasesTranslations;
+use Magefan\TranslationPlus\Model\Config\Source\UsedInArea;
 
 /**
  * @method addComponent(mixed $ATTRIBUTE_CODE, $column)
@@ -96,6 +97,11 @@ class TranslationIndex extends \Magento\Framework\Model\AbstractModel
      * @var PhrasesTranslations|mixed
      */
     private $phrasesTranslations;
+
+    /**
+     * @var array
+     */
+    private $phrasesTranslationsData = [];
 
     /**
      * @param Context $context
@@ -200,6 +206,7 @@ class TranslationIndex extends \Magento\Framework\Model\AbstractModel
         $connection = $installer->getConnection();
         $tableWithPrefix = $connection->getTableName($this->getResource()->getMainTable());
         $tableStructure = $connection->describeTable($installer->getTable($tableWithPrefix));
+
         $tableColumns = [];
         foreach ($tableStructure as $columnName) {
             $tableColumns[] = $columnName['COLUMN_NAME'];
@@ -273,7 +280,29 @@ class TranslationIndex extends \Magento\Framework\Model\AbstractModel
                 '64K',
                 ['nullable' => false],
                 'Source'
-            );
+            )->addColumn(
+                'used_in_area',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                5,
+                ['nullable' => false],
+                'Used In Area'
+            )->addIndex(
+                $installer->getIdxName($installer->getTable('mftranslation_index'), ['used_in_area']),
+                ['used_in_area']
+            )->addColumn(
+                'module',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                '64K',
+                ['nullable' => false],
+                'Module'
+            )->addColumn(
+                'path_to_string',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                '64K',
+                ['nullable' => false],
+                'Path to String'
+                );
+
             if (isset($locales)) {
                 foreach ($locales as $locale) {
                     $table->addColumn(
@@ -430,11 +459,15 @@ class TranslationIndex extends \Magento\Framework\Model\AbstractModel
         $connection = $installer->getConnection();
 
         try {
+            $this->phrasesTranslationsData = $this->phrasesTranslations->getData();
+
             $items = array_merge(
-                $this->phrasesTranslations->getData(),
-                $this->getTablesContent(),
-                $this->jsTranslation->getData()
+                $this->phrasesTranslationsData,
+                $this->getTablesContent()
+                //$this->jsTranslation->getData()
             );
+
+            $this->setUsedArea($items);
 
             $tableWithPrefix = $connection->getTableName($installer->getTable($this->getResource()->getMainTable()));
 
@@ -459,6 +492,77 @@ class TranslationIndex extends \Magento\Framework\Model\AbstractModel
 
         } catch (\Exception $e) {
             $this->_logger->info($e->getMessage());
+        }
+    }
+
+    /**
+     * @param $items
+     */
+    private function setUsedArea(&$items): void
+    {
+        foreach ($items as $key => $item) {
+            $items[$key]['used_in_area'] = UsedInArea::UNDEFINED;
+
+            // since js-translation doesn't have path file, we try to fetch it from collected phrases
+            if (!isset($items[$key]['module']) && isset($this->phrasesTranslationsData[$key]['module'])) {
+                $items[$key]['module'] = $this->phrasesTranslationsData[$key]['module'];
+                $items[$key]['path_to_string'] = $this->phrasesTranslationsData[$key]['path_to_string'];
+            }
+
+            if (!isset($items[$key]['module'])) {
+                $items[$key]['module'] = 'not detected';
+                $items[$key]['path_to_string'] = '';
+            } else {
+                $paths = explode(PHP_EOL, $items[$key]['path_to_string']);
+
+                $adminhtml = 0;
+                $frontend = 0;
+                $tests = 0;
+                $graphQl = 0;
+
+                foreach ($paths as $path) {
+                    if (stripos($path, '/test/') !== false) {
+                        $tests++;
+                    } elseif (stripos($path, 'graph-ql') !== false
+                        || stripos($path, 'GraphQl') !== false
+                    ) {
+                        $graphQl++;
+                    } elseif (stripos($path, '/adminhtml/') !== false
+                        || stripos($path, '/backend/') !== false
+                        || stripos($path, '/module-backend/') !== false
+                        || stripos($path, 'Admin') !== false
+                        || stripos($path, '-admin-') !== false
+                        || stripos($path, '/Ui/') !== false
+                        || stripos($path, '/Model/Config/Source/') !== false
+                        || stripos($path, '/etc/') !== false
+
+                        || stripos($path, '/module-aws-s3/') !== false
+                        || stripos($path, '/module-backup/') !== false
+                        || stripos($path, '/Setup/') !== false
+                        
+                    ) {
+                        $adminhtml++;
+                    } elseif (stripos($path, '/model/') !== false) {
+                        /** Keep undefined */
+                    } elseif (preg_match('%\b(Block|Controller|view|)\b%', $path) > 0) {
+                        $frontend++;
+                    }
+                }
+
+                if ($adminhtml || $frontend) {
+                    if ($adminhtml && $frontend) {
+                        $items[$key]['used_in_area'] = UsedInArea::STOREFRONT_AND_ADMIN_PANEL;
+                    } elseif ($adminhtml) {
+                        $items[$key]['used_in_area'] = UsedInArea::ADMIN_PANEL;
+                    } else {
+                        $items[$key]['used_in_area'] = UsedInArea::STOREFRONT;
+                    }
+                } elseif ($tests) {
+                    $items[$key]['used_in_area'] = UsedInArea::TESTS;
+                } elseif ($graphQl) {
+                    $items[$key]['used_in_area'] = UsedInArea::GRAPHQL;
+                }
+            }
         }
     }
 

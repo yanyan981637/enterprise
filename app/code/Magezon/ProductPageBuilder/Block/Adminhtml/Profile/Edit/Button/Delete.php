@@ -22,7 +22,8 @@ class Delete extends Generic
     public function getButtonData()
     {
         $data = [];
-        if ($this->getCurrentProfile()->getId() && $this->_isAllowedAction('Magezon_ProductPageBuilder::profile_delete')) {
+        if ($this->getCurrentProfile()->getId() &&
+            $this->_isAllowedAction('Magezon_ProductPageBuilder::profile_delete')) {
             $data = [
                 'label'    => __('Delete'),
                 'class'    => 'delete',

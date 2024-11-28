@@ -286,6 +286,8 @@
                     <item name="config" xsi:type="array">
                         <item name="template" xsi:type="string">ui/form/field</item>
                         <item name="wysiwygConfigData" xsi:type="array">
+                            <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                            <item name="toggle_button" xsi:type="boolean">true</item>
                             <item name="height" xsi:type="string">200px</item>
                         </item>
                         <item name="formElement" xsi:type="string">wysiwyg</item>
@@ -394,6 +396,8 @@
                     <item name="config" xsi:type="array">
                         <item name="template" xsi:type="string">ui/form/field</item>
                         <item name="wysiwygConfigData" xsi:type="array">
+                            <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                            <item name="toggle_button" xsi:type="boolean">true</item>
                             <item name="height" xsi:type="string">200px</item>
                         </item>
                         <item name="formElement" xsi:type="string">wysiwyg</item>

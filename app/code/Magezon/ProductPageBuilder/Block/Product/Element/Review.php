@@ -22,12 +22,12 @@ class Review extends \Magezon\ProductPageBuilder\Block\Product\Element
     protected $_reviewsColFactory;
 
     /**
-     * @param \Magento\Framework\View\Element\Template\Context             $context           
-     * @param \Magento\Framework\App\Http\Context                          $httpContext       
-     * @param \Magento\Framework\Pricing\PriceCurrencyInterface            $priceCurrency     
-     * @param \Magento\Framework\Registry                                  $registry          
-     * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $collectionFactory 
-     * @param array                                                        $data              
+     * @param \Magento\Framework\View\Element\Template\Context             $context
+     * @param \Magento\Framework\App\Http\Context                          $httpContext
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface            $priceCurrency
+     * @param \Magento\Framework\Registry                                  $registry
+     * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $collectionFactory
+     * @param array                                                        $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -51,8 +51,8 @@ class Review extends \Magezon\ProductPageBuilder\Block\Product\Element
         return $this->getUrl(
             'review/product/listAjax',
             [
-				'_secure' => $this->getRequest()->isSecure(),
-				'id'      => $this->getProduct()->getId()
+                '_secure' => $this->getRequest()->isSecure(),
+                'id'      => $this->getProduct()->getId()
             ]
         );
     }

@@ -36,6 +36,16 @@ class AbstractForm extends \Magento\Framework\DataObject
     protected $_types = [];
 
     /**
+     * @var Factory
+     */
+    protected $_factoryElement;
+
+    /**
+     * @var CollectionFactory
+     */
+    protected $_factoryCollection;
+
+    /**
      * @param Factory $factoryElement
      * @param CollectionFactory $factoryCollection
      * @param array $data

@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider;
@@ -26,7 +26,7 @@ class RevSliderUpdate {
 	public function __construct($version) {
 		$this->option = $this->plugin_slug . '_update_info';
 		$this->_retrieve_version_info();
-		$this->version = $version;
+		$this->version = (empty($version)) ? Framework::RS_REVISION : $version;
 	}
 
 
@@ -50,13 +50,21 @@ class RevSliderUpdate {
 		$this->_check_updates();
 
 		if(isset($transient) && !isset($transient->response)){
+            if(!is_object($transient)) $transient = new stdClass();
 			$transient->response = array();
 		}
 
+        if(!isset($this->data))            return $transient;
+        if(!isset($this->data->basic))    return $transient;
+
 		if(!empty($this->data->basic) && is_object($this->data->basic)){
-			if(version_compare($this->version, $this->data->basic->version, '<')){
-				$this->data->basic->new_version = $this->data->basic->version;
-				$transient->response[Framework::RS_PLUGIN_SLUG_PATH] = $this->data->basic;
+            $version = (isset($this->data->basic->version)) ? $this->data->basic->version : $this->data->basic->new_version;
+            if(version_compare($this->version, $version, '<')){
+                $this->data->basic->new_version = $version;
+                if(isset($this->data->basic->version)){
+                    unset($this->data->basic->version);
+                }
+                $transient->response[Framework::RS_PLUGIN_SLUG_PATH] = $this->data->basic;
 			}
 		}
 
@@ -68,6 +76,8 @@ class RevSliderUpdate {
 		$this->_check_updates();
 
 		if(isset($args->slug) && $args->slug == $this->plugin_slug && $action == 'plugin_information'){
+			if(!isset($this->data))			return $result;
+			if(!isset($this->data->full))	return $result;
 			if(is_object($this->data->full) && !empty($this->data->full)){
 				$result = $this->data->full;
 			}
@@ -96,9 +106,8 @@ class RevSliderUpdate {
 		if(time() - $last_check > 172800 || $this->force == true){
 			$data = $this->_retrieve_update_info();
 
-			if(isset($data->basic)) {
-				FA::update_option('revslider-update-check', time());
-
+			FA::update_option('revslider-update-check', time());
+			if(isset($data->basic)){
 				$this->data->checked = time();
 				$this->data->basic	 = $data->basic;
 				$this->data->full	 = $data->full;
@@ -106,7 +115,6 @@ class RevSliderUpdate {
 				FA::update_option('revslider-stable-version', $data->full->stable);
 				FA::update_option('revslider-latest-version', $data->full->version);
 			}
-
 		}
 
 		// Save results
@@ -151,6 +159,7 @@ class RevSliderUpdate {
 
 		// Check for updates
 		if($last_check == false || time() - $last_check > 172800 || $this->force == true){
+            FA::do_action('revslider-retrieve_version_info', $this);
 			FA::update_option('revslider-update-check-short', time());
 
 			$hash = ($this->force === true) ? '' : FA::get_option('revslider-update-hash', '');
@@ -159,7 +168,8 @@ class RevSliderUpdate {
 				'version' => urlencode(Framework::RS_REVISION),
 				'item' => urlencode(Framework::$RS_PLUGIN_SLUG),
 				'hash' => urlencode($hash),
-				'code' => urlencode($purchase)
+                'code' => urlencode($purchase),
+                'addition' => FA::apply_filters('revslider_retrieve_version_info_addition', array())
 			);
 
 			$request = $rslb->call_url($this->remote_url, $data, 'updates');

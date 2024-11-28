@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider;
@@ -45,10 +45,6 @@ class RevSliderGlobals {
         'Nwdthemes\Revslider\Model\Revslider\Admin\Includes',
         'Nwdthemes\Revslider\Model\Revslider\ExternalSources'
     ];
-
-	protected function __construct()
-	{
-	}
 
 	/**
 	 * Instance accessor. If instance doesn't exist, we'll initialize the class.

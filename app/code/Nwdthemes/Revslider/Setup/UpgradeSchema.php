@@ -2,9 +2,11 @@
 
 namespace Nwdthemes\Revslider\Setup;
 
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Nwdthemes\Revslider\Helper\Data;
 
 /**
  * @codeCoverageIgnore
@@ -94,6 +96,33 @@ class UpgradeSchema implements UpgradeSchemaInterface {
                             $size = isset($index['size']) ? "({$index['size']})" : '';
                             $setup->run("ALTER TABLE `$table` ADD KEY `$indexName` (`{$index['field']}`$size);");
                         }
+                    }
+                }
+
+            }
+
+            if (version_compare($context->getVersion(), '6.6.7') < 0) {
+
+                $tablesToModify = [
+                    'nwdthemes_revslider_css',
+                    'nwdthemes_revslider_animations',
+                    'nwdthemes_revslider_navigations',
+                    'nwdthemes_revslider_sliders',
+                    'nwdthemes_revslider_slides',
+                    'nwdthemes_revslider_static_slides'
+                ];
+                foreach ($tablesToModify as $tableName) {
+                    $table = $setup->getTable($tableName);
+                    $indexesList = $connection->getIndexList($table);
+                    try {
+                        if (isset($indexesList['ID'])) {
+                            $connection->dropIndex($table, 'id');
+                        }
+                        if (! isset($indexesList['PRIMARY'])) {
+                            $connection->addIndex($table, 'id', 'id', AdapterInterface::INDEX_TYPE_PRIMARY);
+                        }
+                    } catch (\Exception $e) {
+                        Data::log('6.6.7 Scheme Upgrade Error', $tableName, $e->getMessage());
                     }
                 }
 

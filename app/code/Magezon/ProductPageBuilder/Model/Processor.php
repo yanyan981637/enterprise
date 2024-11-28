@@ -19,19 +19,19 @@ class Processor extends \Magezon\Core\Model\ConditionsProcessor
 {
     public function process(\Magezon\ProductPageBuilder\Model\Profile $profile)
     {
-       if ($this->_storeManager->isSingleStoreMode()) {
+        if ($this->_storeManager->isSingleStoreMode()) {
             $store = $this->_storeManager->getStore(\Magento\Store\Model\Store::DEFAULT_STORE_ID);
             $this->__processBystore($profile, $store);
         } else {
-           $stores = $this->_systemStore->getStoreValuesForForm();
-           foreach ($stores as $store) {
-               if (is_array($store['value']) && !empty($store['value'])) {
-                   foreach ($store['value'] as $_store) {
-                       $store = $this->_storeManager->getStore($_store['value']);
-                       $this->__processBystore($profile, $store);
-                   }
-               }
-           }
+            $stores = $this->_systemStore->getStoreValuesForForm();
+            foreach ($stores as $store) {
+                if (is_array($store['value']) && !empty($store['value'])) {
+                    foreach ($store['value'] as $_store) {
+                        $store = $this->_storeManager->getStore($_store['value']);
+                        $this->__processBystore($profile, $store);
+                    }
+                }
+            }
         }
     }
 

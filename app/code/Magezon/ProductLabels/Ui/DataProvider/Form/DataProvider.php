@@ -36,6 +36,16 @@ class DataProvider extends \Magezon\Core\Ui\DataProvider\Form\AbstractModifier
     protected $dataPersistor;
 
     /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $registry;
+
+    /**
+     * @var PoolInterface
+     */
+    protected $pool;
+
+    /**
      * @param string                      $name
      * @param string                      $primaryFieldName
      * @param string                      $requestFieldName

@@ -11,17 +11,12 @@ var config = {
         pennerEasing:           'Nwdthemes_Revslider/admin/assets/js/plugins/penner-easing',
         wavesurfer:             'Nwdthemes_Revslider/admin/assets/js/plugins/wavesurfer',
         revsliderColorPicker:   'Nwdthemes_Revslider/framework/js/color-picker.min',
-        galleryBrowser:         'Nwdthemes_Revslider/framework/js/browser',
         iris:                   'Nwdthemes_Revslider/framework/js/iris.min',
         jQueryUI:               'Nwdthemes_Revslider/framework/js/jquery-ui.min',
         loading:                'Nwdthemes_Revslider/framework/js/loading',
-        wpUtil:                 'Nwdthemes_Revslider/framework/js/wp-util.min',
-        prototype:              'legacy-build.min'
+        wpUtil:                 'Nwdthemes_Revslider/framework/js/wp-util.min'
     },
     shim: {
-        galleryBrowser: {
-            deps: ['Magento_Variable/variables']
-        },
         revsliderColorPicker: {
             deps: ['jQueryUI', 'iris']
         },
@@ -40,6 +35,13 @@ var config = {
         },
         rs6editor: {
             deps: ['jquery', 'revolutionTools', 'revsliderAdmin']
+        }
+    },
+    config: {
+        mixins: {
+            'mage/adminhtml/browser': {
+                'Nwdthemes_Revslider/js/mixins/browser-mixin': true
+            }
         }
     }
 };

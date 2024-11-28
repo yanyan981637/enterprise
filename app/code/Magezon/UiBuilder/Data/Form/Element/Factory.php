@@ -74,7 +74,7 @@ class Factory
         }
         $element = $this->_objectManager->create($className, $config);
         if (!$element instanceof \Magezon\UiBuilder\Data\Form\Element\AbstractElement) {
-            $className . ' doessn\'n not extend \Magezon\UiBuilder\Data\Form\Element\AbstractElement';
+            $className . ' doesn\'t not extend \Magezon\UiBuilder\Data\Form\Element\AbstractElement';
         }
         return $element;
     }

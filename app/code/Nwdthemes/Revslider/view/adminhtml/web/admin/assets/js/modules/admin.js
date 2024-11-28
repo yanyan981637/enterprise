@@ -4,6 +4,13 @@
  * @author ThemePunch
 */
 
+
+// Media Gallery workaround
+if (typeof galleryBrowser == 'undefined' && typeof MediabrowserUtility != 'undefined') {
+    galleryBrowser = MediabrowserUtility;
+}
+
+
 /**********************************
 	-	GLOBAL VARIABLES	-
 **********************************/
@@ -88,6 +95,10 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		RVS.S.DaD = {};
 		RVS.S.DaD.dragdelta = {x:0,y:0};	// Latest Dragging Delta from Start till Current Time
 
+        if (! window._R_is_Editor) {
+            return;
+        }
+
 		/************************************************
 			-	GLOBAL RESIZING / MOUSE MANAGEMENT	-
 		*************************************************/
@@ -104,6 +115,10 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 			resizeTimeout = setTimeout(function() {
 				RVS.DOC.trigger("windowresized");
 				if (RVS.S.ovMode!==true) RVS.F.updateAllHTMLLayerPositions(true);
+				requestAnimationFrame(function() {
+					if (typeof RVS.F.CSTRETCH === "function" && RVS.F.CSTRETCH())  RVS.DOC.trigger('device_area_dimension_update');
+				});
+
 			},25);
 		});
 
@@ -202,7 +217,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		},
 		save : function() {
 			var _ = RVS.F.videoExtract;
-			RVS.F.ajaxRequest('create_image_from_raw', {bitmap:RVS.F.videoExtract.data, mpeg:RVS.F.videoExtract.video.src , slideid:(RVS.S.slideId.replace("static_",""))+(RVS.F.videoExtract.param==="layer" ? "_layer" : "")}, function(response){
+			RVS.F.ajaxRequest('create_image_from_raw', {bitmap:RVS.F.videoExtract.data, mpeg:RVS.F.videoExtract.video.src , slideid:((""+RVS.S.slideId).replace("static_",""))+(RVS.F.videoExtract.param==="layer" ? "_layer" : "")}, function(response){
 				if (response.success) {
 					RVS.F.videoExtract.callBack(response,RVS.F.videoExtract.param);
 				}
@@ -343,7 +358,6 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 	RVS.F.backup = function(obj) {
 
 		if (RVS.S.ovMode===true || (obj.force!==true && RVS.S.bckpGrp.close!==true && obj.val === obj.old)) return;
-
 		if (RVS.S.bckpGrp != false && RVS.S.bckpGrp.close!==true) {
 			RVS.S.bckpGrp.steps.push(obj);
 			RVS.S.bckpGrp.chngamount++;
@@ -531,11 +545,14 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		}
 
 		// REDRAW LAYERS IF NECESSARY
-		if (obj.todo.redrawLayers && obj.todo.layers !==undefined && obj.todo.layers.length>0)
-			for (var i in obj.todo.layers) if (obj.todo.layers.hasOwnProperty(i)) RVS.F.drawHTMLLayer({uid:obj.todo.layers[i]});
-
+		if (obj.todo.redrawLayers && obj.todo.layers !==undefined && obj.todo.layers.length>0) for (var i in obj.todo.layers) if (obj.todo.layers.hasOwnProperty(i)) RVS.F.drawHTMLLayer({uid:obj.todo.layers[i]});
 		if (obj.todo.callBack!==undefined) obj.todo.callBack();
-
+		if (obj.dir=="undo" && obj.todo.rebuildLayerList) {
+			for (var i in obj.todo.step.steps) {
+				if (!obj.todo.step.steps.hasOwnProperty(i) || obj.todo.step.id!=="removeLayer") continue;
+				RVS.F.updateTriggeringActionRelations(obj.todo.step.steps[i].path);
+			}
+		}
 
 		RVS.DOC.trigger("SceneUpdatedAfterRestore",obj);
 
@@ -959,7 +976,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 					if (RVS.S.waitOnFeedback.closeEvent!==undefined)
 						RVS.DOC.trigger(RVS.S.waitOnFeedback.closeEvent);
 					RVS.S.waitOnFeedback = undefined;
-					jQuery(document.body).unbind('click.revbuilderbodyclick');
+					jQuery(document.body).off('click.revbuilderbodyclick');
 					return false;
 				}
 			}
@@ -983,7 +1000,6 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		        else{
 		        	if (obj[key]===undefined)
 		        		console.log(par+'.'+key+'='+par+'.'+key+'===undefined ? "" : '+par+'.'+key+";");
-		            	//console.log(key": " + obj[key]+"   "+par);
 		        }
 		    }
 	};
@@ -1100,8 +1116,15 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		// If Preselector Exists, only run the Show Info if Preselector covers the LayoutMode
 
 		if (submenus[0].indexOf('*sliderlayout*')>=0 && RVS.S.vWmode!=="sliderlayout") {
+			var tmode = RVS.S.vWmode;
 			RVS.F.mainMode({mode:"sliderlayout"});
 			RVS.eMode.top = "slider";
+			if (tmode==="navlayout") requestAnimationFrame(function() {
+				RVS.F.showWaitAMinute({fadeIn:0});
+				RVS.F.drawHTMLLayers();
+				RVS.F.showWaitAMinute({fadeOut:100});
+			});
+
 		}
 
 		if (submenus[0].indexOf('*navlayout*')>=0 && RVS.S.vWmode!=="navlayout") {
@@ -1303,11 +1326,6 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		RVS.F.updateEasyInput({el:e,nval:obj.val, path:obj.path});
 		if (e.type==="checkbox") RVS.F.turnOnOffVisUpdate({input:e});
 		e.dispatchEvent(new Event('change', { 'bubbles': true }));
-	};
-
-	// GENERATE IMAGES BY WP IF NOT GENERATED YET
-	RVS.F.generateAttachmentMetaData = function() {
-		if (RVS.ENV.create_img_meta) RVS.F.ajaxRequest('generate_attachment_metadata', {}, function(){},true,true);
 	};
 
 
@@ -1574,6 +1592,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 	RVS.F.checkGlobalSkinAvail = function() {
 		for (var i in RVS.SLIDER.settings.skins.colors) {
 			if (!RVS.SLIDER.settings.skins.colors.hasOwnProperty(i)) continue;
+			if (!RVS.SLIDER.settings.skins.colors.v) continue;
 			var ar = [];
 			for (var j in RVS.SLIDER.settings.skins.colors[i].ref) {
 				if (!RVS.SLIDER.settings.skins.colors[i].ref.hasOwnProperty(j)) continue;
@@ -1718,11 +1737,12 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		_ = _.innerHTML===undefined ? _[0] : _;
 		if (slideanimlist===undefined || slideanimlist==="") {
 			slideanimlist = document.createDocumentFragment();
+			slideanimlist.appendChild(document.createElement('option'));
 			var o,OG;
 			for (var m in RVS.LIB.SLTR) {
 				if (!RVS.LIB.SLTR.hasOwnProperty(m) || m==="random" || m==="custom") continue;
 				for (var g in RVS.LIB.SLTR[m]) {
-					if (!RVS.LIB.SLTR[m].hasOwnProperty(g) || g=="icon") continue;
+					if (!RVS.LIB.SLTR[m].hasOwnProperty(g) || g=="icon" || g=="eclass") continue;
 					OG = document.createElement('optgroup');
 					OG.label = (RVS_LANG["sltr_"+m]===undefined ? m : RVS_LANG["sltr_"+m]) +" "+ (RVS_LANG["sltr_"+g]===undefined ? g : RVS_LANG["sltr_"+g]);
 					for (var e in RVS.LIB.SLTR[m][g]) OG.appendChild(RVS.F.CO(e,(RVS_LANG["sltr_"+m]===undefined ? "" : RVS_LANG["sltr_"+m]+" ")+simplifySlideAnimTitle(RVS.LIB.SLTR[m][g][e].title)));
@@ -1730,6 +1750,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 				}
 			}
 		}
+
 		_.appendChild(slideanimlist.cloneNode(true));
 	};
 
@@ -1949,6 +1970,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 			jQuery(this.parentNode).find('.vs-item').removeClass("selected");
 			this.className += " selected";
 			RVS.F.showHideGroups({hide:this.dataset.hide, show:this.dataset.show, showprio:this.dataset.showprio});
+			if (this.dataset.evt=="redrawSelectedLayersInnerHTML") RVS.F.redrawTextLayerInnerHTML(RVS.selLayers[0],true);
 		});
 
 		// CLICK ON BUTTONS
@@ -2277,12 +2299,16 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 *********************************************/
 
 		// Get Image from Media Library
-		RVS.DOC.on('click','.getImageFromMediaLibrary',function() {
+		RVS.DOC.on('click','.getImageFromMediaLibrary',function(evt) {
 			var btn = jQuery(this),
 				ds = btn.data(),
 				multiple = this.dataset.multiple==="true" || this.dataset.multiple==true;
 			ds.targetType = btn.hasClass("layerinput") ? 'layer' : 'slide';
-			RVS.F.openAddImageDialog(RVS_LANG.choose_image,function(urlImage, imageID){RVS.F.updateImageSrcFromMedia(ds,urlImage,imageID);},multiple);
+            // Fix for incorrect target when selecting background or layer
+            RVS.F._ds = ds;
+			RVS.F.openAddImageDialog(RVS_LANG.choose_image,function(urlImage, imageID){
+                RVS.F.updateImageSrcFromMedia(RVS.F._ds,urlImage,imageID);
+            },multiple);
 		});
 
 		// GET AN IMAGE FROM MEDIA LIBRARY WITH DIFFERENT SIZE
@@ -2604,7 +2630,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 			jQuery('#meta_rbm_content').scrollTop(0).RSScroll("update");
 		});
 
-
+		RVS.C.toggledTextButton = document.getElementById('toggledtextbutton');
 
 		RVS.F.updateMetaTranslate();
 
@@ -2615,6 +2641,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 			var inside = jQuery(this.dataset.inside);
 			inside.find('.ssmbtn.selected, .ssm_content.selected').removeClass("selected");
 			this.className +=" selected";
+			if (this.dataset.hidessm!==undefined) jQuery(this.dataset.hidessm+".selected").removeClass("selected");
 			jQuery(this.dataset.showssm).addClass("selected");
 			if (this.dataset.evt!==undefined) RVS.DOC.trigger(this.dataset.evt, this.dataset.evtparam);
 		});
@@ -2866,7 +2893,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		RVS.S.allPresets[_.maingrpclass] = RVS.S.allPresets[_.maingrpclass]===undefined ? {} : RVS.S.allPresets[_.maingrpclass];
 		RVS.S.allPresets[_.maingrpclass][_.ref] = 	RVS.S.allPresets[_.maingrpclass][_.ref]===undefined ? {} : RVS.S.allPresets[_.maingrpclass][_.ref];
 
-		var main = '<div id="'+(_.groupid===undefined ? "" : _.groupid)+'" class="'+(_.modern ? "modern_presets ":" ")+'presets_liste '+(_.groupclass===undefined ? "" :_.groupclass) +'">',
+		var main = '<div id="'+(_.groupid===undefined ? "" : _.groupid)+'" class="'+(_.eclass!==undefined ? ' '+_.eclass : '')+(_.modern ? " modern_presets ":" ")+'presets_liste '+(_.groupclass===undefined ? "" :_.groupclass) +'">',
 		    inner = '',
 			prefix = _.prefix===undefined ? "" : _.prefix+"_";
 
@@ -2874,10 +2901,10 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		RVS.S.allPresets[_.maingrpclass][_.ref].id = _.groupid;
 
 		main += '	<div class="presets_liste_head" data-samemaingroups="'+(_.maingrpclass !==undefined ? _.maingrpclass : "")+'" data-igroup="inner_'+(_.groupid===undefined ? "" : _.groupid)+'" data-samegroups="'+(_.groupclass===undefined ? "" :_.groupclass)+'"><i class="selected_preset material-icons">check</i>'+(_.modern ? '<i class="presets_liste_icon material-icons"'+'>'+_.icon+'</i>' : '')+'<span class="presets_liste_title">'+_.title+'</span><i class="right-divided-icon material-icons">arrow_drop_down</i></div>';
-		inner += '	<div class="presets_liste_inner'+(_.modern ? " modern_preset_list" : "")+(_.maingrpclass !==undefined ? " "+_.maingrpclass : "")+'" id="inner_'+(_.groupid===undefined ? "" : _.groupid)+'">';
+		inner += '	<div class="presets_liste_inner'+(_.eclass!==undefined ? ' '+_.eclass : '')+(_.modern ? " modern_preset_list" : "")+(_.maingrpclass !==undefined ? " "+_.maingrpclass : "")+'" id="inner_'+(_.groupid===undefined ? "" : _.groupid)+'">';
 
 		for (var i in _.groups) {
-			if(!_.groups.hasOwnProperty(i) || i=="grp_title" || i=="icon" || i==="noSubLevel") continue;
+			if(!_.groups.hasOwnProperty(i) || i=="grp_title" || i=="icon" || i==="noSubLevel" || i==="eclass") continue;
 			RVS.S.allPresets[_.maingrpclass][_.ref][i] = { id:_.groupid+"_"+i, class:(_.groups[i].custom || i==="custom" ? "custompresetgroup " : "")};
 			inner += '<div id="'+(_.groupid+"_"+i)+'" class="presetssgroup '+(_.groups[i].custom || i==="custom" ? "custompresetgroup " : "")+' '+(""+_.groups.noSubLevel=="true" ? "nosubpresetlevel " : "")+'">';
 			inner += '	<div class="presetssgroup_head"><span class="presetssgroup_name">'+_.groups[i].title+'</span><div class="animation_drop_arrow"><i class="material-icons">arrow_drop_down</i></div></div>';
@@ -3032,6 +3059,87 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 		if (!groupadded) jQuery('#layeraction_list').append(group);
 	};
 
+/**********************************************
+	BUILD VALUE SLIDERS
+**********************************************/
+RVS.F.buildValueSliders = function() {
+	var fields = document.getElementsByClassName('withvalslider');
+	for (var i in fields) {
+		if (!fields.hasOwnProperty(i)) continue;
+		RVS.F.buildValueSlider(fields[i]);
+	}
+}
+
+RVS.DOC.on('mouseenter','.withvalslider',function() {
+	if (this.dataset.valslideradded==undefined) {
+		RVS.F.buildValueSlider(this);
+		this.dataset.valslideradded = true;
+	}
+	var _ = RVS.S.valSliders[this.dataset.inpid];
+	_.done.style.width = (((parseFloat(_.inp.value) - _.min) / _.range) * _.width) + "px";
+	_.pin.style.left = _.done.style.width;
+
+});
+
+RVS.F.buildValueSlider = function(field) {
+	var inp=field.getElementsByTagName('INPUT')[0];
+	if (inp.id===undefined) inp.id = "rs_valslider_"+Math.round(Math.random()*100000);
+
+	RVS.S.valSliders = RVS.S.valSliders===undefined ? {} : RVS.S.valSliders;
+	RVS.S.valSliders[inp.id] = {
+		inp : inp,
+		con : RVS.F.cF(),
+		wrap : RVS.F.cE({cN:"rs_vswrap"}),
+		done : RVS.F.cE({cN:"rs_vsdone"}),
+		rail : RVS.F.cE({cN:"rs_vsrail"}),
+		pin : RVS.F.cE({cN:"rs_vspin"}),
+		field : field
+	}
+
+	var _ = RVS.S.valSliders[inp.id];
+
+	_.jpin = jQuery(_.pin);
+	_.jinp = jQuery(inp);
+
+	field.dataset.inpid= inp.id;
+
+	_.con.appendChild(_.wrap);
+	_.wrap.appendChild(_.rail);
+	_.wrap.appendChild(_.done);
+	_.wrap.appendChild(_.pin);
+	field.appendChild(_.con);
+
+
+
+	_.max = inp.dataset.max || 100;
+	_.min = inp.dataset.min || 0;
+	_.range = _.max - _.min;
+	_.dez = inp.dataset.dez || 0;
+	_.width = _.wrap.offsetWidth - 9;
+
+	_.jpin.draggable({
+			axis:"x",
+			containment: "parent",
+			start:function(event,ui) {
+				_.width = _.wrap.offsetWidth - 9;
+				_.lastprefix = (_.inp.value+"").indexOf('px')>=0 ? "px" : (_.inp.value+"").indexOf('%')>=0 ? "%" : (_.inp.value+"").indexOf('deg')>=0 ? "deg" : "";
+				_.wrap.classList.add("indrag");
+			},
+			stop:function(event,ui) {
+				_.wrap.classList.remove("indrag");
+			},
+			drag:function(event,ui) {
+				_.done.style.width = ui.position.left+"px";
+				var v = parseFloat(_.min) + (_.range * ((ui.position.left/_.width)));
+				v = _.dez == 0 ? Math.round(v) : dez==1 ? Math.round(v/10) * 10 : dez==2 ? Math.round(v/100) * 100 : dez==3 ? Math.round(v/1000) * 1000 : dez==4 ? Math.round(v/10000) * 10000 : Math.round(v/10000) * 10000;
+				_.inp.value = v+_.lastprefix;
+				_.jinp.trigger('change');
+			}
+		});
+
+
+	//<div id="kenburn_timeline"><div class="pz_timedone"></div><div class="pz_pin"></div></div>
+}
 
 /*************************************************
 	SELECT / UNSELECT REFERENCED CONTAINERS
@@ -3220,7 +3328,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 					jQuery('#importing_processing_files').html('');
 					for (var i in e.originalEvent.dataTransfer.files) {
 						if(!e.originalEvent.dataTransfer.files.hasOwnProperty(i)) continue;
-						if (jQuery.type(e.originalEvent.dataTransfer.files[i])=="object") {
+						if (typeof e.originalEvent.dataTransfer.files[i] == "object") {
 							var txt = e.originalEvent.dataTransfer.files[i].name+" ("+Math.round(e.originalEvent.dataTransfer.files[i].size/1024)+"kb)";
 							jQuery('#importing_processing_files').append('<div id="fileprocessing_'+i+'" class="filedrop_line_2">'+txt+'<i class="material-icons fileupload_status"></i><span class="fileupload_message"></span></div>');
 						}
@@ -3235,7 +3343,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 					RVS.fileDropForm[0].className="is-processing";
 					for (var i in e.target.files) {
 						if(!e.target.files.hasOwnProperty(i)) continue;
-						if (jQuery.type(e.target.files[i])=="object") {
+						if (typeof e.target.files[i] == "object") {
 							var txt = e.target.files[i].name+" ("+Math.round(e.target.files[i].size/1024)+"kb)";
 							jQuery('#importing_processing_files').append('<div id="fileprocessing_'+i+'" class="filedrop_line_2">'+txt+'<i class="material-icons fileupload_status"></i><span class="fileupload_message"></span></div>');
 						}
@@ -3355,8 +3463,13 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 				workindex = jQuery.inArray(slideindex+"",RVS.SLIDER.inWork);
 			workindex = workindex===-1 ? 	jQuery.inArray(slideindex,RVS.SLIDER.inWork) : workindex;
 			if (workindex>=0) {
+				try{
+					RVS.F.compareLayerAnimPresets(RVS.SLIDER[_.slides[_.index]].layers);
+				}
+				catch(e) {console.log(e)}
 				var params = JSON.stringify(RVS.F.simplifySlide(RVS.SLIDER[_.slides[_.index]].slide)),
 					layers = JSON.stringify(RVS.F.simplifyAllLayer(RVS.SLIDER[_.slides[_.index]].layers));
+				RVS.F.compareLayerAnimPresets
 				if (_.force===true || RVS.S.lastSaved===undefined || RVS.S.lastSaved[slideindex]===undefined || params!==RVS.S.lastSaved[slideindex].params || layers!==RVS.S.lastSaved[slideindex].layers) {
 					var options = {slider_id:RVS.ENV.sliderID, slide_id:_.slides[_.index], params:params, layers:layers, slide_order:_.order};
 					RVS.DOC.trigger('rs_save_slide_params', [options]);
@@ -3501,23 +3614,107 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 
 	// CREATE ADDONS LIST BASED ON OBJECT
 	RVS.F.buildAddonList = function(_,mode) {
-		var markup = "";
+		//Adding newmetas Check to hide button if not needed
+		var markup = "",i=0,newmetas=true;
 		RVS.LIB.ADDONS = RVS.LIB.ADDONS===undefined ? {} : RVS.LIB.ADDONS;
-
 		for (var slug in _) {
 			if(!_.hasOwnProperty(slug)) continue;
 			RVS.LIB.ADDONS[slug] = RVS.LIB.ADDONS[slug]===undefined ? {} : RVS.LIB.ADDONS[slug];
 			//if (jQuery.inArray(_[slug].slug,["revslider-gallery-addon", "revslider-rel-posts-addon", "revslider-sharing-addon", "revslider-maintenance-addon", "revslider-404-addon","revslider-login-addon","revslider-prevnext-posts-addon","revslider-featured-addon","revslider-backup-addon"])>=0) _[slug].global = true;
 			RVS.LIB.ADDONS[slug].enable = RVS.S.ovMode ? _[slug].global ? RVS.LIB.ADDONS[slug].enable : undefined : _[slug].global ? RVS.LIB.ADDONS[slug].enable : RVS.SLIDER.settings.addOns[slug]!==undefined ? RVS.SLIDER.settings.addOns[slug].enable : false;
 			RVS.LIB.ADDONS[slug].enable = RVS.LIB.ADDONS[slug].enable===0 || RVS.LIB.ADDONS[slug].enable==="0" ? false : RVS.LIB.ADDONS[slug].enable===1 || RVS.LIB.ADDONS[slug].enable==="1" ? true : RVS.LIB.ADDONS[slug].enable===0 || RVS.LIB.ADDONS[slug].enable;
-			if (mode!=="update") markup += RVS.F.buildSingleAddonElement(_[slug],slug);
+			if (mode!=="update") {
+				if (RVS.LIB.ADDONS[slug].sort===undefined || RVS.LIB.ADDONS[slug].releaseid==undefined) newmetas = false;
+				markup += RVS.F.buildSingleAddonElement(_[slug],slug);
+				delete RVS.LIB.ADDONS[slug].el;
+				RVS.LIB.ADDONS[slug].el = undefined;
+			}
 			RVS.LIB.ADDONS_LIST[slug] = RVS.F.safeExtend(true,{},_[slug]);
+			RVS.LIB.ADDONS[slug].order = i;
+			i++;
 		}
 		if (mode!=="update") {
 			jQuery('#rbm_addonlist').append(markup);
 			RVS.F.RSDialog.center();
+			if (!newmetas) {
+				jQuery('.ddTP.ddTP_C.ddTP-fake.ddTP_C--autowidthinmodal[data-refid="sel_addon_sorting"]').hide();
+			} else {
+				jQuery('#sel_addon_sorting').val("pop").ddTP('change');
+			}
+			jQuery('#sel_addon_filtering').val("all").ddTP('change');
+			document.getElementById('searchaddons').value="";
 		}
+		requestAnimationFrame(RVS.F.redrawAddonList);
 	};
+
+
+	RVS.F.redrawAddonList = function() {
+		if (RVS.S.addonPrefilter!=undefined) {
+				jQuery('#sel_addon_filtering').val(RVS.S.addonPrefilter).ddTP('change');
+				requestAnimationFrame(RVS.F.redrawAddonList);
+				delete RVS.S.addonPrefilter;
+		}
+		var sort = document.getElementById('sel_addon_sorting').value,
+			filter = document.getElementById('sel_addon_filtering').value,
+			order = [],i;
+
+		for ( i in RVS.LIB.ADDONS) if (RVS.LIB.ADDONS.hasOwnProperty(i)) {
+			order.push(RVS.LIB.ADDONS[i]);
+			order[order.length-1].title = order[order.length-1].title.replace("(","").replace(")","");
+		}
+
+
+		//Sort the Sliders First
+		switch(sort) {
+			case "popdesc":
+				order.sort(function(a,b) { return parseInt(b.sort,0) - parseInt(a.sort,0);});
+			break;
+			case "pop":
+				order.sort(function(a,b) { return parseInt(a.sort,0) - parseInt(b.sort,0);});
+			break;
+			case "datedesc":
+				order.sort(function(a,b) { return b.releaseid - a.releaseid;});
+			break;
+			case "date":
+				order.sort(function(a,b) { return a.releaseid - b.releaseid;});
+			break;
+			case "title":
+				order.sort(function(a,b) { return a.title.toUpperCase().localeCompare(b.title.toUpperCase()); });
+			break;
+			case "titledesc":
+				order.sort(function(a,b) { return b.title.toUpperCase().localeCompare(a.title.toUpperCase()); });
+			break;
+			default:
+				order.sort(function(a,b) { return a.order - b.order;});
+			break;
+
+		}
+		var s = jQuery('#searchaddons').val().toLowerCase();
+
+		// ADD SLIDERS
+		for ( i in order) {
+			if(!order.hasOwnProperty(i)) continue;
+			var addon = order[i];
+
+			var cond_a = s.length<3 || (s.length>2 && (addon.title.toLowerCase().indexOf(s)>=0 || addon.line_1.toString().toLowerCase().indexOf(s)>=0 || addon.line_1.toString().toLowerCase().indexOf(s)>=0)),
+				cond_b = filter=="all" ||
+						(filter=="action" && (RVS.ENV.addOns_to_update[addon.slug]!==undefined && RVS.ENV.addOns_to_update[addon.slug].updated!==true ) || addon.installed<addon.available) ||
+						(filter=="installed" && addon.installed) ||
+						(filter=="notinstalled" && !addon.installed) ||
+						(filter=="activated" && addon.active);
+
+			// SEARCHED && SLIDE IS CHILDREN FROM SELECTED FOLDER && SEARCHED TEXT IN TITLE OR TAGLIST
+			addon.showinlist = ( cond_a&&cond_b);
+		}
+
+		for (var i in order) {
+			if (!order.hasOwnProperty(i)) continue;
+			var slug = order[i].slug;
+			RVS.LIB.ADDONS[slug].el = RVS.LIB.ADDONS[slug].el==undefined ?  document.getElementById('ale_'+slug): RVS.LIB.ADDONS[slug].el;
+			RVS.LIB.ADDONS[slug].el.style.display=order[i].showinlist ? "inline-block" : "none";
+			document.getElementById('rbm_addonlist').appendChild(RVS.LIB.ADDONS[slug].el);
+		}
+	}
 
 
 	RVS.F.loadAddonList = function(slug,mode,callme) {
@@ -3566,7 +3763,18 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 				this.className +=" selected";
 				RVS.F.showAddonInfos(this.dataset.ref);
 			});
+			//UPDATE ADDON OVERVIEW LIST
+			RVS.DOC.on('updateAddonsOverview',function(e,p) {
+				RVS.F.redrawAddonList();
+			});
 
+			// SEARCH ADON LIST TRIGGERING
+			RVS.DOC.on('keyup','#searchaddons',function() {
+				clearTimeout(window.searchKeyUp);
+				window.searchKeyUp = setTimeout(function() {
+					RVS.F.redrawAddonList();
+				},200);
+			});
 
 			//INSTALL ADDON
 			RVS.DOC.on('click','.ale_i_installaddon',function() {
@@ -3624,7 +3832,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 
 						//  LOAD JS AND CSS FILES OR SHOW RESTART MESSAGES
 						RVS.F.loadCSS(RVS.ENV.wp_plugin_url+slug+'/admin/assets/css/'+slug+'-admin.css');
-						jQuery.getScript(RVS.ENV.wp_plugin_url+slug+'/admin/assets/js/'+slug+'-admin.js',function() {
+						require(RVS.ENV.wp_plugin_url+slug+'/admin/assets/js/'+slug+'-admin.js',function() {
 							RVS.F.showAddonInfos(slug);
 
 							// IF LOCAL ADDON WITHIN A SLIDER, WE NEED TO INITIALISE IT
@@ -3636,10 +3844,14 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 							// to this:
 							if (!RVS.S.ovMode && RVS.LIB.ADDONS[slug].enable) RVS.DOC.trigger(slug+"_init");
 
-						}).fail(function(a,b,c) {console.log(c);});
+						});
 					}
 				},undefined,undefined,RVS_LANG.addon+'<br><span style="font-size:17px; line-height:25px;">"'+RVS_LANG.activatingaddon+'"</span>');
 				//return false;
+			});
+
+			RVS.DOC.on('click','#process_all_addon_updates',function() {
+
 			});
 
 			RVS.DOC.on('click','#check_addon_updates',function() {
@@ -3713,16 +3925,52 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
 				},undefined,undefined,RVS_LANG.addon+'<br><span style="font-size:17px; line-height:25px;">"'+RVS_LANG.updatingaddon+' '+slug+'"</span>');
 			});
 
+			// UPDATE ADDON
+			RVS.DOC.on('click','.ale_i_allupdateaddon',function() {
+				RVS.F.checkForAddonsActionNeeded();
+				RVS.F.updateAddonsInRow();
+			});
+
 			//LISTEN ON SAVE BUTTON
 			RVS.DOC.on('click','#rbm_configpanel_savebtn',function() {
 				RVS.DOC.trigger('save_'+this.dataset.slug);
 			});
 		}
-
 		RVS.F.RSDialog.create({modalid:'rbm_addons', bgopacity:0.85});
 		jQuery('#rbm_addonlist, #rbm_addon_details').RSScroll({ suppressScrollX:true});
-
+		RVS.F.checkForAddonsActionNeeded();
 	};
+
+	RVS.F.checkForAddonsActionNeeded = function() {
+		RVS.S.slugsToUpdate=[];
+		RVS.C.PRALADUP = RVS.C.PRALADUP==undefined || RVS.C.PRALADUP==null || RVS.C.PRALADUP.length==0 ? document.getElementById('process_all_addon_updates') : RVS.C.PRALADUP;
+		for (var i in RVS.LIB.ADDONS) if (RVS.LIB.ADDONS[i].available>RVS.LIB.ADDONS[i].installed) RVS.S.slugsToUpdate.push(RVS.LIB.ADDONS[i].slug);
+		if (RVS.S.slugsToUpdate.length>0) {
+			RVS.C.PRALADUP.style.display="inline-block";
+		} else {
+			RVS.C.PRALADUP.style.display="none";
+		}
+	}
+
+	RVS.F.updateAddonsInRow = function() {
+		if (RVS.S.slugsToUpdate.length>0) {
+			var slug = RVS.S.slugsToUpdate[0];
+			RVS.F.ajaxRequest('activate_addon', {addon:slug, update:true}, function(response){
+				if(response.success) {
+					if (RVS.LIB.ADDONS!==undefined && RVS.LIB.ADDONS[slug]!==undefined) RVS.LIB.ADDONS[slug].installed = RVS.LIB.ADDONS[slug].available;
+					if (RVS.LIB.ADDONS_LIST!==undefined && RVS.LIB.ADDONS_LIST[slug]!==undefined) RVS.LIB.ADDONS_LIST[slug].installed = RVS.LIB.ADDONS_LIST[slug].available;
+				}
+				RVS.S.slugsToUpdate.splice(0,1);
+				RVS.F.updateAddonsInRow();
+			},undefined,undefined,RVS_LANG.addon+'<br><span style="font-size:17px; line-height:25px;">"'+RVS_LANG.updatingaddon+' '+slug+'"</span>');
+		} else {
+				delete RVS.LIB.ADDONS_LIST;
+				document.getElementById('rbm_addonlist').innerHTML = "";
+				RVS.F.loadAddonList(slug);
+				RVS.C.PRALADUP.style.display="none";
+				if (RVS.F.notifications) RVS.F.notifications();
+		}
+	}
 
 	RVS.F.showAddonInfos = function(slug) {
 		if (RVS.LIB.ADDONS_LIST===undefined || RVS.LIB.ADDONS_LIST[slug]===undefined) return;
@@ -4487,6 +4735,12 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
                 RVS.preview.sizes = response.size;
                 RVS.preview.iframe.contentWindow.document.open();
                 RVS.preview.iframe.contentWindow.document.write(html);
+
+                // Workaround for another config path in ancient version
+                if (! requirejs.s.contexts._.config.paths.length) {
+                    RVS.preview.iframe.contentWindow.document.write('<script type="text/javascript" src="' + response.requireConfigLegacyUrl + '"></script>');
+                }
+
                 RVS.preview.iframe.contentWindow.document.close();
                 RVS.F.updatePreviewSize();
 
@@ -4543,7 +4797,7 @@ window.RS_PRESETS = {"R" : "shuffle","C" : "create","I" : "system_update_alt","S
     RVS.F.cleanProperties = function(obj, depth) {
         for (var key in obj) {
             if ( ! obj.hasOwnProperty(key)
-                || typeof obj[key] == 'function' && ['all', 'any', 'clear', 'clone', 'collect', 'compact', 'detect', 'each', 'eachSlice', 'findAll', 'first', 'flatten', 'grep', 'inGroupsOf', 'include', 'inject', 'inspect', 'intersect', 'invoke', 'last', 'member', 'partition', 'pluck', 'reject', 'select', 'size', 'sortBy', 'toArray', 'uniq', 'without', 'zip', '_each', '_reverse'].indexOf(key) != -1) {
+                || typeof obj[key] == 'function' && ['all', 'any', 'clear', 'clone', 'collect', 'compact', 'detect', 'each', 'eachSlice', 'findAll', 'first', 'flatten', 'grep', 'inGroupsOf', 'include', 'inject', 'inspect', 'intersect', 'invoke', 'last', 'member', 'partition', 'pluck', 'reject', 'select', 'size', 'sortBy', 'toArray', 'uniq', 'without', 'zip', '_each', '_reverse', 'min', 'max'].indexOf(key) != -1) {
                 delete obj[key];
             } else if ((typeof obj[key] == 'object' || typeof obj[key] == 'Array') && ['parent', '_prev', '_next', 'target'].indexOf(key) == -1 && depth < 10) {
                 obj[key] = RVS.F.cleanProperties(obj[key], depth + 1);

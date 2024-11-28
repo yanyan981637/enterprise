@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -12,6 +12,7 @@
             <resource id="Magento_Backend::admin">
                 <resource id="MenuAmasty_Base::menu" title="Amasty Extensions" translate="title" sortOrder="79">
                     <resource id="Amasty_Base::marketplace" title="Amasty Marketplace" translate="title" sortOrder="1"/>
+                    <resource id="Amasty_Base::get_support" title="Get Support" translate="title" sortOrder="2"/>
                 </resource>
 
                 <resource id="Magento_Backend::stores">

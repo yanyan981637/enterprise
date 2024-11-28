@@ -76,7 +76,7 @@ class Edit extends \Magento\Backend\App\Action
     {
         // 1. Get ID and create model
         $id = $this->getRequest()->getParam('profile_id');
-        $model = $this->_objectManager->create('Magezon\ProductPageBuilder\Model\Profile');
+        $model = $this->_objectManager->create(\Magezon\ProductPageBuilder\Model\Profile::class);
 
         // 2. Initial checking
         if ($id) {
@@ -86,7 +86,7 @@ class Edit extends \Magento\Backend\App\Action
                 /** \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
                 $resultRedirect = $this->resultRedirectFactory->create();
                 return $resultRedirect->setPath('*/*/');
-            }            
+            }
             $model->getConditions()->setFormName('productpagebuilder_profile_form');
             $model->getConditions()->setJsFormObject(
                 $model->getConditionsFieldSetId($model->getConditions()->getFormName())

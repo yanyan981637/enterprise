@@ -135,6 +135,16 @@
                 </item>
             </argument>
         </field>
+        <field name="priority">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string">Priority</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="sortOrder" xsi:type="number">55</item>
+                </item>
+            </argument>
+        </field>
         <field name="store_id">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">

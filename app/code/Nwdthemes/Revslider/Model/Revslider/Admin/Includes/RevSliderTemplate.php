@@ -63,19 +63,19 @@ class RevSliderTemplate extends RevSliderFunctions {
 							//return $file so it can be processed. We have now downloaded it into a zip file
 							$return = $file;
 						}else{//else, print that file could not be written
-							$return = array('error' => __('Can\'t write the file into the uploads folder of WordPress, please change permissions and try again!', 'revslider'));
+							$return = array('error' => __('Can\'t write the file into the uploads folder of WordPress, please change permissions and try again!'));
 						}
 					}else{
-						$error = ($this->get_addition('selling') === true) ? __('License Key is invalid', 'revslider') : __('Purchase Code is invalid', 'revslider');
+						$error = ($this->get_addition('selling') === true) ? __('License Key is invalid') : __('Purchase Code is invalid');
 
 						$return = array('error' => $error);
 					}
 				}
 			}else{//else, check for error and print it to customer
-				$return = array('error' => __('Can\'t connect programatically to the ThemePunch servers, please check your webserver settings', 'revslider'));
+				$return = array('error' => __('Can\'t connect programatically to the ThemePunch servers, please check your webserver settings'));
 			}
 		}else{
-			$return = array('error' => __('Can\'t write into the uploads folder of WordPress, please change permissions and try again!', 'revslider'));
+			$return = array('error' => __('Can\'t write into the uploads folder of WordPress, please change permissions and try again!'));
 		}
 
 		return $return;
@@ -136,7 +136,8 @@ class RevSliderTemplate extends RevSliderFunctions {
 					$templates = FA::json_decode($response, true);
 					if(is_array($templates)){
 						if(isset($templates['hash'])) FA::update_option('revslider-templates-hash', $templates['hash']);
-						FA::update_option('rs-templates-new', $templates, false);
+                        $templates = $this->do_compress($templates);
+                        $upd = FA::update_option('rs-templates-new', $templates, false);
 					}
 				}
 			}
@@ -152,8 +153,9 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 */
 	private function update_template_list(){
 		$new = FA::get_option('rs-templates-new', false);
-		$cur = FA::get_option('rs-templates', array());
-
+		$new = $this->do_uncompress($new);
+		$cur = FA::get_option('rs-templates', false);
+		$cur = $this->do_uncompress($cur);
 		$counter = 0;
 
 		if($new !== false && !empty($new) && is_array($new)){
@@ -212,6 +214,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 				}
 			}
 
+			$cur = $this->do_compress($cur);
 			FA::update_option('rs-templates', $cur, false);
 			FA::update_option('rs-templates-new', false, false);
 
@@ -227,9 +230,10 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * @since: 5.0.5
 	 */
 	public function remove_is_new($uid){
-		$cur = FA::get_option('rs-templates', array());
+		$cur = FA::get_option('rs-templates', false);
+		$cur = $this->do_uncompress($cur);
 
-		if(isset($cur['slider']) && is_array($cur['slider'])){
+		if(is_array($cur) && isset($cur['slider']) && is_array($cur['slider'])){
 			foreach($cur['slider'] as $ck => $c){
 				if($c['uid'] == $uid){
 					unset($cur['slider'][$ck]['is_new']);
@@ -238,6 +242,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 			}
 		}
 
+		$cur = $this->do_compress($cur);
 		FA::update_option('rs-templates', $cur, false);
 	}
 
@@ -249,8 +254,10 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 */
 	private function _update_images($img = false){
 		$rslb	= RevSliderGlobals::instance()->get('RevSliderLoadBalancer');
-		$templates = FA::get_option('rs-templates', array());
-		$chk	= $this->check_curl_connection();
+        $templates = FA::get_option('rs-templates', false);
+        $templates = $this->do_uncompress($templates);
+
+        $chk	= $this->check_curl_connection();
 		$curl	= ($chk) ? FA::getCurlHelper() : false;
 		$url	= $rslb->get_url('templates', 0, true);
 		$reload	= array();
@@ -365,6 +372,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 			}
 		}
 
+		$templates = $this->do_compress($templates);
 		FA::update_option('rs-templates', $templates, false); //remove the push_image
 	}
 
@@ -527,8 +535,9 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 */
 	public function get_tp_template_default_slides($slider_alias){
 
-		$templates	= FA::get_option('rs-templates', array());
-		$slides		= (isset($templates['slides']) && !empty($templates['slides'])) ? $templates['slides'] : array();
+		$templates	= FA::get_option('rs-templates', false);
+		$templates = $this->do_uncompress($templates);
+		$slides		= (is_array($templates) && isset($templates['slides']) && !empty($templates['slides'])) ? $templates['slides'] : array();
 
 		return (isset($slides[$slider_alias])) ? $slides[$slider_alias] : array();
 	}
@@ -582,7 +591,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 				$tags[]	= $sliders[$dk]['cat'];
 				$sliders[$dk]['tags'] = $tags;
 				if(!isset($sliders[$dk]['setup_notes'])){
-					$sliders[$dk]['setup_notes'] = '<span class="ttm_content">Checkout our <a href="https://www.themepunch.com/revslider-doc/slider-revolution-documentation/" target="_blank">Documentation</a> for basic Slider Revolution help.</span>';
+					$sliders[$dk]['setup_notes'] = '<span class="ttm_content">Checkout our <a href="https://www.themepunch.com/revslider-doc/slider-revolution-documentation/" target="_blank" rel="noopener">Documentation</a> for basic Slider Revolution help.</span>';
 				}
 
 				unset($sliders[$dk]['filter']);
@@ -607,8 +616,9 @@ class RevSliderTemplate extends RevSliderFunctions {
 		//add themepunch default Sliders here
 		$sliders = $wpdb->get_results("SELECT * FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDER ." WHERE type = 'template'", Query::ARRAY_A);
 
-		$defaults = FA::get_option('rs-templates', array());
-		$defaults = $this->get_val($defaults, 'slider', array());
+        $defaults = FA::get_option('rs-templates', false);
+        $defaults = $this->do_uncompress($defaults);
+        $defaults = $this->get_val($defaults, 'slider', array());
 
 		// filter not available requirements
 
@@ -727,7 +737,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 				unset($defaults[$dk]['cat']);
 
 				if(!isset($defaults[$dk]['setup_notes'])){
-					$defaults[$dk]['setup_notes'] = '<span class="ttm_content">Checkout our <a href="https://www.themepunch.com/revslider-doc/slider-revolution-documentation/" target="_blank">Documentation</a> for basic Slider Revolution help.</span>';
+					$defaults[$dk]['setup_notes'] = '<span class="ttm_content">Checkout our <a href="https://www.themepunch.com/revslider-doc/slider-revolution-documentation/" target="_blank" rel="noopener">Documentation</a> for basic Slider Revolution help.</span>';
 				}
 
 				$id = $this->get_val($default, 'id', 0);
@@ -932,7 +942,8 @@ class RevSliderTemplate extends RevSliderFunctions {
 	public function get_template_categories(){
 		$cat = array();
 
-		$defaults = FA::get_option('rs-templates', array());
+		$defaults = FA::get_option('rs-templates', false);
+		$defaults = $this->do_uncompress($defaults);
 		$defaults = $this->get_val($defaults, 'slider', array());
 
 		if(!empty($defaults)){
@@ -960,7 +971,8 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * get the slide thumbnail
 	 **/
 	public function get_slide_image_by_uid($uid, $slidenumber){
-		$defaults	= FA::get_option('rs-templates', array());
+		$defaults	= FA::get_option('rs-templates', false);
+		$defaults	= (!is_array($defaults)) ? json_decode($defaults, true) : $defaults;
 		$sliders	= $this->get_val($defaults, 'slider', array());
 		$slides		= $this->get_val($defaults, 'slides', array());
 		$image		= false;

@@ -53,18 +53,28 @@ class FormDataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
     protected $builderHelper;
 
     /**
-     * @param string                                  $name                  
-     * @param string                                  $primaryFieldName      
-     * @param string                                  $requestFieldName      
-     * @param \Magento\Framework\Registry             $registry              
-     * @param \Magento\Framework\App\RequestInterface $request               
-     * @param CollectionFactory                       $menuCollectionFactory 
-     * @param DataPersistorInterface                  $dataPersistor         
-     * @param \Magezon\Core\Helper\Data               $coreHelper            
-     * @param \Magezon\Builder\Helper\Data            $builderHelper         
-     * @param PoolInterface                           $pool                  
-     * @param array                                   $meta                  
-     * @param array                                   $data                  
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    protected $request;
+
+    /**
+     * @var PoolInterface
+     */
+    protected $pool;
+
+    /**
+     * @param string                                  $name
+     * @param string                                  $primaryFieldName
+     * @param string                                  $requestFieldName
+     * @param \Magento\Framework\Registry             $registry
+     * @param \Magento\Framework\App\RequestInterface $request
+     * @param CollectionFactory                       $menuCollectionFactory
+     * @param DataPersistorInterface                  $dataPersistor
+     * @param \Magezon\Core\Helper\Data               $coreHelper
+     * @param \Magezon\Builder\Helper\Data            $builderHelper
+     * @param PoolInterface                           $pool
+     * @param array                                   $meta
+     * @param array                                   $data
      */
     public function __construct(
         $name,

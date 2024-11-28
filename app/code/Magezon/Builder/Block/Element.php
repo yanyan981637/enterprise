@@ -550,9 +550,6 @@ class Element extends ElementStyle implements ElementInterface
      */
     public function getLinkParams($data)
     {
-    	if (isset($data['url'])) {
-    		$data['url'] = str_replace(['//', 'https:/', 'http:/'], ['/', 'https://', 'http://'], $data['url']);
-    	}
     	$coreHelper = $this->getCoreHelper();
     	$params = [
 			'type'     => 'custom',

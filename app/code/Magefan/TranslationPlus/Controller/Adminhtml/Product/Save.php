@@ -4,9 +4,9 @@
  * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
 
-
 namespace Magefan\TranslationPlus\Controller\Adminhtml\Product;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Backend\App\Action\Context;
@@ -16,6 +16,7 @@ use Magefan\Translation\Api\ConfigInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class Save extends \Magento\Backend\App\Action
 {
@@ -52,7 +53,17 @@ class Save extends \Magento\Backend\App\Action
     /**
      * @var JsonFactory
      */
-     private $resultJsonFactory;
+    private $resultJsonFactory;
+
+    /**
+     * @var EventManager
+     */
+    private $eventManager;
+
+    /**
+     * @var array
+     */
+    private $use301redirect = [];
 
     /**
      * Save constructor.
@@ -63,6 +74,7 @@ class Save extends \Magento\Backend\App\Action
      * @param ManagerInterface $messageManager
      * @param CollectionFactory $productCollectionFactory
      * @param JsonFactory $resultJsonFactory
+     * @param EventManager $eventManager
      */
     public function __construct(
         Context $context,
@@ -71,7 +83,8 @@ class Save extends \Magento\Backend\App\Action
         ConfigInterface $configInterface,
         ManagerInterface $messageManager,
         CollectionFactory $productCollectionFactory,
-        JsonFactory $resultJsonFactory
+        JsonFactory $resultJsonFactory,
+        EventManager $eventManager
     ) {
         $this->repository = $repository;
         $this->productRepository = $productRepository;
@@ -79,7 +92,8 @@ class Save extends \Magento\Backend\App\Action
         $this->messageManager = $messageManager;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->resultJsonFactory = $resultJsonFactory;
-        return parent::__construct($context);
+        $this->eventManager = $eventManager;
+        parent::__construct($context);
     }
 
     /**
@@ -90,12 +104,12 @@ class Save extends \Magento\Backend\App\Action
     public function execute()
     {
         if (!$this->configInterface->isEnabled()) {
-             return $this->processResponse(false, __(
-                 strrev(
-                     'noitalsnarT> snoisnetxE nafegaM > noitarugifnoC >
+            return $this->processResponse(false, __(
+                strrev(
+                    'noitalsnarT> snoisnetxE nafegaM > noitarugifnoC >
             serotS ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si noitalsnarT nafegaM'
-                 )
-             ));
+                )
+            ));
         }
         $post = $this->getRequest()->getPostValue();
 
@@ -120,6 +134,8 @@ class Save extends \Magento\Backend\App\Action
         $post[0] = $post[-1];
         unset($post[-1]);
 
+        $this->collect301Redirects($post);
+
         try {
             $model = $this->productCollectionFactory->create();
             $resource     = $model->getResource();
@@ -129,7 +145,19 @@ class Save extends \Magento\Backend\App\Action
                 if ($store->getId()) {
                     foreach ($post[0] as $attrKey => $value) {
                         if (!isset($post[$store->getId()][$attrKey])) {
+                            if ($attrKey == 'url_key') {
+                                // in case when checkbox Use Default Checked
+                                $post[$store->getId()]['url_key'] = false;
+                                $post[$store->getId()]['url_key_create_redirect'] = $this->use301redirect[$store->getId()] ?? 0;
+                                continue;
+                            }
+
                             $attribute = $resource->getAttribute($attrKey);
+
+                            if (!$attribute) {
+                                continue;
+                            }
+
                             $condition = [
                                 'attribute_id = ?'   => $attribute->getId(),
                                 'store_id = ?'       => $store->getId(),
@@ -142,6 +170,7 @@ class Save extends \Magento\Backend\App\Action
             }
 
             ksort($post);
+
             foreach ($post as $storeId => $value) {
                 if (!is_numeric($storeId)) {
                     continue;
@@ -150,23 +179,94 @@ class Save extends \Magento\Backend\App\Action
                 $product = $this->productRepository->getById($id, false, (int)$storeId, true);
 
                 foreach ($post[$storeId] as $attrKey => $attrValue) {
-
-                    if ($attrKey == 'product_has_weight') {
-                        continue;
-                    }
                     if (is_array($attrValue)) {
                         $attrValue = implode(',', $attrValue);
                     }
 
-                    $product->setData($attrKey, $attrValue);
-                    $product->getResource()->saveAttribute($product, $attrKey);
+                    switch ($attrKey) {
+                        case "url_key_create_redirect":
+                        case "product_has_weight":
+                        case "locale_code":
+                        case "auto_translation_original":
+                            break;
+                        case "url_key":
+                            $this->saveUrlKey($product, $post[$storeId], $storeId, $model);
+                            break;
+                        default:
+                            $product->setData($attrKey, $attrValue);
+                            $product->getResource()->saveAttribute($product, $attrKey);
+                    }
                 }
             }
+            $this->eventManager->dispatch('magefan_save_product_translation', ['current_object' => $this]);
             return $this->processResponse(true, __('You saved the product.'));
         } catch (LocalizedException $e) {
             return $this->processResponse(false, $e->getPrevious() ? : $e);
         } catch (\Exception $err) {
             return $this->processResponse(false, __('Something went wrong while saving the product.'));
+        }
+    }
+
+    /**
+     * @param $product
+     * @param $data
+     * @param $storeId
+     * @param $model
+     * @return void
+     * @throws NoSuchEntityException
+     */
+    private function saveUrlKey($product, $data, $storeId, $model)
+    {
+        $oldUrl = $product->getUrlKey();
+        $newUrl = $data['url_key'];
+
+        if (($newUrl || $newUrl === '') && $oldUrl != $newUrl) {
+
+            // in case of empty string - url key will be generated based on entity name
+            if ($newUrl === '') {
+                $newUrl = null;
+            }
+
+            $product->setData('url_key_create_redirect', '');
+            $product->setData('save_rewrites_history', false);
+
+            if (isset($data['url_key_create_redirect']) && $data['url_key_create_redirect']) {
+                $product->setData('url_key_create_redirect', $oldUrl);
+                $product->setData('save_rewrites_history', true);
+            }
+
+            $product->setUrlKey($newUrl);
+
+            $this->_eventManager->dispatch('catalog_product_save_before', ['product' => $product]);
+            $product->getResource()->saveAttribute($product, 'url_key');
+            $this->_eventManager->dispatch('catalog_product_save_after', ['product' => $product]);
+            // case when use default used
+        } elseif ($newUrl === false && $product->getExistsStoreValueFlag('url_key')) {
+            // in case when use_default checked
+
+            $product->setData('url_key_create_redirect', '');
+            $product->setData('save_rewrites_history', true);
+
+            $productBaseStore = $this->productRepository->getById($product->getData('entity_id'), false, 0);
+
+            $product->setUrlKey($productBaseStore->getUrlKey());
+
+            $this->_eventManager->dispatch('catalog_product_save_before', ['product' => $product]);
+            $product->getResource()->saveAttribute($product, 'url_key');
+            $this->_eventManager->dispatch('catalog_product_save_after', ['product' => $product]);
+
+            // remove value from store level
+            $resource = $model->getResource();
+            $adapter = $resource->getConnection();
+            $attribute = $resource->getAttribute('url_key');
+
+            $condition = [
+                'attribute_id = ?'   => $attribute->getId(),
+                'store_id = ?'       => $storeId,
+                'entity_id IN(?)'    => $product->getData('entity_id')
+            ];
+
+            $adapter->delete($attribute->getBackendTable(), $condition);
         }
     }
 
@@ -196,7 +296,7 @@ class Save extends \Magento\Backend\App\Action
                     ? $this->getUrl('catalog/product/edit', ['id' => $id])
                     : $this->getUrl('translationplus/product/translate', ['id' => $id]);
             } else {
-                $this->messageManager->addExceptionMessage($message);
+                $this->messageManager->addErrorMessage($message);
 
                 $path = ($id)
                     ? $this->getUrl('translationplus/product/translate', ['id' => $id])
@@ -205,6 +305,25 @@ class Save extends \Magento\Backend\App\Action
             }
 
             return $resultRedirect->setPath($path);
+        }
+    }
+
+    /**
+     * @param array $post
+     */
+    private function collect301Redirects(array &$post): void
+    {
+        $useRedirectForDefaultValue = $post['use_redirect_for_default_value'] ?? [];
+
+        if ($useRedirectForDefaultValue) {
+
+            foreach ($useRedirectForDefaultValue as $storeId_isChecked) {
+                [$storeId, $isChecked] = explode('_', $storeId_isChecked);
+
+                $this->use301redirect[$storeId] = $isChecked;
+            }
+
+            unset($post['use_redirect_for_default_value']);
         }
     }
 }

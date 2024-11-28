@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider;
@@ -65,11 +65,21 @@ class RevSliderFunctions extends RevSliderData {
 	 * update general settings
 	 * @before: RevSliderOperations::updateGeneralSettings()
 	 */
-	public function set_global_settings($global){
+	public function set_global_settings($global, $merge = false){
 		$this->delete_wp_cache('_get_global_settings');
+		if($this->_truefalse($merge) === true){
+			$_global = $this->get_global_settings();
+			if(!is_array($_global)) $_global = array();
+			if(!is_array($global)) $global = array();
+
+			$global = array_merge($_global, $global);
+		}
 
 		$global = json_encode($global);
-		return FA::update_option('revslider-global-settings', $global);
+
+		FA::update_option('revslider-global-settings', $global);
+
+		return true;
 	}
 
 
@@ -152,26 +162,28 @@ class RevSliderFunctions extends RevSliderData {
 	 * get POST variable
 	 * before: RevSliderBase::getPostVar();
 	 */
-	public function get_post_var($key, $default = ''){
-		$val = $this->get_var($_POST, $key, $default);
+    public function get_post_var($key, $default = '', $esc = true){
+		$val = $this->get_var(FA::getPost(), $key, $default);
 
-		return $val;
+        return ($esc) ? FA::esc_html($val) : $val;
 	}
 
 	/**
 	 * get GET variable
 	 * before: RevSliderBase::getGetVar();
 	 */
-	public function get_get_var($key, $default = ''){
-        return $this->get_var(Data::$_GET, $key, $default);
+    public function get_get_var($key, $default = '', $esc = true){
+        $val = $this->get_var(Data::$_GET, $key, $default);
+        return ($esc) ? FA::esc_html($val) : $val;
     }
 
 	/**
 	 * get POST or GET variable in this order
 	 * before: RevSliderBase::getPostGetVar();
 	 */
-	public function get_request_var($key, $default = ''){
-        return (array_key_exists($key, $_POST)) ? $this->get_var($_POST, $key, $default) : $this->get_var(Data::$_GET, $key, $default);
+    public function get_request_var($key, $default = '', $esc = true){
+        $val = (array_key_exists($key, FA::getPost())) ? $this->get_var(FA::getPost(), $key, $default) : $this->get_var(Data::$_GET, $key, $default);
+        return ($esc) ? FA::esc_html($val) : $val;
     }
 
 	/**
@@ -204,7 +216,7 @@ class RevSliderFunctions extends RevSliderData {
 		$this->validate_not_empty($val, $fn);
 
 		if(!is_numeric($val))
-			$this->throw_error($fn.__(' should be numeric', 'revslider'));
+			$this->throw_error($fn.__(' should be numeric'));
 	}
 
 	/**
@@ -213,7 +225,7 @@ class RevSliderFunctions extends RevSliderData {
 	 */
 	public function validate_not_empty($val, $fn = 'Field'){
 		if(empty($val) && is_numeric($val) == false)
-			$this->throw_error($fn.__(' should not be empty', 'revslider'));
+			$this->throw_error($fn.__(' should not be empty'));
 	}
 
 	/**
@@ -286,6 +298,34 @@ class RevSliderFunctions extends RevSliderData {
 		}
 
 		return false;
+	}
+
+	/**
+	 * compress an array/object/string to a string
+	 * @since 6.6.0
+	 **/
+	public function do_compress($data, $level = 9){
+		if(is_array($data) || is_object($data)) $data = json_encode($data);
+
+		if(!function_exists('gzcompress') || !function_exists('gzuncompress')) return $data; //gzencode / gzdecode
+
+		return base64_encode(gzcompress($data, $level));
+	}
+
+	/**
+	 * decompress an string to an array/object/string
+	 * @since 6.6.0
+	 **/
+	public function do_uncompress($data){
+		if($data === false || empty($data) || is_array($data) || is_object($data)) return $data;
+		$_data = json_decode($data, true);
+		if(is_array($_data) || is_object($_data)) return $_data;
+		if(!function_exists('gzcompress') || !function_exists('gzuncompress')) return $data; //gzencode / gzdecode
+
+		$data = gzuncompress(base64_decode($data));
+		$_data = json_decode($data, true);
+
+		return (!empty($_data)) ? $_data : $data;
 	}
 
 	/**
@@ -540,13 +580,13 @@ class RevSliderFunctions extends RevSliderData {
 				$categories	= array_merge($categories, $cats);
 			}
 		}else{
-			$args = array('taxonomy' => $taxonomy);
+			$args = array('taxonomy' => $taxonomy, 'number' => 10000);
 			$cats = FA::get_categories($args);
 			foreach($cats as $cat){
 				$num				= $cat->count;
 				$id					= $cat->cat_ID;
 				$name				= ($num == 1) ? 'item' : 'items';
-				$title				= $cat->name . ' ('.$num.' '.$name.')';
+				$title				= $cat->name /*. ' ('.$num.' '.$name.')'*/;
 				$categories[$id]	= $title;
 			}
 		}
@@ -624,7 +664,7 @@ class RevSliderFunctions extends RevSliderData {
 	 *
 	 **/
 	public function import_media_raw($name, $id, $bitmap){
-		if(intval($id) === 0) return __('Invalid id given', 'revslider');
+		if(intval($id) === 0) return __('Invalid id given');
 
 		$ul_dir	 = FA::wp_upload_dir();
 		$path = $ul_dir['basedir'].'/rstemp/';
@@ -634,7 +674,7 @@ class RevSliderFunctions extends RevSliderData {
 			$type = strtolower($type[1]); // jpg, png, gif
 
 			if(!in_array($type, array('jpg', 'jpeg', 'gif', 'png'))){
-				return __('Image has an invalid type', 'revslider');
+				return __('Image has an invalid type');
 			}
 
 			if(strpos($name, '.') !== false){
@@ -648,17 +688,17 @@ class RevSliderFunctions extends RevSliderData {
 			$data = base64_decode($data);
 
 			if($data === false){
-				return __('Image has an invalid type', 'revslider');
+				return __('Image has an invalid type');
 			}
 		}else{
-			return __('Image has invalid data', 'revslider');
+			return __('Image has invalid data');
 		}
 
 		if(!is_dir($path)){
 			mkdir($path, 0777, true);
 		}
 		$return = file_put_contents($path.$name, $data);
-		if($return === false) return __('Image could not be saved', 'revslider');
+		if($return === false) return __('Image could not be saved');
 
 		return $this->import_media($path.$name , 'video-media/');
 	}
@@ -771,9 +811,6 @@ class RevSliderFunctions extends RevSliderData {
 				if(!isset($rs_meta_create[$attach_id])){
 					$rs_meta_create[$attach_id] = $save_dir;
 					FA::update_option('rs_image_meta_todo', $rs_meta_create);
-				}
-				if($attach_data = @FA::wp_generate_attachment_metadata($attach_id, $save_dir)){
-					@FA::wp_update_attachment_metadata($attach_id, $attach_data);
 				}
 			}else{
 				$attach_id = $atc_id;
@@ -936,7 +973,22 @@ class RevSliderFunctions extends RevSliderData {
 		}
 
 		if($fdl === 'preload'){
-			if(!empty($fonts)){
+            $ret .= $this->preload_fonts($fonts);
+        }else{
+            $url = $this->modify_fonts_url('https://fonts.googleapis.com/css?family=');
+            $ret .= ($tcf !== '') ? '<link href="'.$url.$tcf.'&display=swap" rel="stylesheet" property="stylesheet" media="all" type="text/css" >'."\n" : '';
+            $ret .= ($tcf2 !== '') ? html_entity_decode(stripslashes($tcf2)) : '';
+        }
+
+        return FA::apply_filters('revslider_printCleanFontImport', $ret);
+    }
+
+    /**
+     * preloading fonts and return style for it
+     **/
+    public function preload_fonts($fonts){
+        $ret = '';
+            if(!empty($fonts)){
 				$upload_dir	= FA::wp_upload_dir();
 				$base_dir	= $upload_dir['basedir'];
 				$base_url	= $upload_dir['baseurl'];
@@ -949,10 +1001,24 @@ class RevSliderFunctions extends RevSliderData {
 					$font_name = strtolower(str_replace(' ', '-', FA::esc_attr($font_name)));
 
 					$f_raw		= explode(':', $font);
-					$weights	= (!empty($f_raw) && is_array($f_raw) && isset($f_raw[1])) ? explode('%2C', $f_raw[1]) : array('400');
-					$f_family	= str_replace('+', ' ', $f_raw[0]);
+                    $weights    = array('400');
+                    $f_family    = '';
+                    $f_download = false;
+                    if(!empty($f_raw) && is_array($f_raw) && isset($f_raw[1])){
+                        $f_raw[1]    = str_replace('%2C', ',', $f_raw[1]);
+                        $weights    = explode(',', $f_raw[1]);
+                        $f_family    = str_replace('+', ' ', $f_raw[0]);
+                        foreach($weights as $wk => $weight){
+                            if($weight === 'ital'){
+                                $weights[$wk] = 'italic';
+                                continue;
+                            }
+                            $weights[$wk] = intval($weight);
+                            if($weights[$wk] === 0) unset($weights[$wk]);
+                        }
+                    }
+                    $f_family	= str_replace('+', ' ', $f_raw[0]);
 
-					$f_download = false;
 					foreach($weights as $weight){
 						if(!is_file($base_dir.'/gfonts/'. $font_name . '/' . $font_name . '-' . $weight . '.woff2') || filemtime($base_dir.'/gfonts/'. $font_name . '/' . $font_name . '-' . $weight . '.woff2') < $rs_google_ts){
 							$f_download = true;
@@ -961,13 +1027,9 @@ class RevSliderFunctions extends RevSliderData {
 					}
 
 					if($f_download){
-						if(!is_dir($base_dir.'/gfonts/')){
-							mkdir($base_dir.'/gfonts/');
-						}
 
-						if(!is_dir($base_dir.'/gfonts/'.$font_name)){
-							mkdir($base_dir.'/gfonts/'.$font_name);
-						}
+                        if(!is_dir($base_dir.'/gfonts/')) mkdir($base_dir.'/gfonts/');
+                        if(!is_dir($base_dir.'/gfonts/'.$font_name)) mkdir($base_dir.'/gfonts/'.$font_name);
 
 						$regex_url	= "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
 						$regex_fw	= "/(?<=font-weight:)(.*)(?=;)/";
@@ -976,6 +1038,7 @@ class RevSliderFunctions extends RevSliderData {
 						$content	= FA::wp_remote_get($url);
 						$body		= $this->get_val($content, 'body', '');
 						$body		= explode('}', $body);
+
 						if(!empty($body)){
 							foreach($body as $b){
 								if(preg_match($regex_url, $b, $found_fonts)){
@@ -991,15 +1054,15 @@ class RevSliderFunctions extends RevSliderData {
 
 									$file = $base_dir.'/gfonts/'. $font_name . '/' . $font_name . '-' . $found_fw . $found_fs . '.woff2';
 
-									@mkdir(dirname($file));
-									@file_put_contents($file, $f_c_body);
+                                    if(!is_dir(dirname($file))) mkdir(dirname($file));
+									file_put_contents($file, $f_c_body);
 								}
 							}
 						}
 					}
 
 					if(!empty($weights) && is_array($weights)){
-						$ret .= '<style type="text/css">';
+						$ret .= '<style>';
 						foreach($weights as $weight){
 							$style	 = (strpos($weight, 'italic') !== false) ? 'italic' : 'normal';
 							$_weight = str_replace('italic', '', $weight);
@@ -1009,6 +1072,7 @@ class RevSliderFunctions extends RevSliderData {
   font-family: '".$f_family."';
   font-style: ".$style.";
   font-weight: ".$_weight.";
+  font-display: swap;
   src: local('".$f_family."'), local('".$f_family."'), url(".$base_url.'/gfonts/'. $font_name . '/' . $font_name . '-' . $weight . '.woff2'.") format('woff2');
 }";
 						}
@@ -1017,13 +1081,7 @@ class RevSliderFunctions extends RevSliderData {
 				}
 			}
 
-		}else{
-			$url = $this->modify_fonts_url('https://fonts.googleapis.com/css?family=');
-			$ret .= ($tcf !== '') ? '<link href="'.$url.$tcf.'" rel="stylesheet" property="stylesheet" media="all" type="text/css" >'."\n" : '';
-			$ret .= ($tcf2 !== '') ? html_entity_decode(stripslashes($tcf2)) : '';
-		}
-
-		return FA::apply_filters('revslider_printCleanFontImport', $ret);
+        return $ret;
 	}
 
 	/**
@@ -1248,7 +1306,7 @@ class RevSliderFunctions extends RevSliderData {
         foreach($base_transitions as $m => $bt){
             if(!is_string($m) || $m === 'random' || $m === 'custom' || ($main !== 'all' && $main !== $m)) continue;
             foreach($bt as $g => $_bt){
-                if(is_array($_bt) && $g !== 'icon' && (empty($grp) || isset($grp[$g]))){
+                if(is_array($_bt) && $g !== 'icon' && (empty($grp) || in_array($g, $grp))){
                     foreach($_bt as $e => $__bt){
                         $items[] = $e;
                     }
@@ -1290,6 +1348,7 @@ class RevSliderFunctions extends RevSliderData {
 				$url = str_replace(array('http://', 'https://'), '//' , $url);
 			break;
 		}
+        $url = FA::forceSSL($url);
 		return $url;
 	}
 

@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
 namespace Amasty\Base\Setup;
 
+use Amasty\Base\Model\SysInfo\Command\LicenceService\RegisterLicenceKey;
+use Magento\Framework\App\Area;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\State;
 use Magento\Framework\Module\Manager;
 use Magento\Framework\Module\Status;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * @codeCoverageIgnore
@@ -42,14 +47,38 @@ class RecurringData implements InstallDataInterface
      */
     private $modulesToDisable = [];
 
+    /**
+     * @var RegisterLicenceKey|null
+     */
+    private $registerLicenceKeyCommand;
+
+    /**
+     * @var State
+     */
+    private $appState;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         Manager $moduleManager,
         Status $moduleStatus,
-        array $modulesToDisable = []
+        array $modulesToDisable = [],
+        RegisterLicenceKey $registerLicenceKeyCommand = null,
+        State $appState = null,
+        LoggerInterface $logger = null
     ) {
         $this->moduleManager = $moduleManager;
         $this->moduleStatus = $moduleStatus;
         $this->modulesToDisable = $this->initModulesToDisable($modulesToDisable);
+        $this->registerLicenceKeyCommand = $registerLicenceKeyCommand
+            ?? ObjectManager::getInstance()->get(RegisterLicenceKey::class);
+        $this->appState = $appState
+            ?? ObjectManager::getInstance()->get(State::class);
+        $this->logger = $logger
+            ?? ObjectManager::getInstance()->get(LoggerInterface::class);
     }
 
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
@@ -59,7 +88,23 @@ class RecurringData implements InstallDataInterface
         }
         $setup->startSetup();
         $this->processNotificationTable($setup);
+        $this->processInstanceRegistration();
         $setup->endSetup();
+    }
+
+    /**
+     * Will try to register instance in case of domain change
+     */
+    private function processInstanceRegistration(): void
+    {
+        try {
+            $this->appState->emulateAreaCode(
+                Area::AREA_CRONTAB,
+                [$this->registerLicenceKeyCommand, 'execute']
+            );
+        } catch (\Exception $e) {
+            $this->logger->critical($e->getMessage());
+        }
     }
 
     /**

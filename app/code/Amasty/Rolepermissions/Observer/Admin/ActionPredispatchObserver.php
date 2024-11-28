@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Advanced Permissions for Magento 2
  */
 
@@ -119,7 +119,7 @@ class ActionPredispatchObserver implements ObserverInterface
             if (!in_array($storeId, $rule->getScopeStoreviews())) {
                 $this->helper->redirectHome();
             }
-        } elseif ($websiteId = $request->getParam('website')) {
+        } elseif ($websiteId = $request->getParam('website') && $this->needToCheck($request->getParam('website'))) {
             if (is_array($websiteId)) {
                 $websiteId = $websiteId['website_id'];
             }
@@ -136,6 +136,23 @@ class ActionPredispatchObserver implements ObserverInterface
                 }
             }
         }
+    }
+
+    /**
+     * Setting should have only ids.
+     * If we receive something else, we supposed that is some custom setting and don't need to check permissions.
+     *
+     *
+     * @param array|string $data
+     * @return bool
+     */
+    private function needToCheck($data): bool
+    {
+        if (is_array($data)) {
+            return true;
+        }
+
+        return (bool)preg_match('/^\d+(,\d+)*,?$/', $data);
     }
 
     private function isWysiwygImages($controllerName)

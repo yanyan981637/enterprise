@@ -14,8 +14,7 @@
 
 namespace Magezon\ProductPageBuilder\Block\Product\Element;
 
-use Magento\Framework\Phrase;
-use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Catalog\Model\Product;
 
 class Attribute extends \Magezon\ProductPageBuilder\Block\Product\Element
 {
@@ -45,14 +44,14 @@ class Attribute extends \Magezon\ProductPageBuilder\Block\Product\Element
     protected $_attributeValue;
 
     /**
-     * @param \Magento\Framework\View\Element\Template\Context     $context       
-     * @param \Magento\Framework\App\Http\Context                  $httpContext   
-     * @param \Magento\Framework\Pricing\PriceCurrencyInterface    $priceCurrency 
-     * @param \Magento\Framework\Registry                          $registry      
-     * @param \Magento\Catalog\Helper\Image                        $imageHelper   
-     * @param \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry 
-     * @param \Magezon\Core\Helper\Data                            $coreHelper    
-     * @param array                                                $data          
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Magento\Framework\App\Http\Context $httpContext
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Catalog\Helper\Image $imageHelper
+     * @param \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry
+     * @param \Magezon\Core\Helper\Data $coreHelper
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -75,9 +74,11 @@ class Attribute extends \Magezon\ProductPageBuilder\Block\Product\Element
      */
     public function getAttributeValue()
     {
-        if ($this->_attributeValue == NULL) {
+        if ($this->_attributeValue == null) {
             $attributeCode = $this->getElement()->getAttribute();
-            if (!$attributeCode) return;
+            if (!$attributeCode) {
+                return;
+            }
             $product      = $this->getProduct();
             $typeInstance = $product->getTypeInstance();
             $attribute    = '';
@@ -87,7 +88,9 @@ class Attribute extends \Magezon\ProductPageBuilder\Block\Product\Element
                     break;
                 }
             }
-            if (!$attribute) return;
+            if (!$attribute) {
+                return;
+            }
 
             $this->_attributeLabel = $attribute->getStoreLabel();
 
@@ -97,9 +100,9 @@ class Attribute extends \Magezon\ProductPageBuilder\Block\Product\Element
                 $value = $attribute->getFrontend()->getValue($product);
                 if ($value instanceof \Magento\Framework\Phrase) {
                     $value = (string)$value;
-                } else if ($attribute->getFrontendInput() == 'price' && is_string($value)) {
+                } elseif ($attribute->getFrontendInput() == 'price' && is_string($value)) {
                     $value = $this->priceCurrency->convertAndFormat($value);
-                } else if ($attribute->getFrontendInput() == 'media_image' && is_string($value)) {
+                } elseif ($attribute->getFrontendInput() == 'media_image' && is_string($value)) {
                     if ($value==='no_selection') {
                         $value = '';
                     } else {

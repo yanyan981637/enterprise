@@ -17,7 +17,6 @@ namespace Magezon\ProductPageBuilder\Model\Source;
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\View\Model\PageLayout\Config\BuilderInterface;
 
-
 class PageLayout implements OptionSourceInterface
 {
     /**

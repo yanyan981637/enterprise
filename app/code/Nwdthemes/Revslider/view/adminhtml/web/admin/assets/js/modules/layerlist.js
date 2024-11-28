@@ -76,7 +76,6 @@
 		}
 
 		RVS.F.layerListScrollable("update");
-
 		if (!obj.ignoreRebuildHTML) RVS.F.buildHTMLLayers({ignoreDrawLayers:obj.ignoreDrawLayers});
 		if (!obj.ignoreSelectLayers) RVS.F.selectLayers();
 	};
@@ -117,21 +116,36 @@
 		var kids = _.kids===undefined ? {} : _.kids;
 		for (var li in RVS.L) {
 			if(!RVS.L.hasOwnProperty(li)) continue;
-			if (RVS.L[li].group.puid==_.layerid) {
+			if (RVS.L[li].group.puid==_.layerid || ((_.layerid=="-1" || _.layerid==-1) && RVS.L[li].type=="row")) {
 				kids[RVS.L[li].uid] = {
 						type:RVS.L[li].type,
-						frames:{}
+						frames:{},
 				};
-				for (var fi in RVS.L[li].timeline.frames) {
-					if(!RVS.L[li].timeline.frames.hasOwnProperty(fi)) continue;
-					kids[RVS.L[li].uid].frames[fi] = RVS.L[li].timeline.frames[fi].timeline.start;
-				}
-				if (jQuery.inArray(RVS.L[li].type,["column","row","group"])>=0)
-					kids = RVS.F.getLayerChildren({layerid:RVS.L[li].uid, kids:kids});
+				if (!_.ignoreframes)
+					for (var fi in RVS.L[li].timeline.frames) {
+						if(!RVS.L[li].timeline.frames.hasOwnProperty(fi)) continue;
+						kids[RVS.L[li].uid].frames[fi] = RVS.L[li].timeline.frames[fi].timeline.start;
+					}
+				if (!_.onelevel && jQuery.inArray(RVS.L[li].type,["column","row","group"])>=0) kids = RVS.F.getLayerChildren({layerid:RVS.L[li].uid, kids:kids,ignoreframes:_.ignoreframes,onelevel:_.onelevel});
 			}
+		}
+		if (_.removeZones) {
+			delete kids.top;
+			delete kids.bottom;
+			delete kids.middle;
 		}
 		return kids;
 	};
+
+
+	RVS.F.hasChildren = function(gid) {
+		var hasChild = false;
+		for (var li in RVS.L) {
+			if(!RVS.L.hasOwnProperty(li) || hasChild) continue;
+			hasChild = RVS.L[li].group.puid==gid;
+		}
+		return hasChild;
+	}
 
 
 	/*
@@ -586,6 +600,7 @@
 			RVS.S.llcache[RVS.S.slideId].tlLayerList.parentElement.removeChild(RVS.S.llcache[RVS.S.slideId].tlLayerList);
 		}
 
+
 		drawListElements({list:layerOrder, container:RVS.S.llcache[RVS.S.slideId].tlLayerList,showEmpty:true, cIdName:'tllayerlist_element'});
 
 		RVS.C.layerListWrap[0].appendChild(RVS.S.llcache[RVS.S.slideId].tlLayerList)
@@ -659,7 +674,6 @@
 
 	function innerListOrder(list,puid) {
 		list = getLayersSortedInGroup(puid);
-
 		for (var l in list) {
 			if(!list.hasOwnProperty(l)) continue;
 			if (list[l].type==="zone" || list[l].type==="row" || list[l].type==="column" || list[l].type==="group")
@@ -671,7 +685,10 @@
 	function getLayersSortedInGroup(puid) {
 		var list = [],withZero,moreZeros=false;
 		for (var l in RVS.L) if(RVS.L.hasOwnProperty(l) && (""+RVS.L[l].group.puid==""+puid)) list.push({id:RVS.L[l].uid,  sort:RVS.L[l].group.groupOrder , zIndex:RVS.L[l].position.zIndex, type:RVS.L[l].type, alias:RVS.L[l].alias});
-		for (var i in list) if (list[i].sort==0 || list[i].sort=="0") if (withZero===undefined) withZero = i; else {list[i].sort = list[i].zIndex;moreZeros = true;}
+
+		for (var i in list) {
+			if (list[i].sort==0 || list[i].sort=="0") if (withZero===undefined) withZero = i; else {list[i].sort = list[i].zIndex;moreZeros = true;}
+		}
 		if (moreZeros) list[withZero].sort = list[withZero].zIndex;
 
 
@@ -698,7 +715,8 @@
 
 	function createLayerListElement(_,withchildren) {
 		let frag = RVS.F.cF();
-		let ticon = RVS.F.getLayerIcon(_.type,_.subtype);
+
+		let ticon = RVS.F.getLayerIcon(_.linebreak?'linebreak':_.type,_.subtype);
 
 		let markup = RVS.F.cE({cN:'layerlist_element_innerwrap',ds:{layerid:_.uid, id:_.uid}});
 		let cleft = RVS.F.cE({cN:'context_left'});
@@ -714,6 +732,7 @@
 
 		markup.appendChild(cleft);
 		cleft.appendChild(RVS.F.cE({cN:'layer_has_action'}));
+		cleft.appendChild(RVS.F.cE({cN:'layer_raz_info', id:'layer_raz_info_'+RVS.S.slideId+'_'+_.uid, txt:_.position.position+" <b>"+(_.position.zIndex<10 ? "0" : "")+_.position.zIndex+'</b><label_icon class="ui_free_layers"></label_icon>'}));
 		cleft.appendChild(RVS.F.cE({cN:'layerlist_element_level',icon:{c:'arrow_drop_down'}}));
 		cleft.appendChild(RVS.F.cE({cN:'layerlist_element_type',icon:{c:ticon}}));
 		cleft.appendChild(alias);
@@ -783,6 +802,14 @@
 		});
 	}
 
+	RVS.F.updateRelAbsZinTXT = function(layerid) {
+		if (layerid===undefined && RVS.L[layerid!==undefined]) return;
+		requestAnimationFrame(function() {
+			RVS.H[layerid].relabszin = RVS.H[layerid].relabszin===undefined ? document.getElementById('layer_raz_info_'+RVS.S.slideId+'_'+layerid) : RVS.H[layerid].relabszin;
+			RVS.H[layerid].relabszin.innerHTML = RVS.L[layerid].position.position+" <b>"+(RVS.L[layerid].position.zIndex<10 ? "0" : "")+RVS.L[layerid].position.zIndex+'</b><label_icon class="ui_free_layers"></label_icon>';
+		});
+	}
+
 	function listElementSortable(obj) {
 		var contHeight,
 			contY,
@@ -802,8 +829,15 @@
 				if (this.dataset.type==="row") RVS.TL.TL.addClass("layer_in_drag");
 				var jsub = jQuery(RVS.S.llcache[RVS.S.slideId][obj.cacheSub]);
 				ui.helper.width(jsub.width());
+				RVS.F.updateRelAbsZinTXT(this.dataset.id);
 				ps  = jQuery(obj.container).closest('.ps');
 				contHeight = ps.height();
+				RVS.S.DaD = RVS.S.DaD==undefined ? {} : RVS.S.DaD;
+				RVS.S.DaD.dragInListFrom = RVS.L[this.dataset.id].group.puid;
+				RVS.S.DaD.dragInListFromType = RVS.L[RVS.S.DaD.dragInListFrom]!==undefined ? RVS.L[RVS.S.DaD.dragInListFrom].type : undefined;
+				RVS.S.DaD.dragInListTempPos =  RVS.L[this.dataset.id].position.position;
+
+
 				// COLLAPSE COLUMNS BEFORE MOVE THEM
 				if (this.dataset.type === 'column') jQuery('#'+obj.cIdName+'_'+RVS.S.slideId+'_'+this.dataset.puid).find('.'+obj.cIdName+'_column').each(wasCollapsed);
 				// COLLAPSE ROWS BEFORE MOVE THEM
@@ -835,6 +869,7 @@
 				eY = event.pageY;
 				if (res!==false) {
 					jQuery('.'+obj.cIdName).removeClass("beforeitemdrop").removeClass("afteritemdrop").removeClass("incolumntopdrop").removeClass("incolumndrop").removeClass("afterzonedrop");
+					jQuery('.grouptodropinlist').removeClass('grouptodropinlist');
 					RVS.S.llcache[RVS.S.slideId][obj.cacheSub].classList.remove("sortToTheEnd");
 					if (event.pageY<listElementPosArray[1].y || res.found===true) {
 						var classAddition = "",
@@ -848,9 +883,9 @@
 								if (res.puid === "top" || res.puid==="bottom" || res.puid==="middle") classAddition = res.cover<hs ? "beforeitemdrop" : "afteritemdrop";
 								if (res.id === "top" || res.id==="bottom" || res.id==="middle") classAddition = res.cover<hs && res.id!=="top" ? "beforeitemdrop" : "afteritemdrop";
 							break;
-							case "group":
+							/*case "group":
 								classAddition = res.cover<hs ? 	"beforeitemdrop" : 	"afteritemdrop";
-							break;
+							break;*/
 							case "column":
 								jQuery('#'+obj.cIdName+'_'+RVS.S.slideId+'_'+this.dataset.puid).addClass("incolumndrop");
 								if (res.puid === this.dataset.puid) classAddition = res.cover<hs ? 	"beforeitemdrop" : 	"afteritemdrop";
@@ -858,18 +893,47 @@
 							default:
 								if (res.type!=="zone" && res.type!=="row") {
 									if (res.puid!==-1 && (res.type!=="zone" && res.type!=="column" && res.type!=="row" && res.type!=="group")) jQuery('#'+obj.cIdName+'_'+RVS.S.slideId+'_'+res.puid).addClass("incolumndrop");
-
-									classAddition = res.cover<hs ? res.type!=="column" ? "beforeitemdrop" : "afteritemdrop incolumntopdrop" :
+									var isChild = RVS.F.isParent(this.dataset.id,res.id);
+									classAddition = this.dataset.type=="group" && isChild ? "" :
+													this.dataset.type=="group" && res.type=="group" && res.puid!=="-1" ? res.cover<12 ? "beforeitemdrop" : "" :
+													this.dataset.type=="group" && (""+res.puid)!=="-1" && RVS.L[res.puid]!==undefined && (""+RVS.L[res.puid].group.puid)!=="-1" ? "" :
+												res.type=="group" && !RVS.F.hasChildren(res.id) ?
+												res.cover<12 ? "beforeitemdrop" :
+												res.cover>11 && res.cover<24 ?  "incolumntopdrop" :"afteritemdrop"
+												:
+												res.cover<hs ? res.type!=="column" ? "beforeitemdrop" : "afteritemdrop" :
 												res.type!=="row" && res.type!=="column" && res.type!=="group" ? "afteritemdrop" :
 												res.type==="column"  || res.type==="group" ? "incolumntopdrop" : classAddition;
 								} else {
 									if (res.cover<hs && res.type==="zone" && res.id==="top") classAddition = "beforeitemdrop";
 									if (res.type==="zone" && res.id==="bottom") classAddition = "afterzonedrop";
 								}
-
 							break;
 						}
-						jQuery('#'+obj.cIdName+'_'+RVS.S.slideId+'_'+res.id).addClass(classAddition);
+
+						var el,resel = document.getElementById(obj.cIdName+'_'+RVS.S.slideId+'_'+res.id);
+
+
+
+						if ((res.type!=="group" && res.type!=="column" && res.puid!=="-1" && RVS.L[res.puid].type=="column") || (res.type=="column" && this.dataset.type=="column")) {
+							el = document.getElementById(obj.cIdName+'_'+RVS.S.slideId+'_'+res.puid);
+							if (el!==null && el!==undefined) el.classList.add('grouptodropinlist');
+						} else
+						if (res.type=="column" && this.dataset.type!=="group") {
+
+							el = document.getElementById(obj.cIdName+'_'+RVS.S.slideId+'_'+res.id);
+							if (el!==null && el!==undefined) el.classList.add('grouptodropinlist');
+						}
+						if ((""+res.puid)!=="-1" && this.dataset.type=="group" && (RVS.L[res.puid]!==undefined && ((""+RVS.L[res.puid].group.puid)!=="-1" ||  (classAddition!=="beforeitemdrop" && classAddition!=="afteritemdrop")))) {
+
+						} else
+						if ((""+res.puid)!=="-1" && RVS.L[res.puid].type=="group" && (res.type!=="group" || classAddition=="beforeitemdrop" || this.dataset.type=="group")) {
+								el = document.getElementById(obj.cIdName+'_'+RVS.S.slideId+'_'+res.puid);
+								if (el!==null && el!==undefined) el.classList.add('grouptodropinlist');
+							} else
+						if (classAddition.indexOf('incolumntopdrop')>=0 && res.type=="group") resel.classList.add('grouptodropinlist');
+
+						if (classAddition!=="" && resel!==undefined) resel.classList.add(classAddition);
 					} else {
 						//if (this.dataset.type!=="column") RVS.S.llcache[RVS.S.slideId][obj.cacheSub].addClass("sortToTheEnd");
 					}
@@ -877,10 +941,13 @@
 			},
 			stop:function(event,ui) {
 				if (this.dataset.type=="zone") return;
+				var tid = this.dataset.id;
 				RVS.TL.TL.removeClass("layer_in_drag");
 				clearInterval(scTimer);
 				jQuery('.'+obj.cIdName).removeClass("beforeitemdrop").removeClass("afteritemdrop").removeClass("incolumntopdrop").removeClass("incolumndrop");
 				RVS.S.llcache[RVS.S.slideId][obj.cacheSub].classList.remove("sortToTheEnd");
+				jQuery('.grouptodropinlist').removeClass('grouptodropinlist');
+
 
 				// UNCOLLAPSE COLUMNS AFTER DRAG
 				if (this.dataset.type === 'column') jQuery('#'+obj.cIdName+'_'+RVS.S.slideId+'_'+this.dataset.puid).find('.'+obj.cIdName+'_column').each(resetWasCollapsed);
@@ -902,18 +969,28 @@
 								if (res.cover<hs && res.id==="middle") { res.id="top"; target="zonebottom";}
 								if (res.cover<hs && res.id==="bottom") { res.id="middle"; target="zonebottom";}
 							break;
-							case "group":
+						/*	case "group":
 								target = res.cover<hs ? "before" : "after";
-							break;
+							break;*/
 							case "column":
 								if (res.puid === this.dataset.puid) target = res.cover<hs ? "before" : "after";
 							break;
 							default:
-								target = (res.cover<hs && res.type!=="column" && res.type!=="row" && (res.type!=="zone" || res.id==="top")) ? "before" :
+								var isChild = RVS.F.isParent(tid,res.id);
+
+								target =
+										this.dataset.type=="group" && isChild ? target :
+										this.dataset.type=="group" && res.type=="group" && res.puid!=="-1" ?
+										res.cover<hs-1 ? "before" : "" :
+										res.type=="group" && !RVS.F.hasChildren(res.id) ?
+										res.cover<12 ? "before" :
+										res.cover>11 && res.cover<24 ?  "group" :"after"
+										:
+										 (res.cover<hs && res.type!=="column" && res.type!=="row" && (res.type!=="zone" || res.id==="top")) ? "before" :
 										 (res.cover<hs && res.type==="column") ? "column" :
 										 (res.cover>(hs-1) && (res.type!=="row" && res.type!=="column" && res.type!=="group" && res.type!=="zone")) ? "after" :
 										 (res.cover>(hs-1) && res.type==="column") ? "column" :
-										 (res.cover>(hs-1) && res.type==="group" && res.puid==-1) ? "group" :
+										 (res.cover>(hs-1) && res.type==="group") ? "group" :
 										 ((res.puid==-1 || res.puid==="bottom") && res.type==="zone") ? "after" : target;
 							break;
 						}
@@ -928,7 +1005,17 @@
 							break;
 						}
 					}
-					if (target!=="") RVS.F.sortLayer({layer:this.dataset.id, target:target, env:res.id});
+
+					if (RVS.S.DaD.dragInListTempPos=="absolute" && target==="column" && RVS.S.DaD.dragInListFromType!=="column") {
+							RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+tid+'.position.position',val:"relative", uid:tid});
+					}
+
+					if (target!=="") RVS.F.sortLayer({layer:tid, target:target, dropto:target, env:res.id});
+
+
+					RVS.F.updateLayerPositionClass(tid);
+					RVS.F.selectedLayersVisualUpdate();
+
 				}
 			},
 			revert:"true"
@@ -964,19 +1051,22 @@
 
 	//SORT LAYER INTO OTHER POSITION AFTER DROP/DRAG
 	RVS.F.sortLayerStepOne = function(obj) {
+
 		if (obj.env!==obj.layer) {
 				var pre = '#tllayerlist_element_'+RVS.S.slideId+'_',
 					el = jQuery(pre+obj.layer);
+
 			switch (obj.target) {
 				case "after":
-					if (RVS.L[obj.layer].type=="group" && RVS.L[obj.env].group.puid!==-1) obj.env = RVS.L[obj.env].group.puid;
+					//Check if Object is a Group, and if depth is not deeper than 1 level
+					if (RVS.L[obj.layer].type=="group" && RVS.F.getLayerDepth({layer:obj.env}) >1)  obj.env = RVS.L[RVS.L[obj.env].group.puid]==undefined || RVS.L[RVS.L[obj.env].group.puid].type!=="column" ? RVS.L[obj.env].group.puid : obj.env;
 					if (RVS.L[obj.layer].type!=="row" && RVS.L[obj.env].type==="row")
 						el.appendTo('#tl_layerList_'+RVS.S.slideId);
 					else
 						el.insertAfter(pre+obj.env);
 				break;
 				case "before":
-					if (RVS.L[obj.layer].type=="group" && RVS.L[obj.env].group.puid!==-1) obj.env = RVS.L[obj.env].group.puid;
+					if (RVS.L[obj.layer].type=="group" && RVS.F.getLayerDepth({layer:obj.env}) >1) obj.env = RVS.L[RVS.L[obj.env].group.puid]==undefined || RVS.L[RVS.L[obj.env].group.puid].type!=="column" ? RVS.L[obj.env].group.puid : obj.env;
 					if (RVS.L[obj.layer].type!=="row" && RVS.L[obj.env].type==="row")
 						el.appendTo('#tl_layerList_'+RVS.S.slideId);
 					else
@@ -993,14 +1083,17 @@
 						el.appendTo('#tl_layerList_'+RVS.S.slideId);
 					}
 				break;
+				case "firstingroup":
+					el.prependTo(pre+obj.env+'>ul');
+				break;
 				case "group":
-					el.prependTo(pre+obj.env+' ul');
+					el.prependTo(pre+obj.env+'>ul');
 				break;
 				case "column":
-					el.prependTo(pre+obj.env+' ul');
+					el.prependTo(pre+obj.env+'>ul');
 				break;
 				case "columnend":
-					el.appendTo(pre+obj.env+' ul');
+					el.appendTo(pre+obj.env+'>ul');
 				break;
 				case "veryend":
 					if (RVS.L[obj.layer].type=="row")
@@ -1013,13 +1106,17 @@
 	};
 
 	RVS.F.sortLayerStepTwo = function(obj) {
-		if (obj.dropto==="column") {
+		if (obj.dropto==="column" && obj.pospos!=="absolute") {
 				RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+obj.layer+'.position.x.#size#.v',val:0});
 				RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+obj.layer+'.position.y.#size#.v',val:0});
 				RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+obj.layer+'.position.horizontal.#size#.v',val:"left"});
 				RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+obj.layer+'.position.vertical.#size#.v',val:"top"});
 			}
-		if (obj.resetPosition!==undefined && (obj.dropto==="group" || obj.dropto==="root")) {
+		if (obj.resetPosition!==undefined && (obj.dropto==="group" || obj.dropto==="root" || (obj.dropto==="column" && obj.pospos=="absolute"))) {
+			if (obj.dropto==="root") {
+				RVS.L[obj.layer].position.ingrouppositoin = RVS.L[obj.layer].position.position;
+				RVS.L[obj.layer].position.position = "absolute";
+			}
 			var X = obj.resetPosition.x - RVS.H[obj.layer].w_offsetcache.horizontal,
 				Y = obj.resetPosition.y - RVS.H[obj.layer].w_offsetcache.vertical;
 			RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+obj.layer+'.position.x.#size#.v',val:X});
@@ -1038,7 +1135,7 @@
 		for (si in RVS.selLayers) {
 			if(!RVS.selLayers.hasOwnProperty(si)) continue;
 			obj.layer = RVS.selLayers[m-si];
-			if (RVS.L[obj.layer].type!=="row" && RVS.L[obj.layer].type!=="column" && RVS.L[obj.layer].type!=="group")
+			if (RVS.L[obj.layer].type!=="row" && RVS.L[obj.layer].type!=="column" && RVS.L[obj.layer].type!=="groupi")
 				RVS.F.sortLayerStepOne(obj);
 		}
 
@@ -1046,7 +1143,7 @@
 			if(!RVS.selLayers.hasOwnProperty(si)) continue;
 			obj.layer = RVS.selLayers[m-si];
 			obj.positionoffset = si;
-			if (RVS.L[obj.layer].type!=="row" && RVS.L[obj.layer].type!=="column" && RVS.L[obj.layer].type!=="group")
+			if (RVS.L[obj.layer].type!=="row" && RVS.L[obj.layer].type!=="column" && RVS.L[obj.layer].type!=="groupi")
 				RVS.F.sortLayerStepTwo(obj);
 		}
 		updatePUIDs();
@@ -1058,6 +1155,7 @@
 
 	// SORT 1 SINGLE LAYER INTO A NEW POSITION
 	RVS.F.sortLayer = function(obj) {
+
 		RVS.F.sortLayerStepOne(obj);
 		setTimeout(function() {
 			RVS.F.openBackupGroup({id:"layersorting",txt:"Layer Sorting",icon:"sort_by_alpha"});
@@ -1069,6 +1167,9 @@
 			if (obj.redraw)
 				RVS.F.updateSelectedHtmlLayers(true);
 			RVS.F.updateEasyInputs({container:jQuery('.layer_settings_collector'), path:RVS.S.slideId+".layers.", trigger:"init", multiselection:true});
+			RVS.F.updateLayerPositionClass(obj.uid);
+			RVS.F.selectedLayersVisualUpdate();
+
 		},50);
 	};
 
@@ -1103,44 +1204,30 @@
 
 	}
 
-	RVS.F.updateZIndexTable = function() {
-		var els = jQuery('#tl_layerList_'+RVS.S.slideId+' .layerlist_element'),
-			max = els.length+5,
-			min = 0,
-			cur = 0,
-			onroot = 0,
-			ind = 0,
-			groups = {};
+	RVS.F.getChildrenAmount = function(layerid) {
+		var a = RVS.F.getLayerChildren({layerid: layerid=="root" ? "-1" : layerid,ignoreframes:true, onelevel:true, removeZones:true});
+		var l=0; for (var i in a) if (a.hasOwnProperty(i)) l++;
+		return l;
+	}
+
+	RVS.F.updateZIndexTable = function(ignoreUndo) {
+		var els = jQuery('#tl_layerList_'+RVS.S.slideId+' .layerlist_element'),G = {},puid;
+
+
 		for (var el in els) {
-			if(!els.hasOwnProperty(el)) continue;
-			if (els[el] !== undefined && els[el].dataset!==undefined && els[el].dataset.id!==undefined)	{
-				ind++;
-				var c_puid = RVS.L[els[el].dataset.id].group.puid;
-
-				if (c_puid===-1 || RVS.L[c_puid].type==="group")
-					max--;
-				else
-					min++;
-				cur = (c_puid===-1 || RVS.L[c_puid].type==="group") ? max : min;
-
-				groups[c_puid] = groups[c_puid]===undefined ? 0 : groups[c_puid];
-
-				RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+els[el].dataset.id+'.position.zIndex',val:cur});
-
-				if (c_puid!==-1 && RVS.L[c_puid].type!=="group") {
-					RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+els[el].dataset.id+'.group.groupOrder',val:groups[c_puid]});
-					groups[c_puid]++;
- 				} else {
- 					onroot++;
- 					RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+els[el].dataset.id+'.group.groupOrder',val:cur});
- 				}
- 				//ZONE zINDEX NEED TO BE SET STRAIGHT
-				if (RVS.L[els[el].dataset.id].type!=="zone") tpGS.gsap.set(RVS.H[els[el].dataset.id].w,{zIndex:cur});
-
-			}
+			if(!els.hasOwnProperty(el) || !(els[el] !== undefined && els[el].dataset!==undefined && els[el].dataset.id!==undefined)) continue;
+			var puid = RVS.L[els[el].dataset.id].group.puid;
+			puid = puid == "-1" || puid===-1 ? "root" : puid;
+			G[puid] = G[puid]===undefined ? {min:0, max:RVS.F.getChildrenAmount(puid)+5} : G[puid];
+			RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+els[el].dataset.id+'.position.zIndex',val:G[puid].max});
+			RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+els[el].dataset.id+'.group.groupOrder',val:(puid=="root" || (RVS.L[puid]!==undefined && RVS.L[puid].type==="group") ? G[puid].max : G[puid].min)});
+			if (RVS.L[els[el].dataset.id].type!=="zone") tpGS.gsap.set(RVS.H[els[el].dataset.id].w,{zIndex:G[puid].max});
+			G[puid].max--;
+			G[puid].min++;
 		}
+
 		RVS.F.updateZoneZIndexes();
 
-	};
+	}
 
 })();

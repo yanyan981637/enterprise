@@ -16,23 +16,30 @@ namespace Magezon\ProductPageBuilder\Plugin\Block\Product\View;
 
 class Gallery
 {
+    /**
+     * @param \Magento\Catalog\Block\Product\View\Gallery $subject
+     * @param callable $proceed
+     * @param $name
+     * @param $module
+     * @return mixed
+     */
     public function aroundGetVar(
-    	\Magento\Catalog\Block\Product\View\Gallery $subject,
-		callable $proceed,
-    	$name,
-    	$module = null
+        \Magento\Catalog\Block\Product\View\Gallery $subject,
+        callable $proceed,
+        $name,
+        $module = null
     ) {
-    	if ($element = $subject->getProductPageBuilderElement()) {
-    		if (!$element->getUseDefaultThemeSettings()) {
-	            $path = str_replace('/', '_', $name);
-	            if ($element->hasData($path)) {
-	                return $element->getData($path);
-	            }
-	        }
+        if ($element = $subject->getProductPageBuilderElement()) {
+            if (!$element->getUseDefaultThemeSettings()) {
+                $path = str_replace('/', '_', $name);
+                if ($element->hasData($path)) {
+                    return $element->getData($path);
+                }
+            }
         }
 
         $result = $proceed($name, $module);
 
-		return $result;
+        return $result;
     }
 }

@@ -1,13 +1,13 @@
 /********************************************
  * REVOLUTION EXTENSION - NAVIGATION
- * @date: 01.12.2020
+ * @date: 06.10.2022
  * @requires rs6.main.js
  * @author ThemePunch
 *********************************************/
 
 (function($) {
     "use strict";
-    var version="6.3.2";
+var version="6.6.0";
     jQuery.fn.revolution = jQuery.fn.revolution || {};
     var _R = jQuery.fn.revolution;
 
@@ -181,7 +181,7 @@
             } else el[i].classList.remove('selected');
         },
         transferParams : function(w,p) {
-            if (p!==undefined) for (var i in p.params)  w = w.replace(p.params[i].from,p.params[i].to);
+            if (p!==undefined) for (var i in p.params) if (p.params.hasOwnProperty(i)) w = w.replace(p.params[i].from,p.params[i].to);
             return w;
         },
 
@@ -285,7 +285,7 @@
             hdResets(_d);
 
             // HOVER OVER ELEMENTS SHOULD SHOW/HIDE NAVIGATION ELEMENTS
-            _R[id].cpar.on("mouseenter mousemove",function(e) {
+		_R[id].cpar.on(_R.ISM ? "touchstart touchmove" : "mouseenter mousemove",function(e) {
                 if (e.target!==undefined && e.target.className!==undefined && typeof e.target.className==="string" && e.target.className.indexOf("rs-waction")>=0) return;
                 if (_R[id].tpMouseOver!==true) {
                     if (_R[id].firstSlideAvailable) {
@@ -303,7 +303,7 @@
                 }
             });
 
-            _R[id].cpar.on("mouseleave ",function() {
+		_R[id].cpar.on(_R.ISM ? "touchend" : "mouseleave ",function() {
                 _R[id].tpMouseOver=false;
                 hidaNavElements(id);
             });
@@ -448,36 +448,58 @@
 
         if (_R[id].navigation.mouseScrollNavigation!==true && _R[id].navigation.mouseScrollNavigation!=="on" && _R[id].navigation.mouseScrollNavigation!=="carousel") return;
 
-        _R[id].c.on('wheel mousewheel DOMMouseScroll', function(e) {
+	_R[id].c[0].addEventListener('wheel', wheelListener, {passive: false});
 
-            var y = normalizeWheel(e.originalEvent),
+	function wheelListener(e) {
+		var y = normalizeWheel(e),
                 ret = false,
                 fs = _R[id].pr_active_key==0 || _R[id].pr_processing_key == 0,
                 ls = _R[id].pr_active_key==_R[id].slideamount-1 ||  _R[id].pr_processing_key == _R[id].slideamount-1,
                 b = _R[id].topc!==undefined ? _R[id].topc[0].getBoundingClientRect() : _R[id].canv.height === 0 ? _R[id].cpar[0].getBoundingClientRect() : _R[id].c[0].getBoundingClientRect(),
-                visiblesize = b.top>0 && b.bottom<_R.winH ? 1 : b.top>=0 && b.bottom>=_R.winH ? (_R.winH-b.top) / b.height : b.top<=0 && b.bottom<=_R.winH ? b.bottom / b.height : 1;
+			visiblesize = b.top >= 0 && b.bottom <= _R.winH ? 1 : b.top >= 0 && b.bottom >= _R.winH ? (_R.winH - Math.round(b.top)) / b.height : b.top <= 0 && b.bottom <= _R.winH ? Math.round(b.bottom) / b.height : 1;
 
-            if (visiblesize>=_R[id].navigation.wheelViewPort) {
+			var dir = y<0 ? -1 : 1,
+				wVP = _R[id].navigation.wheelViewPort;
 
+			visiblesize = Math.round(visiblesize*100) / 100;
                 if (_R[id].navigation.mouseScrollReverse=="reverse") {var a = ls; ls = fs;fs = a;}
+
+		if(wVP - visiblesize <= _R[id].navigation.threshold/100 && !(visiblesize>=wVP)
+			&& !((b.top >= 0 && dir === -1) || b.top <= 0 && dir === 1)) {
+			e.preventDefault();
+			if(!_R[id].mScrollTween){
+				var scrollTarget = _R[id].navigation.target === 'window' || !_R[id].navigation.target ? window : _R[id].navigation.target;
+				_R[id].mScrollTween = tpGS.gsap.to(scrollTarget, {
+					duration:  jQuery.fn.revolution.isWebkit() ? .1 : 0.7,
+					scrollTo:{
+						y: _R[id].topc,
+					},
+					ease: "power2.out",
+					onComplete: function (){
+						_R[id].mScrollTween.kill();
+						delete _R[id].mScrollTween;
+					}
+				});
+			}
+
+		} else if (visiblesize>=wVP) {
 
                 if (_R[id].sliderType==="carousel" && _R[id].carousel.snap===false)
                     _R.swipeAnimate({id:id,to:(_R[id].carousel.slide_offset+(y*5)),direction:y<0 ? "left" : "right",easing:"power2.out",phase:"move"});
                 else {
 
-                    var dir = y<0 ? -1 : 1;
-
-                    _R[id].sc_indicator_dir = (_R[id].navigation.mouseScrollReverse==="reverse" && dir<0) || (_R[id].navigation.mouseScrollReverse!=="reverse" && dir>0) ? 0 : 1;
+				_R[id].sc_indicator_dir = (_R[id].navigation.mouseScrollReverse==="reverse" && dir<0) || (_R[id].navigation.mouseScrollReverse!=="reverse" && dir>0) ? (_R[id].navigation.mouseScrollReverse!=="reverse" ? 0 : 1) : (_R[id].navigation.mouseScrollReverse!=="reverse" ? 1: 0);
                     if (_R[id].navigation.mouseScrollNavigation=="carousel" || (_R[id].sc_indicator_dir===0 && !ls) || (_R[id].sc_indicator_dir===1 && !fs)) {
-                        if (_R[id].pr_processing_key===undefined && _R[id].justmouseScrolled!==true) {
+					if (_R[id].pr_processing_key===undefined && _R[id].justmouseScrolled!==true) {
                             _R[id].sc_indicator="arrow";
                             if (_R[id].sliderType==="carousel") _R[id].ctNavElement=true;
-                            _R.callingNewSlide(id,_R[id].sc_indicator_dir===0 ? 1 : -1,_R[id].sliderType==="carousel");
+						_R.callingNewSlide(id,_R[id].sc_indicator_dir===0 ? (_R[id].navigation.mouseScrollReverse==="reverse" ? -1 : 1) : (_R[id].navigation.mouseScrollReverse==="reverse" ? 1 : -1),_R[id].sliderType==="carousel");
                             _R[id].justmouseScrolled = true;
                             setTimeout(function() {
                                 _R[id].justmouseScrolled=false;
                             },_R[id].navigation.wheelCallDelay)
-                        } else delete _R[id].sc_indicator_dir;
+					}
+					//else delete _R[id].sc_indicator_dir;
                     } else if (_R[id].justmouseScrolled!==true) ret = true;
                 }
 
@@ -489,7 +511,7 @@
                 }
             }
 
-        });
+	}
     };
 
     var getClosest = function (elem, tagName) {
@@ -578,6 +600,9 @@
                         break;
                         case "end":
                         case "cancel":
+						if(_R[id].navigation.draggable && _R[id].navigation.draggable.enable) _R[id].navigation.draggable.enable();
+						if(_.draggable && _.draggable.enable) _.draggable.enable();
+
                             curpos = newpos + (tdir === "vertical" ? distanceY : distanceX);
                             curpos = tdir==="vertical" ? curpos < 0-(el.height()-t.height()) ? 0-(el.height()-t.height()) : curpos : curpos < 0-(el.width()-t.width()) ? 0-(el.width()-t.width()) : curpos;
                             curpos = curpos > 0 ? 0 : curpos;
@@ -605,119 +630,57 @@
         */
 
 
-        if ((_R[id].sliderType!=="carousel" && ((_R.ISM && _R[id].navigation.touch.touchenabled) || (_R.ISM!==true && _R[id].navigation.touch.touchOnDesktop))) ||
-            (_R[id].sliderType==="carousel" && ((_R.ISM && _R[id].navigation.touch.mobileCarousel) || (_R.ISM!==true && _R[id].navigation.touch.desktopCarousel)))
-           ){
-            _R[id].preventClicks = false;
-            _R[id].c.on('click', function(e){
-                if(_R[id].preventClicks) e.preventDefault();
-            });
-            _R[id].c.rsswipe({
-                allowPageScroll:"vertical",
-                triggerOnTouchLeave:true,
-                treshold:_R[id].navigation.touch.swipe_treshold,
-                fingers:_R[id].navigation.touch.swipe_min_touches>5 ? 1 : _R[id].navigation.touch.swipe_min_touches,
-                excludedElements:"label, button, input, select, textarea, .noSwipe, .rs-nav-element",
+	if (_R[id].sliderType === "carousel"){
+		_R.setupCarousel(id);
+	}
 
-                swipeStatus:function(event,phase,direction,distance,duration,fingerCount,fingerData) {
-                    _R[id].preventClicks = true;
-                    var	distanceX = phase==="start" ? 0 : ONANDROID ? fingerData[0].end.x - fingerData[0].start.x : event.pageX - _.screenX,
-                        distanceY = phase==="start" ? 0 : ONANDROID ? fingerData[0].end.x - fingerData[0].start.y : event.pageY - _.screenY;
+	if(_R[id].sliderType!=="carousel" && ((_R.ISM && _R[id].navigation.touch.touchenabled) || (_R.ISM!==true && _R[id].navigation.touch.touchOnDesktop))){
+		_R[id].navigation.proxy = document.createElement('div');
+		_R[id].navigation.draggable = tpGS.draggable.create(_R[id].navigation.proxy, {
+			trigger: _R[id].c[0],
+			type: _R[id].navigation.touch.swipe_direction === "horizontal" ? "x" : "y",
+			cursor: 'pointer',
+			lockAxis: true,
+			allowContextMenu: true,
+			allowEventDefault: true,
+			onPress: function(e){
+				if(_R.closestClass(e.target, 'rs-nav-element')) {
+					_R[id].navigation.draggable.endDrag();
+					_R[id].navigation.draggable.disable();
+				}
+			},
+			onDragStart: function(){
+				var nav = _R[id].navigation;
+				var key = _R[id].pr_processing_key !== undefined ? _R[id].pr_processing_key : _R[id].pr_active_key === undefined ? 0 : _R[id].pr_active_key;
 
-
-                    if (_R[id].sliderType==="carousel" && _R[id].carousel.wrapwidth>_R[id].carousel.maxwidth && _R[id].carousel.horizontal_align!=="center") return;
-
-                    // SWIPE OVER SLIDER, TO SWIPE SLIDES IN CAROUSEL MODE
-                    if (_R[id].sliderType==="carousel") {
-
-                        if (_.preventSwipe || (_R.ISM && (direction==="left" || direction==="right"))) event.preventDefault();
-                        if (_.positionanim!==undefined) _.positionanim.pause();
-                        _.carouselAutomatic = false;
-
-                        switch (phase) {
-                            case "start":
-                                clearTimeout(_.swipeMainTimer);
-                                _.beforeSwipeOffet = _.slide_offset;
-                                _.focusedBeforeSwipe=_.focused;
-                                _.beforeDragStatus = _R[id].sliderstatus;
-                                _R[id].c.trigger('stoptimer');
-                                _.swipeStartPos = ONANDROID ? fingerData[0].start.x : event.pageX;
-                                _.swipeStartTime = new Date().getTime();
-                                _.screenX = ONANDROID ? fingerData[0].end.x : event.pageX;
-                                _.screenY = ONANDROID ? fingerData[0].end.y : event.pageY;
-                                if (_.positionanim!==undefined) {
-                                        _.positionanim.pause();
-                                        _.carouselAutomatic = false;
-                                }
-                                _.overpull = "none";
-                                _.wrap.addClass("dragged");
-                            break;
-                            case "move":
-
-                                    if (direction==="left" || direction==="right") _.preventSwipe = true;
-                                    _.justDragged = true;
-                                    if (Math.abs(distanceX)>=10 || _R[id].carousel.isDragged) {
-                                        _R[id].carousel.isDragged = true;
-                                        _R[id].c.find('.rs-waction').addClass("tp-temporarydisabled");
-                                        _.CACHE_slide_offset = _.beforeSwipeOffet + distanceX;
-
-                                        if (!_.infinity) {
-                                            var bb = _.horizontal_align==="center" ? ((_.wrapwidth/2-_.slide_width/2) - _.CACHE_slide_offset) / _.slide_width : (0 - _.CACHE_slide_offset) / _.slide_width;
-                                            if ((_.overpull ==="none" || _.overpull===0)  && (bb<0 || bb>_R[id].slideamount-1)) _.overpull =  distanceX;
-                                            else
-                                            if (bb>=0 && bb<=_R[id].slideamount-1 && ((bb>=0 && distanceX>_.overpull) || (bb<=_R[id].slideamount-1 && distanceX<_.overpull))) _.overpull = 0;
-                                            _.CACHE_slide_offset = bb<0 ? _.CACHE_slide_offset+ (_.overpull-distanceX)/1.5 + Math.sqrt(Math.abs((_.overpull-distanceX)/1.5)) :
-                                            bb>_R[id].slideamount-1 ? _.CACHE_slide_offset+ (_.overpull-distanceX)/1.5 - Math.sqrt(Math.abs((_.overpull-distanceX)/1.5)) : _.CACHE_slide_offset ;
-                                        }
-                                        _R.swipeAnimate({id:id,to:_.CACHE_slide_offset,direction:direction,easing:"power2.out",phase:"move"});
-
-                                    }
-                            break;
-
-                            case "end":
-                            case "cancel":
-                                    //duration !!
-                                    clearTimeout(_.swipeMainTimer);
-                                    _.swipeMainTimer = setTimeout(function() {
-                                        _.preventSwipe = false;
-                                    },500);
-                                    _R[id].carousel.isDragged = false;
-                                    _.wrap.removeClass("dragged");
-                                    _.swipeEndPos = ONANDROID ? fingerData[0].end.x : event.pageX;
-                                    _.swipeEndTime = new Date().getTime();
-                                    _.swipeDuration = _.swipeEndTime - _.swipeStartTime;
-                                    _.swipeDistance = _R.ISM ? (_.swipeEndPos - _.swipeStartPos) : (_.swipeEndPos - _.swipeStartPos)/1.5;
-                                    _.swipePower = _.swipeDistance / _.swipeDuration;
-                                    _.CACHE_slide_offset = _.slide_offset + (_.swipeDistance*Math.abs(_.swipePower));
-                                    if(Math.abs(distanceX) < 5 && Math.abs(distanceY) < 5) break;	// Protection to avoid buggy behaviour on double clicks
-                                    _R.swipeAnimate({id:id,to:_.CACHE_slide_offset,direction:direction,fix:true,newSlide:true,easing:"power2.out",phase:"end"});
-
-
-                                    if (_.beforeDragStatus ==='playing') _R[id].c.trigger('restarttimer');
-                                    setTimeout(function() {_R[id].c.find('.rs-waction').removeClass("tp-temporarydisabled");},19);
-
-                            break;
-                        }
-                    }  else {
-                        if (phase=="end") {
-                            _R[id].sc_indicator="arrow";
-                            if ((_R[id].navigation.touch.swipe_direction=="horizontal" && direction == "left") || (_R[id].navigation.touch.swipe_direction=="vertical" && direction == "up")) {
-                                _R[id].sc_indicator_dir = 0;
-                                _R.callingNewSlide(id,1);
-                                return false;
-                            }
-                            if ((_R[id].navigation.touch.swipe_direction=="horizontal" && direction == "right") || (_R[id].navigation.touch.swipe_direction=="vertical" && direction == "down")) {
-                                _R[id].sc_indicator_dir = 1;
-                                _R.callingNewSlide(id,-1);
-                                return false;
-                            }
-                        }
-                        //if (_R[id].navigation.touch.drag_block_vertical) event.preventDefault();
-                        return true;
+				if(this.getDirection() === "up" && key == _R[id].slideamount - 1 ||
+				this.getDirection() === "down" && (key === 0)) {
+					nav.forceScroll = true;
                     }
+				else nav.forceScroll = false;
+
                 },
-                tap: function(){
-                    _R[id].preventClicks = false;
+			onDragEnd: function(){
+				_R[id].sc_indicator="arrow";
+				var direction = this.getDirection();
+				var nav = _R[id].navigation;
+
+				if(nav.forceScroll) {
+					if(this.getDirection() === "up") _R.document.scrollTop(_R[id].cpar.offset().top + _R[id].module.height);
+					else _R.document.scrollTop(_R.document.scrollTop() - (window.innerHeight - _R[id].cpar[0].getBoundingClientRect().top));
+					return;
+				}
+
+				if ((_R[id].navigation.touch.swipe_direction=="horizontal" && direction == "left") || (_R[id].navigation.touch.swipe_direction=="vertical" && direction == "up")) {
+					_R[id].sc_indicator_dir = 0;
+					_R.callingNewSlide(id,1);
+					return false;
+				}
+				if ((_R[id].navigation.touch.swipe_direction=="horizontal" && direction == "right") || (_R[id].navigation.touch.swipe_direction=="vertical" && direction == "down")) {
+					_R[id].sc_indicator_dir = 1;
+					_R.callingNewSlide(id,-1);
+					return false;
+				}
                 }
             });
         }
@@ -795,10 +758,10 @@
         for (var i in a.anims) {
             if (!a.anims.hasOwnProperty(i)) continue;
             switch (a.anims[i]) {
-                case "left":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {marginLeft:-50},{delay: a.animDelay, marginLeft:0,ease:"power3.inOut"}),0);break;
-                case "right":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {marginLeft:50},{delay: a.animDelay, marginLeft:0,ease:"power3.inOut"}),0);break;
-                case "top":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {marginTop:-50},{delay: a.animDelay, marginTop:0,ease:"power3.inOut"}),0);break;
-                case "bottom":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {marginTop:50},{delay: a.animDelay, marginTop:0,ease:"power3.inOut"}),0);break;
+                case "left":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {marginLeft:-50},{delay: a.animDelay, marginLeft:"0px",ease:"power3.inOut"}),0);break;
+                case "right":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {marginLeft:50},{delay: a.animDelay, marginLeft:"0px",ease:"power3.inOut"}),0);break;
+                case "top":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {marginTop:-50},{delay: a.animDelay, marginTop:"0px",ease:"power3.inOut"}),0);break;
+                case "bottom":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {marginTop:50},{delay: a.animDelay, marginTop:"0px",ease:"power3.inOut"}),0);break;
                 case "zoomin":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {scale:0.5},{delay: a.animDelay, scale:1,ease:"power3.inOut"}),0);break;
                 case "zoomout":tw.add(tpGS.gsap.fromTo(a.c[i],a.speed, {scale:1.2},{delay: a.animDelay, scale:1,ease:"power3.inOut"}),0);break;
             }

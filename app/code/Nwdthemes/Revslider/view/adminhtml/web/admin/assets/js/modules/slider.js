@@ -86,7 +86,7 @@ RVS.S.ulDIM = {width:0,height:0};
 
 		//Upate Global Sizes
 		for (var i in RVS.V.sizesold) if (RVS.V.sizesold.hasOwnProperty(i)) document.getElementById('global_size_'+RVS.V.sizesold[i]).innerHTML = i==0 ? "> "+RVS.ENV.glb_slizes[RVS.V.sizes[1]] :
-				i==3 ? "< "+RVS.ENV.glb_slizes[RVS.V.sizes[i]] : parseInt(RVS.ENV.glb_slizes[RVS.V.sizes[i]],0)-1+"px - " + RVS.ENV.glb_slizes[RVS.V.sizes[parseInt(i,0)+1]];
+            i==3 ? "< "+RVS.ENV.glb_slizes[RVS.V.sizes[i]] : parseInt(RVS.ENV.glb_slizes[RVS.V.sizes[i]],0)-1+" - " + RVS.ENV.glb_slizes[RVS.V.sizes[parseInt(i,0)+1]];
 
 	};
 
@@ -333,6 +333,11 @@ RVS.S.ulDIM = {width:0,height:0};
                 RVS.F.showWaitAMinute({fadeOut:2,text:RVS_LANG.updatingfields});
                 RVS.S.sliderInputFieldsInitialisedWarning=false;
             }
+			requestAnimationFrame(function() {
+				//RVS.DOC.trigger('device_area_dimension_update');
+				//setSlidesDimension(true, true);
+				updateSlideDimensionFields();
+			});
 
         },5);
     }
@@ -387,7 +392,19 @@ RVS.S.ulDIM = {width:0,height:0};
 
 		RVS.DOC.trigger('checkOnScrollSettings');
 
-
+		if(RVS.SLIDER.settings.pakps) {
+			RVS.C.RSPREM = document.getElementById('rs_premium');
+			if (RVS.C.RSPREM===undefined || RVS.C.RSPREM==null) return;
+			RVS.C.RSPREM.style.display="block";
+			if (RVS.ENV.activated) {
+				RVS.C.RSPREM.innerHTML = '<div class="rs_lib_premium_lila">'+RVS_LANG.premium_template+'</div><div class="rs_premium_content">'+RVS_LANG.rs_premium_content+'</div>';
+			} else {
+				RVS.C.RSPREM.innerHTML = '<div class="rs_lib_premium_red"><i class="material-icons">visibility_off</i>'+RVS_LANG.premiumunlock+'</div><div class="rs_premium_content">'+RVS_LANG.rs_premium_content+'</div>';
+				RVS.DOC.on('click','.rs_lib_premium_red',function() {
+					RVS.F.showRegisterSliderInfo();
+				});
+			}
+		}
 	};
 
 	/*
@@ -839,14 +856,20 @@ RVS.S.ulDIM = {width:0,height:0};
 		if (window.rs_jscss_editor==="FAIL") return;
 		if (typeof RevMirror==="undefined" || RevMirror===undefined) {
 			RVS.F.showWaitAMinute({fadeIn:500,text:RVS_LANG.loadingRevMirror});
-			RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.css');
-			jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.js',function() {
+			RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.min.css');
+			jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.min.js',function() {
 				setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
 				RVS.F.openSliderApi();
 			}).fail(function(a,b,c) {
-				setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
-				window.rs_jscss_editor = "FAIL";
-			});
+                RVS.F.loadCSS(RVS.ENV.plugin_url+'/admin/assets/css/RevMirror.css');
+                jQuery.getScript(RVS.ENV.plugin_url+'/admin/assets/js/plugins/RevMirror.js',function() {
+                    setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
+                    RVS.F.openSliderApi();
+                }).fail(function(a,b,c) {
+                    setTimeout(function() {RVS.F.showWaitAMinute({fadeOut:500});},100);
+                    window.rs_jscss_editor = "FAIL";
+                });
+            });
 		} else
 		if (window.rs_jscss_editor===undefined) {
 			window.rs_jscss_editor = RevMirror(document.getElementById('rs_css_js_area'), {
@@ -884,6 +907,18 @@ RVS.S.ulDIM = {width:0,height:0};
 	INIT CUSTOM EVENT LISTENERS FOR TRIGGERING FUNCTIONS
 	*/
 	function initLocalListeners() {
+
+		RVS.DOC.on('carouselverticaldouble',function(a,ds) {
+			if (ds!==undefined) {
+				var sel = document.getElementById(ds);
+				if (sel==undefined || sel==null) return;
+				RVS.F.openBackupGroup({id:"carouselverticalalign",txt:"Carousel Vertial Align",icon:"ui_y"});
+				RVS.F.updateSliderObj({path:'settings.carousel.vertical',val:sel.value});
+				RVS.F.closeBackupGroup({id:"carouselverticalalign"});
+				RVS.F.updateEasyInputs({container:jQuery('#form_slidergeneral_caroussel'), trigger:"init", visualUpdate:true});
+			}
+
+		});
 
 		RVS.DOC.on('click','#add_skin_color',function() {
 			if (RVS.SLIDER.settings.skins===undefined) return;
@@ -1064,7 +1099,8 @@ RVS.S.ulDIM = {width:0,height:0};
 				setSlidesDimension(false);
 				RVS.F.redrawSlideBG();
 				if (p==="slidertype") setProgressBar();
-				if (lgHeight_cache!==RVS.S.lgh || RVS.ENV.globVerOffset!== RVS.S.cacheglobVerOffset) {
+				if (lgHeight_cache!==RVS.S.lgh || RVS.ENV.globVerOffset!== RVS.S.cacheglobVerOffset || RVS.ENV.firstLayoutAfterSlideload) {
+					RVS.ENV.firstLayoutAfterSlideload=false;
 					RVS.F.updateAllHTMLLayerPositions();
 					RVS.S.cacheglobVerOffset = RVS.ENV.globVerOffset;
 				}
@@ -1076,6 +1112,11 @@ RVS.S.ulDIM = {width:0,height:0};
 				}
 			},100);
 		}
+
+		RVS.DOC.on('updatesliderlayoutall',function(e,p){
+			RVS.F.updatesliderlayout(p);
+			RVS.DOC.trigger('device_area_dimension_update');
+		});
 
 		RVS.DOC.on('device_area_availibity',function() {
 			setSlidesDimension(true);
@@ -1540,6 +1581,17 @@ RVS.S.ulDIM = {width:0,height:0};
 	RVS.F.JWALL = function() {
 		return RVS.SLIDER.settings.type==="carousel" && RVS.SLIDER.settings.carousel.justify===true;
 	}
+	RVS.F.CSTRETCH = function() {
+		return RVS.SLIDER.settings.type==="carousel" && (RVS.SLIDER.settings.carousel.stretch===true || RVS.SLIDER.settings.carousel.orientation=="v");
+	}
+
+	RVS.F.CVERT = function() {
+		return RVS.SLIDER.settings.type==="carousel" &&  RVS.SLIDER.settings.carousel.orientation=="v";
+	}
+
+	RVS.F.CHOR = function() {
+		return RVS.SLIDER.settings.type==="carousel" &&  RVS.SLIDER.settings.carousel.orientation!="v";
+	}
 
 	RVS.F.GW = function(s) {
 		var r = parseInt(RVS.SLIDER.settings.size.width[s],0);
@@ -1549,6 +1601,12 @@ RVS.S.ulDIM = {width:0,height:0};
 			if (RVS.SLIDER[searchid].slide.bg.type==="image" || RVS.SLIDER[searchid].slide.bg.type==="external")
 				if (RVS.SLIDER[searchid].slide.bg.imageRatio!==undefined) r = parseInt(RVS.SLIDER.settings.size.height[s],0)  * RVS.SLIDER[searchid].slide.bg.imageRatio;
 
+		} else
+		if (RVS.F.CSTRETCH()) {
+			var searchid = RVS.SLIDER[RVS.S.slideId].slide.static.isstatic && RVS.S.lastShownSlideId!==undefined ? RVS.S.lastShownSlideId : RVS.S.slideId;
+			// JUSTIFY WALL IS ON AND WE HAVE AN IMAGE IN SLIDE
+			// if (RVS.SLIDER[searchid].slide.bg.type==="image" || RVS.SLIDER[searchid].slide.bg.type==="external")
+			// 	if (RVS.SLIDER[searchid].slide.bg.imageRatio!==undefined) r = Math.max(RVS.C.rb[0].offsetWidth-40, r);
 		}
 		return r;
 	}
@@ -1589,6 +1647,9 @@ RVS.S.ulDIM = {width:0,height:0};
 		return lastLayerGridHeight!==minLayerGridHeight;
 	};
 
+	RVS.F.setSlidesDimension = function(updateFields, updateShrinks) {
+		setSlidesDimension(updateFields, updateShrinks)
+	}
 	/*
 	DRAWS THE NEW DIMENSION OF THE SLIDER
 	*/
@@ -1605,6 +1666,8 @@ RVS.S.ulDIM = {width:0,height:0};
 			minh = RVS.SLIDER.settings.layouttype==="fullscreen" ? RVS.SLIDER.settings.size.minHeightFullScreen : RVS.SLIDER.settings.size.minHeight,
 			nw = "100%",
 			ar = h/w;
+		var vertCarW = Math.max(RVS.C.rb[0].offsetWidth-40, w);
+		var vertCar = RVS.SLIDER.settings.type==="carousel" && RVS.SLIDER.settings.carousel.orientation === "v";
 
 		checkJustifyCarousel();
 
@@ -1640,16 +1703,25 @@ RVS.S.ulDIM = {width:0,height:0};
 
 		//tpGS.gsap.set(_ib,{minHeight:(minh + RVS.ENV.globVerOffset)});
 
+		//IF CAROUSEL VERTICAL, SET HEIGHT min 2x of Grid Height !
+		if (RVS.F.CVERT()) {
+			RVS.S.vertCarOff =40;
+			RVS.S.ulDIM = {width:RVS.C.UL.width(), height:Math.max(Math.min(RVS.S.winh-300,parseInt(RVS.SLIDER.settings.size.height[RVS.screen],0)*2) , RVS.C.UL.height())};
+		} else {
+			RVS.S.vertCarOff =0;
+			RVS.S.ulDIM = {width:RVS.C.UL.width(), height:RVS.C.UL.height()};
+		}
 
-		RVS.S.ulDIM = {width:RVS.C.UL.width(), height:RVS.C.UL.height()};
-		RVS.RMD = RVS.SLIDER.settings.type==="carousel" ? {width:w, height:h} : {width:RVS.S.ulDIM.width, height:RVS.S.ulDIM.height};
+		RVS.RMD = RVS.SLIDER.settings.type==="carousel" ? {width: (vertCar ? vertCarW : w), height:h} : {width:RVS.S.ulDIM.width, height:RVS.S.ulDIM.height};
 
 
-		var __L = Math.max(0,((RVS.S.ulDIM.width)/2 - w/2)),
+
+
+		var __L = Math.max(0,((RVS.S.ulDIM.width)/2 - (vertCar ? vertCarW : w)/2)),
 			__T = Math.max(0,((RVS.S.ulDIM.height) - h) / 2);
 
 		// OFFSET PLACE FOR CAROUSEL PADDINGS AND NAVIGATION OUTER CONTAINERS
-		tpGS.gsap.set(RVS.C.UL,{minHeight:(RVS.S.ulDIM.height + RVS.S.dim_offsets.carouseloffset + RVS.S.dim_offsets.navtop + RVS.S.dim_offsets.navbottom), minWidth:(/*RVS.S.ulDIM.width*/ nminw)});
+		tpGS.gsap.set(RVS.C.UL,{minHeight:(RVS.S.ulDIM.height + RVS.S.dim_offsets.carouseloffset + RVS.S.dim_offsets.navtop + RVS.S.dim_offsets.navbottom), minWidth:(/*RVS.S.ulDIM.width*/ (vertCar ? vertCarW : nminw))});
 
 
 
@@ -1667,8 +1739,8 @@ RVS.S.ulDIM = {width:0,height:0};
 		var __slide = document.getElementById('slide_'+RVS.S.slideId);
 
 		if (RVS.SLIDER.settings.type==="carousel") {
-			if (__slide) tpGS.gsap.set(__slide,{width:w,height:h, top:__T, left:__L, overflow:"hidden",borderRadius:RVS.SLIDER.settings.carousel.borderRadius});
-			tpGS.gsap.set(['.layer_grid'],{x:0,y:0,left:"0px", top:"0px"});
+			if (__slide) tpGS.gsap.set(__slide,{width:(vertCar ? vertCarW : w),height:h, top:__T, left:__L, overflow:"hidden",borderRadius:RVS.SLIDER.settings.carousel.borderRadius});
+			tpGS.gsap.set(['.layer_grid'],{x:0,y:0,left: (vertCar ? (vertCarW - w)/2 : 0), top:"0px"});
 			tpGS.gsap.set(_lg,{x:0,y:0,left:__L+"px", top:__T});
 			tpGS.gsap.set('.slots_wrapper',{top:0, left:0, maxWidth:"none", maxHeight:"none"});
 		} else {
@@ -1685,10 +1757,11 @@ RVS.S.ulDIM = {width:0,height:0};
 		RVS.F.updateContentDeltas();
 
 		//DRAW CAROUSEL FAKES IN CASE WE ARE IN CAROUSEL MODE
-		if (RVS.SLIDER.settings.type==="carousel")
-			drawFakeCarousels({width:w, height:h, top:__T, left:__L});
-		else
+		if (RVS.SLIDER.settings.type==="carousel") {
+			drawFakeCarousels({width:(vertCar ? vertCarW : w), height:h, top:__T, left:__L});
+		} else {
 			jQuery('.fakecarouselslide').remove();
+		}
 
 		// REPOSITION ALL THE CONTENT INSIDE
 		RVS.F.sliderNavPositionUpdate({type:"arrows"});
@@ -1753,7 +1826,10 @@ RVS.S.ulDIM = {width:0,height:0};
 			side = 1,
 			ha = _.carousel.horizontal==="center" ? 2 : 1,
 			d = 0,
-			scaleoffset = 0;
+			scaleoffset = 0,
+			car = _.carousel,
+			totalSlides = RVS.SLIDER.slideIDs.length - 1;
+
 		jQuery('.fakecarouselslide').hide();
 		for (var ci = 1;ci<_.carousel.maxItems;ci++) {
 			var fc = jQuery('#fakecarouselslide_'+ci),
@@ -1770,6 +1846,7 @@ RVS.S.ulDIM = {width:0,height:0};
 						width:obj.width,
 						height:obj.height,
 						top:obj.top,
+						left:obj.left,
 						borderRadius:_.carousel.borderRadius,
 						display:"block"
 						};
@@ -1778,6 +1855,16 @@ RVS.S.ulDIM = {width:0,height:0};
 			var sdown = parseInt(_.carousel.scaleDown,0)/100,
 				mrot = parseInt(_.carousel.maxRotation,0),
 				mfad = parseInt(_.carousel.maxOpacity,0)/100;
+				trans = 'left',
+				dim = 'width';
+				rot = 'rotationY';
+
+			if (_.carousel.orientation=="v") {
+				trans = 'top';
+				dim = 'height';
+				rot = 'rotationX';
+			}
+
 
 			// SET FADEOUT OF ELEMENT
 			if (_.carousel.fadeOut)
@@ -1792,27 +1879,72 @@ RVS.S.ulDIM = {width:0,height:0};
 					tr.scale = 1- Math.abs((((1-sdown)/Math.ceil(_.carousel.maxItems/ha))*d));
 				else
 					tr.scale = d*side>=1 || d*side<=-1 ? sdown : (100-( sdown*Math.abs(d)));
-				 scaleoffset = d * (tr.width - tr.width*tr.scale)/2;
+				 scaleoffset = d * (tr[dim] - tr[dim]*tr.scale)/2;
 			} else tr.scale = 1;
 
-			leftoffset = ci % 2 === 1 ? parseFloat(leftoffset) + parseFloat(obj.width) + (parseInt(_.carousel.space,0) * (_.carousel.offsetScale ? tr.scale : 1)) : leftoffset;
-			tr.left = parseFloat(obj.left) + (side * leftoffset);
+			leftoffset = ci % 2 === 1 ? parseFloat(leftoffset) + parseFloat(obj[dim]) + (parseInt(_.carousel.space,0) * (_.carousel.offsetScale ? tr.scale : 1)) : leftoffset;
 
-			// ROTATION FUNCTIONS
-			if (_.carousel.rotation && _.carousel.maxRotation!==undefined && Math.abs(mrot)!=0)	{
-				if (_.carousel.varyRotate) {
-					tr.rotationY = Math.abs(mrot) - Math.abs((1-Math.abs(((1/Math.ceil(_.carousel.maxItems/ha))*d))) * mrot);
-					tr.autoAlpha = Math.abs(tr.rotationY)>90 ? 0 : tr.autoAlpha;
-				} else {
-					tr.rotationY = d*side>=1 || d*side<=-1 ?  mrot : Math.abs(d)*mrot;
-				}
-				tr.rotationY = tr.rotationY*side*-1;
-			} else {
+			tr[trans] = parseFloat(obj[trans]) + (side * leftoffset);
+
+			if(car.spin === "off"){
+				tr.rotationX = 0;
+				tr.rotation = 0;
 				tr.rotationY = 0;
 			}
 
+			// ROTATION FUNCTIONS
+			if(car.spin !== "off"){
+				car.spinAngle = parseFloat(car.spinAngle);
+				if(spinAngle === 0) car.spinAngle = 1;
+				car.space = parseFloat(car.space);
+				tr.scale = 1;
+				var w = obj[dim];
+				var base = w/2;
+				var spinAngle = Math.max(Math.min(car.spinAngle, 360/totalSlides), -360/totalSlides);
+				var hype = base/Math.sin((spinAngle/2) * Math.PI/180);
+				var spinR = (Math.sqrt(hype * hype - base * base)  + car.space ) * Math.sign(spinAngle);
+
+				if(car.spin === '2d' && car.orientation === 'h') spinR += (spinAngle <= 0 ? 0 : 1) * obj.height;
+				else if(car.spin === '2d') spinR += (spinAngle <= 0 ? 0 : 1) * obj.width;
+
+				var pOffset = ci > Math.floor(car.maxItems/2) ? Math.floor(car.maxItems/2) : Math.floor(car.maxItems/2);
+				tr[trans] = ((pOffset - Math.floor(car.maxItems/2)) * (parseFloat(obj[dim]) + parseInt(_.carousel.space))) + obj[trans];
+
+				if(car.spin === '2d') {
+					tr.rotation = spinAngle * (ci > Math.floor(car.maxItems/2) ? (ci - Math.floor(car.maxItems/2)) : (ci - Math.ceil(car.maxItems/2)));
+					if(car.orientation === 'h') tr.transformOrigin = 'center ' + spinR + 'px 0';
+					else tr.transformOrigin = spinR + 'px center 0';
+					tr.rotationX = 0;
+					tr.rotationY = 0;
+				} else {
+					tr.transformOrigin = 'center center ' + spinR + 'px';
+					if(car.orientation === 'h'){
+						tr.rotationY = spinAngle * (ci > Math.floor(car.maxItems/2) ? (ci - Math.floor(car.maxItems/2)) : (ci - Math.ceil(car.maxItems/2)));
+						tr.rotation = 0;
+						tr.rotationX = 0;
+					} else {
+						tr.rotationX = spinAngle * (ci > Math.floor(car.maxItems/2) ? (ci - Math.floor(car.maxItems/2)) : (ci - Math.ceil(car.maxItems/2)));
+						tr.rotation = 0;
+						tr.rotationY = 0;
+					}
+				}
+
+			} else if (_.carousel.rotation && _.carousel.maxRotation!==undefined && Math.abs(mrot)!=0)	{
+				if (_.carousel.varyRotate) {
+					tr[rot] = Math.abs(mrot) - Math.abs((1-Math.abs(((1/Math.ceil(_.carousel.maxItems/ha))*d))) * mrot);
+					tr.autoAlpha = Math.abs(tr[rot])>90 ? 0 : tr.autoAlpha;
+				} else {
+					tr[rot] = d*side>=1 || d*side<=-1 ?  mrot : Math.abs(d)*mrot;
+				}
+				tr[rot] = tr[rot]*side*-1;
+			} else {
+				tr[rot] = 0;
+			}
+
 			// ADD EXTRA SPACE ADJUSTEMENT IF COVER MODE IS SELECTED
-			if (tr.scale!==undefined && tr.scale!==1) tr.left = side<0 ? tr.left + scaleoffset : tr.left - scaleoffset;
+			if (tr.scale!==undefined && tr.scale!==1) {
+				tr[trans] = side<0 ? tr[trans] + scaleoffset : tr[trans] - scaleoffset;
+			}
 
 			// ZINDEX ADJUSTEMENT
 			tr.zIndex = Math.round(100-Math.abs(d*5));
@@ -1821,10 +1953,8 @@ RVS.S.ulDIM = {width:0,height:0};
 			// TRANSFORM STYLE
 			tr.transformStyle =  "flat";
 			tr.transformPerspective = 1200;
-			tr.transformOrigin = "50% "+_.carousel.vertical;
-
+			if(car.spin === "off") tr.transformOrigin = _.carousel.orientation=="v" ? "50% 50%" : "50% "+_.carousel.vertical;
 			tpGS.gsap.set(fc,tr);
-
 			side = side * -1;
 
 		}
@@ -2091,6 +2221,7 @@ RVS.S.ulDIM = {width:0,height:0};
 
 		/* SLIDER BASICS */
 		newSlider.alias = _d(obj.alias,"");
+		newSlider.pakps = _d(obj.pakps,false);
 
 		newSlider.shortcode = _d(obj.shortcode,"");
 		newSlider.type = _d(obj.type,"standard");
@@ -2303,6 +2434,8 @@ RVS.S.ulDIM = {width:0,height:0};
 
 		/* CAROUSEL SETTINGS */
 		newSlider.carousel = _d(obj.carousel,{
+			orientation:'h',
+			prevNextVis:'50px',
 			justify:false,
 			justifyMaxWidth:false,
 			snap:true,
@@ -2328,7 +2461,12 @@ RVS.S.ulDIM = {width:0,height:0};
 			varyFade:false,
 			varyRotate:false,
 			varyScale:false	,
-			showAllLayers:'false'
+			showAllLayers:'false',
+			skewX: 0,
+			skewY: 0,
+			spin: 'off',
+			spinAngle: 0,
+			overshoot: false
 		});
 
 		newSlider.carousel.showAllLayers=newSlider.carousel.showAllLayers==="true" || newSlider.carousel.showAllLayers===true ? "all" : newSlider.carousel.showAllLayers;
@@ -2493,7 +2631,8 @@ RVS.S.ulDIM = {width:0,height:0};
 				set:'off',
 				reverse:"default",
 				viewport:50,
-				calldelay:1000
+				calldelay:1000,
+				threshold: 50,
 				/*msWayUp:"top",
 				msWayDown:"top",
 				msWayUpOffset:0,
@@ -2674,6 +2813,7 @@ RVS.S.ulDIM = {width:0,height:0};
 			horizontal:"center",
 			vertical:"middle",
 			cover:true,
+			allowPageScroll:false,
 			coverColor:"rgba(0,0,0,0.5)",
 			coverSpeed:1000
 		});
@@ -2708,8 +2848,9 @@ RVS.S.ulDIM = {width:0,height:0};
 			fixedEnd:4000,
 			layers:false,
 			ease:"none",
-			speed:500
-		});
+            speed:500,
+            pullcontent:false
+        });
 
 		newSlider.skins = _d(obj.skins,{colorsAtStart:false});
 

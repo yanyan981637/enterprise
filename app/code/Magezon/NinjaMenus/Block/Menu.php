@@ -231,6 +231,7 @@ class Menu extends \Magento\Framework\View\Element\Template
             $categories->addAttributeToSelect(['name', 'is_active', 'parent_id']);
             $categories->setStoreId($storeId);
             $categories->addIsActiveFilter();
+            $categories->addAttributeToFilter('include_in_menu', 1);
             $categories->addUrlRewriteToResult();
             $categories->setOrder('position', 'ASC');
             $attributes[] = [
@@ -273,6 +274,7 @@ class Menu extends \Magento\Framework\View\Element\Template
         }
 
         $block->addGlobalData('menu', $menu);
-        return $this->dataHelper->filter($block->toHtml());
+        $html = $block->toHtml();
+        return $html ? $this->dataHelper->filter($html) : '';
     }
 }

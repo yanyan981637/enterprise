@@ -54,18 +54,27 @@ class RevSliderVimeo extends RevSliderFunctions {
 	 *
 	 * @since    1.0.0
 	 */
-	public function get_vimeo_videos($type, $value){
-		//call the API and decode the response
+    public function get_vimeo_videos($type, $value, $elements = 20){
+        //call the API and decode the response
 		$url = 'https://vimeo.com/api/v2/';
 		$url .= ($type == 'user') ? $value.'/videos.json' : $type.'/'.$value.'/videos.json';
 
-		$transient_name = 'revslider_' . md5($url);
+        $transient_name = 'revslider_' . md5($url.$elements);
 
 		if($this->transient_sec > 0 && false !== ($data = FA::get_transient($transient_name)))
 			return ($data);
 
-		$rsp = FA::json_decode(FA::wp_remote_fopen($url));
-		FA::set_transient($transient_name, $rsp, $this->transient_sec);
+        $elements = intval($elements);
+        $page = 1;
+        $rsp = array();
+        do {
+            $_rsp = json_decode(FA::wp_remote_fopen($url.'?page='.$page));
+            if(!empty($_rsp) && is_array($_rsp)) $rsp = array_merge($rsp, $_rsp);
+            $page++;
+            $elements -= 20;
+        } while($elements > 0);
+
+        FA::set_transient($transient_name, $rsp, $this->transient_sec);
 
 		return $rsp;
 	}

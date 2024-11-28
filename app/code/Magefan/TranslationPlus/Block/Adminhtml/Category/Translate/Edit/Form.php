@@ -20,7 +20,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
     /**
      * @var  Magefan_TranslationPlus::category/translate/edit/form.phtml
      */
-    protected $_template = 'Magefan_TranslationPlus::category/translate/edit/form.phtml';
+    protected $_template = 'Magefan_TranslationPlus::translate/edit/form.phtml';
 
     /**
      * @var CollectionFactory
@@ -35,13 +35,11 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
     protected $storeManagerInterface;
 
     /**
-     * /**
      * @var StoreRepositoryInterface
      */
     private $storeManager;
 
     /**
-     * /**
      * @var CategoryRepository
      */
     private $categoryRepository;
@@ -50,6 +48,8 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
      * @var array
      */
     private $stores;
+
+    private $storeRepository;
 
     /**
      * @param Context $context
@@ -117,6 +117,24 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
     }
 
     /**
+     * Return current object by id
+     *
+     * @param int $storeId
+     */
+    public function getCurrentObject($storeId = null)
+    {
+        return $this->getCategory($storeId);
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjectType()
+    {
+        return 'category';
+    }
+
+    /**
      * Return collection of groups
      *
      * @param int $storeId
@@ -124,7 +142,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
      */
     public function getGroups($storeId)
     {
-        return  $this->attributeGroupCollection->create()
+        return $this->attributeGroupCollection->create()
             ->setAttributeSetFilter($this->getCategory($storeId)->getAttributeSetId())
             ->load();
     }
@@ -226,6 +244,11 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                         continue;
                     }
 
+                    if (in_array($attribute->getFrontendInput(), ['select', 'date', 'datetime', 'boolean'])) {
+                        unset($attributes[$key]);
+                        continue;
+                    }
+
                     $applyTo = $attribute->getApplyTo();
                     if (!$attribute->getIsVisible() || !empty($applyTo) && !in_array($oCategory->getTypeId(), $applyTo)
                         || $attribute->getScope() == 'global') {
@@ -259,7 +282,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
     public function getTemplate()
     {
         if ($this->getRequest()->getParam('attr_code')) {
-            return 'Magefan_TranslationPlus::category/translate/edit/single-attr-form.phtml';
+            return 'Magefan_TranslationPlus::translate/edit/single-attr-form.phtml';
         }
         return parent::getTemplate();
     }

@@ -92,9 +92,12 @@ define([
         onMouseHover: function(item) {
             this._super(item);
             if (this.isDesktop && item.hasClass('nav-item-static')) {
-                item.closest('.magezon-builder').addClass('nav-item-static');
-                item.closest('.ninjamenus').addClass('nav-item-static');
-                item.closest('.navigation').addClass('nav-item-static');
+                var animationDuration = item.data('animation-duration') ? item.data('animation-duration') : 0;
+                setTimeout(function() {
+                    item.closest('.magezon-builder').addClass('nav-item-static');
+                    item.closest('.ninjamenus').addClass('nav-item-static');
+                    item.closest('.navigation').addClass('nav-item-static');
+                }, animationDuration);
             }
         },
 

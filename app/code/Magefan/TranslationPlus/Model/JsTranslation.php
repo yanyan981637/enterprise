@@ -87,7 +87,7 @@ class JsTranslation
                 foreach ($tmp as $key => $value) {
                     if (!empty($key)) {
                         $keys[] = $key;
-                        $source[$key]=$path;
+                        $source[$key] = 'js-translation.json';
                     }
                 }
             }

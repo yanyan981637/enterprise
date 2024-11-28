@@ -1,12 +1,12 @@
 /********************************************
  * REVOLUTION EXTENSION - PARALLAX
- * @date: 03.10.2020
+ * @date: 06.10.2022
  * @requires rs6.main.js
  * @author ThemePunch
  *********************************************/
 (function ($) {
 	"use strict";
-	var version = "6.2.24";
+	var version = "6.6.0";
 	jQuery.fn.revolution = jQuery.fn.revolution || {};
 	var _R = jQuery.fn.revolution;
 
@@ -123,21 +123,20 @@
 					_.mouseEntered = true;
 
 				});
-
-				var parallaxHandler = this.updateParallax.bind(this, id, _);
+			
+				_.parallaxHandler = this.updateParallax.bind(this, id, _);
+				_.hasAlreadyPermission = false;
 
 				_R[id].c.on('mousemove.hoverdir, mouseleave.hoverdir, trigger3dpath', function (e) {
 					_.eventData = e;
-					if (_.frame === undefined || e.type === "mouseleave") _.frame = window.requestAnimationFrame(parallaxHandler);
+					if (_.frame === undefined || e.type === "mouseleave") _.frame = window.requestAnimationFrame(_.parallaxHandler);
 				});
 
 				if (_R.ISM) {
-					window.addEventListener("deviceorientation", function (e) {
-						_.eventData = e;
-						if (_.frame === undefined) _.frame = window.requestAnimationFrame(parallaxHandler);
-					});
+					_R.modulesNeedOrientationListener = _R.modulesNeedOrientationListener== undefined ? {} : _R.modulesNeedOrientationListener;
+					_R.modulesNeedOrientationListener[id] = true;
+					_R.addDeviceOrientationListener(id);
 				}
-
 			}
 
 			// COLLECT ALL ELEMENTS WHICH NEED FADE IN/OUT ON PARALLAX SCROLL
@@ -151,6 +150,36 @@
 			if (_s._L !== undefined && _s._L.length === 0) _s._L = false;
 			if (_s.bgs !== undefined && _s.bgs.length === 0) _s.bgs = false;
 		},
+
+		removeIOSPermissionWait : function() {
+			document.querySelectorAll('.iospermaccwait').forEach(function(el) {el.classList.add('permanenthidden');});						 
+		},
+
+		addDeviceOrientationListener : function(id) {
+			var _ = _R[id].parallax;			
+			window.addEventListener("deviceorientation", function (e) {
+				if (_R.modulesNeedOrientationListener[id]) {
+					_R.modulesNeedOrientationListener[id] = false;
+					_R.removeIOSPermissionWait();
+				}
+				_.eventData = e;
+				if (_.frame === undefined) _.frame = window.requestAnimationFrame(_.parallaxHandler);
+			});
+		},
+
+		getAccelerationPermission : function(id) {			
+			DeviceMotionEvent.requestPermission().then(function(response){
+				if (response == 'granted') {
+					for (var i in _R.modulesNeedOrientationListener) {
+						if (!_R.modulesNeedOrientationListener.hasOwnProperty(i)) continue;
+						_R.modulesNeedOrientationListener[i] = false;
+						_R.removeIOSPermissionWait();
+						_R.addDeviceOrientationListener(i);
+					}
+				}
+			});	
+		},
+		
 		getLayerParallaxOffset : function(id,lid,dir) {
 			return _R[id].parallax!==undefined && _R[id].parallax.pcontainers!==undefined && _R[id].parallax.pcontainers[_R[id]._L[lid].slidekey]!==undefined && _R[id].parallax.pcontainers[_R[id]._L[lid].slidekey][lid]!==undefined ? Math.abs(_R[id].parallax.pcontainers[_R[id]._L[lid].slidekey][lid]['offs'+dir]) : 0;
 		},
@@ -339,7 +368,7 @@
 
 			// FIXED TOP POSITION ON SCROLL (STICKY SLIDER)
 			if (_R[id].sbtimeline.fixed) {
-				if (_R[id].fixedScrollOnState !== false && _R.stickySupported && (_R[id].fullScreenOffsetResult==0 || _R[id].fullScreenOffsetResult==undefined)) {
+				if (_R[id].fixedScrollOnState !== false && (_R[id].drawUpdates.cpar.left === 0) && _R.stickySupported && (_R[id].fullScreenOffsetResult==0 || _R[id].fullScreenOffsetResult==undefined)) {
 					_R[id].topc.addClass("rs-stickyscrollon");
 					_R[id].fixedScrollOnState = true;
 				} else _R.stickySupported=false;
@@ -382,7 +411,7 @@
 
 			} else mproc = (_R[id].duration * mproc) / 1000;
 
-
+			
 			// Erste Animation mit Speed, dann vielleicht immer sofort auf position springen !
 
 			//Animate to Timeline Based on Scroll Position
@@ -396,6 +425,7 @@
 						time = time <= 0 ? 0 : time < 0.1 ? 0.1 : time;
 
 						if (_R[id]._L[sba].animteToTime !== time) {
+							_R[id]._L[sba].animteToTimeCache = _R[id]._L[sba].animteToTime;
 							_R[id]._L[sba].animteToTime = time;
 							tpGS.gsap.to(_R[id]._L[sba].timeline, _R[id].sbtimeline.speed, {
 								time: time,
@@ -484,6 +514,8 @@
 
 						seo['-webkit-filter'] = 'blur(' + blurlevel + 'px)';
 						seo.filter = 'blur(' + blurlevel + 'px)';
+						//Fix for Blurred Masks in Safari
+						if (window.isSafari11 && _s._L!==undefined && _s._L[0]!==undefined && _s._L[0][0]!==undefined && _s._L[0][0].tagName=="RS-MASK-WRAP") seo.z  = 0.001;
 					}
 
 
@@ -493,6 +525,7 @@
 						seo['-webkit-filter'] = seo['-webkit-filter'] === undefined ? gf : seo['-webkit-filter'] + ' ' + gf;
 						seo.filter = seo.filter === undefined ? gf : seo.filter + ' ' + gf;
 					}
+					
 
 					tpGS.gsap.set(_s._L, seo);
 				}

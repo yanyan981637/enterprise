@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -13,21 +13,15 @@ namespace Amasty\Base\Model\LicenceService\Schedule;
 use Amasty\Base\Model\FlagRepository;
 use Amasty\Base\Model\LicenceService\Schedule\Data\ScheduleConfig;
 use Amasty\Base\Model\LicenceService\Schedule\Data\ScheduleConfigFactory;
+use Amasty\Base\Model\Schedule\Repository;
+use Amasty\Base\Model\Schedule\ScheduleFactory;
 use Magento\Framework\Api\DataObjectHelper;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Serialize\SerializerInterface;
 
 class ScheduleConfigRepository
 {
-    /**
-     * @var FlagRepository
-     */
-    private $flagRepository;
-
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
     /**
      * @var DataObjectHelper
      */
@@ -38,24 +32,44 @@ class ScheduleConfigRepository
      */
     private $scheduleConfigFactory;
 
+    /**
+     * @var Repository
+     */
+    private $scheduleRepository;
+
+    /**
+     * @var ScheduleFactory
+     */
+    private $scheduleFactory;
+
     public function __construct(
-        FlagRepository $flagRepository,
-        SerializerInterface $serializer,
+        FlagRepository $flagRepository = null, //@deprecated
+        SerializerInterface $serializer = null, //@deprecated
         DataObjectHelper $dataObjectHelper,
-        ScheduleConfigFactory $scheduleConfigFactory
+        ScheduleConfigFactory $scheduleConfigFactory,
+        Repository $scheduleRepository = null,
+        ScheduleFactory $scheduleFactory = null
     ) {
-        $this->flagRepository = $flagRepository;
-        $this->serializer = $serializer;
         $this->dataObjectHelper = $dataObjectHelper;
         $this->scheduleConfigFactory = $scheduleConfigFactory;
+        $this->scheduleRepository = $scheduleRepository ?? ObjectManager::getInstance()->get(Repository::class);
+        $this->scheduleFactory = $scheduleFactory ?? ObjectManager::getInstance()->get(ScheduleFactory::class);
     }
 
     public function get(string $flag): ScheduleConfig
     {
+        try {
+            $schedule = $this->scheduleRepository->get($flag);
+            $scheduleConfigArray = $schedule->toArray();
+            $scheduleConfigArray[ScheduleConfig::TIME_INTERVALS] = array_filter(
+                explode(',', (string)$schedule->getTimeIntervals())
+            );
+            $scheduleConfigArray[ScheduleConfig::LAST_SEND_DATE] = $schedule->getLastSendDate();
+        } catch (NoSuchEntityException $e) {
+            $scheduleConfigArray = [];
+        }
         $scheduleConfigInstance = $this->scheduleConfigFactory->create();
-        $scheduleConfigSerialized = $this->flagRepository->get($flag);
-        $scheduleConfigArray = $this->serializer->unserialize($scheduleConfigSerialized);
-        if (is_array($scheduleConfigArray)) {
+        if (!empty($scheduleConfigArray)) {
             $this->dataObjectHelper->populateWithArray(
                 $scheduleConfigInstance,
                 $scheduleConfigArray,
@@ -68,9 +82,11 @@ class ScheduleConfigRepository
 
     public function save(string $flag, ScheduleConfig $scheduleConfig): bool
     {
-        $scheduleConfigArray = $scheduleConfig->toArray();
-        $scheduleConfigSerialized = $this->serializer->serialize($scheduleConfigArray);
-        $this->flagRepository->save($flag, $scheduleConfigSerialized);
+        $schedule = $this->scheduleFactory->create();
+        $schedule->setCode($flag);
+        $schedule->setTimeIntervals(implode(',', (array)$scheduleConfig->getTimeIntervals()) ?: null);
+        $schedule->setLastSendDate((int)$scheduleConfig->getLastSendDate());
+        $this->scheduleRepository->save($schedule);
 
         return true;
     }

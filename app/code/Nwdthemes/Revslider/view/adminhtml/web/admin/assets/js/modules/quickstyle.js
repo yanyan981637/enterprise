@@ -4,7 +4,7 @@
  * @author ThemePunch
 */
 
-RVS.LIB.QS = {
+RVS.LIB.QS = RVS.F.safeExtend(true,RVS.LIB.QS,{
 	headlines : [
 		{fs:32, lh:36, ff:"Indie Flower",fw:"400",ls:1},
 		{fs:35, lh:45, ff:"Raleway",fw:"300",ls:2},
@@ -69,18 +69,18 @@ RVS.LIB.QS = {
 		{fs:14, ff:"Roboto", lh:18, ls:1, tt:"uppercase", pd:["10px","30px","10px","30px"], br:["30px", "30px", "30px", "30px"],  bg:"rgba(0,0,0,0.75)", color:"#ffffff", content:'Click Here <i class="fa-chevron-right"></i>',cls:"rev-btn rev-hiddenicon",hc:"rgba(0,0,0,1)", hbg:"#ffffff", hs:200},
 		{fs:12, ff:"Roboto", lh:14, ls:1, tt:"uppercase", pd:["8px","20px","8px","20px"], br:["30px", "30px", "30px", "30px"],  bg:"rgba(0,0,0,0.75)", color:"#ffffff", content:'Click Here <i class="fa-chevron-right"></i>', cls:"rev-btn rev-hiddenicon",hc:"rgba(0,0,0,1)", hbg:"#ffffff", hs:200},
 
-		{showsize:"third", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"], color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-light", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
-		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"], bc:"rgba(255,255,255,0.75)", bs:"solid", bw:["2px","2px","2px","2px"],color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-light", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
-		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"],  bg:"#ffffff", color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-dark", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
+		{showsize:"third", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"], color:"#ffffff", ignoreIntelligent:true,content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-light", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
+		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"], bc:"rgba(255,255,255,0.75)", bs:"solid", bw:["2px","2px","2px","2px"],color:"#ffffff", ignoreIntelligent:true,content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-light", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
+		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"],  bg:"#ffffff", color:"#ffffff", ignoreIntelligent:true,content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-dark", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
 
-		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"], color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-dark", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
-		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"], bc:"rgba(51,51,51,0.75)", bs:"solid", bw:["2px","2px","2px","2px"],color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-dark", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
-		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"],   bg:"#333333", color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-light", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
+		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"], color:"#ffffff", ignoreIntelligent:true,content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-dark", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
+		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"], bc:"rgba(51,51,51,0.75)", bs:"solid", bw:["2px","2px","2px","2px"],color:"#ffffff", ignoreIntelligent:true,content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-dark", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
+		{showsize:"third",fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["50%", "50%", "50%", "50%"],   bg:"#333333", color:"#ffffff", ignoreIntelligent:true,content:'<span></span><span></span><span></span>', cls:"rev-burger rev-b-span-light", action:{action:"toggle_class", toggle_class:"open", tooltip_event:"click"}},
 
-		{showsize:"fourth",w:"35px", h:"55px", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["23px", "23px", "23px", "23px"], bc:"rgba(255,255,255,0.75)", bs:"solid", bw:["3px","3px","3px","3px"],color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-scroll-btn rev-b-span-light"},
-		{showsize:"fourth",w:"35px", h:"55px", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["23px", "23px", "23px", "23px"], bc:"rgba(255,255,255,0.75)", bs:"solid", bw:["3px","3px","3px","3px"], bg:"#fff", color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-scroll-btn rev-b-span-dark"},
-		{showsize:"fourth",w:"35px", h:"55px", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["23px", "23px", "23px", "23px"], bc:"rgba(51,51,51,0.75)", bs:"solid", bw:["3px","3px","3px","3px"],color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-scroll-btn rev-b-span-dark"},
-		{showsize:"fourth",w:"35px", h:"55px", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["23px", "23px", "23px", "23px"], bc:"rgba(51,51,51,0.75)", bs:"solid", bw:["3px","3px","3px","3px"], bg:"#333", color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-scroll-btn rev-b-span-light"},
+		{showsize:"fourth",w:"35px", h:"55px", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["23px", "23px", "23px", "23px"], bc:"rgba(255,255,255,0.75)", bs:"solid", bw:["3px","3px","3px","3px"],color:"#ffffff", ignoreIntelligent:true, content:'<span></span><span></span><span></span>', cls:"rev-scroll-btn rev-b-span-light"},
+		{showsize:"fourth",w:"35px", h:"55px", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["23px", "23px", "23px", "23px"], bc:"rgba(255,255,255,0.75)", bs:"solid", bw:["3px","3px","3px","3px"], bg:"#fff", ignoreIntelligent:true, color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-scroll-btn rev-b-span-dark"},
+		{showsize:"fourth",w:"35px", h:"55px", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["23px", "23px", "23px", "23px"], bc:"rgba(51,51,51,0.75)", bs:"solid", bw:["3px","3px","3px","3px"],color:"#ffffff", ignoreIntelligent:true, content:'<span></span><span></span><span></span>', cls:"rev-scroll-btn rev-b-span-dark"},
+		{showsize:"fourth",w:"35px", h:"55px", fs:17, ff:"Roboto", lh:20, ls:1, tt:"uppercase", pd:["22px","14px","22px","14px"], br:["23px", "23px", "23px", "23px"], bc:"rgba(51,51,51,0.75)", bs:"solid", bw:["3px","3px","3px","3px"], bg:"#333", ignoreIntelligent:true, color:"#ffffff", content:'<span></span><span></span><span></span>', cls:"rev-scroll-btn rev-b-span-light"},
 
 		{showsize:"fourth",w:"37px", h:"37px", fs:20, ff:"Roboto", lh:37, ta:"center", tt:"uppercase", pd:["0","0","0","0"], br:["50%", "50%", "50%", "50%"],   bg:"#3B5998", color:"#ffffff", content:'<i class="fa-facebook-f"></i>', cls:""},
 		{showsize:"fourth",w:"37px", h:"37px", fs:20, ff:"Roboto", lh:37, ta:"center", tt:"uppercase", pd:["0","0","0","0"], br:["50%", "50%", "50%", "50%"],   bg:"#FD1D1D", color:"#ffffff", content:'<i class="fa-instagram"></i>', cls:""},
@@ -109,7 +109,7 @@ RVS.LIB.QS = {
 		{showsize:"half", text_hoff:"0px", text_voff:"10px", text_blur:"10px", text_color:"rgba(0,0,0,0.75)" },
 		{showsize:"half", text_hoff:"15px", text_voff:"15px", text_blur:"20px", text_color:"rgba(0,0,0,0.45)" }
 	]
-};
+});
 RVS.LIB.QS_CONT = {
 	headlines:"Headline",
 	content:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vestibulum orci at leo..."
@@ -148,7 +148,9 @@ RVS.LIB.QS_CONT = {
 	RVS.F.updateAvailableLayerTypes = function() {
 		if (!RVS.S.qstyle_library_open) return;
 		window.quickstylefilter = [];
-		var btns = false, headlines = false, content=false, first = false;
+		var btns = false, headlines = false, content=false, first = false,ignoreshadows=false;	
+
+		RVS.F.qstyleParamsListCase = RVS.F.qstyleParamsListCase===undefined ? {} : RVS.F.qstyleParamsListCase;		
 
 		if (RVS.S.qstyleParams.list!==undefined && Array.isArray((RVS.S.qstyleParams.list)))
 			for (var lid in RVS.S.qstyleParams.list) {
@@ -176,32 +178,46 @@ RVS.LIB.QS_CONT = {
 							headlines = true;
 						}
 					break;
+					default:
+						if (RVS.F.qstyleParamsListCase[RVS.S.qstyleParams.list[lid]]!==undefined && window.quickstylefilter.indexOf(RVS.S.qstyleParams.list[lid])===-1)
+							ignoreshadows = RVS.F.qstyleParamsListCase[RVS.S.qstyleParams.list[lid]](RVS.S.qstyleParams.list[lid]);
+					break;
 				}
 			}
 		else
 		for (var lid in RVS.selLayers) {
 			if(!RVS.selLayers.hasOwnProperty(lid)) continue;
-			switch (RVS.L[RVS.selLayers[lid]].type) {
-				case "button":
-					if (!btns) {
-						window.quickstylefilter.push("buttons");
-						btns = true;
-					}
-				break;
+			if (RVS.L[RVS.selLayers[lid]].subsubtype!==undefined && RVS.LIB.QS[RVS.L[RVS.selLayers[lid]].subsubtype]!==undefined) {
+				switch(RVS.L[RVS.selLayers[lid]].subsubtype) {					
+					default:
+					
+					 if (RVS.F.qstyleParamsListCase[RVS.L[RVS.selLayers[lid]].subsubtype] && window.quickstylefilter.indexOf(RVS.L[RVS.selLayers[lid]].subsubtype)==-1)
+					 	ignoreshadows = RVS.F.qstyleParamsListCase[RVS.L[RVS.selLayers[lid]].subsubtype](RVS.L[RVS.selLayers[lid]].subsubtype);						 
+					break;
+				}				
+			} else {
+				switch (RVS.L[RVS.selLayers[lid]].type) {
+					case "button":
+						if (!btns) {
+							window.quickstylefilter.push("buttons");
+							btns = true;
+						}
+					break;
 
-				case "text":
-					if (!headlines) {
-						window.quickstylefilter.push("headlines");
-						window.quickstylefilter.push("content");
-						headlines = true;
-						content = true;
-						first = "headlines";
-					}
-				break;
-				default:
+					case "text":
+						if (!headlines) {
+							window.quickstylefilter.push("headlines");
+							window.quickstylefilter.push("content");
+							headlines = true;
+							content = true;
+							first = "headlines";
+						}					
+					break;
+					default:
 
-				break;
-			}
+					break;
+				}
+			}	
 		}
 
 		if (window.quickstylefilter.length===0) {
@@ -209,7 +225,7 @@ RVS.LIB.QS_CONT = {
 			window.quickstylefilter.push("content");
 			window.quickstylefilter.push("buttons");
 		}
-		if (jQuery.inArray("shadows",window.quickstylefilter)===-1) window.quickstylefilter.push("shadows");
+		if (!ignoreshadows && jQuery.inArray("shadows",window.quickstylefilter)===-1) window.quickstylefilter.push("shadows");
 
 		jQuery('.quick_style_dep_all').hide();
 		jQuery('.quick_style_menu_point').hide();
@@ -220,10 +236,10 @@ RVS.LIB.QS_CONT = {
 			else
 				window.qstyle_scroll_targets[i].enable = false;
 		}
-		for (var i in window.quickstylefilter) {
+		for (var i in window.quickstylefilter) {			
 			if(!window.quickstylefilter.hasOwnProperty(i)) continue;
 			jQuery('#quick_style_dep_'+window.quickstylefilter[i]).show();
-			jQuery('#quick_style_menu_'+window.quickstylefilter[i]).show();
+			jQuery('#quick_style_menu_'+window.quickstylefilter[i]).show();			
 		}
 		if (first!==false) setTimeout(function() {	jQuery('#quick_style_menu_'+first).trigger('click');},400);
 	};
@@ -246,36 +262,36 @@ RVS.LIB.QS_CONT = {
 
 		var requiredGoogleFonts = {},
 			familiesToLoad = [];
+		
+		RVS.F.buildQuickStyleExtensionMenu = RVS.F.buildQuickStyleExtensionMenu===undefined ? {} : RVS.F.buildQuickStyleExtensionMenu;
 
 		var _c = '<div id="quick_style"><div id="quick_style_inner">';
 		_c += '<div id="quick_style_menu">';
 		for (var i in RVS.LIB.QS) {
 			if(!RVS.LIB.QS.hasOwnProperty(i)) continue;
 			_c += '<div data-ref="#quick_style_dep_'+i+'" data-library="'+i+'" id="quick_style_menu_'+i+'" class="quick_style_menu_point">'+RVS_LANG["qs_"+i]+'</div>';
+			if (RVS.F.buildQuickStyleExtensionMenu[i]!==undefined) _c += RVS.F.buildQuickStyleExtensionMenu[i](_);
 		}
+		
 		_c += '<div id="quick_style_close"><i class="material-icons">close</i></div>';
 		_c += '</div>';
 		_c += '<div id="quick_style_scrollable_wrap"><div id="quick_style_scrollable">';
 		for (var i in RVS.LIB.QS) {
 			if(!RVS.LIB.QS.hasOwnProperty(i)) continue;
-			_c += '<div id="quick_style_dep_'+i+'" class="quick_style_dep_all"><div class="quick_style_dep">'+RVS_LANG["qs_"+i]+(i==='headlines' || i==='content' ? '<div data-cont="'+i+'" class="quick_colorchange_dark"></div><div data-cont="'+i+'"  class="quick_colorchange_light selected"></div>' : '')+'</div>';
+			_c += '<div id="quick_style_dep_'+i+'" class="quick_style_dep_all"><div class="quick_style_dep">'+RVS_LANG["qs_"+i]+(i==='headlines' || i==='content'  ? '<div data-cont="'+i+'" class="quick_colorchange_dark"></div><div data-cont="'+i+'"  class="quick_colorchange_light selected"></div>' : '')+'</div>';
+			
 			for (var j in RVS.LIB.QS[i]) {
 				if(!RVS.LIB.QS[i].hasOwnProperty(j)) continue;
-				var _ = RVS.F.safeExtend(true,{},RVS.LIB.QS[i][j]);
+				var _ = RVS.F.safeExtend(true,{},RVS.LIB.QS[i][j]),
+					checkfont = false;
 				_ = setButtonDefault(_);
 				switch (i) {
 					case "headlines":
 					case "content":
 						var bord = _.bc!==undefined && _.bw!==undefined && _.bs!==undefined ? 'border-style:'+_.bs+';border-width:'+_.bw[0]+' '+_.bw[1]+' '+_.bw[2]+' '+_.bw[3]+';border-color:'+_.bc+';' : '';
 						_c += '<div class="quick_style_example_wrap"><div class="quick_style_example" data-layertype="text" data-qstyletype="'+i+'" data-qstyleindex="'+j+'"><div class="qsec_info">'+_.ff+','+_.fs+'px,'+_.fw+'</div><div class="quick_style_example_content" style="'+(i==="headlines" ? "white-space:nowrap;":"")+bord+(_.tt!==undefined? 'text-transform:'+_.tt+';': '')+'font-style:'+_.fst+'; font-family:'+_.ff+';font-size:'+_.fs+'px; font-weight:'+_.fw+';line-height:'+_.lh+'px;letter-spacing:'+_.ls+'px">'+(_.content!==undefined ? _.content : RVS.LIB.QS_CONT[i])+'</div></div></div>';
-						var family = _.ff.replace(/\ /g,'_');
-						requiredGoogleFonts[family] = requiredGoogleFonts[family]===undefined ? {family:family, weights:[], italic:false} : requiredGoogleFonts[family];
-						requiredGoogleFonts[family].font = _.ff;
-						requiredGoogleFonts[family].italic = requiredGoogleFonts[family].italic===true ? true : _.fst;
-						for (var s in RVS.V.sizes) {
-							if(!RVS.V.sizes.hasOwnProperty(s)) continue;
-							if (requiredGoogleFonts[family].weights.toString().indexOf(_.fw)===-1) requiredGoogleFonts[family].weights.push(_.fw);
-						}
+						checkfont = true;
+						
 					break;
 					case "buttons":
 						var bord = _.bc!==undefined && _.bw!==undefined && _.bs!==undefined ? 'border-style:'+_.bs+';border-width:'+_.bw[0]+' '+_.bw[1]+' '+_.bw[2]+' '+_.bw[3]+';border-color:'+_.bc+';' : '',
@@ -283,14 +299,7 @@ RVS.LIB.QS_CONT = {
 							wh = _.w!==undefined ? 'width:'+_.w+';' : '';
 						wh = _.h!==undefined ? wh+'height:'+_.h+';' : wh;
 						_c += '<div class="quick_style_example_wrap '+(_.showsize!==undefined ? 'qsew_'+_.showsize:'')+'"><div class="quick_style_example" data-layertype="button" data-qstyletype="'+i+'" data-qstyleindex="'+j+'"><div class="quick_style_example_content '+_.cls+'" '+hovon+' style="'+bord+wh+(_.tt!==undefined? 'text-transform:'+_.tt+';': '')+(_.ta!==undefined? 'text-align:'+_.ta+';': '')+(_.bxc!==undefined ? 'box-shadow:'+_.bxh+' '+_.bxv+' '+_.bxb+' '+_.bxs+' '+_.bxc+';' : '')+'border-radius:'+_.br[0]+' '+_.br[1]+' '+_.br[2]+' '+_.br[3]+';padding:'+_.pd[0]+' '+_.pd[1]+' '+_.pd[2]+' '+_.pd[3]+';background:'+window.RSColor.get(_.bg)+';font-style:'+_.fst+'; font-family:'+_.ff+';font-size:'+_.fs+'px; color:'+_.color+';font-weight:'+_.fw+';line-height:'+_.lh+'px;letter-spacing:'+_.ls+'px">'+_.content+'</div></div></div>';
-						var family = _.ff.replace(/\ /g,'_');
-						requiredGoogleFonts[family] = requiredGoogleFonts[family]===undefined ? {family:family, weights:[], italic:false} : requiredGoogleFonts[family];
-						requiredGoogleFonts[family].font = _.ff;
-						requiredGoogleFonts[family].italic = requiredGoogleFonts[family].italic===true ? true : _.fst;
-						for (var s in RVS.V.sizes) {
-							if(!RVS.V.sizes.hasOwnProperty(s)) continue;
-							if (requiredGoogleFonts[family].weights.toString().indexOf(_.fw)===-1) requiredGoogleFonts[family].weights.push(_.fw);
-						}
+						checkfont = true;
 					break;
 					case "shadows":
 						if (_.box_hoff!==undefined)
@@ -299,7 +308,23 @@ RVS.LIB.QS_CONT = {
 							_c += '<div class="quick_style_example_wrap '+(_.showsize!==undefined ? 'qsew_'+_.showsize:'')+'"><div class="quick_style_example qse_textshadow" data-layertype="textshadow" data-qstyletype="'+i+'" data-qstyleindex="'+j+'" style="text-shadow:'+_.text_hoff+' '+_.text_voff+' '+_.text_blur+' '+_.text_color+'">Shadow</div></div>';
 					break;
 					default:
+						RVS.F.buildQuickStyleExtension = RVS.F.buildQuickStyleExtension===undefined ? {} : RVS.F.buildQuickStyleExtension;						
+						if (RVS.F.buildQuickStyleExtension[i]!==undefined) {
+							_c += RVS.F.buildQuickStyleExtension[i](j,_);
+							checkfont = true;
+						}
 					break;
+				}
+
+				if (checkfont) {
+					var family = _.ff.replace(/\ /g,'_');
+					requiredGoogleFonts[family] = requiredGoogleFonts[family]===undefined ? {family:family, weights:[], italic:false} : requiredGoogleFonts[family];
+					requiredGoogleFonts[family].font = _.ff;
+					requiredGoogleFonts[family].italic = requiredGoogleFonts[family].italic===true ? true : _.fst;				
+					for (var s in RVS.V.sizes) {	
+						if(!RVS.V.sizes.hasOwnProperty(s)) continue;
+						if (requiredGoogleFonts[family].weights.toString().indexOf(_.fw)===-1) requiredGoogleFonts[family].weights.push(_.fw);
+					}
 				}
 			}
 			_c +='</div>';
@@ -357,7 +382,7 @@ RVS.LIB.QS_CONT = {
 		return _;
 	}
 
-	function setContentColor(th,c) {
+	function setContentColor(th,c) {		
 		var cont = th.closest('.quick_style_dep_all');
 		RVS.LIB.QS[th[0].dataset.cont+'_color'] = c==='dark' ? '#000' : '#fff';
 		cont.find('.quick_colorchange_'+(c==='dark' ? 'light' : 'dark')).removeClass("selected");
@@ -405,15 +430,20 @@ RVS.LIB.QS_CONT = {
 				switch (ltype) {
 					case "text":
 					case "button":
-						if ((RVS.L[RVS.selLayers[lid]].type==="text" && ltype==="text") || (RVS.L[RVS.selLayers[lid]].type==="button" && ltype==="button")) {
-							updateIntelligentInherit = true;
+						if ((RVS.L[RVS.selLayers[lid]].type==="text" && ltype==="text") || (RVS.L[RVS.selLayers[lid]].type==="button" && ltype==="button")) {							
+							if (_.ignoreIntelligent) {
+								RVS.F.updateSliderObj({path:pre+'behavior.intelligentInherit',val:false});
+								RVS.F.updateSliderObj({path:pre+'behavior.autoResponsive',val:false});
+								RVS.F.updateSliderObj({path:pre+'behavior.responsiveOffset',val:false});
+								RVS.F.updateSliderObj({path:pre+'behavior.responsiveChilds',val:false});
+								updateIntelligentInherit = false;
+							} else updateIntelligentInherit = true;
 							if (ltype==="button") {
 								/*RVS.F.updateSliderObj({path:pre+'behavior.autoResponsive',val:false});
 								RVS.F.updateSliderObj({path:pre+'behavior.intelligentInherit',val:false});
 								RVS.F.updateSliderObj({path:pre+'behavior.responsiveChilds',val:false});
 								RVS.F.updateSliderObj({path:pre+'behavior.responsiveOffset',val:false});*/
-							}
-
+							}							 
 							if (ltype==="text" && (qstype==="headlines" || qstype==="content")) RVS.F.updateSliderObj({path:pre+'idle.color.d.v',val:RVS.LIB.QS[qstype+'_color']});
 							if (_.fs!==undefined) RVS.F.updateSliderObj({path:pre+'idle.fontSize.d.v',val:_.fs});
 							if (_.w!==undefined) RVS.F.updateSliderObj({path:pre+'size.width.d.v',val:_.w}); else RVS.F.updateSliderObj({path:pre+'size.width.d.v',val:"auto"});
@@ -482,6 +512,7 @@ RVS.LIB.QS_CONT = {
 									RVS.H[RVS.selLayers[lid]].c.html(_.content);
 								}
 							//}
+							
 
 							if (_.hs!==undefined) {
 								RVS.F.updateSliderObj({path:pre+'hover.usehover',val:true});
@@ -503,6 +534,8 @@ RVS.LIB.QS_CONT = {
 								RVS.F.updateSliderObj({path:pre+'hover.usehover',val:false});
 							}
 
+							if (_.callback!==undefined && RVS.F.updateQuickStyleObject!==undefined && RVS.F.updateQuickStyleObject[_.callback]!==undefined) RVS.F.updateQuickStyleObject[_.callback](_,pre,lid);
+							
 
 						}
 					break;
@@ -529,9 +562,11 @@ RVS.LIB.QS_CONT = {
 
 				RVS.F.intelligentUpdateValuesOnLayer(RVS.selLayers[lid]);
 				//SET INTELLIGENT INHERITING ON THE LAYER AFTER UPDATING IT
+				
+
 				if (updateIntelligentInherit) RVS.F.setToIntelligentUpdate(true);
 				//if (ltype!=="button" && newlayer===true)
-				RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.selLayers[lid]+'.behavior.intelligentInherit',val:true});
+				if (updateIntelligentInherit!==false) RVS.F.updateSliderObj({path:RVS.S.slideId+'.layers.'+RVS.selLayers[lid]+'.behavior.intelligentInherit',val:true});
 				RVS.F.drawHTMLLayer({uid:RVS.selLayers[lid]});
 			}
 			if (RVS.S.qstyleBackupGroup===undefined) RVS.F.closeBackupGroup({id:"quickstyle"});
@@ -550,7 +585,7 @@ RVS.LIB.QS_CONT = {
 		});
 
 
-		RVS.DOC.on('mouseenter','.quick_style_example_content', function() {
+		RVS.DOC.on('mouseenter','.quick_style_example_content, .forms_quick_style_example_content', function() {			
 			if (this.dataset.hoverspeed!==undefined) {
 				var j = jQuery(this);
 				if (j.data('hoveranim')===undefined) {
@@ -570,7 +605,7 @@ RVS.LIB.QS_CONT = {
 				j.data('hoveranim').play();
 			}
 		});
-		RVS.DOC.on('mouseleave','.quick_style_example_content', function() {
+		RVS.DOC.on('mouseleave','.quick_style_example_content, .forms_quick_style_example_content', function() {
 			if (this.dataset.hoverspeed!==undefined)
 				jQuery(this).data('hoveranim').reverse();
 		});

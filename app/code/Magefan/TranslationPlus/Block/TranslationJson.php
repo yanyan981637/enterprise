@@ -10,16 +10,11 @@ use Magefan\Translation\Model\ResourceModel\Translation\CollectionFactory;
 use Magefan\Translation\Model\Config;
 use Magento\Framework\Locale\Resolver;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\View\Asset\Source;
-use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Element\Template\Context;
-use \Magento\Framework\DataObject\IdentityInterface;
-use Magefan\TranslationPlus\Model\Config as ModelConfig;
+use Magento\Framework\DataObject\IdentityInterface;
+use Magefan\Community\Api\SecureHtmlRendererInterface;
 
-/**
- * Class Check EnableInfo Block
- */
 class TranslationJson extends \Magento\Framework\View\Element\Text implements IdentityInterface
 {
     /**
@@ -43,52 +38,24 @@ class TranslationJson extends \Magento\Framework\View\Element\Text implements Id
     private $storeManager;
 
     /**
-     * @var \Magento\Framework\View\Asset\Repository
-     */
-    private $assetRepository;
-
-    /**
-     * @var Source
-     */
-    private $source;
-
-    /**
-     * @var File
-     */
-    private $driverFile;
-
-    /**
      * @var Json
      */
     private $jsonSerializer;
 
     /**
-     * @var mixed
+     * @var SecureHtmlRendererInterface
      */
-    private $jsTranslationFile;
+    private $mfSecureRenderer;
 
     /**
-     * @var \Magefan\Translation\Model\ResourceModel\Translation\Collection
-     */
-    private $translationsCollection;
-
-    /**
-     * @var ModelConfig
-     */
-    private $modelConfig;
-
-    /**
-     * TranslationJson constructor.
      * @param Context $context
      * @param CollectionFactory $collectionFactory
      * @param Config $config
      * @param Resolver $localeResolver
      * @param StoreManagerInterface $storeManager
-     * @param Source $source
-     * @param File $driverFile
      * @param Json $jsonSerializer
-     * @param ModelConfig $modelConfig
      * @param array $data
+     * @param SecureHtmlRendererInterface|null $mfSecureRenderer
      */
     public function __construct(
         Context $context,
@@ -96,102 +63,64 @@ class TranslationJson extends \Magento\Framework\View\Element\Text implements Id
         Config $config,
         Resolver $localeResolver,
         StoreManagerInterface $storeManager,
-        Source $source,
-        File $driverFile,
         Json $jsonSerializer,
-        ModelConfig $modelConfig,
-        array $data = []
+        array $data = [],
+        SecureHtmlRendererInterface $mfSecureRenderer = null
     ) {
         $this->collectionFactory = $collectionFactory;
         $this->config = $config;
         $this->localeResolver = $localeResolver;
         $this->storeManager = $storeManager;
-        $this->source = $source;
-        $this->driverFile = $driverFile;
         $this->jsonSerializer = $jsonSerializer;
-        $this->assetRepository = $context->getAssetRepository();
-        $this->modelConfig = $modelConfig;
+        $this->mfSecureRenderer = $mfSecureRenderer ?: \Magento\Framework\App\ObjectManager::getInstance()
+            ->get(SecureHtmlRendererInterface::class);
         parent::__construct($context, $data);
     }
 
-
     /**
-     * @return bool|string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return mixed
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function getJsTranslationFile()
+    private function getLastUpdatedAt()
     {
-        if (null === $this->jsTranslationFile) {
-            $asset = $this->assetRepository->createAsset('js-translation.json');
-            $file = $this->source->getFile($asset);
+        $locale = $this->localeResolver->getLocale();
+        $storeId = $this->storeManager->getStore()->getId();
 
-            $file = str_replace('var/view_preprocessed/', '', $file);
+        $translations = $this->collectionFactory->create();
+        $translations
+            ->addFieldToFilter('locale', $locale)
+            ->addFieldToFilter(
+                ['store_id', 'store_id'],
+                [
+                    ['eq' => 0],
+                    ['eq' => $storeId],
+                ]
+            )
+            ->setOrder('updated_at', 'DESC')
+            ->setPageSize(1);
 
-            if ($this->driverFile->isExists($file)) {
-                $this->jsTranslationFile = $file;
-            } else {
-                $this->jsTranslationFile = false;
-            }
-        }
-        return $this->jsTranslationFile;
-    }
-
-    /**
-     * @param $locale
-     * @param $lastUpdateDate
-     * @return \Magefan\Translation\Model\ResourceModel\Translation\Collection
-     */
-    private function getTranslationsCollection()
-    {
-        if (null === $this->translationsCollection) {
-            $file = $this->getJsTranslationFile();
-            $locale = $this->localeResolver->getLocale();
-            $storeId = $this->storeManager->getStore()->getId();
-
-            $staticContentDeployDateTime = $this->modelConfig->getStaticContentDeployDateTime();
-            if ($staticContentDeployDateTime) {
-                $date = date('Y-m-d H:i:s', strtotime($staticContentDeployDateTime)  - 86400);
-            } else {
-                $date = date('Y-m-d H:i:s', filemtime($file) - 86400);
-            }
-
-            $translations = $this->collectionFactory->create();
-            $translations
-                ->addFieldToFilter('locale', $locale)
-                ->addFieldToFilter(
-                    'updated_at',
-                    ['gt' => $date]
-                )
-                ->addFieldToFilter(
-                    ['store_id', 'store_id'],
-                    [
-                        ['eq' => 0],
-                        ['eq' => $storeId],
-                    ]
-                );
-
-            $this->translationsCollection = $translations;
-        }
-
-        return $this->translationsCollection;
+        $lastTranslation = $translations->getFirstitem();
+        return $lastTranslation->getUpdatedAt();
     }
 
     /**
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getTranslationJson(): string
     {
-        $translations = $this->getTranslationsCollection();
-        $data = [];
-        foreach ($translations as $translate) {
-            $data[$translate->getData('string')] = $translate->getData('translate');
+        $isDisableTranslationParams = (bool)$this->config->getConfig('mftranslation/general/disable_translation_config_params');
+        if ($isDisableTranslationParams) {
+            $data = [];
+        } else {
+            $data = [
+                'locale' => $this->localeResolver->getLocale(),
+                'store_id' => $this->storeManager->getStore()->getId(),
+                'timestamp' => strtotime($this->getLastUpdatedAt() ?: '')
+            ];
         }
 
-        if ($data) {
-            return $this->jsonSerializer->serialize($data);
-        }
-
-        return '';
+        return $this->jsonSerializer->serialize($data);
     }
 
     /**
@@ -201,35 +130,17 @@ class TranslationJson extends \Magento\Framework\View\Element\Text implements Id
      */
     protected function _toHtml()
     {
-        if (!$this->canDisplay()) {
+        if (!$this->config->isEnabled()) {
             return '';
         }
 
         $json = $this->getTranslationJson();
         if ($json) {
-            return '<script>' .
-                'window.mfTranslationJson = ' . $json . ';' .
-                '</script>';
+            $script = 'window.mfTranslationConfig=' . $json . ';' ;
+            return $this->mfSecureRenderer->renderTag('script', [], $script, false);
         }
 
         return '';
-    }
-
-    /**
-     * @return bool
-     * @throws \Magento\Framework\Exception\FileSystemException
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function canDisplay()
-    {
-        if (!$this->config->isEnabled()
-            || !$this->getJsTranslationFile()
-            || $this->driverFile->isWritable($this->getJsTranslationFile())
-        ) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -239,16 +150,10 @@ class TranslationJson extends \Magento\Framework\View\Element\Text implements Id
      */
     public function getIdentities()
     {
-        if ($this->canDisplay()) {
+        if ($this->config->isEnabled()) {
             $identities = [];
             $identities[] = \Magefan\Translation\Model\Translation::CACHE_TAG . '_' . 0;
-            /*
-            foreach ($this->getTranslationsCollection() as $item) {
-                $identities = array_merge($identities, $item->getIdentities());
-            }
-            */
-
-            return array_unique($identities);
+            return $identities;
         }
 
         return [];

@@ -3,7 +3,7 @@
  * @package   Revolution Slider
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.sliderrevolution.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider;
@@ -239,10 +239,10 @@ class RevSliderNavigation extends RevSliderFunctions {
 	public function delete_navigation($nav_id = 0){
 		$wpdb = FA::getQueryHelper();
 
-		if(!isset($nav_id) || intval($nav_id) == 0) return __('Invalid ID', 'revslider');
+		if(!isset($nav_id) || intval($nav_id) == 0) return __('Invalid ID');
 
 		$response = $wpdb->delete($wpdb->prefix.RevSliderFront::TABLE_NAVIGATIONS, array('id' => $nav_id));
-		if($response === false) return __('Navigation could not be deleted', 'revslider');
+		if($response === false) return __('Navigation could not be deleted');
 
 		return true;
 
@@ -493,7 +493,7 @@ class RevSliderNavigation extends RevSliderFunctions {
 						foreach($nav['presets'] as $prkey => $preset){
 							if($prkey == $data['handle']){
 								if(!isset($preset['editable'])){
-									return __("Can't modify a default preset of default navigations", 'revslider');
+									return __("Can't modify a default preset of default navigations");
 								}
 							}
 						}
@@ -508,7 +508,7 @@ class RevSliderNavigation extends RevSliderFunctions {
 						foreach($default_presets[$nav['id']] as $prkey => $preset){
 							if($prkey == $data['handle']){
 								if($data['do_overwrite'] === false || $data['do_overwrite'] === 'false'){
-									return __('Preset handle already exists, please choose a different name', 'revslider');
+									return __('Preset handle already exists, please choose a different name');
 								}
 
 								$default_presets[$nav['id']][$prkey] = array(
@@ -539,7 +539,7 @@ class RevSliderNavigation extends RevSliderFunctions {
 
 					FA::update_option('revslider-nav-preset-default', $default_presets);
 
-					//return __('Can\'t add a preset to default navigations', 'revslider');
+					//return __('Can\'t add a preset to default navigations');
 				}else{
 
 					$overwrite = false;
@@ -548,7 +548,7 @@ class RevSliderNavigation extends RevSliderFunctions {
 						foreach($nav['presets'] as $prkey => $preset){
 							if($prkey == $data['handle']){
 								if($data['do_overwrite'] === false || $data['do_overwrite'] === 'false'){
-									return __('Preset handle already exists, please choose a different name', 'revslider');
+									return __('Preset handle already exists, please choose a different name');
 								}
 
 								$nav['presets'][$prkey] = array(
@@ -608,7 +608,7 @@ class RevSliderNavigation extends RevSliderFunctions {
 			}
 		}
 
-		return __('Navigation not found, could not add preset', 'revslider');
+		return __('Navigation not found, could not add preset');
 
 	}
 
@@ -643,9 +643,9 @@ class RevSliderNavigation extends RevSliderFunctions {
 							return true;
 						}
 					}
-					return __('Can\'t delete default preset of default navigations', 'revslider');
+					return __('Can\'t delete default preset of default navigations');
 				}
-				return __('Preset not found in default navigations', 'revslider');
+				return __('Preset not found in default navigations');
 			}else{
 				if(isset($nav['presets'])){
 					foreach($nav['presets'] as $pkey => $preset){
@@ -657,7 +657,7 @@ class RevSliderNavigation extends RevSliderFunctions {
 						}
 					}
 				}else{
-					return __('Preset not found', 'revslider');
+					return __('Preset not found');
 				}
 
 				$wpdb = FA::getQueryHelper();
@@ -682,7 +682,7 @@ class RevSliderNavigation extends RevSliderFunctions {
 			}
 		}
 
-		return __('Navigation not found, could not delete preset', 'revslider');
+		return __('Navigation not found, could not delete preset');
 	}
 
 }

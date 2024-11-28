@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider\Admin\Includes;
@@ -118,7 +118,7 @@ class RevSliderAddons extends RevSliderFunctions { //before: Rev_addon_Admin
 	 * @since 6.0
 	 */
 	public function install_addon($addon, $force = false){
-		if(FA::get_option('revslider-valid', 'false') !== 'true') return __('Please activate Slider Revolution', 'revslider');
+		if(FA::get_option('revslider-valid', 'false') !== 'true') return __('Please activate Slider Revolution');
 
 		//check if downloaded already
 		$plugins	= FA::get_plugins();
@@ -143,7 +143,7 @@ class RevSliderAddons extends RevSliderFunctions { //before: Rev_addon_Admin
 
 		$rslb = new RevSliderLoadBalancer();
 
-		if(FA::get_option('revslider-valid', 'false') !== 'true') return __('Please activate Slider Revolution', 'revslider');
+		if(FA::get_option('revslider-valid', 'false') !== 'true') return __('Please activate Slider Revolution');
 
 		$plugin_slug	= basename($addon);
 

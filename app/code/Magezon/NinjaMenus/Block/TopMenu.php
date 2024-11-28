@@ -39,4 +39,11 @@ class TopMenu extends \Magento\Framework\View\Element\Template
     {
         return $this->menuHelper->getMenuHtml($this->getIdentifier(), 'ninjamenus-top');
     }
+
+    public function getMagentoTopMenuHtml()
+    {
+        $block = $this->getLayout()->createBlock(\Magento\Theme\Block\Html\Topmenu::class);
+        $block->setTemplate('Magento_Theme::html/topmenu.phtml');
+        return $block->toHtml();
+    }
 }

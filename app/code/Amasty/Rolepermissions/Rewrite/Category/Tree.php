@@ -1,13 +1,15 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Advanced Permissions for Magento 2
  */
 
 namespace Amasty\Rolepermissions\Rewrite\Category;
 
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Data\Tree\Node;
 
 class Tree extends \Magento\Catalog\Block\Adminhtml\Category\Tree
@@ -27,6 +29,11 @@ class Tree extends \Magento\Catalog\Block\Adminhtml\Category\Tree
      */
     public $currentRule;
 
+    /**
+     * @var ProductMetadataInterface
+     */
+    public $productMetadata;
+
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Catalog\Model\ResourceModel\Category\Tree $categoryTree,
@@ -37,10 +44,12 @@ class Tree extends \Magento\Catalog\Block\Adminhtml\Category\Tree
         \Magento\Backend\Model\Auth\Session $backendSession,
         \Amasty\Rolepermissions\Helper\Data $helper,
         \Magento\Framework\Json\DecoderInterface $jsonDecoder,
-        array $data = []
+        array $data = [],
+        ProductMetadataInterface $productMetadata = null //ToDo: move to not optional
     ) {
         $this->helper = $helper;
         $this->jsonDecoder = $jsonDecoder;
+        $this->productMetadata = $productMetadata ?? ObjectManager::getInstance()->get(ProductMetadataInterface::class);
         parent::__construct(
             $context,
             $categoryTree,
@@ -112,7 +121,8 @@ class Tree extends \Magento\Catalog\Block\Adminhtml\Category\Tree
     {
         $html = parent::_toHtml();
 
-        $code = "if (node.disabled) return;";
+        $code = $this->getCode();
+
         $html = preg_replace('|(categoryClick\s*:\s*function[^{]+\{\s*)|s', "\\1$code\n", $html);
 
         $storeId = (int)$this->_request->getParam('store');
@@ -168,5 +178,12 @@ class Tree extends \Magento\Catalog\Block\Adminhtml\Category\Tree
         foreach ($node['children'] as &$child) {
             $this->deactivateCategories($child);
         }
+    }
+
+    private function getCode(): string
+    {
+        return version_compare($this->productMetadata->getVersion(), '2.4.7', '<')
+            ? "if (node.disabled) return;"
+            : '';
     }
 }

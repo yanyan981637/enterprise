@@ -22,8 +22,8 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
     const WP_MAX_MEMORY_LIMIT = '1024M';
 	const RS_DEMO = false;
 	const MODULE = 'Nwdthemes_Revslider';
-	const RS_REVISION = '6.5.3.3';
-	const RS_TP_TOOLS = '6.5.3';
+	const RS_REVISION = '6.6.7.1';
+	const RS_TP_TOOLS = '6.6.7';
 	const RS_PLUGIN_SLUG_PATH = 'nwdthemes/revslider';
 
     const RS_T   = '	';
@@ -38,6 +38,8 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
     const RS_T10 = '										';
     const RS_T11 = '											';
 
+	protected $_appState;
+	protected $_pageFactory;
 	protected $_authSession;
 	protected $_backendUrl;
     protected $_filterProvider;
@@ -81,6 +83,8 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
     public static $rs_preview_mode = false;
     public static $rs_js_collection = array('revapi' => array(), 'js' => array(), 'minimal' => '');
     public static $rs_css_collection = array();
+    public static $rs_revicons = false;
+    public static $rs_youtube_api_loaded = false;
 	public static $revslider_fonts = array('queue' => array(), 'loaded' => array());
 	public static $revslider_addon_notice_merged = 0;
     public static $revslider_animations = array();
@@ -111,10 +115,6 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
 	/**
 	 *	Constructor
 	 */
-
-	private $_appState;
-	private $_pageFactory;
-
 	public function __construct(
         \Magento\Framework\App\Helper\Context $context,
 		\Magento\Framework\App\State $appState,
@@ -192,6 +192,9 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
 		// add filters to make image url absolute
         $this->add_filter('revslider_slider_init_by_data', array($this, 'sliderInitByDataFilter'), 10, 1);
         $this->add_filter('revslider_slide_init_by_data', array($this, 'slideInitByDataFilter'), 10, 1);
+
+		// add filters to modify layers
+        $this->add_filter('revslider_get_layers', array($this, 'getLayersFilter'), 10, 1);
 
         // Inject into adapter
         FrameworkAdapter::injectFramework($this);
@@ -560,8 +563,13 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
      */
 
 	public function forceSSL($url) {
+        if (strpos($url, '//') === 0) {
+            $url = 'https:' . $url;
+        }
         if ($this->is_ssl()) {
             $url = str_replace('http://', 'https://', $url);
+        } else {
+            $url = str_replace('https://', 'http://', $url);
         }
 		return $url;
 	}
@@ -1359,14 +1367,15 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
 	 *
 	 *	@param	string	url
 	 *	@param	mixed	args
+	 *	@param	boolean	$skipPrepend
 	 *	@return	string
 	 */
 
-	public function getBackendUrl($url, $args = '') {
+	public function getBackendUrl($url, $args = '', $skipPrepend = false) {
 
         $backendBase = 'nwdthemes_revslider/revslider/';
         $backendUrl = str_replace('admin-ajax.php', $backendBase . 'addonajax', $url);
-        if (strpos($backendUrl, 'nwdthemes_revslider') === false && strpos($backendUrl, 'adminhtml/') === false) {
+        if (! $skipPrepend && strpos($backendUrl, 'nwdthemes_revslider') === false && strpos($backendUrl, 'adminhtml/') === false) {
             $backendUrl = $backendBase . $backendUrl;
         }
 
@@ -1861,14 +1870,26 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
 	}
 
 	/**
+	 *	Get image by id and size
+	 *
+	 *	@param	int		Image id
+	 *	@param	string	Size type
+	 *	@return array
+	 */
+	public function wp_get_attachment_image_src($attachment_id, $size = 'thumbnail') {
+		return $this->_imagesHelper->wp_get_attachment_image_src($attachment_id, $size);
+	}
+
+	/**
 	 *	Get image url by id and size
 	 *
 	 *	@param	int		Image id
 	 *	@param	string	Size type
 	 *	@return string
 	 */
-	public function wp_get_attachment_image_src($attachment_id, $size='thumbnail') {
-		return $this->_imagesHelper->wp_get_attachment_image_src($attachment_id, $size);
+	public function wp_get_attachment_image_url($attachment_id, $size='thumbnail') {
+		$image = $this->wp_get_attachment_image_src($attachment_id, $size);
+        return $image && is_array($image) ? $image[0] : '';
 	}
 
     public function wp_get_attachment_url() {
@@ -1969,6 +1990,7 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
      */
     public function addRequiredScript($key, $url)
     {
+
         $this->_scriptsToRequire[$key] = $url;
     }
 
@@ -2303,6 +2325,27 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
 	}
 
 	/**
+	 * Get layers fitler
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	public function getLayersFilter($data) {
+        if (is_array($data)) {
+            foreach ($data as &$layer) {
+                if (isset($layer['actions']['action']) && is_array($layer['actions']['action'])) {
+                    foreach ($layer['actions']['action'] as $key => $action) {
+                        if (! $action) {
+                            unset($layer['actions']['action'][$key]);
+                        }
+                    }
+                }
+            }
+        }
+		return $data;
+	}
+
+	/**
 	 * Make image urls relative
 	 *
 	 * @param array $data
@@ -2378,14 +2421,14 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
      * JSON Decode wrapper
      *
      * @param mixed $json,
-     * @param ?bool $associative = null,
+     * @param bool|null $associative = null,
      * @param int $depth = 512,
      * @param int $flags = 0
      * @return mixed
      */
     public function json_decode(
         $json,
-        ?bool $associative = null,
+        $associative = null,
         int $depth = 512,
         int $flags = 0
     ) {
@@ -2393,6 +2436,16 @@ class Framework extends \Magento\Framework\App\Helper\AbstractHelper {
             $json = false;
         }
         return json_decode($json, $associative, $depth, $flags);
+    }
+
+    /**
+     * Get POST data
+     *
+     * @return array
+     */
+    public function getPost()
+    {
+        return $this->_request->getPostValue();
     }
 
 }

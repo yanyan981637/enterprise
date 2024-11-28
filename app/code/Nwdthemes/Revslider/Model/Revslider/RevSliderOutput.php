@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider;
@@ -113,6 +113,11 @@ class RevSliderOutput extends RevSliderFunctions {
 	 * @before: RevSliderOutput::$class_include
 	 **/
 	public $classes = array();
+
+	/**
+	 * holds all additions to the current layer getting printed
+	 **/
+	public $layer_additions = array();
 
 	/**
 	 * holds if static layers should be done
@@ -233,6 +238,16 @@ class RevSliderOutput extends RevSliderFunctions {
 	private $full_js = true;
 
 	/**
+	 * defines if this slider has in any way a youtube layer or slide that is used
+	 **/
+	private $youtube_exists = false;
+
+	/**
+	 * defines if the exception should be visible to the visitor or only in the console
+	 **/
+	private $console_exception = false;
+
+	/**
 	 * stands for JavaScript Tab Addition and defines how many tabs there should be added to the JavaScript prints to make everything better looking in HTML
 	 **/
 	private $JTA = Framework::RS_T3;
@@ -246,22 +261,6 @@ class RevSliderOutput extends RevSliderFunctions {
 	private $_sfx;
 	private $_reverse;
 	private $hv;
-
-	/**
-	 * START: DEPRECATED FUNCTIONS THAT ARE IN HERE FOR OLD ADDONS TO WORK PROPERLY
-	 **/
-
-	/**
-	 * old version of check_add_to()
-	 **/
-	public static function isPutIn($empty_is_false = false){
-		$o = new RevSliderOutput();
-		return $o->check_add_to($empty_is_false);
-	}
-
-	/**
-	 * END: DEPRECATED FUNCTIONS THAT ARE IN HERE FOR OLD ADDONS TO WORK PROPERLY
-	 **/
 
 	/**
 	 * pre init the static slide
@@ -681,10 +680,13 @@ class RevSliderOutput extends RevSliderFunctions {
 
 		FA::do_action('revslider_add_slider_to_stage_pre', $sid, $this);
 
-		if(!$this->check_add_to()) return false;
+		$locale = setlocale(LC_NUMERIC, 0);
+		if($locale !== 'C') setlocale(LC_NUMERIC, 'C');
 
 		$this->set_slider_id($sid);
 		$this->add_slider_base();
+
+		if($locale !== 'C') setlocale(LC_NUMERIC, $locale);
 
 		FA::do_action('revslider_add_slider_to_stage_post', $sid, $this);
 
@@ -722,6 +724,11 @@ class RevSliderOutput extends RevSliderFunctions {
 
 			//check if we are mobile and the slider needs to be printed or not
 			if($this->slider->get_param(array('general', 'disableOnMobile'), false) === true && FA::wp_is_mobile()) return false;
+
+			if($this->slider->get_param('pakps', false) === true && $this->_truefalse(FA::get_option('revslider-valid', 'false')) === false && Framework::$rs_preview_mode === false && $this->get_preview_mode() === false){
+				$this->console_exception = true;
+				$this->throw_error(__('Please register the Slider Revolution plugin to use premium templates.')); // return false;
+			}
 
 			//the initial id can be an alias, so reset the id now
 			$sid = $this->slider->get_id();
@@ -786,7 +793,7 @@ class RevSliderOutput extends RevSliderFunctions {
 
 			echo $this->add_custom_navigation_css();
 			echo $this->get_material_icons_css();
-
+			echo $this->add_youtube_api_html();
 			echo $this->close_slider_wrapper_div();
 			echo $this->add_unfloat_html();
 
@@ -806,7 +813,12 @@ class RevSliderOutput extends RevSliderFunctions {
 		}catch(\Exception $e){
 			$message = $e->getMessage();
 
-			$this->print_error_message($message);
+            if($this->console_exception){
+                $this->print_error_message_console($message);
+            }else{
+                $this->print_error_message($message);
+            }
+
 		}
 	}
 
@@ -868,6 +880,7 @@ class RevSliderOutput extends RevSliderFunctions {
 			}
 
 			$bg_img = $this->check_valid_image($bg_img);
+
 			if($bg_img !== false){
 				$style .= 'background-image:url('.$bg_img.');';
 				$style .= 'background-repeat:'.FA::esc_attr($this->slider->get_param(array('layout', 'bg', 'repeat'), 'no-repeat')).';'; //$this->slider->get_param(array('def', 'background', 'repeat'), 'no-repeat')
@@ -882,7 +895,8 @@ class RevSliderOutput extends RevSliderFunctions {
 		}
 
 		if(!in_array($max_width, array('0', 0, '0px', '0%'), true) && $type == 'auto'){
-			$style .= 'max-width:'. $max_width.';';
+			if(intval($max_width) > 0 && strpos($max_width, 'px') === false && strpos($max_width, '%') === false) $max_width .= 'px';
+			$style .= (empty($max_width)) ? '' : 'max-width:'. $max_width.';';
 		}
 
 		$fixedOnTop = array(
@@ -942,6 +956,27 @@ class RevSliderOutput extends RevSliderFunctions {
 		}
 
 		return FA::apply_filters('revslider_add_unfloat_html', $r, $this);
+	}
+
+
+	/**
+	 * check if the youtube api needs to be added, this should only be done once for all sliders
+	 * @since: 6.5.7
+	 **/
+	public function add_youtube_api_html(){
+		$r = '';
+
+		if(Framework::$rs_youtube_api_loaded === true) return $r; //already loaded
+		if($this->youtube_exists !== true) return $r; //no layer or slide used it
+
+		//check global option if enabled
+		$gs = $this->get_global_settings();
+		if($this->_truefalse($this->get_val($gs, array('script', 'ytapi'), true)) === true){
+			$r = Framework::RS_T4.'<script src="https://www.youtube.com/iframe_api"></script>'."\n";
+			Framework::$rs_youtube_api_loaded = true;
+		}
+
+		return FA::apply_filters('revslider_add_youtube_api_html', $r, $this);
 	}
 
 
@@ -1085,7 +1120,7 @@ class RevSliderOutput extends RevSliderFunctions {
 
 		$this->set_general_params_for_layers();
 
-		echo FA::apply_filters('revslider_get_slides_pre', Framework::RS_T5.'<rs-slides>'."\n", $this);
+        echo FA::apply_filters('revslider_get_slides_pre', Framework::RS_T5.'<rs-slides style="overflow: hidden; position: absolute;">'."\n", $this);
 
 		foreach($slides as $slide){
 			$this->set_slide($slide);
@@ -1193,7 +1228,8 @@ class RevSliderOutput extends RevSliderFunctions {
 		//echo Framework::RS_T6.'<!-- SLIDE  -->'."\n";
 		echo Framework::RS_T6.'<rs-slide';
 
-		echo $this->get_html_slide_key();
+        echo $this->get_html_slide_style();
+        echo $this->get_html_slide_key();
 		echo $this->get_html_slide_title();
 		echo $this->get_html_slide_description();
 		echo $this->get_thumb_url();
@@ -1241,9 +1277,10 @@ class RevSliderOutput extends RevSliderFunctions {
 			$this->set_layers($layers);
 			if(!empty($layers)){
 				$sof = $static_slide->get_param(array('static', 'overflow'), '');
+                $scl = $sof;
 				$sof = (!empty($sof) && $sof == 'hidden') ? ' style="overflow:hidden;width:100%;height:100%;top:0px;left:0px;"' : '';
 				$slp = $static_slide->get_param(array('static', 'position'), 'front');
-				$slp = (!empty($slp) && $slp === 'back') ? ' class="rs-stl-back"' : '';
+                $slp = (!empty($slp) && $slp === 'back') ? ' class="rs-stl-back ' . ($scl == 'visible' ? 'rs-stl-visible' : '') . '"' : ($scl == 'visible' ? ' class="rs-stl-visible"' : '');
 
 				//check for static layers
 				echo Framework::RS_T5.'<rs-static-layers' . $sof . $slp . '><!--'."\n";
@@ -1271,6 +1308,10 @@ class RevSliderOutput extends RevSliderFunctions {
 			//echo Framework::RS_T7.'<!-- MAIN IMAGE -->'."\n";
 			echo Framework::RS_T7.'<img';
 			foreach($img as $k => $v){
+                if($k === 'alt'){
+                    echo ' '.$k.'="'.$v.'"'; //always print an alt even if empty
+                    continue;
+                }
 				echo (trim($v) !== '') ? ' '.$k.'="'.$v.'"' : '';
 			}
 			echo ' data-no-retina>'."\n";
@@ -1350,7 +1391,7 @@ class RevSliderOutput extends RevSliderFunctions {
 				$img['src'] = $url_trans;
 				if(isset($img['alt']) && trim($img['alt']) === ''){
 					$img['alt'] = $this->get_html_slide_title(true);
-					$img['alt'] = (empty($img['alt'])) ? __('Slide Background', 'revslider') : $img['alt'];
+					$img['alt'] = (empty($img['alt'])) ? __('Slide Background') : $img['alt'];
 				}
 			break;
 		}
@@ -1482,7 +1523,8 @@ class RevSliderOutput extends RevSliderFunctions {
 			}else{
 				//additional background params
 				$bgFit = $slide->get_param(array('bg', 'fit'), 'cover'); //$this->slider->get_param(array('def', 'background', 'fit'), 'cover')
-				$return['f'] = ($bgFit == 'percentage') ? (intval($slide->get_param(array('bg', 'fitX'), '100')) ?: 100).'% '.(intval($slide->get_param(array('bg', 'fitY'), '100')) ?: 100).'%' : $bgFit; //$this->slider->get_param(array('def', 'background', 'fitX'), '100') $this->slider->get_param(array('def', 'background', 'fitY'), '100')
+                if(!in_array($bgFit, array('cover', 'contain', 'percentage', 'auto'))) $bgFit = 'cover';
+                $return['f'] = ($bgFit == 'percentage') ? (intval($slide->get_param(array('bg', 'fitX'), '100')) ?: 100).'% '.(intval($slide->get_param(array('bg', 'fitY'), '100')) ?: 100).'%' : $bgFit; //$this->slider->get_param(array('def', 'background', 'fitX'), '100') $this->slider->get_param(array('def', 'background', 'fitY'), '100')
 				$return['r'] = $slide->get_param(array('bg', 'repeat'), 'no-repeat'); //$this->slider->get_param(array('def', 'background', 'repeat'), 'no-repeat')
 			}
 		}
@@ -1557,6 +1599,8 @@ class RevSliderOutput extends RevSliderFunctions {
 				echo $row_layers;
 				echo Framework::RS_T7.$this->add_closing_comment().'</rs-zone>'.$this->add_opening_comment()."\n";
 
+                $this->container_mode = '';
+
 				break; //zone is written, go to the next one
 			}
 		}
@@ -1567,14 +1611,16 @@ class RevSliderOutput extends RevSliderFunctions {
 	 * @since: 5.3.0
 	 * @before: RevSliderOutput::putCreativeGroups()
 	 */
-	public function add_groups(){
+	public function add_groups($puid = '-1'){ //-1 means: we only want to handle groups here that are on the first level
 		$layers = $this->get_layers();
 		if(empty($layers)) return false;
 
+		$container_mode = $this->container_mode;
 		foreach($layers as $layer){
 			if($this->get_val($layer, 'type', 'text') !== 'group') continue; //we only want to handle groups here to get the zones we need to create
+			if($this->get_val($layer, array('group', 'puid'), '-1') !== $puid) continue;
 
-			$this->container_mode = '';
+			//$this->container_mode = '';
 
 			$uid = $this->get_val($layer, 'uid');
 
@@ -1592,6 +1638,8 @@ class RevSliderOutput extends RevSliderFunctions {
 			echo $this->ld().Framework::RS_T7.'--></rs-group>'.$this->add_opening_comment()."\n";
 
 		}
+
+        $this->container_mode = $container_mode;
 	}
 
 	/**
@@ -1600,10 +1648,10 @@ class RevSliderOutput extends RevSliderFunctions {
 	 */
 	private function add_creative_layer(){
 		$layers = $this->get_layers();
-		if(empty($layers)) return false;
+        if(empty($layers)) return false;
 
 		$layers = FA::apply_filters('revslider_putCreativeLayer', $layers, $this, $this->is_static);
-		$this->container_mode = '';
+        $this->container_mode = '';
 
 		foreach($layers as $layer){
 			if((string)$this->get_val($layer, array('group', 'puid'), '-1') !== '-1') continue; //dont do group layer
@@ -1619,18 +1667,45 @@ class RevSliderOutput extends RevSliderFunctions {
 	 * @before: RevSliderOutput::putCreativeGroupLayer();
 	 */
 	public function add_group_layer($u_id){
-		$layers = $this->get_layers();
+		$layers			= $this->get_layers();
+		$group_layers	= array();
+		$go				= 9999;
 
 		foreach($layers as $layer){
-			$p_uid = $this->get_val($layer, array('group', 'puid'));
-			$uid = $this->get_val($layer, array('group', 'uid'));
+			$p_uid	= $this->get_val($layer, array('group', 'puid'));
+			$uid	= $this->get_val($layer, array('group', 'uid'));
 
 			if((string)$u_id !== (string)$p_uid) continue;
 			if((string)$u_id === (string)$uid) continue;
 
-			$this->set_layer($layer);
-			$this->add_layer(true); //add the layer into the group
+			$order = $this->get_val($layer, array('group', 'groupOrder'));
+			if($order === ''){
+				$order = $go;
+				$go++;
+			}
+
+			$group_layers[$order] = $layer;
 		}
+
+		if(!empty($group_layers)){
+			krsort($group_layers); //sort the rows
+
+			foreach($group_layers as $layer){ //allow groups in groups
+				$this->set_layer($layer);
+				if($this->get_val($layer, 'type') === 'group'){
+					$uid = $this->get_val($layer, 'uid');
+					$this->add_layer(true, 'group'); //add the group layer
+					$this->increase_layer_depth();
+					$this->add_group_layer($uid); //add all layers that are in the group
+					$this->decrease_layer_depth();
+					echo $this->ld().Framework::RS_T7.'--></rs-group>'.$this->add_opening_comment()."\n";
+				}else{
+					$this->add_layer(true); //add the layer into the group
+				}
+			}
+			unset($group_layers);
+		}
+
 	}
 
 	/**
@@ -1682,6 +1757,7 @@ class RevSliderOutput extends RevSliderFunctions {
 
 				echo $this->ld().Framework::RS_T7.$this->add_closing_comment().'</rs-row>'.$this->add_opening_comment()."\n";//as we have used 'row' in the add_layer() function, it does not print the closing </> and we have to do it here
 			}
+            unset($row_layer);
 		}
 	}
 
@@ -1740,6 +1816,9 @@ class RevSliderOutput extends RevSliderFunctions {
 
 				$this->container_mode = 'column';
 
+				//add group layers from the current cuid
+				$this->add_groups($cuid);
+
 				//sort now the $group_layers
 				if(!empty($group_layers)){
 					ksort($group_layers);
@@ -1752,11 +1831,13 @@ class RevSliderOutput extends RevSliderFunctions {
 					}
 
 					$this->decrease_layer_depth();
+                    unset($group_layers);
 				}
 
 				echo $this->ld().Framework::RS_T7.$this->add_closing_comment().'</rs-column>'.$this->add_opening_comment();
 				echo "\n"; //as we have used 'column' in the add_layer() function, it does not print the closing </> and we have to do it here
 			}
+            unset($column_layers);
 		}
 	}
 
@@ -1784,6 +1865,7 @@ class RevSliderOutput extends RevSliderFunctions {
 	 */
 	public function add_layer($row_group_uid = false, $special_type = false){
 		$layer = FA::apply_filters('revslider_putLayer_pre', $this->get_layer(), $this, $row_group_uid, $this->is_static, $special_type);
+		$this->layer_additions = array();
 		$this->set_layer($layer);
 		$this->set_layer_unique_id();
 
@@ -1839,6 +1921,8 @@ class RevSliderOutput extends RevSliderFunctions {
 		$html_video_data	= $this->get_html_video_data();
 		$html_column_data	= $this->get_html_column_data();
 		$html_margin_data	= $this->get_html_margin_data($row_group_uid);
+		$html_covermode_data	= $this->get_html_covermode_data();
+
 		$html_padding_data	= $this->get_html_padding_data();
 		$html_border_data	= $this->get_html_border_data();
 		$html_inline_style	= $this->get_html_inline_style();
@@ -1851,6 +1935,7 @@ class RevSliderOutput extends RevSliderFunctions {
 		$html_corners		= $this->get_html_corners();
 		$html_disp			= $this->get_html_disp();
 		$html_layer			= $this->get_html_layer();
+		$html_layer_additions = $this->get_html_layer_additions();
 		$layertype 			= $this->get_layer_type();
 
 		$this->create_style_hover();
@@ -1900,12 +1985,15 @@ class RevSliderOutput extends RevSliderFunctions {
 		echo ($html_video_data != '')		? $html_video_data : ''; //$this->ld().Framework::RS_T8.   ."\n"
 		echo ($html_column_data != '')		? $this->ld().Framework::RS_T8.$html_column_data."\n" : '';
 		echo ($html_margin_data != '')		? $this->ld().Framework::RS_T8.$html_margin_data."\n" : '';
+        echo ($html_covermode_data != '')	? $this->ld().Framework::RS_T8.$html_covermode_data."\n" : '';
 		echo ($html_padding_data != '')		? $this->ld().Framework::RS_T8.$html_padding_data."\n" : '';
 		echo ($html_border_data != '')		? $this->ld().Framework::RS_T8.$html_border_data."\n" : '';
 		echo ($html_frameorder != '')		? $this->ld().Framework::RS_T8.$html_frameorder."\n" : '';
 		echo ($html_clip != '')				? $this->ld().Framework::RS_T8.$html_clip."\n" : '';
 
 		echo ($html_frames != '')			? $this->ld().Framework::RS_T8.$html_frames : '';
+
+        echo ($html_layer_additions != '')	? $html_layer_additions : '';
 
 		if(!empty($loop_data)){
 			foreach($loop_data as $ldk => $ld){
@@ -2012,6 +2100,7 @@ class RevSliderOutput extends RevSliderFunctions {
 			case 'streamyoutubeboth':
 				$vid = (in_array($video_type, array('streamyoutube', 'streamyoutubeboth'), true)) ? $this->slide->get_param(array('bg', 'youtube'), '') : $vid; //change $vid to the stream!
 				$vid = ($this->get_val($layer, array('media', 'videoFromStream'), false) === true) ? $this->slide->get_param(array('bg', 'youtube'), '') : $vid;
+				$this->youtube_exists = (empty($vid)) ? $this->youtube_exists : true;
 
 				return (empty($vid)) ?  false : true;
 			break;
@@ -2142,7 +2231,11 @@ class RevSliderOutput extends RevSliderFunctions {
 				case 'streaminstagram':
 				case 'streaminstagramboth':
 				case 'html5':
-					if($this->get_val($layer, array('media', 'largeControls'), true) === false) $class[] = 'rs-nolc';
+					if($this->get_val($layer, array('media', 'largeControls'), true) === false){
+						$class[] = 'rs-nolc';
+					}else{
+						Framework::$rs_revicons = true;
+					}
 				break;
 			}
 		}
@@ -2181,6 +2274,16 @@ class RevSliderOutput extends RevSliderFunctions {
 		if($tag == 'iframe' && array_search('rs-layer', $class) !== false) $add_intrinsic = true;
 
 		if($add_intrinsic) $class[] = 'intrinsic-ignore';
+
+		$actions	= $this->get_val($layer, array('actions', 'action'), array());
+		if(!empty($actions)){
+			foreach($actions as $action){
+				if($this->get_val($action, 'action') !== 'getAccelerationPermission') continue;
+
+				$class[] = 'iospermaccwait';
+				break;
+			}
+		}
 
 		return implode(' ', $class);
 	}
@@ -2247,7 +2350,7 @@ class RevSliderOutput extends RevSliderFunctions {
 			}else{
 				$me = $this->get_markup_export();
 				$html .= ($me === true) ? '<!-- STYLE -->' : '';
-				$html .= Framework::RS_T4 .'<style type="text/css">'. $css .'</style>';
+				$html .= Framework::RS_T4 .'<style>'. $css .'</style>';
 				$html .= ($me === true) ? '<!-- /STYLE -->' : '';
 			}
 		}else{
@@ -2324,6 +2427,13 @@ class RevSliderOutput extends RevSliderFunctions {
 			$objlib = new RevSliderObjectLibrary();
 			$objlib->_check_object_exist($img); //redownload if needed
 
+			$global = $this->get_global_settings();
+			$lazyloadbg = $this->get_val($global, 'lazyonbg', false);
+			if($lazyloadbg !== false && $lazyloadbg !== 'false'){
+				$this->layer_additions['data-bglazy'] = $img;
+				$img = Framework::$RS_PLUGIN_URL.'public/assets/assets/dummy.png';
+			}
+
 			$style['background'] = "url('".$img."')";
 			$style['background'] .= ' '.$this->get_val($layer, array('idle', 'backgroundRepeat'), 'no-repeat');
 			$style['background'] .= ' '.$this->get_val($layer, array('idle', 'backgroundPosition'), 'center center');
@@ -2344,7 +2454,10 @@ class RevSliderOutput extends RevSliderFunctions {
 		}
 
 		if(!in_array($type, array('image', 'video', 'row', 'column', 'group', 'shape', 'audio'), true)){
-			$style['font-family'] = str_replace('"', "'", $this->get_val($layer, array('idle', 'fontFamily'), 'Roboto'));
+			$style['font-family'] = str_replace(array('"', "'"), "", $this->get_val($layer, array('idle', 'fontFamily'), 'Roboto'));
+			$font_family		  = explode(',', $style['font-family']);
+			$style['font-family'] = (!empty($font_family) && is_array($font_family)) ? array_map('trim', $font_family) : trim($font_family);
+			$style['font-family'] = (!empty($style['font-family'])) ? "'" . implode("', '", $style['font-family']) . "'"  : '';
 		}
 
 		$text_transform = $this->get_val($layer, array('idle', 'textTransform'), 'none');
@@ -2365,7 +2478,7 @@ class RevSliderOutput extends RevSliderFunctions {
 		if($type === 'column'){
 			$style['width'] = '100%';
 		}
-		if($this->container_mode === 'column' && $type !== 'row' && $this->get_val($layer, array('idle', 'display'), 'block') !== 'block'){
+		if(($this->container_mode === 'column' || $this->container_mode === 'group') && $type !== 'row' && $this->get_val($layer, array('idle', 'display'), 'block') !== 'block'){
 			$style['display'] = $this->get_val($layer, array('idle', 'display'));
 		}
 
@@ -2417,13 +2530,13 @@ class RevSliderOutput extends RevSliderFunctions {
 
 		if(Framework::$rs_material_icons_css !== false) return '';
 		if(empty($layers)) return '';
+		$gs = $this->get_global_settings();
 
 		foreach($layers as $layer){
 			$text = $this->get_val($layer, 'text', '');
 			$text_toggle = $this->get_val($layer, array('toggle', 'text'), '');
 			if(strpos($text, 'material-icons') !== false || strpos($text_toggle, 'material-icons') !== false){
-                $gs = $this->get_global_settings();
-                if($this->get_val($gs, 'fontdownload', 'off') === 'off'){
+				if(in_array($this->get_val($gs, 'fontdownload', 'off'), array('preload', 'off'))){
                     $font_face = "@font-face {
   font-family: 'Material Icons';
   font-style: normal;
@@ -2530,12 +2643,14 @@ rs-module .material-icons {
 		$rx = intval($this->get_val($layer, array('idle', 'rotationX'), 0));
 		$ry = intval($this->get_val($layer, array('idle', 'rotationY'), 0));
 		$rz = intval($this->get_val($layer, array('idle', 'rotationZ'), 0));
+		$iosfx = $this->get_val($layer, array('idle', 'filtersIOSFix'), 'd');
 		$op = $this->get_val($layer, array('idle', 'opacity'), 1);
 
 		if($rx !== 0) $html .='rX:'.$rx.';';
 		if($ry !== 0) $html .='rY:'.$ry.';';
 		if($rz !== 0) $html .='rZ:'.$rz.';';
 		if($op !== 1) $html .='o:'.$op.';';
+		if($iosfx !== 'd') $html .='iosfx:'.$iosfx.';';
 
 		return ($html !== '') ? 'data-btrans="'.$html.'"' : $html;
 	}
@@ -2604,7 +2719,7 @@ rs-module .material-icons {
 		$layer		= $this->get_layer();
 		$tabindex	= $this->get_val($layer, array('attributes', 'tabIndex'));
 
-		return		(!in_array($tabindex, array('', '0', 0), true)) ? 'tabindex="'.$tabindex.'"' : '';
+		return (!in_array($tabindex, array('', '0', 0), true)) ? 'tabindex="'.$tabindex.'"' : '';
 	}
 
 	/**
@@ -2621,15 +2736,17 @@ rs-module .material-icons {
 	 * get the HTML layer x and y position
 	 **/
 	public function get_html_layer_position(){
-		$f = array('top', 'right', 'bottom', 'left', 'center', 'middle');
-		$t = array('t', 'r', 'b', 'l', 'c', 'm');
+		$f		= array('top', 'right', 'bottom', 'left', 'center', 'middle');
+		$t		= array('t', 'r', 'b', 'l', 'c', 'm');
+		$xy		= 'data-xy="';
+		$layer	= $this->get_layer();
+		$pos	= $this->get_val($layer, array('position', 'position'));
+		$type	= $this->get_val($layer, 'type', 'text');
 
-		$xy = 'data-xy="';
-		if($this->is_full_width_video() == true){
+		if($this->is_full_width_video() == true){ // || $pos === 'relative'
 			$xy .= 'x:0;';
 			$xy .= 'y:0;';
 		}else{
-			$layer		= $this->get_layer();
 			$alignHor	= $this->get_val($layer, array('position', 'horizontal'));
 			$alignVert	= $this->get_val($layer, array('position', 'vertical'));
 			$left		= $this->get_val($layer, array('position', 'x'));
@@ -2697,6 +2814,16 @@ rs-module .material-icons {
 		}
 
 		$xy .= '"';
+
+		/**
+		 * if we are row/column -> ignore
+		 * if we are in root	-> ignore //container_mode === ''
+		 **/
+		if(!in_array($type, array('row', 'column'), true) && $this->container_mode !== ''){
+			if(empty($pos) && in_array($this->container_mode, array('row', 'column'), true)) $pos = 'relative';
+			$p	= ($pos === 'relative') ? 'r' : 'a';
+			$xy .= "\n".$this->ld().Framework::RS_T8.'data-pos="'.$p.'"';
+		}
 
 		return ($xy !== 'data-xy=""') ? $xy : '';
 	}
@@ -2842,10 +2969,10 @@ rs-module .material-icons {
 		$text = 'data-bsh="';
 
 		if($this->get_val($layer, array('idle', 'boxShadow', 'inuse'), false) === true){
-			$color = str_replace(' ', '', $this->get_val($layer, array('idle', 'boxShadow', 'color'), 'rgba(0,0,0,0)'));
+			$color = str_replace(' ', '', $this->get_val($layer, array('idle', 'boxShadow', 'color'), 'rgba(0,0,0,0.25)'));
 
 			if($this->get_val($layer, array('idle', 'boxShadow', 'container'), 'content') !== 'content') $text.= 'e:w'; //w for wrapper
-			if(!in_array($color, array('rgba(0,0,0,0)', '#000000'))) $text.= 'c:'.$color.';';
+			if(!in_array($color, array('rgba(0,0,0,0.25)'))) $text.= 'c:'.$color.';';
 
 			$data = array();
 			if($this->adv_resp_sizes == true){
@@ -3236,7 +3363,9 @@ rs-module .material-icons {
                                 $_event['sp'] = $this->modal_sliders[$_modal]->get_param(array('modal', 'coverSpeed'), 1);
                                 Framework::$rs_do_init_action = true;
 							}
-
+							if($this->modal_sliders[$_modal]->get_param(array('modal', 'allowPageScroll'), false) === true){
+								$_event['allowPageScroll'] = true;
+							}
 							if($this->modal_sliders[$_modal]->get_param(array('modal', 'cover'), true) === true){
 								$_event['bg'] = $this->modal_sliders[$_modal]->get_param(array('modal', 'coverColor'), 'rgba(0,0,0,0.5)');
 							}
@@ -3301,6 +3430,15 @@ rs-module .material-icons {
 							'layer'	=> $layer_attribute_id,
 							'd'		=> $this->get_val($action, 'action_delay', ''),
 							'ch'	=> $this->get_val($action, 'updateChildren', ''),
+							'rd'	 => $this->get_val($action, 'action_repeats', '')
+						);
+					break;
+					case 'getAccelerationPermission':
+						$events[] = array(
+							'o'		=> $this->get_val($action, 'tooltip_event', ''),
+							'a'		=> 'getAccelerationPermission',
+							'layer'	=> $layer_attribute_id,
+							'd'		=> $this->get_val($action, 'action_delay', ''),
 							'rd'	 => $this->get_val($action, 'action_repeats', '')
 						);
 					break;
@@ -4228,7 +4366,7 @@ rs-module .material-icons {
 				}
 
 				// If iC (instanc Click) is available, we must write it !
-				if ($v['n'] === 'iC') $idle = 'false';
+				if($v['n'] === 'iC') $idle = 'false';
 
 				if(is_array($hover)) $hover = implode(',', $hover);
 				if(is_array($idle)) $idle = implode(',', $idle);
@@ -4238,6 +4376,13 @@ rs-module .material-icons {
 				if((string)$nv !== (string)$v['d'] || (string)$hover !== (string)($idle)){
 					$_frames['frame_hover']['base'][$v['n']] = $this->transform_frame_vals($nv);
 				}
+			}
+
+			//remove borders if styling is set to none
+			if(!isset($_frames['frame_hover']['base']['bos']) || $_frames['frame_hover']['base']['bos'] === 'none'){
+				if(isset($_frames['frame_hover']['base']['bow'])) unset($_frames['frame_hover']['base']['bow']);
+				if(isset($_frames['frame_hover']['base']['boc'])) unset($_frames['frame_hover']['base']['boc']);
+				if(isset($_frames['frame_hover']['base']['bos'])) unset($_frames['frame_hover']['base']['bos']);
 			}
 		}
 
@@ -4498,7 +4643,7 @@ rs-module .material-icons {
 
 		$vw	 = $this->get_val($layer, array('size', 'width'));
 		$vh	 = $this->get_val($layer, array('size', 'height'));
-		$vpl = $this->get_val($layer, array('media', 'preloadAudio'), 'auto');
+		$vpl = $this->get_val($layer, array('media', 'preload'), 'auto');
 		$sta = $this->get_val($layer, array('media', 'startAt'), -1);
 		$end = $this->get_val($layer, array('media', 'endAt'), -1);
 		$mp4 = FA::esc_attr($this->remove_http($this->get_val($layer, array('media', 'audioUrl'))));
@@ -4520,11 +4665,7 @@ rs-module .material-icons {
 			$data['video']['w'] = $this->get_biggest_device_setting($vw, $this->enabled_sizes);
 			$data['video']['h'] = $this->get_biggest_device_setting($vh, $this->enabled_sizes);
 		}
-		if(!in_array($vpl, array('', 'auto'), true)){
-			$data['video']['p'] = $vpl;
-			$plw = intval($this->get_val($layer, array('media', 'preloadWait'), 5));
-			if(!in_array($plw, array('5', 5), true)) $data['video']['pw'] = $plw;
-		}
+		$data['video']['p'] = $vpl;
 		if(!in_array($sta, array('', '-1', -1), true)) $data['video']['sta'] = $sta;
 		if(!in_array($end, array('', '-1', -1), true)) $data['video']['end'] = $end;
 		if(!empty($mp4))	$data['mp4'] = FA::getImagesHelper()->imageUrl($mp4);
@@ -4589,6 +4730,7 @@ rs-module .material-icons {
 		$poster	 = $this->remove_http($this->get_val($layer, array('media', 'posterUrl'), ''));
 		$poster_change = $this->get_val($layer, array('behavior', 'imageSourceType'), 'full');
 		$poster_id	= $this->remove_http($this->get_val($layer, array('media', 'posterId')));
+		if($mute !== true) $data['video']['twa'] = $mute; // Set twa before checking autoplay
 		$mute	 = (!in_array($autoplay, array('false', false), true)) ? true : $mute;
 
 		if(!in_array($autoplay, array('true', true), true)) $data['video']['ap'] = $autoplay;
@@ -4665,6 +4807,7 @@ rs-module .material-icons {
 					$vid = $my_v_ret['v'];
 				}
 
+				$this->youtube_exists = (empty($vid)) ? $this->youtube_exists : true;
 				$data['ytid'] = $vid;
 				$data['vatr'] = 'version=3&amp;enablejsapi=1&amp;html5=1&amp;'.$vargs;
 				if(!in_array($sp, array('1', 1), true)) $data['video']['sp'] = $sp;
@@ -4730,6 +4873,15 @@ rs-module .material-icons {
 	}
 
 	/**
+	 * get the covermode HTML data
+	 **/
+	public function get_html_covermode_data(){
+		$layer	= $this->get_layer();
+		$covermode	= $this->get_val($layer, array('size', 'covermode'),'custom');
+		return ($covermode === 'fullinset') ? 'data-fullinset="true"' : '';
+	}
+
+	/**
 	 * get the column HTML data
 	 **/
 	public function get_html_column_data(){
@@ -4737,12 +4889,13 @@ rs-module .material-icons {
 		$type	= $this->get_val($layer, 'type', 'text');
 		$data	= 'data-column="';
 
-		if($type == 'column'){
+		if($type === 'column'){
 			$size_raw = explode('/', $this->get_val($layer, array('group', 'columnSize'), '1/3'));
 			$size	= (count($size_raw) !== 2) ? '100' : round(100 * ((int)$size_raw[0] / (int)$size_raw[1]), 2);
-			$va		= $this->get_val($layer, array('idle', 'verticalAlign'), 'top');
-
 			$data .= (!in_array($size, array('', '33,33', '33.33', 33.33), true)) ? 'w:'.$size.'%;' : '';
+		}
+		if(in_array($type, array('column', 'group'), true)){
+			$va		= $this->get_val($layer, array('idle', 'verticalAlign'), 'top');
 			$data .= ($va !== 'top') ? 'a:'.$va.';' : '';
 		}
 
@@ -4760,7 +4913,7 @@ rs-module .material-icons {
 		$data	= 'data-margin="';
 
 		//add margin data attributes
-		if($type == 'row' || $type == 'column' || $row_group_uid !== false){
+		//if($type == 'row' || $type == 'column' || $row_group_uid !== false){
 			$margins	= $this->get_val($layer, array('idle', 'margin'));
 			$rl_margin	= array();
 
@@ -4795,7 +4948,7 @@ rs-module .material-icons {
 					}
 				}
 			}
-		}
+	//	}
 
 		$data .= '"';
 
@@ -4866,7 +5019,7 @@ rs-module .material-icons {
 		$style['bor'] = $this->get_val($layer, array('idle', 'borderRadius', 'v'));
 		$style['bor'] = (is_array($style['bor']) || is_object($style['bor'])) ? implode(',', (array)$style['bor']) : $style['bor'];
 
-		if(in_array($style['bow'], array(0, '0px', '0px,0px,0px,0px', '0', '0,0,0,0'), true) || $style['bos'] === 'none'){
+		if(in_array($style['bow'], array(0, '0px', '0px,0px,0px,0px', '0', '0,0,0,0'), true) || in_array($style['bos'], array('', 'none'))){
 			unset($style['bow']);
 			unset($style['boc']);
 			unset($style['bos']);
@@ -4894,6 +5047,7 @@ rs-module .material-icons {
 	public function get_background_image(){
 		$layer	= $this->get_layer();
 		$type	= $this->get_val($layer, 'type', 'text');
+		$add	= '';
 		$image	= '<rs-bg-elem style="';
 		//check for background images
 		if(in_array($type, array('shape', 'row', 'group'), true)){
@@ -4910,6 +5064,14 @@ rs-module .material-icons {
 				$objlib->_check_object_exist($url_image);
 
 				if(in_array($type, array('group', 'shape', 'row'))){
+
+					$global = $this->get_global_settings();
+					$lazyloadbg = $this->get_val($global, 'lazyonbg', false);
+					if($lazyloadbg !== false && $lazyloadbg !== 'false'){
+						$add .= ' data-bglazy="'. $this->remove_http($url_image) .'"';
+						$url_image = Framework::$RS_PLUGIN_URL.'public/assets/assets/dummy.png';
+					}
+
 					$image .= "background: url('".$this->remove_http($url_image)."')";
 					$image .= ' '.$this->get_val($layer, array('idle', 'backgroundRepeat'), 'no-repeat');
 					$image .= ' '.$this->get_val($layer, array('idle', 'backgroundPosition'), 'center center');
@@ -4922,7 +5084,7 @@ rs-module .material-icons {
 			}
 		}
 
-		$image .= '"></rs-bg-elem>';
+		$image .= '"'. $add .'></rs-bg-elem>';
 
 		return ($image !== '<rs-bg-elem style=""></rs-bg-elem>') ? $image : '';
 	}
@@ -5130,13 +5292,31 @@ rs-module .material-icons {
 		$type	= $this->get_val($layer, 'type', 'text');
 		$html	= 'data-disp="';
 
-		if($this->container_mode === 'column' && $type !== 'row' && $this->get_val($layer, array('idle', 'display'), 'block') !== 'block'){
+		if(($this->container_mode === 'column' || $this->container_mode === 'group') && $type !== 'row' && $this->get_val($layer, array('idle', 'display'), 'block') !== 'block'){
 			$html .= $this->get_val($layer, array('idle', 'display'));
 		}
 
 		$html .= '"';
 
 		return ($html !== 'data-disp=""') ? $html : '';
+	}
+
+	/**
+	 * get layer HTML layer additions
+	 **/
+	public function get_html_layer_additions(){
+		$layer	= $this->get_layer();
+		$html	= '';
+
+		if(!empty($this->layer_additions)){
+			foreach($this->layer_additions as $data => $value){
+				$html .= $this->ld().Framework::RS_T8.$data.'="';
+				$html .= (is_array($value)) ? json_encode($value) : $value;
+				$html .= '"'."\n";
+			}
+		}
+
+		return $html;
 	}
 
 	/**
@@ -5213,14 +5393,14 @@ rs-module .material-icons {
 					if($img_data !== false && !empty($img_data)){
 						if($img_size !== 'full'){
 							if(isset($img_data['sizes']) && isset($img_data['sizes'][$img_size])){
-								$img_w = $img_data['sizes'][$img_size]['width'];
-								$img_h = $img_data['sizes'][$img_size]['height'];
+								$img_w = $this->get_val($img_data, array('sizes', $img_size, 'width'));
+								$img_h = $this->get_val($img_data, array('sizes', $img_size, 'height'));
 							}
 						}
 
 						if($img_w == '' || $img_h == ''){
-							$img_w = $img_data['width'];
-							$img_h = $img_data['height'];
+							$img_w =  $this->get_val($img_data, 'width');
+							$img_h =  $this->get_val($img_data, 'height');
 						}
 						$additional.= ' width="'.$img_w.'" height="'.$img_h.'"';
 					}
@@ -5251,8 +5431,7 @@ rs-module .material-icons {
 				if($urlImage !== ''){
 					//$urlImage = str_replace(array('https://', 'http://'), '//', $urlImage);
 					$html = '<img src="'.$this->remove_http($urlImage).'"';
-					$html .= ($alt !== '') ? ' alt="'.$alt.'"' : '';
-					$html .= ' class="'.$class.'"';
+					$html .= ' alt="'.$alt.'" class="'.$class.'"';
 					$html .= $additional.' data-no-retina>';
 				}
 			break;
@@ -5280,12 +5459,7 @@ rs-module .material-icons {
 	 * @since: 5.3.0
 	 */
 	public function set_placeholders($text){
-		global $post;
-
 		$text = str_replace(array('%home_url%', '{{home_url}}'), FA::esc_url(FA::home_url( '/' )), $text);
-		if(isset($post->ID)) $text = str_replace(array('%current_page_link%', '{{current_page_link}}'), FA::get_permalink($post->ID), $text);
-		if(isset($post->ID)) $text = FA::apply_filters('revslider_gallery_set_placeholders', $text, $post->ID);
-
 		return $text;
 	}
 
@@ -5413,6 +5587,7 @@ rs-module .material-icons {
 				if($youtube_id === '' && $vimeo_id === '' && $html_mpeg === '') return false;
 
 				if($youtube_id !== ''){
+					$this->youtube_exists = true;
 					$arguments = $slide->get_param(array('bg', 'video', 'args'), RevSliderFront::YOUTUBE_ARGUMENTS);
 					$arguments = (empty($arguments)) ? RevSliderFront::YOUTUBE_ARGUMENTS : $arguments;
 					if($mute_video === false){
@@ -5458,6 +5633,7 @@ rs-module .material-icons {
 				$youtube_id = $slide->get_param(array('bg', 'youtube'), '');
 				if($youtube_id == '') return false;
 
+				$this->youtube_exists = true;
 				if(strpos($youtube_id, 'http') !== false){ //check if full URL
 					parse_str(parse_url($youtube_id, PHP_URL_QUERY), $my_v_ret); //we have full URL, split it to ID
 					$youtube_id = $my_v_ret['v'];
@@ -5553,8 +5729,12 @@ rs-module .material-icons {
 		//$data['video']['autoplay'] = 'true'; //default, so dont write
 		//$data['video']['apf'] = false; //default, so dont write
 
+		$crso = $slide->get_param(array('bg', 'crossOriginVideo'), false);
 
-		if($video_type === 'html5') $data['video']['vfc'] = $slide->get_param(array('bg', 'video', 'fitCover'), true); //video fit cover
+		if($video_type === 'html5') {
+			$data['video']['vfc'] = $slide->get_param(array('bg', 'video', 'fitCover'), true); //video fit cover
+			if($crso === true) $data['video']['crossOriginVideo'] = $crso;
+		}
 		$do	= $slide->get_param(array('bg', 'video', 'dottedOverlay'), 'none');
 		if($do !== 'none'){
 			$data['video']['do'] = $do;
@@ -5588,6 +5768,24 @@ rs-module .material-icons {
 		echo $this->ld().Framework::RS_T7.'></rs-bgvideo>'."\n";
 	}
 
+    /**
+     * get slide style
+     **/
+    public function get_html_slide_style(){
+        $style = array('position' => 'absolute');
+        $style = FA::apply_filters('revslider_get_html_slide_style', $style, $this);
+
+        $style_html = ' style="';
+        if(!empty($style)){
+            foreach($style as $_style => $_value){
+                $style_html .= $_style.': '.$_value.';';
+            }
+        }
+        $style_html .= '"';
+
+        return ($style_html !== ' style=""') ? $style_html : '';
+    }
+
 	/**
 	 * get slide key
 	 **/
@@ -5619,10 +5817,10 @@ rs-module .material-icons {
 	public function get_html_slide_description(){
 		$slide = $this->get_slide();
 
-		if($this->slider->is_posts()){ //check if we are post based or normal slider
+		if ($this->slider->is_posts()) { //check if we are post based or normal slider
 			$the_post = FA::get_post($slide->get_id());
-			$description = strip_tags(FA::strip_shortcodes($the_post->post_excerpt));
-		}else{
+			$description = FA::strip_shortcodes($the_post->post_excerpt) ? strip_tags(FA::strip_shortcodes($the_post->post_excerpt)) : '';
+		} else {
 			$description = $slide->get_param(array('info', 'description'), '');
 		}
 
@@ -5687,7 +5885,7 @@ rs-module .material-icons {
 			switch($slide->get_param(array('seo', 'type'), 'regular')){
 				default: //---- normal link
 				case 'regular':
-					$target	= ' data-target="'.$slide->get_param(array('seo', 'target'), '_self').'"';
+					$target	= ' data-tag="'.$slide->get_param(array('seo', 'tag'), 'l').'" data-target="'.$slide->get_param(array('seo', 'target'), '_self').'"';
 					$http	= $slide->get_param(array('seo', 'linkHelp'), 'auto');
 					$l		= $this->remove_http($slide->get_param(array('seo', 'link'), ''), $http);
 					$link	= ($l !== '') ? ' data-link="'.FA::do_shortcode($l).'"'.$target : $link;
@@ -5869,7 +6067,7 @@ rs-module .material-icons {
 			}
 			$anim .= ($duration === '') ? '' : 'ms:'.$duration.';';
 			$anim .= $this->get_html_slide_anim_rotation();
-			$anim .= $this->get_html_slide_anim_attribute($data, false, 'adpr', false, 'adpr', false);
+			$anim .= $this->get_html_slide_anim_attribute($data, false, 'adpr', true, 'adpr', false);
 			$anim .= $this->get_html_slide_anim_attribute($data, false, 'd', 15, 'd', false);
 			$anim .= $this->get_html_slide_anim_attribute($data, false, 'e', 'basic', 'e', false);
 			$anim .= $this->get_html_slide_anim_attribute($data, false, 'p', 'none', 'p', false);
@@ -5903,7 +6101,7 @@ rs-module .material-icons {
 		}else{ /*CANVAS*/
 			/* Animate Defaults */
 			$anim .= $this->get_html_slide_anim_attribute($data, false, 'eng', 'animateCore', 'eng', false);
-			$anim .= $this->get_html_slide_anim_attribute($data, false, 'adpr', false, 'adpr', false);
+			$anim .= $this->get_html_slide_anim_attribute($data, false, 'adpr', true, 'adpr', false);
 			$anim .= $this->get_html_slide_anim_attribute($data, false, 'd', 15, 'd', false);
 			$anim .= $this->get_html_slide_anim_attribute($data, false, 'e', 'basic', 'e', false);
 			$anim .= $this->get_html_slide_anim_attribute($data, false, 'speed', 1000, 'ms', false);
@@ -6489,59 +6687,6 @@ rs-module .material-icons {
 	}
 
 	/**
-	 * check the add_to
-	 * return true / false if the put in string match the current page.
-	 * @before isPutIn()
-	 */
-	public function check_add_to($empty_is_false = false){
-		$add_to = $this->get_add_to();
-
-		if($empty_is_false && empty($add_to)) return false;
-
-		if($add_to == 'homepage'){ //only add if we are the homepage
-			if(is_front_page() == false && is_home() == false) return false;
-		}elseif(!empty($add_to)){
-
-			$add_to_pages = array();
-			$add_to = explode(',', $add_to);
-			if(!empty($add_to)){
-				foreach($add_to as $page){
-					$page = trim($page);
-
-					if(is_numeric($page) || $page == 'homepage') $add_to_pages[] = $page;
-				}
-			}
-
-			//check if current page is in list
-			if(!empty($add_to_pages)){
-				$cp_id = $this->get_current_page_id();
-				if(array_search($cp_id, $add_to_pages) === false) return false;
-			}else{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * get the current page id
-	 * @since: 6.0
-	 **/
-	public function get_current_page_id(){
-		$id = '';
-
-		if(is_front_page() == true || is_home() == true){
-			$id = 'homepage';
-		}else{
-			global $post;
-			$id = (isset($post->ID)) ? $post->ID : $id;
-		}
-
-		return $id;
-	}
-
-	/**
 	 * set general values that are needed by layers
 	 * this is needed to be called before any layer is added to the stage
 	 **/
@@ -6747,13 +6892,14 @@ rs-module .material-icons {
 	 * print the HTML markup if no Slides are found in Slider
 	 **/
 	public function add_no_slides_markup(){
+
 		if($this->slider->is_posts()){
-			$text = __('No slides found, please add at least one Slide Template to the choosen language.', 'revslider');
+			$text = __('Make sure that a valid product id / category is selected in "Module General Options -> Content -> Product Selection".');
 		}else{
-			$text = __('No slides found, please add some slides', 'revslider');
+			$text = __('Make sure to add slides to the slider');
 		}
 
-		throw new \Exception($text);
+		$this->throw_error($text);
 	}
 
 	/**
@@ -6807,11 +6953,12 @@ rs-module .material-icons {
 	 **/
 	public function get_html_js_start_size($optFullWidth, $optFullScreen){
 		$csizes	= $this->get_responsive_size($this);
+		$html_id_trimmed = $this->get_html_id(false);
 		$jus = $this->slider->get_param(array('carousel', 'justify'), false);
+		$revapi = $this->get_revapi();
 		if($jus !== false) $jus="true";
 		$html	= '';
 		if(!$this->get_markup_export()){ //not needed for html markup export
-			$html .= 'require([\'setREVStartSize\'], function(setREVStartSize) {';
 			$html .= 'setREVStartSize(';
 			$html .= "{c: '". $this->get_html_id() ."',";
 			$html .= (isset($csizes['level']) && !empty($csizes['level'])) ? 'rl:['. $csizes['level'] .'],' : '';
@@ -6861,11 +7008,29 @@ rs-module .material-icons {
 			$html .= 'mh:"'.$mheight.'"';
 			$html .= '}';
 			$html .= ');';
-			$html .= '});';
+            $html .= 'if (window.RS_MODULES!==undefined && window.RS_MODULES.modules!==undefined && window.RS_MODULES.modules["'. $html_id_trimmed .'"]!==undefined) {';
+            $html .= 'window.RS_MODULES.modules["'. $html_id_trimmed .'"].once = false;';
+            $html .= 'window.'. $revapi .' = undefined;';
+            $html .= 'if (window.RS_MODULES.checkMinimal!==undefined) window.RS_MODULES.checkMinimal()';
+            $html .= '};';
 		}
 
 		return $html;
 	}
+
+    /**
+     * add error message into the console
+     */
+    public function print_error_message_console($message){
+
+        $message = $this->slider->get_title().': '.$message;
+        $html = '';
+        $html .= '<script>';
+        $html .= 'console.log("'.FA::esc_html($message).'")';
+        $html .= '</script>'."\n";
+
+        echo $html;
+    }
 
 	/**
 	 * put inline error message in a box.
@@ -6896,24 +7061,24 @@ rs-module .material-icons {
 		$html .= ($this->rs_module_wrap_open === false) ? Framework::RS_T3.'<rs-module-wrap id="'.$html_id.'_wrapper">'."\n" : '';
 		$html .= ($this->rs_module_open === false) ? Framework::RS_T4.'<rs-module id="'.$html_id.'">'."\n" : '';
 		$html .= Framework::RS_T5.'<div class="rs_error_message_box">'."\n";
-		$html .= Framework::RS_T6.'<div class="rs_error_message_oops">Oops...</div>'."\n";
-		$html .= Framework::RS_T6.'<div class="rs_error_message_content">'.FA::esc_html($message);
-		$html .= (!empty($url)) ? '<br>'.__('Please follow this link to edit the Slider:', 'revslider') : '';
-		$html .= '</div>'."\n";
+        $html .= Framework::RS_T6.'<div class="rs_error_message_oops">There is nothing to show here!</div>'."\n";
+        $html .= Framework::RS_T6.'<div class="rs_error_message_content">'.FA::esc_html($message);
+        $html .= (!empty($url)) ? '<br>'.__('Please follow this link to edit the slider:') : '';
+        $html .= '</div>'."\n";
 		$html .= (!empty($url)) ? Framework::RS_T6.'<a href="'.$url.'" target="_blank" class="rs_error_message_button">Edit Module : "'.$this->slider->get_alias().'"</a>'."\n" : '';
 		$html .= (!empty($page_url)) ? Framework::RS_T6.'<a href="'.$page_url.'" target="_blank" class="rs_error_message_button">Edit Page</a>'."\n" : '';
 		$html .= Framework::RS_T5.'</div>'."\n";
 		$html .= ($this->rs_module_wrap_closed === false) ? Framework::RS_T4.'</rs-module>'."\n" : '';
 		$html .= ($this->rs_module_closed === false) ? Framework::RS_T3.'</rs-module-wrap>'."\n" : '';
 
-		$html .=  Framework::RS_T3.'<script type="text/javascript">'."\n";
+		$html .=  Framework::RS_T3.'<script>'."\n";
 		$html .=  Framework::RS_T4.'var rs_eslider = document.getElementById("'.$html_id.'");'."\n";
 		if(FA::is_user_logged_in()){
 			$html .=  Framework::RS_T4.'rs_eslider.style.display = "block";'."\n";
 			$html .=  Framework::RS_T4.'rs_eslider.style.visibility = "visible";'."\n";
 		}else{
 			$html .=  Framework::RS_T4.'rs_eslider.style.display = "none";'."\n";
-			$html .=  Framework::RS_T4.'console.log("'.FA::esc_html($message).'");'."\n";
+			$html .=  Framework::RS_T4.'console.log('.json_encode(FA::esc_html($message)).');'."\n";
 		}
 		$html .=  Framework::RS_T3.'</script>'."\n";
 
@@ -7029,16 +7194,14 @@ rs-module .material-icons {
             $cache->add_addition('action', 'wp_print_footer_scripts', $this->JTA . Framework::RS_T2.'var    '. $revapi .';'."\n", 1);
         }
         if($this->full_js){
-            $html .= $this->JTA . Framework::RS_T.'<script type="text/javascript">'."\n";
-            $html .= $this->JTA . Framework::RS_T2.'if(window.RS_MODULES === undefined) window.RS_MODULES = {};'."\n";
-            $html .= $this->JTA . Framework::RS_T2.'if(RS_MODULES.modules === undefined) RS_MODULES.modules = {};'."\n";
-            $html .= $this->JTA . Framework::RS_T2.'var    '. $revapi .';'."\n";
+            $html .= $this->JTA . Framework::RS_T.'<script>'."\n";
         }
-        $html .= $this->JTA . Framework::RS_T2.'RS_MODULES.modules["'.$html_id_trimmed .'"] = {init:function() {'."\n";
-        $html .= $this->JTA . Framework::RS_T3.$revapi.' = jQuery("#'. $html_id .'");'."\n";
-        if($this->full_js){
-            $html .= ($this->slider->get_param(array('troubleshooting', 'jsNoConflict'), true) === true) ? $this->JTA . Framework::RS_T3.'jQuery.noConflict();'."\n" : '';
-        }
+        $html .= $this->JTA . Framework::RS_T2.'if(window.RS_MODULES === undefined) window.RS_MODULES = {};'."\n";
+        $html .= $this->JTA . Framework::RS_T2.'if(RS_MODULES.modules === undefined) RS_MODULES.modules = {};'."\n";
+        $html .= $this->JTA . Framework::RS_T2.'RS_MODULES.modules["'.$html_id_trimmed .'"] = {once: RS_MODULES.modules["'.$html_id_trimmed .'"]!==undefined ? RS_MODULES.modules["'.$html_id_trimmed .'"].once : undefined, init:function() {'."\n";
+        $html .= $this->JTA . Framework::RS_T3.'window.'. $revapi .' = window.'. $revapi .'===undefined || window.'. $revapi .'===null || window.'. $revapi .'.length===0  ? document.getElementById("'. $html_id .'") : window.'. $revapi .';'."\n";
+        $html .= $this->JTA . Framework::RS_T3.'if(window.'. $revapi .' === null || window.'. $revapi .' === undefined || window.'. $revapi .'.length==0) { window.'. $revapi .'initTry = window.'. $revapi .'initTry ===undefined ? 0 : window.'. $revapi .'initTry+1; if (window.'. $revapi .'initTry<20) requestAnimationFrame(function() {RS_MODULES.modules["'.$html_id_trimmed .'"].init()}); return;}'."\n";
+        $html .= $this->JTA . Framework::RS_T3.'window.'.$revapi.' = jQuery(window.'. $revapi .');'."\n";
 		$html = FA::apply_filters('revslider_fe_before_init_script', $html, $this->slider, $html_id); // needed for AddOns
         $html .= $this->JTA . Framework::RS_T3.$revapi.'.revolutionInit({'."\n";
 
@@ -7159,9 +7322,7 @@ rs-module .material-icons {
 		$html = '';
 
 		if($this->orig_html_id !== false){
-			//$html .= $this->JTA . Framework::RS_T.'<script type="text/javascript">'."\n";
-			$html .= $this->JTA . Framework::RS_T2.'console.log("'.sprintf(__('Warning - ID: %s exists already and was converted to: %s', 'revslider'), $this->orig_html_id, $this->get_html_id()).'")'."\n";
-			//$html .= $this->JTA . Framework::RS_T.'</script>'."\n";
+			$html .= $this->JTA . Framework::RS_T2.'console.log("'.sprintf(__('Warning - ID: %s exists already and was converted to: %s'), $this->orig_html_id, $this->get_html_id()).'")'."\n";
 		}
 
 		return $html;
@@ -7464,6 +7625,7 @@ rs-module .material-icons {
 
 		if($fa === false) return $html;
 
+		$pc	 = $s->get_param(array('scrolltimeline', 'pullcontent'), false);
 		$ol	 = $s->get_param(array('scrolltimeline', 'layers'), false);
 		$ea	 = $s->get_param(array('scrolltimeline', 'ease'), 'none');
 		$this->easings[$ea] = $ea;
@@ -7474,6 +7636,7 @@ rs-module .material-icons {
 		$sfixe	= $s->get_param(array('scrolltimeline', 'fixedEnd'), 0);
 
 		$se['set'] = $fa;
+		if($pc !== false) $se['pullc'] = $pc;
 		if($ol !== false) $se['layers'] = $ol;
 		if($ea !== 'none') $se['ease'] = $ea;
 		if($sp !== 500 && $sp !== '500' && $sp !== '500ms') $se['speed'] = $sp;
@@ -7595,6 +7758,7 @@ rs-module .material-icons {
 		if($this->usage !== 'modal') return $html;
 
 		$cover = $s->get_param(array('modal', 'cover'), true);
+		$pagescroll = $s->get_param(array('modal', 'allowPageScroll'), true);
 		$bodyclass = $s->get_param(array('modal', 'bodyclass'), '');
 		$speed = $s->get_param(array('modal', 'coverSpeed'), 1);
 		$color = $s->get_param(array('modal', 'coverColor'), 'rgba(0,0,0,0.5)');
@@ -7605,6 +7769,7 @@ rs-module .material-icons {
 		$c['alias'] = FA::esc_attr($this->slider->get_alias());
 		if($bodyclass !== '') $c['bodyclass'] = $bodyclass;
 		if($cover !== true) $c['cover'] = $cover;
+		if($pagescroll === true) $c['allowPageScroll'] = true;
 		if($color !== 'rgba(0,0,0,0.5)') $c['coverColor'] = $color;
         if($speed !== 1) $c['coverSpeed'] = $speed;
         if($h !== 'center') $c['horizontal'] = $h;
@@ -7638,39 +7803,56 @@ rs-module .material-icons {
 		$ease = $s->get_param(array('carousel', 'ease'), 'power3.inOut');
 		$this->easings[$ease] = $ease;
 		$speed = $s->get_param(array('carousel', 'speed'), 800);
+		$osh = $s->get_param(array('carousel', 'overshoot'), false);
 		$sal = $s->get_param(array('carousel', 'showAllLayers'), false);
 		$ha = $s->get_param(array('carousel', 'horizontal'), 'center');
 		$va = $s->get_param(array('carousel', 'vertical'), 'center');
 		$in = $s->get_param(array('carousel', 'infinity'), false);
 		$jus = $s->get_param(array('carousel', 'justify'), false);
+		$ori = $s->get_param(array('carousel', 'orientation'), 'h');
+		$pnv = $s->get_param(array('carousel', 'prevNextVis'), '0px');
+		$socl = $s->get_param(array('carousel', 'stopOnClick'), true);
 		$jusmw = $s->get_param(array('carousel', 'justifyMaxWidth'), false);
 
 		$snap = $s->get_param(array('carousel', 'snap'), true);
 		$sp = $s->get_param(array('carousel', 'space'), 0);
 		$mvi = $s->get_param(array('carousel', 'maxItems'), 3);
 		$st = $s->get_param(array('carousel', 'stretch'), false);
+		$sn = $s->get_param(array('carousel', 'spin'), 'off');
+		$sna = $s->get_param(array('carousel', 'spinAngle'), 0);
+		$skx = $s->get_param(array('carousel', 'skewX'), 0);
+		$sky = $s->get_param(array('carousel', 'skewY'), 0);
 		$fo = $s->get_param(array('carousel', 'fadeOut'), true);
 		$cr = $s->get_param(array('carousel', 'rotation'), false);
 		$cs = $s->get_param(array('carousel', 'scale'), false);
 		$br = $s->get_param(array('carousel', 'borderRadius'), 0);
 		$pt = $s->get_param(array('carousel', 'paddingTop'), 0);
 		$pb = $s->get_param(array('carousel', 'paddingBottom'), 0);
-		$csd = $s->get_param(array('carousel', 'scaleDown'), 50);
-		$csd = ($csd > 100) ? 100 : $csd;
+		if ($ori=="v") $st = false;
 
 		if($ease !== 'power3.inOut') $c['easing'] = $ease;
 		if(!in_array($speed, array(800, '800', '800ms'), true)) $c['speed'] = $speed;
+		if($osh !== false) $c['overshoot'] = $osh;
 		if(!in_array($sal, array('false', false), true)) $c['showLayersAllTime'] = $sal;
 		if($ha !== 'center') $c['horizontal_align'] = $ha;
 		if($va !== 'center') $c['vertical_align'] = $va;
 		if($in !== false) $c['infinity'] = $in;
 		if($jus !== false) $c['justify'] = $jus;
+		if($ori !== 'h') {
+			$c['orientation'] = $ori;
+		 	$c['prevNextVis'] = $pnv;
+		}
 		if($jusmw !== false) $c['justifyMaxWidth'] = $jusmw;
 		if($snap !== true) $c['snap'] = $snap;
+		if($socl !== true) $c['stopOnClick'] = $socl;
 		if(!in_array($sp, array(0, '0', '0px'), true)) $c['space'] = $sp;
 		if(!in_array($mvi, array(3, '3'), true)) $c['maxVisibleItems'] = $mvi;
 		if($st !== false) $c['stretch'] = $st;
 		if($fo !== true) $c['fadeout'] = $fo;
+		if($sn !== 'off') $c['spin'] = $sn;
+		if($sna !== 0) $c['spinAngle'] = $sna;
+		if($skx !== 0) $c['skewX'] = $skx;
+		if($sky !== 0) $c['skewY'] = $sky;
 		if($cr === true){
 			$mr = $s->get_param(array('carousel', 'maxRotation'), 0);
 			$vr = $s->get_param(array('carousel', 'varyRotate'), false);
@@ -7680,6 +7862,8 @@ rs-module .material-icons {
 		}
 
 		if($cs === true){
+			$csd = $s->get_param(array('carousel', 'scaleDown'), 50);
+			$csd = (intval(str_replace('%', '', $csd)) > 100) ? 100 : $csd;
 			$vs = $s->get_param(array('carousel', 'varyScale'), false);
 			$os = $s->get_param(array('carousel', 'offsetScale'), false);
 			$c['minScale'] = $csd;
@@ -7694,8 +7878,10 @@ rs-module .material-icons {
 			if(!in_array($mo, array(100, '100'), true)) $c['maxOpacity'] = $mo;
 		}
 		if(!in_array($br, array(0, '0', '0px'), true)) $c['border_radius'] = $br;
-		if(!in_array($pt, array(0, '0', '0px'), true)) $c['padding_top'] = $pt;
-		if(!in_array($pb, array(0, '0', '0px'), true)) $c['padding_bottom'] = $pb;
+		if ($ori!=='v') {
+			if(!in_array($pt, array(0, '0', '0px'), true)) $c['padding_top'] = $pt;
+			if(!in_array($pb, array(0, '0', '0px'), true)) $c['padding_bottom'] = $pb;
+		}
 
 		if(!empty($c)){
 			$ff = true;
@@ -7746,6 +7932,10 @@ rs-module .material-icons {
 		$spinner = (in_array($spinner, array(-1, '-1'), true)) ? 'off' : $spinner;
 
 		$keys = array(
+			'revapi' => array(
+				'v' => $this->get_revapi(),
+                'd' => 'none'
+			),
 			'sliderType' => array(
 				'v' => $s_type,
 				'd' => 'standard'
@@ -7904,6 +8094,11 @@ rs-module .material-icons {
 		$lazyloaddata = $this->get_val($global, 'lazyloaddata', '');
 		if($lazyloaddata !== ''){
 			$keys['lazyloaddata'] = array('v' => $lazyloaddata, 'd' => '');
+		}
+
+		$lazyloadbg = $this->get_val($global, 'lazyonbg', false);
+		if($lazyloadbg !== false && $lazyloadbg !== 'false'){
+			$keys['lazyOnBg'] = array('v' => $lazyloadbg, 'd' => false);
 		}
 
 		$cache_size = $this->slider->get_param(array('size', 'editorCache'), false);
@@ -8074,6 +8269,8 @@ rs-module .material-icons {
 			$kbd = $s->get_param(array('nav', 'keyboard', 'direction'), 'horizontal');
 
 			$msr = $s->get_param(array('nav', 'mouse', 'reverse'), false);
+			$msst = $s->get_param(array('nav', 'mouse', 'target'), 'window');
+			$mstr = $s->get_param(array('nav', 'mouse', 'threshold'), 50);
 			$mswu = $s->get_param(array('nav', 'mouse', 'viewport'), 50);
 			$mscd = $s->get_param(array('nav', 'mouse', 'calldelay'), '1000ms');
 			$ohs = $s->get_param(array('general', 'slideshow', 'stopOnHover'), true);
@@ -8082,6 +8279,8 @@ rs-module .material-icons {
 			if($kbd !== 'horizontal')$h['keyboard_direction'] = $kbd;
 			if($msn !== 'off')		 $h['mouseScrollNavigation'] = $msn;
 			if($msr !== 'default')	 $h['mouseScrollReverse'] = $msr;
+            if($msst !== 'window')     $h['target'] = $msst;
+            if($mstr !== 50)         $h['threshold'] = $mstr;
 			if($mswu !== 50)		 $h['wheelViewPort'] = $mswu;
 			if($mscd !== '1000ms')		 $h['wheelCallDelay'] = $mscd;
 

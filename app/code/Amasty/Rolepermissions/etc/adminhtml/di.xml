@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Advanced Permissions for Magento 2
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
@@ -154,5 +154,8 @@
                 <item name="scope" xsi:type="object">Amasty\Rolepermissions\Model\Validation\AccessMode\Validator\Scope</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Store\Model\System\Store">
+        <plugin name="Amasty_Rolepermissions::System_Store" type="Amasty\Rolepermissions\Plugin\System\Store" />
     </type>
 </config>

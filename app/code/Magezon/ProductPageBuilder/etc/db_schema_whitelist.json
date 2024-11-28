@@ -1,0 +1,53 @@
+{
+    "mgz_productpagebuilder_profile": {
+        "column": {
+            "profile_id": true,
+            "name": true,
+            "profile": true,
+            "is_active": true,
+            "from_date": true,
+            "to_date": true,
+            "creation_time": true,
+            "update_time": true,
+            "page_layout": true,
+            "conditions_serialized": true,
+            "priority": true
+        },
+        "index": {
+            "MGZ_PRODUCTPAGEBUILDER_PROFILE_NAME": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "mgz_productpagebuilder_profile_store": {
+        "column": {
+            "profile_id": true,
+            "store_id": true
+        },
+        "index": {
+            "MGZ_PRODUCTPAGEBUILDER_PROFILE_STORE_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FK_796675BD8BDA42FD4A849AC69CD06334": true,
+            "MGZ_PRODUCTPAGEBUILDER_PROFILE_STORE_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "mgz_productpagebuilder_profile_product": {
+        "column": {
+            "profile_id": true,
+            "store_id": true,
+            "product_id": true
+        },
+        "index": {
+            "MGZ_PRODUCTPAGEBUILDER_PROFILE_PRODUCT_PRODUCT_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FK_400F462C100F42489676292CC0260424": true,
+            "MGZ_PRODUCTPAGEBUILDER_PROFILE_PRODUCT_STORE_ID_STORE_STORE_ID": true,
+            "MGZ_PRDPAGEBUILDER_PROFILE_PRD_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true
+        }
+    }
+}

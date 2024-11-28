@@ -28,11 +28,11 @@ class RelatedProducts extends \Magezon\Builder\Data\Element\ProductList
     }
 
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
-	public function prepareGeneralTab()
+    public function prepareGeneralTab()
     {
-    	$general = parent::prepareGeneralTab();
+        $general = parent::prepareGeneralTab();
 
             $general->addChildren(
                 'use_default_theme_layout',
@@ -192,7 +192,7 @@ class RelatedProducts extends \Magezon\Builder\Data\Element\ProductList
                 ]
             );
 
-    	return $general;
+        return $general;
     }
 
     /**

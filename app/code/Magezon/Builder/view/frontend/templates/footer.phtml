@@ -1,1 +1,2 @@
-<script>require(['magezonBuilder']);</script>
+<?php $jsContent = "require(['magezonBuilder']);";
+echo $secureRenderer->renderTag('script', ['type' => 'text/javascript'], $jsContent, false);

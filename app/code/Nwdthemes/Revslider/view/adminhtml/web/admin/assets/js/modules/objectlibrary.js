@@ -207,6 +207,10 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 
 	};
 
+	RVS.F.rebuildObjectFilter = function(type) {
+		rebuildObjectFilter(type);
+	}
+
 	function rebuildObjectFilter(type) {
 		jQuery('#ol_filter_'+type).remove();
 		addObjectFilter({groupType:type, groupAlias:RVS_LANG['ol_'+type], icon:filtericons[type], count:RVS.LIB.OBJ.types[type].count, tags:RVS.LIB.OBJ.types[type].tags, custom:RVS.LIB.OBJ.types[type].upload, groupopen:true});
@@ -411,25 +415,24 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 			var obj = RVS.LIB.OBJ.items[RVS.LIB.OBJ.selectedType][i];
 			/* addToFilter = false; */
 			obj.parent = obj.parent===undefined ? -1 : obj.parent;
-			var folderPath = getParentPath(obj.parent);
-
+			var folderPath = getParentPath(obj.parent),
+			ch = { a:(!checkfavorit || obj.favorite)}
 
 			// SEARCHED && obj IS CHILDREN FROM SELECTED FOLDER && SEARCHED TEXT IN TITLE OR TAGLIST
-			if (!checkfavorit || obj.favorite) {
-				var samefolder = (jQuery.inArray(RVS.LIB.OBJ.selectedFolder,folderPath)>=0 ||  jQuery.inArray(""+RVS.LIB.OBJ.selectedFolder,folderPath)>=0);
-				if ((s.length>2 && samefolder && (obj.title.toLowerCase().indexOf(s)>=0) && (RVS.LIB.OBJ.selectedFilter=="all" || filterMatch({o:obj, filter:RVS.LIB.OBJ.selectedFilter}))) ||
-					(s.length<3 && RVS.LIB.OBJ.selectedType=== obj.libraryType && RVS.LIB.OBJ.selectedFilter=="all" && parseInt(obj.parent,0) == RVS.LIB.OBJ.selectedFolder) ||
-					(s.length<3 && RVS.LIB.OBJ.selectedType=== obj.libraryType && filterMatch({o:obj, filter:RVS.LIB.OBJ.selectedFilter}) && samefolder) ||
-					(RVS.LIB.OBJ.selectedType==="moduletemplateslides" || RVS.LIB.OBJ.selectedType==="moduleslides")) 	{
-						if (((checkfavorit && obj.favorite) && (RVS.LIB.OBJ.selectedPackage==-1 ||  obj.package_id == RVS.LIB.OBJ.selectedPackage)) ||
-							((RVS.LIB.OBJ.selectedType==="moduletemplates") && (s.length>2 || (((RVS.LIB.OBJ.selectedPackage==-1 && (obj.package_id==undefined ||  obj.package_parent=="true")) || (RVS.LIB.OBJ.selectedPackage!==-1 && (obj.package_id == RVS.LIB.OBJ.selectedPackage) && obj.package_parent!="true") ) ))) ||
-							((RVS.LIB.OBJ.selectedType==="moduletemplateslides" || RVS.LIB.OBJ.selectedType==="moduleslides") && RVS.LIB.OBJ.selectedModule==obj.parent) ||
-							(RVS.LIB.OBJ.selectedType!=="moduletemplates" && RVS.LIB.OBJ.selectedType!=="moduletemplateslides" && RVS.LIB.OBJ.selectedType!=="moduleslides")
-							)
-								RVS.LIB.OBJ.filteredList.push(obj.id);
-						}
-
-
+			if (ch.a) {
+				ch.samefolder = (jQuery.inArray(RVS.LIB.OBJ.selectedFolder,folderPath)>=0 ||  jQuery.inArray(""+RVS.LIB.OBJ.selectedFolder,folderPath)>=0);
+				ch.b = (s.length>2 && ch.samefolder && (obj.title.toLowerCase().indexOf(s)>=0) && (RVS.LIB.OBJ.selectedFilter=="all" || filterMatch({o:obj, filter:RVS.LIB.OBJ.selectedFilter})));
+				ch.c = (s.length<3 && RVS.LIB.OBJ.selectedType=== obj.libraryType && RVS.LIB.OBJ.selectedFilter=="all" && parseInt(obj.parent,0) == RVS.LIB.OBJ.selectedFolder);
+				ch.d = (s.length<3 && RVS.LIB.OBJ.selectedType=== obj.libraryType && filterMatch({o:obj, filter:RVS.LIB.OBJ.selectedFilter}) && ch.samefolder);
+				ch.db = (RVS.LIB.OBJ.selectedType==="moduletemplates" && RVS.LIB.OBJ.selectedPackage!==-1 && (""+obj.package_parent!=="true") && obj.package_id == RVS.LIB.OBJ.selectedPackage);
+				ch.e = (RVS.LIB.OBJ.selectedType==="moduletemplateslides" || RVS.LIB.OBJ.selectedType==="moduleslides");
+				if ( ch.b||ch.c||ch.d||ch.e||ch.db) {
+						ch.f = ((checkfavorit && obj.favorite) && (RVS.LIB.OBJ.selectedPackage==-1 ||  (""+obj.package_id) == (""+RVS.LIB.OBJ.selectedPackage)));
+						ch.g = ((RVS.LIB.OBJ.selectedType==="moduletemplates") && (s.length>2 || (((RVS.LIB.OBJ.selectedPackage==-1 && (obj.package_id==undefined ||  obj.package_parent=="true")) || (RVS.LIB.OBJ.selectedPackage!==-1 && (obj.package_id == RVS.LIB.OBJ.selectedPackage) && obj.package_parent!="true") ))));
+						ch.h = ((RVS.LIB.OBJ.selectedType==="moduletemplateslides" || RVS.LIB.OBJ.selectedType==="moduleslides") && RVS.LIB.OBJ.selectedModule==obj.parent);
+						ch.i = (RVS.LIB.OBJ.selectedType!=="moduletemplates" && RVS.LIB.OBJ.selectedType!=="moduletemplateslides" && RVS.LIB.OBJ.selectedType!=="moduleslides");
+						if (ch.f ||ch.g || ch.h || ch.i) RVS.LIB.OBJ.filteredList.push(obj.id);
+				}
 			}
 		}
 
@@ -531,7 +534,6 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 
 	// Loading Missing Medias In 1 Go
 	RVS.F.loadAllMissingMedia = function() {
-
 		if (RVS.LIB.OBJ.waitForLoad.length>0) {
 			if (RVS.LIB.OBJ.waitForLoadIndex<RVS.LIB.OBJ.waitForLoad.length) {
 				var half = (RVS.LIB.OBJ.waitForLoad[0].librarytype==="layers" || RVS.LIB.OBJ.waitForLoad[0].librarytype==="videos") ? Math.round(RVS.LIB.OBJ.waitForLoad.length/2) : RVS.LIB.OBJ.waitForLoad.length;
@@ -696,7 +698,7 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 					if (_.plugin_require!==undefined  && _.plugin_require!==null) {
 						for (var pi in _.plugin_require) {
 							if(!_.plugin_require.hasOwnProperty(pi)) continue;
-							infocontent += '<div class="olti_content">'+(_.plugin_require[pi].installed=="true" || _.plugin_require[pi].installed==true? o_ok : o_no)+'<a href="'+_.plugin_require[pi].url+'" target="_blank">'+_.plugin_require[pi].name+'</a></div>';
+							infocontent += '<div class="olti_content">'+(_.plugin_require[pi].installed=="true" || _.plugin_require[pi].installed==true? o_ok : o_no)+'<a href="'+_.plugin_require[pi].url+'" target="_blank" rel="noopener">'+_.plugin_require[pi].name+'</a></div>';
 							if (_.plugin_require[pi].installed!=="true" && _.plugin_require[pi].installed!==true) addoninstallable=false;
 						}
 					}
@@ -772,9 +774,9 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 				}
 
 				infocontent += '</div>';
-				if (_.img!==undefined && jQuery.type(_.img)==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-size":"cover", backgroundPosition:"center center"});
+				if (_.img!==undefined && typeof _.img ==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-size":"cover", backgroundPosition:"center center"});
 				else
-				if (_.img!==undefined && jQuery.type(_.img)==="object") {
+				if (_.img!==undefined && typeof _.img ==="object") {
 					var imgobj = _.img.style!==undefined ? jQuery('<div class="olibrary_media_style" style="'+_.img.style+'"></div>') : jQuery('<div class="olibrary_media_style"></div>');
 					if (_.img.url!==undefined && _.img.url.length>3)  tpGS.gsap.set(imgobj,{backgroundImage:"url("+_.img.url+")"});
 					iwrap.append(imgobj);
@@ -815,9 +817,9 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 						content += '</div>';
 					}
 					if (_.libraryType==="moduletemplateslides") {
-						if (_.img!==undefined && jQuery.type(_.img)==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-size":"cover", backgroundPosition:"center center"});
+						if (_.img!==undefined && typeof _.img ==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-size":"cover", backgroundPosition:"center center"});
 						else
-						if (_.img!==undefined && jQuery.type(_.img)==="object") {
+						if (_.img!==undefined && typeof _.img ==="object") {
 							var imgobj = _.img.style!==undefined ? jQuery('<div class="olibrary_media_style" style="'+_.img.style+'"></div>') : jQuery('<div class="olibrary_media_style"></div>');
 							if (_.img.url!==undefined && _.img.url.length>3)  tpGS.gsap.set(imgobj,{backgroundImage:"url("+_.img.url+")"});
 							iwrap.append(imgobj);
@@ -875,6 +877,7 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 
 			case "modules":
 				let favorites = typeof RS_SHORTCODE_FAV !== 'undefined' && RS_SHORTCODE_FAV.modules ? RS_SHORTCODE_FAV.modules : false;
+
 				if(favorites) {
 					for(let fav in favorites) {
 						if(!favorites.hasOwnProperty(fav)) continue;
@@ -884,9 +887,10 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 						}
 					}
 				}
-
+				if (_.premium) obj.append('<div class="rs_lib_premium_wrap'+(RVS.ENV.activated ? '' : ' rs_n_ac_n') +'"><div class="rs_lib_premium_lila">'+RVS_LANG.premium+'</div><div class="rs_lib_premium_red"><i class="material-icons">visibility_off</i>'+RVS_LANG.premium+'</div><div class="rs_lib_premium_red_hover"><i class="material-icons">visibility_off</i>'+RVS_LANG.premiumunlock+'</div></div>');
 				content = '<div class="olibrary_content_left">';
 				content += '	<div class="olibrary_content_title">'+_.title+'</div>';
+
 				if (_.folder)
 					content += '	<div class="olibrary_content_type oc_package">'+RVS_LANG.folderBIG+'</div>';
 				else
@@ -947,11 +951,11 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 					obj.append('<div class="olibrary_media_overlay"><div class="avtivationicon"><i class="material-icons">not_interested</i>'+RVS_LANG.licencerequired+'</div></div>');
 				else
 					obj.append('<div class="olibrary_media_overlay"><div class="olibrary_addimage_wrapper"><div data-id="'+_.id+'" data-size="xs" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">xs</div><div data-id="'+_.id+'" data-size="s" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">s</div><div data-id="'+_.id+'" data-size="m" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">m</div><div data-id="'+_.id+'" data-size="l" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">l</div><div data-id="'+_.id+'" data-size="o" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">o</div></div></div>');
-				if (_.img!==undefined && jQuery.type(_.img)==="string") {
+				if (_.img!==undefined && typeof _.img ==="string") {
 					var imgobj = jQuery('<img class="olib_png_obj" src="'+_.img+'">');
 					iwrap.append(imgobj);
 				} else
-				if (_.img!==undefined && jQuery.type(_.img)==="object") {
+				if (_.img!==undefined && typeof _.img ==="object") {
 					var imgobj = _.img.style!==undefined ? jQuery('<div class="olibrary_media_style" style="'+_.img.style+'"></div>') : jQuery('<div class="olibrary_media_style"></div>');
 					if (_.img.url!==undefined && _.img.url.length>3)  tpGS.gsap.set(imgobj,{backgroundImage:"url("+_.img.url+")", backgroundRepeat:"no-repeat","background-size":"contain", backgroundPosition:"center center"});
 					iwrap.append(imgobj);
@@ -973,9 +977,9 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 				else
 					obj.append('<div class="olibrary_media_overlay"><div class="olibrary_addimage_wrapper"><div data-id="'+_.id+'" data-size="xs" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">xs</div><div data-id="'+_.id+'" data-size="s" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">s</div><div data-id="'+_.id+'" data-size="m" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">m</div><div data-id="'+_.id+'" data-size="l" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">l</div><div data-id="'+_.id+'" data-size="o" data-librarytype="'+_.libraryType+'" class="ol_link_to_add_image">o</div></div></div>');
 
-				if (_.img!==undefined && jQuery.type(_.img)==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-repeat":"no-repeat", "background-size":"cover", backgroundPosition:"center center", backgroundRepeat:"no-repeat"});
+				if (_.img!==undefined && typeof _.img ==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-repeat":"no-repeat", "background-size":"cover", backgroundPosition:"center center", backgroundRepeat:"no-repeat"});
 				else
-				if (_.img!==undefined && jQuery.type(_.img)==="object") {
+				if (_.img!==undefined && typeof _.img ==="object") {
 					var imgobj = _.img.style!==undefined ? jQuery('<div class="olibrary_media_style" style="'+_.img.style+'"></div>') : jQuery('<div class="olibrary_media_style"></div>');
 					if (_.img.url!==undefined && _.img.url.length>3)  tpGS.gsap.set(imgobj,{backgroundImage:"url("+_.img.url+")"});
 					iwrap.append(imgobj);
@@ -1005,9 +1009,9 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 
 
 				iwrap[0].dataset.videosource=_.video_thumb.url;
-				if (_.img!==undefined && jQuery.type(_.img)==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-repeat":"no-repeat", "background-size":"cover", backgroundPosition:"center center"});
+				if (_.img!==undefined && typeof _.img ==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-repeat":"no-repeat", "background-size":"cover", backgroundPosition:"center center"});
 				else
-				if (_.img!==undefined && jQuery.type(_.img)==="object") {
+				if (_.img!==undefined && typeof _.img ==="object") {
 					var imgobj = _.img.style!==undefined ? jQuery('<div class="olibrary_media_style" style="'+_.img.style+'"></div>') : jQuery('<div class="olibrary_media_style"></div>');
 					if (_.img.url!==undefined && _.img.url.length>3)  tpGS.gsap.set(imgobj,{backgroundImage:"url("+_.img.url+")"});
 					iwrap.append(imgobj);
@@ -1037,17 +1041,18 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 
 
 				iwrap[0].dataset.videosource=_.video_thumb.url;
-				if (_.img!==undefined && jQuery.type(_.img)==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-repeat":"no-repeat", "background-size":"cover", backgroundPosition:"center center"});
+				if (_.img!==undefined && typeof _.img ==="string") tpGS.gsap.set(iwrap,{backgroundImage:'url('+_.img+')', "background-repeat":"no-repeat", "background-size":"cover", backgroundPosition:"center center"});
 				else
-				if (_.img!==undefined && jQuery.type(_.img)==="object") {
+				if (_.img!==undefined && typeof _.img ==="object") {
 					var imgobj = _.img.style!==undefined ? jQuery('<div class="olibrary_media_style" style="'+_.img.style+'"></div>') : jQuery('<div class="olibrary_media_style"></div>');
 					if (_.img.url!==undefined && _.img.url.length>3)  tpGS.gsap.set(imgobj,{backgroundImage:"url("+_.img.url+")", backgroundSize:"cover"});
 					iwrap.append(imgobj);
 				}
 			break;
 			default:
+
 				if (RVS.F["newObjectLibraryItem_"+_.libraryType]!==undefined) {
-					var details = RVS.F["newObjectLibraryItem_"+_.libraryType](_,obj);
+					var details = RVS.F["newObjectLibraryItem_"+_.libraryType](_,obj,iwrap);
 					if (details.content!==undefined) content += details.content;
 					if (details.infocontent!==undefined)  infocontent += details.infocontent;
 				}
@@ -1474,17 +1479,19 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 				break;
 
 				case "layers":
-
+					var objlibsrcid = this.dataset.id;
 					RVS.F.ajaxRequest('load_library_object', {type:"layers",id:this.dataset.id}, function(response){
 						if (response.success) {
 							//var _IL = JSON.parse(response.layers);
 							RVS.LIB.OBJ.import = {toImport :[]};
 							for (var i in response.layers) {
 								if(!response.layers.hasOwnProperty(i)) continue;
+								response.layers[i].layerLibSrc = objlibsrcid;
 								RVS.LIB.OBJ.import.toImport.push(response.layers[i].uid);
 							}
 							RVS.F.showWaitAMinute({fadeIn:100,text:RVS_LANG.importinglayers});
-							RVS.F.importSelectedLayers(response.layers);
+
+							RVS.F.importSelectedLayers(RVS.F.checkLayersRelativeAbsolute(response.layers));
 
 							RVS.DOC.trigger(RVS.LIB.OBJ.success.layers);
 						} else {
@@ -2008,9 +2015,10 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 		// SELECT PARENT NODES IF NEEDED
 		if (_.dataset.puid!=-1 && _.className.indexOf('selected')>=0) {
 			var _IL = RVS.LIB.OBJ.items.moduleslides[RVS.LIB.OBJ.selectedSlideId].layers;
-			jQuery('#layi_'+_.dataset.puid).addClass("selected");
-			if (_IL[_.dataset.puid]!==undefined && _IL[_.dataset.puid].type==="column")
+			if (_IL[_.dataset.puid]!==undefined && _IL[_.dataset.puid].type==="row") {
+				jQuery('#layi_'+_.dataset.puid).addClass("selected");
 				jQuery('#layi_'+_IL[_.dataset.puid].group.puid).addClass("selected");
+			}
 		}
 
 		//SELECT UNSELECTED EMPTY COLUMNS IN SELECTED ROWS
@@ -2049,10 +2057,10 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 	}
 
 	//Create Single Markup for 1 Import Element
-	function importListSingleMarkup(_,level,i) {
+	function importListSingleMarkup(_,level) {
 		var eclass = (_.subtype!==undefined && _.subtype!=="" && subtypeExists(_.subtype)==false) ? "disabled" : "",
 		_h='	<div id="layi_'+_.uid+'" class="'+eclass+' layimpli_element layimpli_level_'+level+'" data-uid="'+_.uid+'" data-type="'+_.type+'" data-puid="'+_.group.puid+'">';
-		_h +='		<i class="layimpli_icon material-icons">'+RVS.F.getLayerIcon(_.type,_.subtype)+'</i>';
+		_h +='		<i class="layimpli_icon material-icons">'+RVS.F.getLayerIcon(_.linebreak ? 'linebreak' : _.type,_.subtype)+'</i>';
 		_h +='		<div class="layimpli_icon_title">'+_.alias+'</div>';
 		_h +='		<div class="layimpli_icon_dimension">'+_.size.width.d.v+' x '+_.size.height.d.v+'</div>';
 		if (_.subtype!==undefined && _.subtype!=="" && subtypeExists(_.subtype)==false) {
@@ -2095,7 +2103,8 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 	RVS.F.buildLayerListToSelect = function(_) {
 		//BUILD LIST OF LAYERS
 		var markup = '<div class="layimpli_main_wrap">',
-			cache = {root:""};
+			cache = {root:""},
+			level;
 
 		// LAYERS
 		for (var i in _){
@@ -2107,11 +2116,30 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 						cache.root += importListSingleMarkup(_[i],0,i);
 					else {
 						cache[_[i].group.puid] = cache[_[i].group.puid]== undefined ? "" : cache[_[i].group.puid];
-						cache[_[i].group.puid] += importListSingleMarkup(_[i],(_[_[i].group.puid].type=="column" ? 2 : 1),i);
+						level = _[_[i].group.puid].type=="column" ? 2 : _[_[i].group.puid].group.puid == undefined || _[_[i].group.puid].group.puid == -1 || _[_[i].group.puid].group.puid == '-1' ? 1 : _[ _[_[i].group.puid].group.puid].type=="group" ? 2 : 3;
+						cache[_[i].group.puid] += importListSingleMarkup(_[i],level,i);
 					}
 				}
 			}
 		}
+
+
+		// GROUP
+		for (var i in _){
+			if(!_.hasOwnProperty(i) || _[i].type!=="group" ||  _[i].group.puid==-1 || _[i].group.puid=='-1' || _[i].group.puid == undefined) continue;
+			if (_[i].type==="group") {
+				cache[_[i].group.puid] = cache[_[i].group.puid]==undefined ? "" : cache[_[i].group.puid];
+				cache[_[i].group.puid] += '<div class="layimpli_group_wrap">';
+				level = _[_[i].group.puid].type=="group" ? 1 :  _[_[i].group.puid].type=="column" ? 2 : 0;
+
+				cache[_[i].group.puid] += importListSingleMarkup(_[i],level,i);
+				cache[_[i].group.puid] +='<div class="layimpli_group_inner">';
+				if (cache[_[i].uid]!==undefined) cache[_[i].group.puid] += cache[_[i].uid];
+				cache[_[i].group.puid] +='	</div>';
+				cache[_[i].group.puid] +='</div>';
+			}
+		}
+
 
 		// COLUMNS
 		for (var i in _){
@@ -2130,7 +2158,7 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 		// ROWS
 		for (var i in _) {
 			if(!_.hasOwnProperty(i)) continue;
-			if (_[i].type==="row" || _[i].type==="group") {
+			if (_[i].type==="row" || (_[i].type=="group" && ( _[i].group.puid==-1 || _[i].group.puid=='-1' || _[i].group.puid == undefined))) {
 				markup += '<div class="layimpli_group_wrap">';
 				markup +=	importListSingleMarkup(_[i],0,i);
 				markup +='	<div class="layimpli_group_inner">';
@@ -2139,6 +2167,8 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 				markup +='</div>';
 			}
 		}
+
+
 		markup += cache.root;
 		markup += '</div>';
 
@@ -2404,7 +2434,7 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 
 	// SELECTED FILTER MATCH
 	function filterMatch(_) {
-		return ((_.filter === _.o.source || _.filter === _.o.type || _.filter === _.o.size || jQuery.inArray(_.filter,_.o.tags)>=0));
+		return ((_.filter === _.o.source || _.filter === _.o.type || _.filter === _.o.size || jQuery.inArray(_.filter,_.o.tags)>=0 || jQuery.inArray(_.filter,_.o.tag)>=0 || _.filter == _.o.tag || _.filter == _.o.tags));
 	}
 
 
@@ -2678,7 +2708,7 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 
 			for (var i in _.tags) {
 
-				if(!_.tags.hasOwnProperty(i)) continue;
+				if(!_.tags.hasOwnProperty(i) || typeof _.tags[i] == 'function') continue;
 				var m = _.groupType==="moduletemplates" ? renameTag(_.tags[i]) : {o:0, t:_.tags[i]},
 					tagid = _.tagIDs!==undefined ? _.tagIDs[i] : "noid",
 					cont;
@@ -2708,6 +2738,8 @@ RVS.DOC = RVS.DOC === undefined ? jQuery(document) : RVS.DOC;
 			_html += '</ul>';
 		}
 		_html += '</div>';
+
+
 
 		RVS.LIB.OBJ.container_Filters.append(_html);
 

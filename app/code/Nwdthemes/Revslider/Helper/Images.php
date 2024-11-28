@@ -48,7 +48,7 @@ class Images extends \Magento\Framework\App\Helper\AbstractHelper {
         \Magento\Catalog\Helper\Product $catalogProductHelper,
 		\Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Catalog\Model\Product\Media\Config $productMediaConfig,
-        \Nwdthemes\Revslider\Helper\Gallery\Images $galleryImagesHelper
+        \Magento\Cms\Helper\Wysiwyg\Images $galleryImagesHelper
     ) {
         $this->_imageFactory = $imageFactory;
         $this->_storeManager = $storeManager;

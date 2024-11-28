@@ -77,7 +77,7 @@ class RevSliderTwitterApi extends RevSliderFunctions {
 		$response = FA::wp_remote_post('https://api.twitter.com/oauth2/token', $args);
 
 		if(FA::is_wp_error($response) || 200 != $response['response']['code'])
-			return $this->bail(__( 'Can\'t get the bearer token, check your credentials', 'revslider'), $response);
+			return $this->bail(__( 'Can\'t get the bearer token, check your credentials'), $response);
 
 		$result = FA::json_decode($this->get_val($response, 'body'));
 
@@ -130,7 +130,7 @@ class RevSliderTwitterApi extends RevSliderFunctions {
 				$this->bearer_token = $this->get_bearer_token();
 				return $this->query($query, $this->query_args, true);
 			}else{
-				return $this->bail(__('Bearer Token is good, check your query', 'revslider'), $response);
+				return $this->bail(__('Bearer Token is good, check your query'), $response);
 			}
 		}
 		FA::set_transient($transient_name, $response['body'], $this->query_args['cache']);

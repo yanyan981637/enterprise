@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Advanced Permissions for Magento 2
  */
 
@@ -42,7 +42,11 @@ class IndexPostdispatchObserver implements ObserverInterface
             || empty($this->helper->getAllowedSetIds())
         ) {
             $listBlock = $this->view->getLayout()->getBlock('products_list');
-            $listBlock->updateButton('add_new', 'disabled', true);
+            if ($listBlock !== false) {
+                $listBlock->updateButton('add_new', 'disabled', true);
+            } else {
+                $this->helper->redirectHome();
+            }
         }
     }
 }

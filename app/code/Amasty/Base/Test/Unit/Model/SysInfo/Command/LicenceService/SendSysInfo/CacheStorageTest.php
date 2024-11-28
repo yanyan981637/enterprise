@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
 namespace Amasty\Base\Test\Unit\Model\SysInfo\Command\LicenceService\SendSysInfo;
 
-use Amasty\Base\Model\FlagRepository;
+use Amasty\Base\Model\InstanceHash\InstanceHash;
+use Amasty\Base\Model\InstanceHash\InstanceHashFactory;
+use Amasty\Base\Model\InstanceHash\Repository;
 use Amasty\Base\Model\SysInfo\Command\LicenceService\SendSysInfo\CacheStorage;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,19 +25,24 @@ class CacheStorageTest extends TestCase
     private $model;
 
     /**
-     * @var FlagRepository|MockObject
+     * @var Repository|MockObject
      */
-    private $flagRepositoryMock;
+    private $instanceHashRepositoryMock;
+
+    /**
+     * @var InstanceHashFactory|MockObject
+     */
+    private $instanceHashFactoryMock;
 
     protected function setUp(): void
     {
-        $this->flagRepositoryMock = $this->createPartialMock(
-            FlagRepository::class,
-            ['get', 'save']
-        );
+        $this->instanceHashRepositoryMock = $this->createMock(Repository::class);
+        $this->instanceHashFactoryMock = $this->createMock(InstanceHashFactory::class);
 
         $this->model = new CacheStorage(
-            $this->flagRepositoryMock
+            null,
+            $this->instanceHashRepositoryMock,
+            $this->instanceHashFactoryMock
         );
     }
 
@@ -47,11 +54,12 @@ class CacheStorageTest extends TestCase
      */
     public function testGet(string $identifier, ?string $expected): void
     {
-        $this->flagRepositoryMock
+        $instanceHashMock = $this->createConfiguredMock(InstanceHash::class, ['getValue' => $expected]);
+        $this->instanceHashRepositoryMock
             ->expects($this->once())
             ->method('get')
-            ->with(CacheStorage::PREFIX . $identifier)
-            ->willReturn($expected);
+            ->with($identifier)
+            ->willReturn($instanceHashMock);
 
         $this->assertEquals($expected, $this->model->get($identifier));
     }
@@ -72,12 +80,14 @@ class CacheStorageTest extends TestCase
      */
     public function testSet(string $identifier, string $value): void
     {
-        $this->flagRepositoryMock
+        $instanceHashMock = $this->createPartialMock(InstanceHash::class, []);
+        $this->instanceHashFactoryMock->method('create')->willReturn($instanceHashMock);
+        $this->instanceHashRepositoryMock
             ->expects($this->once())
             ->method('save')
-            ->with(CacheStorage::PREFIX . $identifier, $value);
+            ->with($instanceHashMock);
 
-        $this->assertEquals(true, $this->model->set($identifier, $value));
+        $this->assertTrue($this->model->set($identifier, $value));
     }
 
     public function setDataProvider(): array

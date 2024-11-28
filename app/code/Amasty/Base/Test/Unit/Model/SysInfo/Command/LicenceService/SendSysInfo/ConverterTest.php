@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -44,7 +44,7 @@ class ConverterTest extends TestCase
 
     public function testConvertToObject(): void
     {
-        $data = [InstanceInfo::DOMAINS => [], InstanceInfo::MODULES => []];
+        $data = [InstanceInfo::DOMAINS => [], InstanceInfo::MODULES => [], InstanceInfo::CUSTOMER_INSTANCE_KEY => []];
         $instanceInfoMock = $this->createMock(InstanceInfo::class);
 
         $this->instanceInfoFactoryMock

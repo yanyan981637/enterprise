@@ -32,8 +32,8 @@ class ProductAttribute implements \Magento\Framework\Option\ArrayInterface
     protected $_options;
 
     /**
-     * @param \Magento\Framework\App\State                                             $appState                   
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory 
+     * @param \Magento\Framework\App\State                                             $appState
+     * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory
      */
     public function __construct(
         \Magento\Framework\App\State $appState,
@@ -52,7 +52,7 @@ class ProductAttribute implements \Magento\Framework\Option\ArrayInterface
     {
         $options = [];
         if ($this->isAdminStore()) {
-            if ($this->_options === NULL) {
+            if ($this->_options === null) {
                 $collection = $this->attributeCollectionFactory->create();
                 $collection->addFieldToFilter('is_visible', 1);
                 $collection->addFieldToFilter('attribute_code', ['neq' => 'ppd_profile_id']);

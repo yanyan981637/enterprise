@@ -12,10 +12,22 @@
                 <field id="version_plus" translate="label comment" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
                     <frontend_model>Magefan\TranslationPlus\Block\Adminhtml\Config\Form\Info</frontend_model>
                 </field>
+                <field id="flush_cache_on_translation" translate="label comment" type="select" sortOrder="21" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Flush Cache On Translation Change</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="ignore_gws_permissions" translate="label comment" type="select" sortOrder="22" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Ignore GWS Permissions On Translation Grid</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <!--
                 <field id="date_time" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Last Static Content Deploy DateTime</label>
                     <comment>DateTime example: "2022-10-21 05:00:00". Set this option only when the js-translation.json file is not writable or you use Magento Commerce on Cloud.</comment>
                 </field>
+                -->
             </group>
         </section>
     </system>

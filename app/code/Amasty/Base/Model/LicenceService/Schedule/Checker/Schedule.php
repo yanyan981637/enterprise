@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -55,7 +55,15 @@ class Schedule implements SenderCheckerInterface
 
             return true;
         }
-        $timeIntervals = $scheduleConfig->getTimeIntervals();
+
+        if (null === ($timeIntervals = $scheduleConfig->getTimeIntervals())) {
+            $scheduleConfig->addData($this->getScheduleConfig());
+            $scheduleConfig->setLastSendDate($currentTime);
+            $this->scheduleConfigRepository->save($flag, $scheduleConfig);
+
+            return true;
+        }
+
         $firstTimeInterval = array_shift($timeIntervals);
         $isNeedToSend = $currentTime > $scheduleConfig->getLastSendDate() + $firstTimeInterval;
         if ($isNeedToSend) {

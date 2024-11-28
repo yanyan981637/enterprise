@@ -64,7 +64,7 @@ define([
                 if (window.ninjaMenusCategories) {
                     if (document.referrer) {
                         categoryCrumbs = [];
-                        var categories = window.ninjaMenusCategories;
+                        var categories = $.parseJSON(window.ninjaMenusCategories);
                         var status = true;
                         for (var i = 0; i < categories.length; i++) {
                             if (status) {

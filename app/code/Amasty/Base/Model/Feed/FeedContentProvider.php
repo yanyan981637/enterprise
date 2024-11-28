@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -133,7 +133,7 @@ class FeedContentProvider
     {
         if ($this->baseUrlObject === null) {
             $url = $this->storeManager->getStore()->getBaseUrl();
-            $this->baseUrlObject = \Zend\Uri\UriFactory::factory($url);
+            $this->baseUrlObject = \Laminas\Uri\UriFactory::factory($url);
         }
 
         return $this->baseUrlObject;

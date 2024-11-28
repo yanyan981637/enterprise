@@ -1,0 +1,142 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+?>
+<?php
+/**
+ * @var $block \Magefan\TranslationPlus\Block\Adminhtml\Product\Translate\Edit\Form|\Magefan\TranslationPlus\Block\Adminhtml\Category\Translate\Edit\Form
+ * @var $mfSecureRenderer \Magefan\Community\Api\SecureHtmlRendererInterface
+ */
+?>
+<?php
+    $id = (int)$block->getCurrentObject(0)->getId();
+    $html = $block->getGroupsHtml();
+    $script = '';
+?>
+  <form class='form' action=<?= $block->getUrl('translationplus/' . $block->getObjectType() . '/save') ?> method='post' id='translate_template_edit_form'>
+<?php
+    $keys = array_keys($html);
+?>
+<?php for ($i=0; $i < count($html[$keys[0]]); $i++) { ?>
+    <table style="width:100%;">
+        <thead>
+            <tr>
+                <?php foreach ($block->getStores() as $store) { ?>
+                    <th style=" border-left: 1px solid #cccccc; " ><?= $block->escapeHtml($store->getName(). '/' .$store->getWebsite()->getName()) ?></th>
+                <?php } ?>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                  <?php for ($j = 0; $j < count($keys); $j++) { ?>
+                      <td style=" border-left: 1px solid #cccccc; padding:10px; min-width: 500px; max-width: 500px;">
+                          <?= $html[$keys[$j]][$i] ?>
+                      </td>
+                  <?php  } ?>
+            </tr>
+        </tbody>
+    </table>
+<?php } ?>
+<input type='hidden' name='redirect' value=1 />
+<input type='hidden' name='id' value=<?= $block->escapeHtml($id) ?> />
+<input type='hidden' name='form_key' value=<?= $block->escapeHtml($block->getFormKey()) ?> />
+</form>
+
+<style>
+    #translate_template_edit_form .admin__collapsible-block-wrapper.fieldset-wrapper {
+        border: none;
+    }
+
+    #translate_template_edit_form table {
+        /*border: 1px solid #cccccccc;*/
+        margin-top: 25px;
+    }
+
+    #translate_template_edit_form .use-default-label { font-size: 9px; }
+    #translate_template_edit_form .use-default {padding-left: 15px;}
+    #attribute-url_key-container {pointer-events: none;opacity: 0.5;}
+</style>
+
+<?php $script .= "
+require([
+    'jquery',
+    'wysiwygAdapter',
+    'Magento_Ui/js/modal/prompt',
+    'Magento_Ui/js/modal/confirm',
+    'mage/mage',
+    'prototype'
+], function ($, wysiwyg, prompt, confirm) {
+
+    $('#translate_template_edit_form').mage('form').mage('validation');
+    var templateControl = {
+
+        unconvertedText: '',
+        typeChange: false,
+        templateName: false,
+        id: 'text',
+
+        events: {
+            'click [data-role=template-save]': 'save',
+            'click [data-role=template-save-and]': 'save_and',
+            'click [data-role=template-back]': 'back',
+        },
+
+        init: function () {
+           this.bindEvents();
+        },
+
+        bindEvents: function () {
+            var events = this.events,
+                eventName,
+                selector,
+                callback,
+                key;
+
+            for (key in events) {
+                if (!events.hasOwnProperty(key)) {
+                    continue;
+                }
+
+                callback    = this[events[key]];
+                key         = key.split(' ');
+
+                eventName   = key[0];
+                selector    = key.slice(1).join(' ');
+
+                $(selector).on(eventName, $.proxy(callback, this));
+            }
+        },
+
+        save: function () {
+            if (this.typeChange) {
+                $('change_flag_element').value = '1';
+            }
+
+            // Temporary solution will be replaced after refactoring of newsletter functionality
+            $('#translate_template_edit_form').triggerHandler('save');
+            return false;
+        },
+        save_and: function () {
+                if (this.typeChange) {
+                $('change_flag_element').value = '1';
+            }
+            $('input[name=redirect]').val(0);
+            // Temporary solution will be replaced after refactoring of newsletter functionality
+            $('#translate_template_edit_form').triggerHandler('save');
+            return false;
+        },
+         back: function () {
+                window.location.href = \"" . $block->escapeUrl($block->getUrl('catalog/' . $block->getObjectType() . '/edit', ['id' => $id])) . "\";
+            return false;
+        }
+    };
+      $(document).ready(function(){
+            $('.h1[class=\"page-title\"]').prop('value', 'NS/NR');
+        });
+    templateControl.init();
+    templateControl.templateName = \"" . $block->escapeJs($block->getJsTemplateName()) . "\";
+});
+"; ?>
+<?= /* @noEscape */ $mfSecureRenderer->renderTag('script', ['type' => 'text/javascript'], $script, false) ?>

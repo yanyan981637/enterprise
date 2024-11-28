@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 
@@ -13,7 +13,7 @@ namespace Amasty\Base\Model\LicenceService\Api;
 use Amasty\Base\Model\LicenceService\Request\Data\InstanceInfo;
 use Amasty\Base\Model\LicenceService\Request\Url\Builder;
 use Amasty\Base\Model\LicenceService\Response\Data\RegisteredInstance;
-use Amasty\Base\Utils\Http\Curl;
+use Amasty\Base\Model\SimpleDataObject;
 use Amasty\Base\Utils\Http\CurlFactory;
 use Magento\Framework\Api\SimpleDataObjectConverter;
 use Magento\Framework\Exception\LocalizedException;
@@ -47,17 +47,26 @@ class RequestManager
 
     /**
      * @param string $domain
-     * @return RegisteredInstance
+     * @return RegisteredInstance|SimpleDataObject
      * @throws LocalizedException
      */
-    public function registerInstance(string $domain): RegisteredInstance
+    public function registerInstance(string $domain, ?string $oldKey = null): RegisteredInstance
     {
-        /** @var Curl $curl */
         $curl = $this->curlFactory->create();
         $url = $this->urlBuilder->build('/api/v1/instance/registration');
-        $postParams = json_encode(['domain' => $domain]);
 
-        return $curl->request($url, $postParams);
+        $params = ['domain' => $domain];
+        if ($oldKey) {
+            $params['oldSystemInstanceKey'] = $oldKey;
+        }
+        $postParams = json_encode($params);
+
+        $response = $curl->request($url, $postParams);
+        if (!in_array($response->getData('code'), [200, 204])) {
+            throw new LocalizedException(__('Invalid request.'));
+        }
+
+        return $response;
     }
 
     /**
@@ -67,7 +76,6 @@ class RequestManager
      */
     public function updateInstanceInfo(InstanceInfo $instanceInfo): void
     {
-        /** @var Curl $curl */
         $curl = $this->curlFactory->create();
         $url = $this->urlBuilder->build(
             '/api/v1/instance_client/'. $instanceInfo->getSystemInstanceKey() . '/collect'
@@ -75,20 +83,57 @@ class RequestManager
         $postParams = $this->simpleDataObjectConverter->convertKeysToCamelCase($instanceInfo->toArray());
         $postParams = json_encode($postParams);
 
-        $curl->request($url, $postParams);
+        $response = $curl->request($url, $postParams);
+        if (!in_array($response->getData('code'), [200, 204])) {
+            throw new LocalizedException(__('Invalid request.'));
+        }
     }
 
     /**
+     * @deprecated since 1.15.1
+     * @see RequestManager::pingRequest
      * @param string $systemInstanceKey
      * @return void
      * @throws LocalizedException
      */
     public function ping(string $systemInstanceKey): void
     {
-        /** @var Curl $curl */
         $curl = $this->curlFactory->create();
         $url = $this->urlBuilder->build('/api/v1/instance_client/'. $systemInstanceKey . '/ping');
 
         $curl->request($url);
+    }
+
+    /**
+     * @param InstanceInfo $instanceInfo
+     * @return SimpleDataObject
+     */
+    public function pingRequest(InstanceInfo $instanceInfo): SimpleDataObject
+    {
+        $curl = $this->curlFactory->create();
+        $url = $this->urlBuilder->build('/api/v1/instance_client/'. $instanceInfo->getSystemInstanceKey() . '/ping');
+
+        $postParams = $this->simpleDataObjectConverter->convertKeysToCamelCase([
+            'is_production' => $instanceInfo->getIsProduction(),
+            'customer_instance_key' => $instanceInfo->getCustomerInstanceKey()
+        ]);
+        $postParams = json_encode($postParams);
+
+        return $curl->request($url, $postParams);
+    }
+
+    /**
+     * @param InstanceInfo $instanceInfo
+     * @return SimpleDataObject
+     */
+    public function verify(InstanceInfo $instanceInfo): SimpleDataObject
+    {
+        $curl = $this->curlFactory->create();
+        $url = $this->urlBuilder->build('/api/v1/instance_client/'. $instanceInfo->getSystemInstanceKey() . '/verify');
+
+        $postParams = $this->simpleDataObjectConverter->convertKeysToCamelCase($instanceInfo->toArray());
+        $postParams = json_encode($postParams);
+
+        return $curl->request($url, $postParams);
     }
 }

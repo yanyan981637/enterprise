@@ -9,7 +9,7 @@
     <update handle="styles"/>
     <body>
         <referenceContainer name="content">
-            <block name="mftranslationplus.js.translation" template="Magefan_TranslationPlus::product/js.phtml" />
+            <block name="mftranslationplus.js.translation" template="Magefan_TranslationPlus::form/js.phtml" />
         </referenceContainer>
     </body>
 </page>

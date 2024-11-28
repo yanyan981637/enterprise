@@ -23,6 +23,7 @@ class Query extends \Magento\Framework\App\Helper\AbstractHelper {
     public $last_error = '';
     public $last_query = '';
     public $insert_id = '';
+    public $lastRowID = '';
 
     /**
      *	Constructor

@@ -21,54 +21,54 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
      */
     public function prepareForm()
     {
-    	parent::prepareForm();
-    	$this->prepareItemDesignTab();
+        parent::prepareForm();
+        $this->prepareItemDesignTab();
         $this->prepareIconTab();
-    	$this->prepareSubmenuTab();
-    	return $this;
+        $this->prepareSubmenuTab();
+        return $this;
     }
 
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
     public function prepareGeneralTab()
     {
-    	$general = parent::prepareGeneralTab();
+        $general = parent::prepareGeneralTab();
 
-    		$container1 = $general->addContainerGroup(
-	            'container1',
-	            [
-					'sortOrder' => 10
-	            ]
-		    );
+            $container1 = $general->addContainerGroup(
+                'container1',
+                [
+                    'sortOrder' => 10
+                ]
+            );
 
-		    	$container1->addChildren(
-		            'title',
-		            'text',
-		            [
-						'sortOrder'       => 10,
-						'key'             => 'title',
-						'defaultValue'    => 'Item',
-						'templateOptions' => [
-							'label' => __('Title')
-		                ],
+                $container1->addChildren(
+                    'title',
+                    'text',
+                    [
+                        'sortOrder'       => 10,
+                        'key'             => 'title',
+                        'defaultValue'    => 'Item',
+                        'templateOptions' => [
+                            'label' => __('Title')
+                        ],
                         'expressionProperties' => [
                             'templateOptions.disabled' => 'model.item_type=="category"&&model.cat_name'
                         ]
-		            ]
-		        );
+                    ]
+                );
 
-		    	$container1->addChildren(
-		            'sub_title',
-		            'text',
-		            [
-						'sortOrder'       => 20,
-						'key'             => 'sub_title',
-						'templateOptions' => [
-							'label' => __('Sub Title')
-		                ]
-		            ]
-		        );
+                $container1->addChildren(
+                    'sub_title',
+                    'text',
+                    [
+                        'sortOrder'       => 20,
+                        'key'             => 'sub_title',
+                        'templateOptions' => [
+                            'label' => __('Sub Title')
+                        ]
+                    ]
+                );
 
             $container2 = $general->addContainerGroup(
                 'container2',
@@ -77,19 +77,19 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
                 ]
             );
 
-    	    	$container2->addChildren(
-    	            'item_type',
-    	            'select',
-    	            [
-    					'sortOrder'       => 10,
-    					'key'             => 'item_type',
-    					'defaultValue'    => 'custom',
-    					'templateOptions' => [
-    						'label'   => __('Type'),
-    						'options' => $this->getItemType()
-    	                ]
-    	            ]
-    	        );
+                $container2->addChildren(
+                    'item_type',
+                    'select',
+                    [
+                        'sortOrder'       => 10,
+                        'key'             => 'item_type',
+                        'defaultValue'    => 'custom',
+                        'templateOptions' => [
+                            'label'   => __('Type'),
+                            'options' => $this->getItemType()
+                        ]
+                    ]
+                );
 
                 $container2->addChildren(
                     'cat_name',
@@ -104,66 +104,66 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
                     ]
                 );
 
-	    	$general->addChildren(
-	            'category_id',
-	            'uiSelect',
-	            [
-					'sortOrder'       => 30,
-					'key'             => 'category_id',
-					'templateOptions' => [
+            $general->addChildren(
+                'category_id',
+                'uiSelect',
+                [
+                    'sortOrder'       => 30,
+                    'key'             => 'category_id',
+                    'templateOptions' => [
                         'label'       => __('Category'),
                         'source'      => 'category',
                         'showValue'   => true,
                         'placeholder' => __('Search category by name')
-	                ],
-	                'hideExpression' => 'model.item_type!="category"'
-	            ]
-	        );
+                    ],
+                    'hideExpression' => 'model.item_type!="category"'
+                ]
+            );
 
-	    	$general->addChildren(
-	            'page_id',
-	            'uiSelect',
-	            [
-					'sortOrder'       => 30,
-					'key'             => 'page_id',
-					'templateOptions' => [
+            $general->addChildren(
+                'page_id',
+                'uiSelect',
+                [
+                    'sortOrder'       => 30,
+                    'key'             => 'page_id',
+                    'templateOptions' => [
                         'label'       => __('Page'),
                         'source'      => 'page',
                         'showValue'   => true,
                         'placeholder' => __('Search page by name')
-	                ],
-	                'hideExpression' => 'model.item_type!="page"'
-	            ]
-	        );
+                    ],
+                    'hideExpression' => 'model.item_type!="page"'
+                ]
+            );
 
-	    	$general->addChildren(
-	            'product_id',
-	            'uiSelect',
-	            [
-					'sortOrder'       => 30,
-					'key'             => 'product_id',
-					'templateOptions' => [
+            $general->addChildren(
+                'product_id',
+                'uiSelect',
+                [
+                    'sortOrder'       => 30,
+                    'key'             => 'product_id',
+                    'templateOptions' => [
                         'label'       => __('Product'),
                         'source'      => 'product',
                         'showValue'   => true,
                         'placeholder' => __('Search product by name')
-	                ],
-	                'hideExpression' => 'model.item_type!="product"'
-	            ]
-	        );
+                    ],
+                    'hideExpression' => 'model.item_type!="product"'
+                ]
+            );
 
-	    	$general->addChildren(
-	            'custom_link',
-	            'text',
-	            [
-					'sortOrder'       => 30,
-					'key'             => 'custom_link',
-					'templateOptions' => [
-						'label' => __('Custom Link')
-	                ],
-	                'hideExpression' => 'model.item_type!="custom"'
-	            ]
-	        );
+            $general->addChildren(
+                'custom_link',
+                'text',
+                [
+                    'sortOrder'       => 30,
+                    'key'             => 'custom_link',
+                    'templateOptions' => [
+                        'label' => __('Custom Link')
+                    ],
+                    'hideExpression' => 'model.item_type!="custom"'
+                ]
+            );
 
             $container3 = $general->addContainerGroup(
                 'container3',
@@ -339,15 +339,15 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
                     ]
                 );
 
-    	return $general;
+        return $general;
     }
 
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
     public function prepareItemDesignTab()
     {
-    	$design = $this->addTab(
+        $design = $this->addTab(
             'item_design',
             [
                 'sortOrder'       => 50,
@@ -679,11 +679,11 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
                 ]
             );
 
-    	return $design;
+        return $design;
     }
 
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
     public function prepareIconTab()
     {
@@ -800,11 +800,11 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
     }
 
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
     public function prepareSubmenuTab()
     {
-    	$submenu = $this->addTab(
+        $submenu = $this->addTab(
             'item_submenu',
             [
                 'sortOrder'       => 50,
@@ -814,53 +814,53 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
             ]
         );
 
-    		$container1 = $submenu->addContainerGroup(
-	            'container1',
-	            [
-					'sortOrder' => 10
-	            ]
-		    );
+            $container1 = $submenu->addContainerGroup(
+                'container1',
+                [
+                    'sortOrder' => 10
+                ]
+            );
 
-		    	$container1->addChildren(
-		            'submenu_type',
-		            'select',
-		            [
-						'sortOrder'       => 10,
-						'key'             => 'submenu_type',
-						'defaultValue'    => 'mega',
-						'templateOptions' => [
-							'label'   => __('Type'),
-							'options' => $this->getSubmenuType()
-		                ]
-		            ]
-		        );
+                $container1->addChildren(
+                    'submenu_type',
+                    'select',
+                    [
+                        'sortOrder'       => 10,
+                        'key'             => 'submenu_type',
+                        'defaultValue'    => 'mega',
+                        'templateOptions' => [
+                            'label'   => __('Type'),
+                            'options' => $this->getSubmenuType()
+                        ]
+                    ]
+                );
 
-		    	$container1->addChildren(
-		            'submenu_position',
-		            'select',
-		            [
-						'sortOrder'       => 20,
-						'key'             => 'submenu_position',
-						'defaultValue'    => 'left_edge_parent_item',
-						'templateOptions' => [
-							'label'   => __('Position'),
-							'options' => $this->getMegaSubmenuPosition()
-		                ],
+                $container1->addChildren(
+                    'submenu_position',
+                    'select',
+                    [
+                        'sortOrder'       => 20,
+                        'key'             => 'submenu_position',
+                        'defaultValue'    => 'left_edge_parent_item',
+                        'templateOptions' => [
+                            'label'   => __('Position'),
+                            'options' => $this->getMegaSubmenuPosition()
+                        ],
                         'hideExpression' => 'model.submenu_type!="mega"'
-		            ]
-		        );
+                    ]
+                );
 
-		    	$container1->addChildren(
-		            'submenu_width',
-		            'text',
-		            [
+                $container1->addChildren(
+                    'submenu_width',
+                    'text',
+                    [
                         'sortOrder'       => 30,
                         'key'             => 'submenu_width',
                         'templateOptions' => [
-							'label' => __('Width')
-		                ]
-		            ]
-		        );
+                            'label' => __('Width')
+                        ]
+                    ]
+                );
 
             $container2 = $submenu->addContainerGroup(
                 'container2',
@@ -908,7 +908,7 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
                     ]
                 );
 
-	    	$submenu->addChildren(
+            $submenu->addChildren(
                 'subcategories_col',
                 'select',
                 [
@@ -1025,19 +1025,19 @@ class Item extends \Magezon\Builder\Data\Element\AbstractElement
                 ]
             );
 
-    	return $submenu;
+        return $submenu;
     }
 
     /**
-     * @return Magezon\Builder\Data\Form\Element\Fieldset
+     * @return \Magezon\Builder\Data\Form\Element\Fieldset
      */
     public function prepareDesignTab()
     {
-    	$tab = parent::prepareDesignTab();
-    	$config = $tab->getData('config');
-    	$config['templateOptions']['label'] = __('Submenu Design');
-    	$tab->setData('config', $config);
-    	return $tab;
+        $tab = parent::prepareDesignTab();
+        $config = $tab->getData('config');
+        $config['templateOptions']['label'] = __('Submenu Design');
+        $tab->setData('config', $config);
+        return $tab;
     }
 
     public function getItemType()

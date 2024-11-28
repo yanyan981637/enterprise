@@ -23,21 +23,24 @@
         width: 16px;
     }
 
-
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     #amasty_base_information #row_download_info .label {
         vertical-align: inherit;
     }
 
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     #amasty_base_information .ambase-cache-info td,
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     #amasty_base_information .ambase-cache-info th {
-        border: 1px solid #ddd;
+        border: 1px solid @color-light-gray;
         padding: 10px;
         text-align: left;
     }
 
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     #amasty_base_information .ambase-cache-info th {
+        background: @ambase__menu__table-header__background;
         font-weight: bold;
-        background: #efefef;
     }
 
     .ambase-grid-message {
@@ -52,6 +55,7 @@
         }
     }
 
+    /* phpcs:ignore Magento2.Less.ClassNaming.NotAllowedSymbol */
     .admin__action-dropdown-menu {
         .notifications-entry[data-ambase-logo='1'] {
             background: url('@{baseDir}Amasty_Base/images/logo_popup.svg') no-repeat 5px 7px;
@@ -63,7 +67,9 @@
         }
     }
 
+    /* phpcs:ignore Magento2.Less.ClassNaming.NotAllowedSymbol */
     .admin__menu [data-ui-id^='menu-amasty-'] .submenu-group-title span:before,
+    /* phpcs:ignore Magento2.Less.ClassNaming.NotAllowedSymbol */
     .admin__menu [data-ui-id^='menu-magento-'] [data-ui-id^='menu-magento-'] [data-ui-id^='menu-amasty-'] span:before {
         background: url('@{baseDir}Amasty_Base/images/logo-menu.svg') no-repeat center;
         content: '';
@@ -74,6 +80,7 @@
         width: 16px;
     }
 
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     #menu-menuamasty-base-menu {
         .ambase-menu-button.-close {
             & {
@@ -99,16 +106,17 @@
         }
     }
 
-    // Start extension override
+    //  Start extension override
     .item-extensions a,
     .item-marketplace a {
-        color: #fff !important;
+        color: @color-white !important;
         font-weight: 600 !important;
     }
+    //  End extension override
 
-    // End extension override
-
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     #amasty_base_extensions table td.value,
+    /* phpcs:ignore Magento2.Less.AvoidId.IdSelectorUsage */
     #amasty_base_information table td.value {
         vertical-align: bottom;
     }

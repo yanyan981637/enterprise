@@ -1,23 +1,24 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Advanced Permissions for Magento 2
  */
 
 namespace Amasty\Rolepermissions\Observer\Admin;
 
-use Amasty\Rolepermissions\Helper\Data;
 use Amasty\Rolepermissions\Api\Data\RuleInterface;
+use Amasty\Rolepermissions\Helper\Data;
 use Magento\Catalog\Model\Category;
+use Magento\Customer\Model\ResourceModel\Customer\Collection as CustomerCollection;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\DB\Select;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult;
-use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\Website;
 use Zend_Db_Select_Exception;
@@ -31,6 +32,8 @@ class CollectionLoadBeforeObserver implements ObserverInterface
     public const STORE_IDS_KEY = 'store_ids';
 
     public const WEBSITE_KEY = 'website';
+
+    public const WEBSITE_ID_KEY = 'website_id';
 
     /**
      * @var Registry
@@ -103,7 +106,11 @@ class CollectionLoadBeforeObserver implements ObserverInterface
             }
 
             if ($this->isCollectionHasWebsiteField($collection)) {
-                $this->addWebsiteFilter($collection, $rule);
+                $this->addWebsiteFilter($collection, $rule, self::WEBSITE_KEY);
+            }
+
+            if ($this->isCollectionHasWebsiteIdField($collection)) {
+                $this->addWebsiteFilter($collection, $rule, self::WEBSITE_ID_KEY);
             }
 
             if ($this->isCollectionHasSetStoreIdsMethod($collection)) {
@@ -180,18 +187,17 @@ class CollectionLoadBeforeObserver implements ObserverInterface
         if (in_array($storeIdKey, $this->getCollectionKeys($collection))) {
             $select = $collection->getSelect();
             $alias = $this->getMainAlias($select) ? $this->getMainAlias($select) . '.' : '';
-
             $allowedStoreViews = $rule->getScopeStoreviews() ?: [];
-            $collection->addFieldToFilter($alias . $storeIdKey, ['in' => $allowedStoreViews]);
+
+            if ($this->isNeedSkipAlias($collection)) {
+                $collection->addFieldToFilter($storeIdKey, ['in' => $allowedStoreViews]);
+            } else {
+                $collection->addFieldToFilter($alias . $storeIdKey, ['in' => $allowedStoreViews]);
+            }
         }
     }
 
-    /**
-     * @param AbstractCollection $collection
-     * @param RuleInterface $rule
-     * @return void
-     */
-    private function addWebsiteFilter($collection, RuleInterface $rule): void
+    private function addWebsiteFilter(AbstractCollection $collection, RuleInterface $rule, string $websiteKey): void
     {
         $allowedStoreIds = $rule->getScopeStoreviews() ?: [];
         $websiteIds = [];
@@ -204,7 +210,7 @@ class CollectionLoadBeforeObserver implements ObserverInterface
             $select = $collection->getSelect();
             $alias = $this->getMainAlias($select) ? $this->getMainAlias($select) . '.' : '';
 
-            $collection->addFieldToFilter($alias . self::WEBSITE_KEY, ['in' => $websiteIds]);
+            $collection->addFieldToFilter($alias . $websiteKey, ['in' => $websiteIds]);
         }
     }
 
@@ -272,6 +278,11 @@ class CollectionLoadBeforeObserver implements ObserverInterface
         return $collection instanceof \Amasty\GdprCookie\Model\ResourceModel\CookieConsent\Collection;
     }
 
+    private function isCollectionHasWebsiteIdField($collection): bool
+    {
+        return $collection instanceof \Amasty\GiftCardAccount\Model\GiftCardAccount\ResourceModel\Collection;
+    }
+
     /**
      * @param $collection
      *
@@ -335,6 +346,11 @@ class CollectionLoadBeforeObserver implements ObserverInterface
 
         return $resourceModel instanceof \Magento\Theme\Model\ResourceModel\Design\Config
             || $resourceModel instanceof \Magento\Search\Model\ResourceModel\SynonymGroup;
+    }
+
+    private function isNeedSkipAlias(AbstractDb $collection): bool
+    {
+        return $collection instanceof CustomerCollection;
     }
 
     private function addFilterToSearchResultCollection(

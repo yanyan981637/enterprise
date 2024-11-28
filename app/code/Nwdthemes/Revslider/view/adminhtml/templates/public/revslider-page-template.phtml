@@ -21,7 +21,7 @@ $jsMin = FA::isMinified('js') ? '.min' : '';
         <script type="text/javascript" src="<?= $block->getViewFileUrl("requirejs-config{$jsMin}.js"); ?>"></script>
         <!-- /scripts -->
         <link rel="stylesheet" type="text/css" media="all" href="<?= $block->getViewFileUrl('Nwdthemes_Revslider::public/assets/css/rs6.min.css'); ?>" />
-        <style type="text/css">
+        <style>
             body:before { display:none !important}
             body:after { display:none !important}
             body { background:transparent}

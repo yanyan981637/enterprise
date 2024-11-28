@@ -47,74 +47,65 @@ class InstallSchema implements InstallSchemaInterface {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $installer->run("CREATE TABLE `{$installer->getTable('nwdthemes_revslider_css')}` (
-          `id` int(9) NOT NULL AUTO_INCREMENT,
+          `id` int(9) NOT NULL PRIMARY KEY AUTO_INCREMENT,
           `handle` text NOT NULL,
           `settings` longtext,
           `hover` longtext,
           `params` longtext NOT NULL,
           `advanced` longtext,
-          UNIQUE KEY id (id),
           INDEX `handle_index` (`handle`(64))
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $installer->run("CREATE TABLE `{$installer->getTable('nwdthemes_revslider_animations')}` (
-          `id` int(9) NOT NULL AUTO_INCREMENT,
+          `id` int(9) NOT NULL PRIMARY KEY AUTO_INCREMENT,
           `handle` text NOT NULL,
           `params` text NOT NULL,
-          `settings` text,
-          UNIQUE KEY `id` (`id`)
+          `settings` text NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $installer->run("CREATE TABLE `{$installer->getTable('nwdthemes_revslider_navigations')}` (
-          `id` int(9) NOT NULL AUTO_INCREMENT,
+          `id` int(9) NOT NULL PRIMARY KEY AUTO_INCREMENT,
           `name` varchar(191) NOT NULL,
           `handle` varchar(191) NOT NULL,
+          `type` varchar(191) NOT NULL,
           `css` longtext NOT NULL,
           `markup` longtext NOT NULL,
-          `settings` longtext,
-          `type` varchar(191) NOT NULL,
-          UNIQUE KEY `id` (`id`),
-          KEY `handle` (`handle`)
+          `settings` longtext NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $installer->run("CREATE TABLE `{$installer->getTable('nwdthemes_revslider_options')}` (
-          `id` int(9) NOT NULL AUTO_INCREMENT,
+          `id` int(9) NOT NULL PRIMARY KEY AUTO_INCREMENT,
           `handle` varchar(100) NOT NULL,
           `option` longtext NOT NULL,
-          PRIMARY KEY (`id`),
           KEY `handle` (`handle`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $installer->run("CREATE TABLE `{$installer->getTable('nwdthemes_revslider_sliders')}` (
-          `id` int(9) NOT NULL AUTO_INCREMENT,
+          `id` int(9) NOT NULL PRIMARY KEY AUTO_INCREMENT,
           `title` varchar(255) NOT NULL,
           `alias` varchar(255),
           `params` longtext NOT NULL,
           `settings` text NULL DEFAULT '',
           `type` varchar(191) NOT NULL DEFAULT '',
-          UNIQUE KEY id (id),
           INDEX `type_index` (`type`(8))
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $installer->run("CREATE TABLE `{$installer->getTable('nwdthemes_revslider_slides')}` (
-          `id` int(9) NOT NULL AUTO_INCREMENT,
+          `id` int(9) NOT NULL PRIMARY KEY AUTO_INCREMENT,
           `slider_id` int(9) NOT NULL,
           `slide_order` int(11) NOT NULL,
           `params` longtext NOT NULL,
           `layers` longtext NOT NULL,
           `settings` text NOT NULL,
-          UNIQUE KEY id (id),
           INDEX `slider_id_index` (`slider_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $installer->run("CREATE TABLE `{$installer->getTable('nwdthemes_revslider_static_slides')}` (
-          `id` int(9) NOT NULL AUTO_INCREMENT,
+          `id` int(9) NOT NULL PRIMARY KEY AUTO_INCREMENT,
           `slider_id` int(9) NOT NULL,
           `params` longtext NOT NULL,
           `layers` longtext NOT NULL,
           `settings` text NOT NULL,
-          PRIMARY KEY (`id`),
-          UNIQUE KEY id (id),
           INDEX `slider_id_index` (`slider_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 

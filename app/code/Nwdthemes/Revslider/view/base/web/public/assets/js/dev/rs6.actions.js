@@ -1,12 +1,12 @@
 /********************************************
  * REVOLUTION EXTENSION - ACTIONS
- * @Date: (20.06.2020)
+ * @Date: (05.10.2022)
  * @requires rs6.main.js
  * @author ThemePunch
 *********************************************/
 (function($,undefined) {
 "use strict";
-var version = "6.2.14";
+var version = "6.6.0";
 
 jQuery.fn.revolution = jQuery.fn.revolution || {};
 var _R = jQuery.fn.revolution;
@@ -66,18 +66,48 @@ jQuery.extend(true,_R, {
 		 	speed : Animation Speed
 		 	event : Animation Ease
 		 */
+		_R.scrollToObj = obj;
+		if (!window.isSafari11) {
+			var scrollBehaviorHtml = tpGS.gsap.getProperty('html', 'scrollBehavior');
+			var scrollBehaviorBody = tpGS.gsap.getProperty('body', 'scrollBehavior');
+			tpGS.gsap.set('html,body', {scrollBehavior: 'auto'});
+			obj.scrollBehaviorHtml = scrollBehaviorHtml;
+			obj.scrollBehaviorBody = scrollBehaviorBody;
+		}
+		_R.calcScrollToId();
+	},
+
+	calcScrollToId: function() {
+		if(!_R.scrollToObj) return;
+		var obj = _R.scrollToObj;
+		var progress = obj.tween && obj.tween.progress ? obj.tween.progress() : 0;
+		if(obj.tween && obj.tween.kill) obj.tween.kill();
+
+		if(obj.startScrollPos === undefined || obj.startScrollPos === null) obj.startScrollPos = (_R[obj.id].modal.useAsModal) ? _R[obj.id].cpar.scrollTop() : _R.document.scrollTop();
 
 		var off= obj.action==="scrollbelow" ? (getOffContH(_R[obj.id].fullScreenOffsetContainer) || 0) - (parseInt(obj.offset,0) || 0) || 0 : 0-(parseInt(obj.offset,0) || 0),
-			c =  obj.action==="scrollbelow" ? _R[obj.id].c : jQuery('#'+obj.anchor),
-			ctop = c.length>0 ? c.offset().top : 0,
-			sobj = {_y: _R[obj.id].modal.useAsModal ? _R[obj.id].cpar[0].scrollTop :  (window.pageYOffset!==document.documentElement.scrollTop) ? window.pageYOffset!==0 ? window.pageYOffset :document.documentElement.scrollTop : window.pageYOffset };
+		c =  obj.action==="scrollbelow" ? _R[obj.id].c : jQuery('#'+obj.anchor),
+		ctop = c.length>0 ? c.offset().top : 0,
+		sobj = {_y: _R[obj.id].modal.useAsModal ? _R[obj.id].cpar[0].scrollTop :  (window.pageYOffset!==document.documentElement.scrollTop) ? window.pageYOffset!==0 ? window.pageYOffset :document.documentElement.scrollTop : window.pageYOffset };
 
 		ctop += obj.action==="scrollbelow" ? _R[obj.id].sbtimeline.fixed ? _R[obj.id].cpar.parent().height() + _R[obj.id].fullScreenOffsetResult : jQuery(_R[obj.id].slides[0]).height() : 0;
 
-		tpGS.gsap.to(sobj,obj.speed/1000,{_y:(ctop-off), ease:obj.ease,
+		obj.tween = tpGS.gsap.fromTo(sobj,obj.speed/1000, {_y:obj.startScrollPos}, {_y:(ctop-off), ease:obj.ease,
 			onUpdate:function() { if (_R[obj.id].modal.useAsModal) _R[obj.id].cpar.scrollTop(sobj._y); else _R.document.scrollTop(sobj._y); /* document.documentElement.scrollTop = sobj._y*/},
-			onComplete:function() {if (obj.hash!==undefined) window.location.hash = obj.hash}
+			onComplete:function() {
+				if (obj.hash!==undefined) history.pushState(null, null, obj.hash);
+				if (!window.isSafari11) {
+					tpGS.gsap.set('html', {scrollBehavior: obj.scrollBehaviorHtml});
+					tpGS.gsap.set('body', {scrollBehavior: obj.scrollBehaviorBody});
+				}
+				if(_R.scrollToObj){
+					if(_R.scrollToObj.tween){ _R.scrollToObj.tween.kill(); _R.scrollToObj.tween = null; }
+					_R.scrollToObj.startScrollPos = null;
+					_R.scrollToObj = null;
+				}
+			}
 		});
+		obj.tween.progress(progress);
 	}
 });
 
@@ -110,12 +140,20 @@ var moduleEnterLeaveActions = function(id) {
 }
 
 var checkActions_intern = function(layer,id) {
-	var actions = _R.gA(layer[0],"actions"),
-		_L = layer.data();
+	var actions = _R.gA(layer[0],"actions");
+
+	if (layer[0].tagName=="RS-COLUMN") {
+		var wrap = _R.closestNode(layer[0], 'RS-COLUMN-WRAP');
+		if (wrap!==null && wrap!==undefined) {
+			_R.sA(wrap,"action",actions);
+			layer = jQuery(wrap);
+		}
+	}
+
+	var _L = layer.data();
 	actions = actions.split("||");
 	layer.addClass("rs-waction");
 	_L.events = _L.events===undefined ? [] : _L.events;
-	_R[id].lastMouseDown = {};
 	//GET THROUGH THE EVENTS AND COLLECT INFORMATIONS
 	for (var ei in actions) {
 		if (!actions.hasOwnProperty(ei)) continue;
@@ -156,23 +194,9 @@ var checkActions_intern = function(layer,id) {
 			break;
 		}
 	}
-
-
 	_R[id].actionsPrepared = true;
-	layer.on('mousedown', function(e){
-		if(e.touches) e = e.touches[0];
-		_R[id].lastMouseDown.pageX = e.pageX;
-		_R[id].lastMouseDown.pageY = e.pageY;
-	});
 
 	layer.on("click mouseenter mouseleave",function(e) {
-
-		if(e.type === 'click'){
-			var evt = e.touches ? e.touches[0] : e;
-			if(Math.abs(evt.pageX - _R[id].lastMouseDown.pageX) > 5 || Math.abs(evt.pageY - _R[id].lastMouseDown.pageY) > 5) return;
-		}
-
-
 		for (var i in _L.events) {
 			if (!_L.events.hasOwnProperty(i)) continue;
 			if (_L.events[i].on!==e.type) continue;
@@ -201,6 +225,9 @@ var checkActions_intern = function(layer,id) {
 
 					e.preventDefault();
 				break;
+				case "getAccelerationPermission":
+					_R.getAccelerationPermission(id);
+				break;
 				case "nextframe":
 				case "prevframe":
 				case "gotoframe":
@@ -209,7 +236,6 @@ var checkActions_intern = function(layer,id) {
 				case "startlayer":
 				case "stoplayer":
 					if (targetlayer[0]===undefined) continue;
-
 					var _ = _R[id]._L[targetlayer[0].id],
 						frame=event.frame,
 						tou = "triggerdelay";
@@ -262,7 +288,6 @@ var checkActions_intern = function(layer,id) {
 						pars.updateChildren = true;
 						pars.fastforward = true;
 					}
-
 				 	if (_R.renderLayerAnimation) {
 				 		clearTimeout(_[tou]);
 				 		_[tou] = setTimeout(function(_) {
@@ -312,7 +337,7 @@ var checkActions_intern = function(layer,id) {
 								_R.scrollToId({id:id, offset:event.offset, action:event.action, anchor: event.id,  speed:event.speed, ease:event.ease});
 							break;
 							case "jumptoslide":
-
+								_R[id].skipAttachDetach = true;
 								switch (event.slide.toLowerCase()) {
 									case "rs-random":
 										var ts = Math.min(Math.max(0,Math.ceil(Math.random()*_R[id].realslideamount)-1));
@@ -381,7 +406,8 @@ var checkActions_intern = function(layer,id) {
 							case "gofullscreen":
 							case "exitfullscreen":
 							case "togglefullscreen":
-				var gf;
+                                var gf;
+                                tpGS.gsap.set(_R[id].parallax.bgcontainers, {y: 0});
 								if (jQuery('.rs-go-fullscreen').length>0 && (event.action=="togglefullscreen" || event.action=="exitfullscreen")) {
 									jQuery('.rs-go-fullscreen').removeClass("rs-go-fullscreen");
 									gf = _R[id].c.closest('rs-fullwidth-wrap').length>0 ? _R[id].c.closest('rs-fullwidth-wrap') : _R[id].c.closest('rs-module-wrap');

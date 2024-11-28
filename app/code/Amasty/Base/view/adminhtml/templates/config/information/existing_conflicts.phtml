@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */
 /** @var \Amasty\Base\Block\Adminhtml\System\Config\InformationBlocks\ExistingConflicts $block */
@@ -14,7 +14,7 @@
     </div>
     <div class="amasty-disable-extensions">
         <?php foreach ($messages as $message): ?>
-            <p class="message message-error"><?= $escaper->escapeHtml($message) ?></p>
+            <p class="message message-error"><?= $escaper->escapeHtml($message, ['a']) ?></p>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>

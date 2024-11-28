@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Advanced Permissions for Magento 2
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -23,9 +23,6 @@
     </type>
     <type name="Magento\Catalog\Block\Adminhtml\Product\Edit\Tab\Websites">
         <plugin name="Amasty_Rolepermissions::Websites_Tab" type="Amasty\Rolepermissions\Plugin\Tab\Websites" />
-    </type>
-    <type name="Magento\Store\Model\System\Store">
-        <plugin name="Amasty_Rolepermissions::System_Store" type="Amasty\Rolepermissions\Plugin\System\Store" />
     </type>
     <type name="Magento\Catalog\Model\ResourceModel\Product\Collection">
         <plugin name="Amasty_Rolepermissions::RestrictLoading"

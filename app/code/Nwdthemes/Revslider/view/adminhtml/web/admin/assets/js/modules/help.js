@@ -744,13 +744,18 @@
 			}
 
 			if(isIndexed) {
-
 				helpPath = '';
 				getPath(index.editor_settings[root][subroot], '', path);
 				if(helpPath) return ['editor_settings.' + root + '.' + subroot + helpPath, index.editor_settings[root][subroot], helpPath];
-
-			}
-
+				else {
+					// Extenstion for Freaky Paths in Addons
+					if (path.indexOf('addOns.tpack')>=0) {
+						var v = path.split('.');
+						v = v[v.length-1];
+						return ['editor_settings.slide_settings.addons.transitionpack.'+v, index.editor_settings.slide_settings.addons.transitionpack,'.'+v]; 
+					}
+				}					
+			}			
 		}
 
 		return false;

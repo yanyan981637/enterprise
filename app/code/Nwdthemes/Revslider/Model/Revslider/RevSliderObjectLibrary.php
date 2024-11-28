@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2022 ThemePunch
  */
 
 namespace Nwdthemes\Revslider\Model\Revslider;
@@ -21,7 +21,6 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 	private $object_orig_path	= '/objects/';
     private $customsvgpath		= '/svg/objects/';
 	private $sizes				= array('75', '50', '25', '10');
-	private $curl_check			= null;
 	private $font_icon_paths;
 	public	$upload_dir;
     public  $download_path;
@@ -195,61 +194,58 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 		$_download	= !is_file($file); //check if object thumb is already downloaded
 
 		if($validated == 'false' && !in_array($type, $this->allowed_types, true)){
-			return array('error' => __('Plugin not activated', 'revslider'));
+			return array('error' => __('Plugin not activated'));
 		}
 
 		// Check folder permission and define file location
 		if($_download && $download === true && FA::wp_mkdir_p($this->upload_dir['basedir'].$path)){
-			$curl = $this->_curl;
 			$file = $this->upload_dir['basedir'] . $path . $object_handle;
 
 			if(!is_file($file)){
 				$image_data = false;
 
-				if($curl !== false){
-					if($validated == 'false' && !in_array($type, $this->allowed_types, true)){
-						$error = __('Plugin not activated', 'revslider');
-					}else{
-						$rslb	= RevSliderGlobals::instance()->get('RevSliderLoadBalancer');
-						$code	= ($validated == 'false') ? '' : FA::get_option('revslider-code', '');
-						$rattr	= array(
-							'library_version' => urlencode(self::LIBRARY_VERSION),
-							'version'	=> urlencode(Framework::RS_REVISION),
-							'handle'	=> urlencode($object_handle),
-							'download'	=> urlencode($type),
-							'product'	=> urlencode(Framework::$RS_PLUGIN_SLUG)
-						);
+                if($validated == 'false' && !in_array($type, $this->allowed_types, true)){
+                    $error = __('Plugin not activated');
+                }else{
+                    $rslb	= RevSliderGlobals::instance()->get('RevSliderLoadBalancer');
+                    $code	= ($validated == 'false') ? '' : FA::get_option('revslider-code', '');
+                    $rattr	= array(
+                        'library_version' => urlencode(self::LIBRARY_VERSION),
+                        'version'	=> urlencode(Framework::RS_REVISION),
+                        'handle'	=> urlencode($object_handle),
+                        'download'	=> urlencode($type),
+                        'product'	=> urlencode(Framework::$RS_PLUGIN_SLUG)
+                    );
 
-						$http_force = false;
-						if(!in_array($type, $this->allowed_types, true)){
-							$rattr['code']	= urlencode($code); //push code only if needed
-							$http_force		= true; //force http
-						}
+                    $http_force = false;
+                    if(!in_array($type, $this->allowed_types, true)){
+                        $rattr['code']	= urlencode($code); //push code only if needed
+                        $http_force		= true; //force http
+                    }
 
-						$image_data = $rslb->call_url($this->library_download, $rattr, 'library', $http_force);
+                    $image_data = $rslb->call_url($this->library_download, $rattr, 'library', $http_force);
 
-						if(!FA::is_wp_error($image_data) && isset($image_data['body']) && isset($image_data['response']) && isset($image_data['response']['code']) && $image_data['response']['code'] == '200'){
-							$image_data = $image_data['body'];
-							//check body for errors in here
-							$check = FA::json_decode($image_data, true);
-							if(!empty($check)){
-								if(isset($check['error'])){
-									$image_data = false;
-									$error = $check['error'];
-								}
-							}elseif(trim($image_data) == ''){
-								$error = __('No data received', 'revslider');
-							}
-						}else{
-							$image_data = false;
-							$error = __('Error downloading object', 'revslider');
-						}
-					}
-				}
+                    if(!FA::is_wp_error($image_data) && isset($image_data['body']) && isset($image_data['response']) && isset($image_data['response']['code']) && $image_data['response']['code'] == '200'){
+                        $image_data = $image_data['body'];
+                        //check body for errors in here
+                        $check = FA::json_decode($image_data, true);
+                        if(!empty($check)){
+                            if(isset($check['error'])){
+                                $image_data = false;
+                                $error = $check['error'];
+                            }
+                        }elseif(trim($image_data) == ''){
+                            $error = __('No data received');
+                        }
+                    }else{
+                        $image_data = false;
+                        $error = __('Error downloading object');
+                    }
+                }
 
 				if($image_data !== false && $image_data !== ''){
-					@mkdir(dirname($file));
-					@file_put_contents($file, $image_data);
+					mkdir(dirname($file));
+					file_put_contents($file, $image_data);
 
 					if($type == 'video' || $type == 'video_thumb'){
 
@@ -258,10 +254,10 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 					}
 
 				}else{//could not connect to server
-					$error = __('Error downloading object', 'revslider');
+					$error = __('Error downloading object');
 				}
 			}else{//use default image
-				$error = __('Error downloading object', 'revslider');
+				$error = __('Error downloading object');
 			}
 		}
 
@@ -274,7 +270,7 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 
 		//get dimensions of image
 		if(is_file($file)){
-			$imgsize = @getimagesize($file);
+			$imgsize = getimagesize($file);
 			if($imgsize !== false){
 				$width	= $this->get_val($imgsize, '0');
 				$height	= $this->get_val($imgsize, '1');
@@ -326,52 +322,49 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 		if(intval($object_id) > 0){
 			$object_handle = $this->get_object_handle_by_id($object_id);
 		}else{
-			$error = __('Error downloading layers', 'revslider');
+			$error = __('Error downloading layers');
 			return array('error' => $error);
 		}
 
-		$curl = $this->_curl;
-
 		$layers_data = false;
-		if($curl !== false){
-			$validated = FA::get_option('revslider-valid', 'false');
 
-            if($validated == 'false'){
-				$error = __('Plugin not activated', 'revslider');
-			}else{
-				$code	= ($validated == 'false') ? '' : FA::get_option('revslider-code', '');
-				$rattr	= array(
-					'code'		=> urlencode($code),
-					'library_version' => urlencode(self::LIBRARY_VERSION),
-					'version'	=> urlencode(Framework::RS_REVISION),
-					'handle'	=> urlencode($object_handle),
-					'download'	=> urlencode('layers'),
-					'product'	=> urlencode(Framework::$RS_PLUGIN_SLUG)
-				);
+        $validated = FA::get_option('revslider-valid', 'false');
 
-				$layers_data = $rslb->call_url($this->library_download, $rattr, 'library');
+        if($validated == 'false'){
+            $error = __('Plugin not activated');
+        }else{
+            $code	= ($validated == 'false') ? '' : FA::get_option('revslider-code', '');
+            $rattr	= array(
+                'code'		=> urlencode($code),
+                'library_version' => urlencode(self::LIBRARY_VERSION),
+                'version'	=> urlencode(Framework::RS_REVISION),
+                'handle'	=> urlencode($object_handle),
+                'download'	=> urlencode('layers'),
+                'product'	=> urlencode(Framework::$RS_PLUGIN_SLUG)
+            );
 
-				if(!FA::is_wp_error($layers_data) && isset($layers_data['body']) && isset($layers_data['response']) && isset($layers_data['response']['code']) && $layers_data['response']['code'] == '200'){
-					$layers_data = $layers_data['body'];
-					//check body for errors in here
-					$check = FA::json_decode($layers_data, true);
-					if(!empty($check)){
-						if(isset($check['error'])){
-							$layers_data = false;
-							$error = $check['error'];
-						}
-					}elseif(trim($layers_data) == ''){
-						$error = __('No data received', 'revslider');
-					}
-				}else{
-					$layers_data = false;
-					$error = __('Error downloading layers data', 'revslider');
-				}
-			}
-		}
+            $layers_data = $rslb->call_url($this->library_download, $rattr, 'library');
+
+            if(!FA::is_wp_error($layers_data) && isset($layers_data['body']) && isset($layers_data['response']) && isset($layers_data['response']['code']) && $layers_data['response']['code'] == '200'){
+                $layers_data = $layers_data['body'];
+                //check body for errors in here
+                $check = FA::json_decode($layers_data, true);
+                if(!empty($check)){
+                    if(isset($check['error'])){
+                        $layers_data = false;
+                        $error = $check['error'];
+                    }
+                }elseif(trim($layers_data) == ''){
+                    $error = __('No data received');
+                }
+            }else{
+                $layers_data = false;
+                $error = __('Error downloading layers data');
+            }
+        }
 
 		//could not connect to server
-		$error = ($layers_data === false && $error == '') ? __('Error downloading layers data', 'revslider') : $error;
+		$error = ($layers_data === false && $error == '') ? __('Error downloading layers data') : $error;
 
 		if($error !== '') return array('error' => $error);
 
@@ -594,18 +587,6 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Check if Curl can be used
-	 */
-	public function check_curl_connection(){
-
-		$curl = $this->_curl;
-
-		$this->curl_check = $curl->test();
-
-		return $this->curl_check;
 	}
 
 	/**
@@ -1007,7 +988,7 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 	 **/
 	public function upload_custom_item($data){
 		$return		= false;
-		$customs	= FA::json_decode(stripslashes($this->get_val($_POST, 'customs', '')), true);
+		$customs	= FA::json_decode(stripslashes($this->get_val(FA::getPost(), 'customs', '')), true);
 		$lib_type	= $this->get_val($customs, 'type', '');
 		$tag		= $this->get_val($customs, 'tag', false);
 		if($lib_type === 'svgcustom'){
@@ -1100,16 +1081,15 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 	 * import (unzip) an uploaded custom svg files
 	 */
 	private function import_custom_svg_file($data, $customs){
-		require_once(ABSPATH . 'wp-admin/includes/file.php');
 		$import_file = $this->get_val($_FILES, 'import_file');
 		$error		 = $this->get_val($import_file, 'error');
 		switch($error){
 			case UPLOAD_ERR_NO_FILE:
-				$this->throw_error(__('No file sent.', 'revslider'));
+				$this->throw_error(__('No file sent.'));
 				break;
 			case UPLOAD_ERR_INI_SIZE:
 			case UPLOAD_ERR_FORM_SIZE:
-				$this->throw_error(__('Exceeded filesize limit.', 'revslider'));
+				$this->throw_error(__('Exceeded filesize limit.'));
 				break;
 			default:
 		}
@@ -1123,9 +1103,9 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 		$lib_type	= $this->get_val($customs, 'type');
 		$lib_type	= $this->sanitize_tag_name($lib_type);
 
-		if(!in_array($lib_type, $this->allowed_categories)) $this->throw_error(__('Category does not exist', 'revslider'));
+		if(!in_array($lib_type, $this->allowed_categories)) $this->throw_error(__('Category does not exist'));
 		if(isset($path['error'])) $this->throw_error($path['error']);
-		if(file_exists($path) == false) $this->throw_error(__('Import file not found', 'revslider'));
+		if(file_exists($path) == false) $this->throw_error(__('Import file not found'));
 
 		$wp_filesystem = FA::getFilesystemHelper();
 
@@ -1172,7 +1152,7 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 
 		if(empty($import)){
 			$wp_filesystem->delete($this->svg_remove_path, true);
-			$this->throw_error(__('No valid file sent.', 'revslider'));
+			$this->throw_error(__('No valid file sent.'));
 		}
 
 		$tags = FA::get_option('rs-custom-library-tags', array());
@@ -1219,7 +1199,7 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 
 		$found = false;
 		foreach($import as $k => $v){
-			$handle = ($zip === true) ? basename($v) : $name; //if zip is false, file has still a temporary name
+            $handle = ($zip === true) ? basename($v) : basename($name); //if zip is false, file has still a temporary name
 			$new = $this->upload_dir['basedir'] . $this->customsvgpath . $lib_type . '/' . $handle;
 			$url = $this->upload_dir['baseurl'] . $this->customsvgpath . $lib_type . '/' . $handle;
 			$i = 1;
@@ -1237,9 +1217,9 @@ class RevSliderObjectLibrary extends RevSliderFunctions {
 
 			$handle = ($change === true) ? $_h : $handle;
 			$done = (file_exists(dirname($new))) ? true : @mkdir(dirname($new), 0777, true);
-			if($done === false) $this->throw_error(dirname($new) . ' '.__('could not be created programmatically', 'revslider'));
+			if($done === false) $this->throw_error(dirname($new) . ' '.__('could not be created programmatically'));
 			$done = copy($v, $new);
-			if($done === false) $this->throw_error($handle . ' '.__('could not be created programmatically', 'revslider'));
+			if($done === false) $this->throw_error($handle . ' '.__('could not be created programmatically'));
 			//push to library
 			if(!empty($library[$lib_type]['items'])){
 				$found = false;

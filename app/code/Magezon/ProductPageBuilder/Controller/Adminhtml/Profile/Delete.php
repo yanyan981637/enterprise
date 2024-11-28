@@ -37,7 +37,7 @@ class Delete extends \Magento\Backend\App\Action
         if ($id) {
             try {
                 // init model and delete
-                $model = $this->_objectManager->create('Magezon\ProductPageBuilder\Model\Profile');
+                $model = $this->_objectManager->create(\Magezon\ProductPageBuilder\Model\Profile::class);
                 $model->load($id);
                 $model->delete();
                 // display success message

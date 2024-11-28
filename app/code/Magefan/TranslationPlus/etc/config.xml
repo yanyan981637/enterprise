@@ -9,8 +9,11 @@
     <default>
         <mftranslation>
             <general>
-                <mfmodule>TranslationPlus</mfmodule>
+                <mfmodulep>TranslationPlus</mfmodulep>
                 <mftype>0</mftype>
+                <flush_cache_on_translation>0</flush_cache_on_translation>
+                <ignore_gws_permissions>1</ignore_gws_permissions>
+                <disable_translation_config_params>0</disable_translation_config_params>
                 <date_time/>
             </general>
         </mftranslation>

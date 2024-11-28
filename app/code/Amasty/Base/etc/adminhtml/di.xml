@@ -2,7 +2,7 @@
 <!--
 /**
  * @author Amasty Team
- * @copyright Copyright (c) 2023 Amasty (https://www.amasty.com)
+ * @copyright Copyright (c) Amasty (https://www.amasty.com)
  * @package Magento 2 Base Package
  */-->
 
@@ -54,5 +54,11 @@
                 <item name="30" xsi:type="string">Premium</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Config\Block\System\Config\Edit">
+        <plugin name="Amasty_Base::removeSaveButton" type="Amasty\Base\Plugin\Config\Block\System\Config\Edit\RemoveSaveButton"/>
+    </type>
+    <type name="ClassyLlama\AvaTax\Plugin\Model\ConfigPlugin">
+        <plugin name="Amasty_Base::disableAmastySectionCheck" type="Amasty\Base\Plugin\ClassyLlama\Plugin\Model\ConfigPlugin\DisableAmastySectionCheck"/>
     </type>
 </config>
