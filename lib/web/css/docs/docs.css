@@ -4267,9 +4267,9 @@ footer.footer {
   overflow: hidden;
   visibility: hidden;
 }
-.columns > .column {
+/* .columns > .column {
   padding-bottom: 40px;
-}
+} */
 @media (min-width: 600px) {
   .page-layout-1column .column.main {
     width: 100%;
