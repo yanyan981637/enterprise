@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61c2a5897f9c1aed3df3240f97bbbfff",
+    "content-hash": "33122697952023f1683cae7c2d56c8f8",
     "packages": [
         {
             "name": "2tvenom/cborencode",
@@ -18978,6 +18978,115 @@
             "time": "2023-08-25T12:52:21+00:00"
         },
         {
+            "name": "mageplaza/facebook-graph-sdk",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mageplaza/facebook-graph-sdk.git",
+                "reference": "35b88d8930916614d0f00cda35867f282b527dd5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mageplaza/facebook-graph-sdk/zipball/35b88d8930916614d0f00cda35867f282b527dd5",
+                "reference": "35b88d8930916614d0f00cda35867f282b527dd5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client",
+                "paragonie/random_compat": "Provides a better CSPRNG option in PHP"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Facebook/polyfills.php"
+                ],
+                "psr-4": {
+                    "Facebook\\": "src/Facebook/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Facebook Platform"
+            ],
+            "authors": [
+                {
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/php-graph-sdk/contributors"
+                }
+            ],
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/php-graph-sdk",
+            "keywords": [
+                "facebook",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/mageplaza/facebook-graph-sdk/issues",
+                "source": "https://github.com/mageplaza/facebook-graph-sdk/tree/v1.0.1"
+            },
+            "time": "2024-03-28T09:33:03+00:00"
+        },
+        {
+            "name": "mageplaza/magento-2-blog-extension",
+            "version": "4.2.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mageplaza/magento-2-blog.git",
+                "reference": "b9a5ed1504cdaf9d5f76b360e3fb22592adee8a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mageplaza/magento-2-blog/zipball/b9a5ed1504cdaf9d5f76b360e3fb22592adee8a5",
+                "reference": "b9a5ed1504cdaf9d5f76b360e3fb22592adee8a5",
+                "shasum": ""
+            },
+            "require": {
+                "mageplaza/facebook-graph-sdk": "^1.0.1",
+                "mageplaza/module-core": "^1.5.9"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Mageplaza\\Blog\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Mageplaza",
+                    "email": "support@mageplaza.com",
+                    "homepage": "https://www.mageplaza.com",
+                    "role": "Technical Support"
+                }
+            ],
+            "description": "Magento 2 Blog extension",
+            "keywords": [
+                "blog",
+                "magento 2",
+                "magento 2 blog",
+                "magento2",
+                "mageplaza"
+            ],
+            "support": {
+                "source": "https://github.com/mageplaza/magento-2-blog/tree/v4.2.6"
+            },
+            "time": "2024-11-14T02:26:10+00:00"
+        },
+        {
             "name": "mageplaza/module-backend-reindex",
             "version": "4.0.1",
             "source": {
@@ -19023,6 +19132,51 @@
             "time": "2021-07-26T17:50:30+00:00"
         },
         {
+            "name": "mageplaza/module-banner-slider",
+            "version": "4.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mageplaza/magento-2-banner-slider.git",
+                "reference": "21e1d42b38c71e76e57728e9e19d50830be0df91"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mageplaza/magento-2-banner-slider/zipball/21e1d42b38c71e76e57728e9e19d50830be0df91",
+                "reference": "21e1d42b38c71e76e57728e9e19d50830be0df91",
+                "shasum": ""
+            },
+            "require": {
+                "mageplaza/module-core": "^1.5.3"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Mageplaza\\BannerSlider\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Mageplaza",
+                    "email": "support@mageplaza.com",
+                    "homepage": "https://www.mageplaza.com",
+                    "role": "Technical Support"
+                }
+            ],
+            "description": "Magento 2 Banner Slider extension",
+            "support": {
+                "issues": "https://github.com/mageplaza/magento-2-banner-slider/issues",
+                "source": "https://github.com/mageplaza/magento-2-banner-slider/tree/v4.0.4"
+            },
+            "time": "2023-05-31T04:49:32+00:00"
+        },
+        {
             "name": "mageplaza/module-core",
             "version": "1.5.9",
             "source": {
@@ -19062,6 +19216,70 @@
                 "source": "https://github.com/mageplaza/module-core/tree/v1.5.9"
             },
             "time": "2024-10-21T09:28:40+00:00"
+        },
+        {
+            "name": "mageplaza/module-smtp",
+            "version": "4.7.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mageplaza/magento-2-smtp.git",
+                "reference": "68ad9f59ff064492bb067a01791c1794922c5b93"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mageplaza/magento-2-smtp/zipball/68ad9f59ff064492bb067a01791c1794922c5b93",
+                "reference": "68ad9f59ff064492bb067a01791c1794922c5b93",
+                "shasum": ""
+            },
+            "require": {
+                "mageplaza/module-core": "^1.5.9"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Mageplaza\\Smtp\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Mageplaza",
+                    "email": "support@mageplaza.com",
+                    "homepage": "https://www.mageplaza.com",
+                    "role": "Technical Support"
+                }
+            ],
+            "description": "SMTP Extension for Magento 2 helps the owner of store simply install SMTP (Simple Mail Transfer Protocol) server which transmits the messages into codes or numbers",
+            "keywords": [
+                "Facebook ADS",
+                "Marketing Automation",
+                "Messenger",
+                "email",
+                "email marketing",
+                "email settings",
+                "facebook",
+                "gmail smtp",
+                "google ads",
+                "magento 2",
+                "magento 2 smtp",
+                "magento smtp",
+                "mageplaza",
+                "sms",
+                "sms marketing",
+                "smtp",
+                "web push notification",
+                "whatsapp"
+            ],
+            "support": {
+                "source": "https://github.com/mageplaza/magento-2-smtp/tree/v4.7.14"
+            },
+            "time": "2024-12-03T06:30:24+00:00"
         },
         {
             "name": "mollie/magento2",

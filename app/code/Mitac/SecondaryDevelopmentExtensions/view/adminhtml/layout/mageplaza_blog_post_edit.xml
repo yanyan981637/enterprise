@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <script src="Mitac_SecondaryDevelopmentExtensions::js/form/element/blog/post_edit.js" />
+    </head>
+    <referenceBlock name="mageplaza_blog_post_edit_tab_post" class="Mitac\SecondaryDevelopmentExtensions\Block\Adminhtml\Blog\Post\Edit\Tab\RewritePost" />
+</page>
