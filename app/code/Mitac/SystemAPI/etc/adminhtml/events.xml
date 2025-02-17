@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- section_id is mdt, and need to add into event name, ref to system.xml -->
+    <event name="admin_system_config_changed_section_mdt">
+        <observer name="sso_url_rewrite_append" instance="Mitac\SystemAPI\Observer\SsoSystemConfigChange" />
+    </event>
+</config>

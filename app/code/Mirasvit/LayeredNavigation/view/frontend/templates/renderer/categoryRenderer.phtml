@@ -92,13 +92,24 @@ $letter  = '';
         <?= $block->getSizeLimiterElement($attributeCode) ?>
     </ol>
 </div>
-<script type="text/x-magento-init"><?= \Mirasvit\Core\Service\SerializeService::encode([
+<!-- <script type="text/x-magento-init"><?= \Mirasvit\Core\Service\SerializeService::encode([
         '[data-mst-nav-filter=' . $attributeCode . ']' => [
             'Mirasvit_LayeredNavigation/js/renderer/label-renderer' => [],
             'Mirasvit_LayeredNavigation/js/helper/checked-items' => [
                 'count'    => $checkedItemsCount,
                 'clearUrl' => $block->getAttributeClearUrl($attributeCode)
             ],
+            'Mirasvit_LayeredNavigation/js/renderer/element/alphabetical' => [
+                'shouldDisplay' => $useAlphabeticalIndex && $filter->isAlphabeticalIndexAllowedByLimit(),
+                'limit'         => $filter->getAlphabeticalLimit()
+            ],
+        ],
+    ]) ?></script> -->
+
+
+<script type="text/x-magento-init"><?= \Mirasvit\Core\Service\SerializeService::encode([
+        '[data-mst-nav-filter=' . $attributeCode . ']' => [
+            'Mirasvit_LayeredNavigation/js/renderer/label-renderer' => [],
             'Mirasvit_LayeredNavigation/js/renderer/element/alphabetical' => [
                 'shouldDisplay' => $useAlphabeticalIndex && $filter->isAlphabeticalIndexAllowedByLimit(),
                 'limit'         => $filter->getAlphabeticalLimit()

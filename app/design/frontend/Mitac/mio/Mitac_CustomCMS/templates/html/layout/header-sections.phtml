@@ -1,0 +1,32 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/**
+ *  General template for displaying group of blocks divided into sections
+ */
+
+$group = $block->getGroupName();
+$groupCss = $block->getGroupCss();
+?>
+<?php if ($detailedInfoGroup = $block->getGroupChildNames($group, 'getChildHtml')) :?>
+    <div class="sections <?= $block->escapeHtmlAttr($groupCss) ?>">
+        <?php $layout = $block->getLayout(); ?>
+        <div class="section-items <?= $block->escapeHtmlAttr($groupCss) ?>-items"
+           data-mage-init='{"tabs":{"openedState":"active"}}'>
+
+           <?php
+           $html = $layout->renderElement('store.menu');
+           $alias = $layout->getElementAlias('store.menu');
+           $label = $block->getChildData($alias, 'title');
+           ?>
+           <div class="section-item-content <?= $block->escapeHtmlAttr($groupCss) ?>-item-content"
+               id="<?= $block->escapeHtmlAttr($alias) ?>"
+               data-role="content">
+               <?= /* @noEscape */ $html ?>
+           </div>
+       </div>
+   </div>
+<?php endif; ?>

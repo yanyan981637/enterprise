@@ -1,0 +1,25 @@
+{
+    "mitac_homebanners": {
+        "column": {
+            "banners_id": true,
+            "stores_id": true,
+            "sort_id": true,
+            "type": true,
+            "title": true,
+            "text": true,
+            "button": true,
+            "img": true,
+            "cms_page_id": true,
+            "url": true,
+            "youtube": true,
+            "status": true,
+            "created_at": true,
+            "updated_at": true,
+            "PageIdentifier": true,
+            "product_id": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

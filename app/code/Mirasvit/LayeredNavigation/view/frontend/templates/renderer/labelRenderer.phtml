@@ -94,13 +94,25 @@ $letter  = '';
     </ol>
 </div>
 
-<script type="text/x-magento-init"><?= \Mirasvit\Core\Service\SerializeService::encode([
+<!-- <script type="text/x-magento-init"><?= \Mirasvit\Core\Service\SerializeService::encode([
         '[data-mst-nav-filter=' . $filterAccessor . ']' => [
             'Mirasvit_LayeredNavigation/js/renderer/label-renderer' => [],
             'Mirasvit_LayeredNavigation/js/helper/checked-items' => [
                 'count'    => $checkedItemsCount,
                 'clearUrl' => $block->getAttributeClearUrl($attributeCode)
             ],
+            'Mirasvit_LayeredNavigation/js/helper/tooltip' => [
+                'tooltip' => $block->getTooltip(),
+            ],
+            'Mirasvit_LayeredNavigation/js/renderer/element/alphabetical' => [
+                'shouldDisplay' => $useAlphabeticalIndex && $filter->isAlphabeticalIndexAllowedByLimit(),
+                'limit'         => $filter->getAlphabeticalLimit()
+            ],
+        ],
+    ]) ?></script> -->
+<script type="text/x-magento-init"><?= \Mirasvit\Core\Service\SerializeService::encode([
+        '[data-mst-nav-filter=' . $filterAccessor . ']' => [
+            'Mirasvit_LayeredNavigation/js/renderer/label-renderer' => [],
             'Mirasvit_LayeredNavigation/js/helper/tooltip' => [
                 'tooltip' => $block->getTooltip(),
             ],

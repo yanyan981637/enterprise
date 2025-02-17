@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+       <referenceBlock name="page.main.title" remove="true" />
+       <referenceBlock class="Mitac\CustomCMS\Block\Rewrite\Category\View" name="category.products" >
+
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Mitac_CustomCMS::html/category/products.phtml</argument>
+            </action>
+       
+            <!-- Type1 -->
+            <block class="Mitac\CustomCMS\Block\Rewrite\Product\ListProduct" name="products.type1" as="product_type1" template="Mitac_CustomCMS::html/category/type/type1.phtml" cacheable="false">
+                <container name="category.product.list.additional" as="additional" />
+                <block class="Magento\Framework\View\Element\RendererList" name="category.product.type.details.renderers" as="details.renderers">
+                    <block class="Magento\Framework\View\Element\Template" name="category.product.type.details.renderers.default" as="default"/>
+                </block>
+
+                <block class="Magento\Catalog\Block\Product\ProductList\Item\Container" name="type1.product.addto" as="addto">
+                    <block class="Magento\Catalog\Block\Product\ProductList\Item\AddTo\Compare"
+                    name="type1.product.addto.compare" as="compare"
+                    template="Magento_Catalog::product/list/addto/compare.phtml"/>
+                </block>
+
+                <block class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar" template="Magento_Catalog::product/list/toolbar.phtml">
+                    <block class="Magento\Theme\Block\Html\Pager" name="product_list_toolbar_pager"/>
+                </block>
+                <action method="setToolbarBlockName">
+                    <argument name="name" xsi:type="string">product_list_toolbar</argument>
+                </action>
+            </block>
+
+            <!-- Type2 -->
+            <block class="Mitac\CustomCMS\Block\Rewrite\Product\ListProduct" name="products.type2" as="product_type2" template="Mitac_CustomCMS::html/category/type/type2.phtml" cacheable="false">
+                <container name="category.product.list.additional" as="additional" />
+                <block class="Magento\Framework\View\Element\RendererList" name="category.product.type.details.renderers" as="details.renderers">
+                    <block class="Magento\Framework\View\Element\Template" name="category.product.type.details.renderers.default" as="default"/>
+                </block>
+                <block class="Magento\Catalog\Block\Product\ProductList\Item\Container" name="type2.product.addto" as="addto">
+                    <block class="Magento\Catalog\Block\Product\ProductList\Item\AddTo\Compare"
+                    name="type2.product.addto.compare" as="compare"
+                    template="Magento_Catalog::product/list/addto/compare.phtml"/>
+                </block>
+                <block class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar" template="Magento_Catalog::product/list/toolbar.phtml">
+                    <block class="Magento\Theme\Block\Html\Pager" name="product_list_toolbar_pager"/>
+                </block>
+                <action method="setToolbarBlockName">
+                    <argument name="name" xsi:type="string">product_list_toolbar</argument>
+                </action>
+            </block>
+
+            <!-- Type3 -->
+            <block class="Mitac\CustomCMS\Block\Rewrite\Product\ListProduct" name="products.type3" as="product_type3" template="Mitac_CustomCMS::html/category/type/type3.phtml" cacheable="false">
+                <container name="category.product.list.additional" as="additional" />
+                <block class="Magento\Framework\View\Element\RendererList" name="category.product.type.details.renderers" as="details.renderers">
+                    <block class="Magento\Framework\View\Element\Template" name="category.product.type.details.renderers.default" as="default"/>
+                </block>
+                <block class="Magento\Catalog\Block\Product\ProductList\Item\Container" name="type3.product.addto" as="addto">
+                    <block class="Magento\Catalog\Block\Product\ProductList\Item\AddTo\Compare"
+                    name="type3.product.addto.compare" as="compare"
+                    template="Magento_Catalog::product/list/addto/compare.phtml"/>
+                </block>
+                <block class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar" template="Magento_Catalog::product/list/toolbar.phtml">
+                    <block class="Magento\Theme\Block\Html\Pager" name="product_list_toolbar_pager"/>
+                </block>
+                
+                <action method="setToolbarBlockName">
+                    <argument name="name" xsi:type="string">product_list_toolbar</argument>
+                </action>
+            </block>
+
+            <!-- Type4 -->
+            <block class="Mitac\CustomCMS\Block\Rewrite\Product\ListProduct" name="products.type4" as="product_type4" template="Mitac_CustomCMS::html/category/type/type4.phtml" cacheable="false">
+                <container name="category.product.list.additional" as="additional" />
+                <block class="Magento\Framework\View\Element\RendererList" name="category.product.type.details.renderers" as="details.renderers">
+                    <block class="Magento\Framework\View\Element\Template" name="category.product.type.details.renderers.default" as="default"/>
+                </block>
+                <block class="Magento\Catalog\Block\Product\ProductList\Item\Container" name="type4.product.addto" as="addto">
+                    <block class="Magento\Catalog\Block\Product\ProductList\Item\AddTo\Compare"
+                    name="type4.product.addto.compare" as="compare"
+                    template="Magento_Catalog::product/list/addto/compare.phtml"/>
+                </block>
+                <block class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar" template="Magento_Catalog::product/list/toolbar.phtml">
+                    <block class="Magento\Theme\Block\Html\Pager" name="product_list_toolbar_pager"/>
+                </block>
+                <action method="setToolbarBlockName">
+                    <argument name="name" xsi:type="string">product_list_toolbar</argument>
+                </action>
+            </block>
+
+             <!-- Type7 -->
+            <block class="Mitac\CustomCMS\Block\Rewrite\Product\ListProduct" name="products.type7" as="product_type7" template="Mitac_CustomCMS::html/category/type/type7.phtml" cacheable="false">
+                <!-- <referenceBlock name="m.catalog.horizontal" remove="true" />
+                <referenceBlock name="m.catalog.navigation.horizontal.renderer" remove="true" /> -->
+                <container name="category.product.list.additional" as="additional" />
+                <block class="Magento\Framework\View\Element\RendererList" name="category.product.type.details.renderers" as="details.renderers">
+                    <block class="Magento\Framework\View\Element\Template" name="category.product.type.details.renderers.default" as="default"/>
+                </block>
+                <block class="Magento\Catalog\Block\Product\ProductList\Item\Container" name="type7.product.addto" as="addto">
+                    <block class="Magento\Catalog\Block\Product\ProductList\Item\AddTo\Compare"
+                    name="type7.product.addto.compare" as="compare"
+                    template="Magento_Catalog::product/list/addto/compare.phtml"/>
+                </block>
+                <block class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar" template="Magento_Catalog::product/list/toolbar.phtml">
+                    <block class="Magento\Theme\Block\Html\Pager" name="product_list_toolbar_pager"/>
+                </block>
+                <action method="setToolbarBlockName">
+                    <argument name="name" xsi:type="string">product_list_toolbar</argument>
+                </action>
+            </block>
+
+             <!-- Type7 -->
+            <block class="Mitac\CustomCMS\Block\Rewrite\Product\ListProduct" name="products.type9" as="product_type9" template="Mitac_CustomCMS::html/category/type/type9.phtml" cacheable="false">
+            </block>
+
+        </referenceBlock>
+
+</body>
+</page>

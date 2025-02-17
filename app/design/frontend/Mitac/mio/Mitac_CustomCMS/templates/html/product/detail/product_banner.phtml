@@ -1,0 +1,178 @@
+<script>
+    new WOW().init();
+</script>
+<?php
+    $product = $block->getProduct();
+    $image_base_Url  = $block->getMediaUrl();
+?>
+<?php for($i=1; $i<=5; $i++): ?>
+<?php
+        $id = str_pad((string) $i, '3', 0, STR_PAD_LEFT);
+        $product->getData('banner_bg'.$id);
+
+        // 背景圖
+        $banner_bg = $product->getData('banner_bg'.$id);
+        // 圖片
+        $image = $product->getData('banner'.$id);
+        // 文字區域(手機)
+        $mobile_banner_text_position =  $product->getAttributeText('mobile_banner_text_position_'.$id);
+        // 產品banner title
+        $product_banner_title =  $product->getData('product_banner_title'.$id);
+        // 產品banner sub title
+        $product_banner_subtitle =  $product->getData('product_banner_st'.$id);
+        // 產品banner描述
+        $product_banner_desc =  $product->getData('product_banner_desc'.$id);
+        //  Title Color
+        $product_banner_title_color =  $product->getAttributeText('product_banner_title_color'.$id);
+        //  Sub-Title Color
+        $product_banner_st_color =  $product->getAttributeText('product_banner_st_color'.$id);
+        //  Description Color
+        $product_banner_desc_color =  $product->getAttributeText('product_banner_desc_color'.$id);
+        //  Text Animation
+        $font_anim =  $product->getAttributeText('font_anim'.$id);
+        if($font_anim == 'from-left'){
+            $wow_font_anim = 'fadeInLeft';
+        }elseif($font_anim == 'from-right'){
+            $wow_font_anim = 'fadeInRight';
+        }else{
+            $wow_font_anim = '';
+        }
+        // Text Animation Delay (ms)
+        $font_anim_delay =  $product->getAttributeText('text_animation_delay_dd_'.$id.'_ms');
+        //  Image Animation
+        $img_anim =  $product->getAttributeText('img_anim'.$id);
+        if($img_anim == 'from-left'){
+            $wow_img_anim = 'fadeInLeft';
+        }elseif($img_anim == 'from-right'){
+            $wow_img_anim = 'fadeInRight';
+        }else{
+            $wow_img_anim = '';
+        }
+        //  Image Animation Delay (ms)
+        $img_anim_delay =  $product->getAttributeText('image_animation_delay_dd_'.$id.'_m');
+        //  Button Text
+        $product_banner_btn =  $product->getData('product_banner_btn'.$id);
+        //  Call to Action Link
+        $product_banner_btn_url =  $product->getData('product_banner_btn_url'.$id);
+         //  Call to Action Link
+         $product_banner_btn_class = "";
+         if (!empty(trim($product->getData('product_banner_btn_class'.$id), ' '))) {
+            $product_banner_btn_class = $product->getData('product_banner_btn_class'.$id);
+         }
+        //  $product_banner_btn_class =  $product->getData('product_banner_btn_class'.$id);
+        //  echo 'product_banner_btn_class'.$product_banner_btn_class;
+        //  Call to Action Button Color
+        $product_banner_btn_color =  $product->getAttributeText('product_banner_btn_color'.$id);
+        //  Image Position
+        $product_banner_theme =  $product->getAttributeText('product_banner_theme'.$id);
+        //  Mask Switch
+        $product_banner_maskswitch =  $product->getData('product_banner_maskswitch'.$id);
+        //  Mobile Banner Setting
+        $mobile_banner_setting =  $product->getAttributeText('mobile_banner_setting_'.$id);
+    ?> 
+       <?php // 判斷背景圖是不是空 ?>
+        <?php if(!empty($product_banner_title)): ?>
+
+            <div class="banner product-banner" id="<?= "banner-".$i ?>">
+                <div class="parallax-container">
+                    <div class="parallax-container-inner no-repeat 
+                        <?= $mobile_banner_setting;
+                        ?>"
+                        <?php if(!empty($banner_bg) && $banner_bg !== "no_selection"): ?>
+                            style="background-image:url(<?= $image_base_Url."catalog/product".$banner_bg; ?>);"
+                        <?php endif; ?>
+                    >
+                    </div>
+
+                    <?php if($product_banner_maskswitch): ?>
+                    <!-- 漸變 -->
+                        <div
+                            class="parallax-container-overlay-gradient"
+                            data-color="<?= $product_banner_title_color; ?>"
+                            dir="<?php 
+                                if($product_banner_theme === 'left'){
+                                    echo 'ltr';
+                                } else {
+                                    echo 'rtl';
+                                }
+                            ?>"
+                            ></div>
+                        <?php endif; ?>
+
+                
+                    <section>
+                        <div class="section-container autoheight">
+                            <div class="banner-row" 
+                                dir="<?php 
+                                    if($product_banner_theme === 'left'){
+                                        echo 'ltr';
+                                    } else {
+                                        echo 'rtl';
+                                    }
+                                ?>"
+                            >
+                                <!-- 圖片 -->
+                                <div class="banner-col text-center col-img wow <?= $wow_img_anim; ?>" data-wow-duration="<?= $img_anim_delay; ?>">
+                                    <div class="content animOK">  
+                                        <?php if(!empty($image) && $image !== "no_selection"): ?>
+                                            <div><img src="<?=  $image_base_Url."catalog/product".$image; ?>" alt=""></div>
+                                        <?php else: ?>
+                                            <div class="no-image"></div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <!-- 文本 -->
+                                <div class="banner-col text-left col-txt <?= $mobile_banner_text_position; ?> wow <?= $wow_font_anim; ?>" data-wow-duration="<?= $font_anim_delay; ?>">
+                                    <div class="content animOK">
+                                            <!-- title -->
+                                        <h2 class="banner-title h1" data-color="<?= $product_banner_title_color; ?>"><?= $product_banner_title; ?></h2>
+
+                                        <?php if(!empty($product_banner_subtitle)): ?>
+                                            <!-- sub title -->
+                                            <h3 class="banner-subtitle h4" data-color="<?= $product_banner_st_color; ?>"><?= $product_banner_subtitle; ?></h3>
+                                        <?php endif; ?>
+
+                                        <?php if(!empty($product_banner_desc)): ?>
+                                            <!-- Description -->
+                                            <p data-color="<?= $product_banner_desc_color; ?>"><?= $product_banner_desc; ?></p>
+                                        <?php endif; ?>
+
+                                        <?php if(!empty($product_banner_btn) && !empty($product_banner_btn_url)): ?>
+                                            <!-- button -->
+                                            <a
+                                                class="active-button button <?= " ".$product_banner_btn_class?>"
+                                                href="<?= $product_banner_btn_url; ?>"
+                                                data-color="<?= $product_banner_btn_color; ?>"
+                                                target="_blank"
+                                            >
+                                                <?= $product_banner_btn; ?>
+                                            </a>
+                                        <?php endif; ?>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
+    <?php endfor; ?>
+    <script>
+        /*require([
+			'jquery',
+			'jquery.appear'
+			], function($) {
+
+                $('.has-anim,' + '[has-anim="true"]').appear(function() {
+                    var $this = $(this);
+                        delay = $this.attr('data-delay');
+                    setTimeout( function(){
+                        $this.addClass('animOK');
+                    },delay);
+                    setTimeout( function(){
+                        $this.removeClass('has-anim');
+                    },parseInt(delay)+1200);
+                },{accX: 0, accY: -90});
+        });*/
+    </script>

@@ -1,0 +1,175 @@
+<?php
+$product = $block->getProduct();
+
+$mivue_manager_flag = $product->getMivueManager();
+$mivue_manager_content;
+$mivue_manager_img;
+if ($mivue_manager_flag){
+    $mivue_manager_img = $block->content("MivueManager_img");
+    $mivue_manager_content = $block->content("software1_en");
+}
+// echo $mivue_manager_content;
+
+$mivue_app_flag = $product->getMivueAppYn();
+$mivue_app_content;
+$mivue_app_img;
+if ($mivue_app_flag){
+    $mivue_app_img= $block->content("mivue_app_img");
+    $mivue_app_content = $block->content("mivue_app");
+}
+
+$mivue_app_pro_flag = $product->getMivueAppProYn();
+$mivue_app_pro_content;
+$mivue_app_pro_img;
+if ($mivue_app_pro_flag){
+    $mivue_app_pro_img= $block->content("mivue_pro_app_img");
+    $mivue_app_pro_content = $block->content("mivue_pro_app");
+}
+
+$mioshare_flag = $product->getData('mio_share');
+$mioshare_content;
+$mioshare_img;
+if($mioshare_flag){
+    $mioshare_content = $block->content("mioshare");
+     $mioshare_img = $block->content("mioshare_img");
+}
+
+$mionext_app_flag = $product->getMionextApp();
+$mionext_app_content;
+$mionext_app_img;
+if ($mionext_app_flag){
+    $mionext_app_img= $block->content("mionext_app_img");
+    $mionext_app_content = $block->content("mionext_app");
+}
+?>
+
+<?php if ($mivue_manager_flag or $mivue_app_flag or $mivue_app_pro_flag or $mioshare_flag or $mionext_app_flag): ?>
+<div class="product-tool">
+        <div class="box-collateral-title title">
+            <h2 class="h1"><?= __("Tools") ?></h2>
+        </div>
+
+        <!-- Mivue Share-->
+        <?php if(!empty($mioshare_content)): // 判断 Mivue  Share  ?>
+            <div id="banner-MivueManager" class="banner product-banner Mivue-share">
+                <div class="parallax-container mgz-container">
+                    <div class="parallax-container-overlay-gradient"></div>
+                    <section class="dark">
+                        <div class="section-container">
+                            <div class="banner-row" dir="rtl">
+                                <div class="banner-col col-img text-center wow fadeInRight">
+                                    <div class="content animOK">
+                                        <?php echo $mioshare_img; ?>
+                                    </div>
+                                </div>
+                                <div class="banner-col col-txt text-left wow fadeInLeft">
+                                    <div class="content animOK">
+                                        <h2 class="title"><?= __("MioShare") ?><sup class="tm">™</sup></h2>
+                                        <?php echo $mioshare_content; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- Mivue manager -->
+        <?php if(!empty($mivue_manager_content)): // 判断 Mivue manager是否为空 ?>
+            <div id="banner-MivueManager" class="banner product-banner Mivue-manager">
+                <div class="parallax-container mgz-container">
+                    <div class="parallax-container-overlay-gradient"></div>
+                    <section class="dark">
+                        <div class="section-container">
+                            <div class="banner-row" dir="rtl">
+                                <div class="banner-col col-img text-center wow fadeInRight">
+                                    <div class="content animOK">
+                                        <?php echo $mivue_manager_img; ?>
+                                    </div>
+                                </div>
+                                <div class="banner-col col-txt text-left wow fadeInLeft">
+                                    <div class="content animOK">
+                                        <h2 class="title"><?= __("MiVue") ?><sup class="tm">™</sup> <span class="normal"><?= __("Manager") ?></span></h2>
+                                        <?php echo $mivue_manager_content; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- Mivue app-->
+        <?php if(!empty($mivue_app_content)): // 判断 Mivue  app  ?>
+            <div id="banner-MivueManager" class="banner product-banner Mivue-app">
+                <div class="parallax-container mgz-container">
+                    <div class="parallax-container-overlay-gradient"></div>
+                    <section class="dark">
+                        <div class="section-container">
+                            <div class="banner-row" dir="ltr">
+                                <div class="banner-col col-img text-center wow fadeInLeft">
+                                    <div class="content animOK">
+                                        <?php echo $mivue_app_img; ?>
+                                    </div>
+                                </div>
+                                <div class="banner-col col-txt text-left wow fadeInRight">
+                                    <div class="animOK">
+                                        <h2 class="title"><?= __("MiVue") ?><sup class="tm">™</sup> <span class="normal"><?= __("App") ?></span></h2>
+                                        <?php echo $mivue_app_content; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
+
+         <!-- Mivue Pro App -->
+         <?php if(!empty($mivue_app_pro_content)): // 判断 Mivue Pro App ?>
+            <div id="banner-MivueManager" class="banner product-banner Mivue-pro-app">
+                <div class="parallax-container mgz-container">
+                    <div class="parallax-container-overlay-gradient"></div>
+                    <section class="dark">
+                        <div class="section-container">
+                            <div class="row banner-row">
+                                <div class="col-lg-6 col-12 col-txt wow fadeInLeft">
+                                    <h2 class="title"><?= __("MiVue") ?><sup class="tm">™</sup> <span class="normal"><?= __("Pro App") ?></span></h2>
+                                    <?php echo $mivue_app_pro_content; ?>
+                                </div>
+                                <div class="col-lg-6 col-12 col-txt wow fadeInRight">
+                                    <?php echo $mivue_app_pro_img; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
+
+         <!-- MioNext App -->
+         <?php if(!empty($mionext_app_content)): // 判断 MioNext App ?>
+            <div id="banner-MivueManager" class="banner product-banner MioNext-app">
+                <div class="parallax-container mgz-container">
+                    <div class="parallax-container-overlay-gradient"></div>
+                    <section class="dark">
+                        <div class="section-container">
+                            <div class="row banner-row">
+                                <div class="col-lg-6 col-12 col-txt wow fadeInLeft">
+                                    <h2 class="title"><?= __("MioNext") ?><sup class="tm">™</sup> <span class="normal"><?= __("App") ?></span></h2>
+                                    <?php echo $mionext_app_content; ?>
+                                </div>
+                                <div class="col-lg-6 col-12 col-txt wow fadeInRight">
+                                    <?php echo $mionext_app_img; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
+
+</div>
+<?php endif; ?>

@@ -1,0 +1,78 @@
+<?php
+$mediaUrl = $block->getMediaUrl();
+$storeId = $block->getStore()->getStoreId();
+$storeCode = $block->getStore()->getCode();
+$helper = $this->helper('Mitac\Homepage\Helper\APIData');
+
+$Identifier = $block->page()->getIdentifier();
+$category   = $block->getCurrentCategory();
+$PageType = $this->getRequest()->getFullActionName();
+
+if(!empty($Identifier))
+{
+    $bannerData = $helper->getContentData($storeId,'banner',$Identifier);
+}
+else if ($PageType == 'catalog_category_view') 
+{
+    if(!empty($category))
+    {
+        $SPUrl= $category->getData('url_path');
+
+        if(!empty($SPUrl))
+        {
+            $SPIdentifier = ltrim(str_replace($storeCode,"",$SPUrl),'/');
+            $bannerData = $helper->getContentData($storeId,'banner',$SPIdentifier);
+        }
+    }
+}
+else if($PageType=='mpblog_category_view')
+{
+    $IdentifierArr = $this->getRequest()->getParams();
+    if(!empty($IdentifierArr['id']))
+        $SPIdentifier = $PageType.'/'.$IdentifierArr['id'];
+
+    if(!empty($SPIdentifier))
+    {
+        $bannerData = $helper->getContentData($storeId,'banner',$SPIdentifier);
+    }
+}
+else if($PageType=='catalogsearch_result_index')
+{
+    $SPUrl = $_SERVER['REQUEST_URI'];
+    
+    if(!empty($SPUrl))
+    {
+        $SPIdentifier = ltrim(str_replace($storeCode,"",$SPUrl),'/');
+        $FirstStrpos = strpos($SPIdentifier,'?q');
+        $SPIdentifier = trim(substr($SPIdentifier, 0, $FirstStrpos));
+        $bannerData = $helper->getContentData($storeId,'banner',$SPIdentifier);
+    }
+}
+else
+{
+    $SPUrl = $_SERVER['REQUEST_URI'];
+    
+    if(!empty($SPUrl))
+    {
+        $SPIdentifier = ltrim(str_replace($storeCode,"",$SPUrl),'/');
+        $bannerData = $helper->getContentData($storeId,'banner',$SPIdentifier);
+    }
+}
+
+$banner_url = ''; $title = "";
+
+if(!empty($bannerData[0]))
+{
+    if(!empty($bannerData[0]['img']))
+        $banner_url = trim($mediaUrl.$bannerData[0]['img']);
+    $banner_url = preg_replace('/\s(?=)/', '', $banner_url);
+    if(!empty($bannerData[0]['title']))
+        $title = $bannerData[0]['title'];
+}
+?>
+
+<?php if(!empty($bannerData[0])): ?>
+    <div class="topbanner mioTopBanner" style="background-image: url(<?php echo $banner_url; ?>);">
+        <h2 class="bannerTitle"><?= __($title);?></h2>
+    </div>
+    <?php endif; ?>

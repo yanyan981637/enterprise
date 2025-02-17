@@ -1,0 +1,84 @@
+<?php
+$CATEGOTY_TITLE = 'Recommend';
+$category_id = $block->getCategoryIdByName($CATEGOTY_TITLE);
+$category_products = $block->getAllCategoryProductsById($category_id);
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$productRepository = $objectManager->get('\Magento\Catalog\Model\ProductRepository');
+
+//include custom block
+$mioblock = $block->getLayout()->createBlock('Mitac\CustomCMS\Block\Catalog\Products');
+
+//Format Price
+$_helper = $this->helper(Magento\Catalog\Helper\Output::class);
+$imageDisplayArea = 'category_page_list';
+?>
+
+<?php if($category_id && count($category_products) > 0): ?>
+
+    <ol class="products-grid slick-content homeNewArr">
+    
+        <?php foreach($category_products as $product): ?>
+            <?php $productInfo = $productRepository->getById($product->getId()); ?>
+            <li class="item product product-item ">
+                <a 
+                    href="<?= $block->escapeUrl($productInfo->getProductUrl())?>" class="product-image"
+                >
+                <?= $block->getImage($productInfo, $imageDisplayArea)->toHtml() ?>
+                </a>
+                <div class="product-info">
+                     <h3 class="product-name">
+                        <a
+                            class="product-item-link"
+                            title="<?= $block->escapeHtmlAttr($productInfo->getName()) ?>"
+                             href="<?= $block->escapeUrl($productInfo->getProductUrl()) ?>">
+                             <?= $block->escapeHtml($productInfo->getName()) ?>
+                        </a>
+                </h3>
+                <div class="desc std">
+                    <?php $description_content = $productInfo->getDescription();?>
+                    <?= $mioblock->truncate($description_content,240);?>
+                </div>
+
+                <div class="price-wrapper">
+                        <div class="ppbd-product-price">
+                            <?=
+                            $block->getProductPrice($productInfo)
+                            ?> 
+                        </div>
+                </div>
+                <a 
+                    href="<?= $block->escapeUrl($productInfo->getProductUrl())?>" class="button secondary"
+                >
+                <span><?= $block->escapeHtml(__('View More')) ?></span>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ol>
+    <script>
+            require([
+                'jquery',
+                'mio_slick'
+                ], function($) {
+
+                    $(document).ready(function(){
+
+                        var windowsize = $(window).width();
+                        var showItsm = (windowsize > 768) ? 3 : (windowsize > 500 ) ? 2 : 1 ;
+
+                        $('.homeNewArr').not('.slick-initialized').slick({
+                            dots: true,
+                            infinite: false,
+                            speed: 300,
+                            slidesToShow: showItsm,
+                            adaptiveHeight: true
+                        });
+
+                        $('.Block_head a').click(function(){
+                            $('.slick-content').slick('refresh');
+                        });
+
+                    });
+
+                });
+            </script>
+<?php endif; ?>

@@ -1,0 +1,21 @@
+<?php
+$product = $block->getProduct();
+$product_name = $product->getName();
+
+$product_url = $product->getProductUrl();
+
+$image_base_Url  = $block->getMediaUrl();
+$img =   $image_base_Url."catalog/product".$product->getData('image');
+
+$url = 'http://vk.com/share.php?url='.urlencode($product_url).'&title='.urlencode($product_name).'&image='.urlencode($img);
+
+?>
+<div class="ppbd-vk-share">
+    <a class="vk"
+        href="<?= $url; ?>"
+        target="_blank"
+        title="Share on vk"
+    >
+        <span class="item-icon fab mgz-fa-vk "></span>
+    </a>
+</div>

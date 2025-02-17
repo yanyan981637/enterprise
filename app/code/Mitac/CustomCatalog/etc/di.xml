@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+	<preference for="Magento\Catalog\Block\Category\View" type="Mitac\CustomCatalog\Block\Rewrite\Category\View" />
+	<preference for="Magento\Catalog\Model\Category\Attribute\Source\Mode" type="Mitac\CustomCatalog\Model\Rewrite\Category\Attribute\Source\Mode" />
+	<type name="Magento\Catalog\Controller\Product\Compare\Add">
+		<plugin name="Mitac_CustomCatalog::restrict_compare_to_add" type="Mitac\CustomCatalog\Plugin\Compare\Controller\CheckCompare" sortOrder="100"/>
+	</type>
+</config>

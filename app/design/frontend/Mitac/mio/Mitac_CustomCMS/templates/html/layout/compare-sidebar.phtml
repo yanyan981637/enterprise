@@ -1,0 +1,148 @@
+<style type="text/css">
+div.block-compare{
+    top: 60%;
+    width: 260px;
+    padding: 10px 20px;
+    position: fixed;
+    z-index: 98;
+    left: 0;
+    margin-bottom: 0;
+    background-color: white;
+    -webkit-box-shadow: rgb(0 0 0 / 20%) 1px 1px 5px;
+    box-shadow: rgb(0 0 0 / 20%) 1px 1px 5px;
+    border: 2px solid #f05a1e;
+    border-radius: 5px;
+} 
+#compare-items .product-item {
+    display: flex;
+}
+#compare-items .product-item a.product-item-link {
+    word-break: break-word;
+}
+.actions-toolbar{
+    display: flex;
+    flex-direction: column;
+}
+.actions-toolbar .compare.button{
+    margin-right: 0;
+}
+
+.btn-remove{
+    margin-left: auto;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    text-align: center;
+    font: 0/0 a;
+    text-shadow: none;
+    color: transparent;
+    position: relative;
+}
+.btn-remove:after {
+    content: '\00d7';
+    color: #666;
+    height: 20px;
+    line-height: 20px;
+    width: 100%;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: initial;
+    display: inline-block;
+}
+#minBlock{
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1rem;
+    cursor: pointer;
+    z-index: 10000;
+    color: #f05a1e;
+}
+#minBlock i{
+    font-size: 2.4rem;
+    padding: 0;
+}
+
+.block-compare{
+    max-height: 320px;
+    transition: all 0.2s;
+}
+.block-compare.compareBlockShow{
+    top: auto;
+    bottom: 0;
+    max-height: 50px;
+    overflow: hidden;
+}
+.block-compare.compareBlockShow .block-content{
+    visibility: hidden;
+}
+.block-compare.compareBlockShow .block-title{
+    line-height: 2.8rem;
+}
+
+
+</style>
+<div class="mio-compare" data-bind="scope: 'compareProducts'" data-role="compare-products-sidebar">
+    <div class="block-compare no-display" data-bind="css: {'no-display': !compareProducts().count}">
+        <div id="minBlock">
+            <i class="icon-down-open"></i>
+        </div>
+        <div class="block-title">
+            <strong id="block-compare-heading" role="heading" aria-level="2"><?= $block->escapeHtml(__('Compare Products')) ?></strong>
+            <span class="counter qty no-display" data-bind="text: compareProducts().count, css: {'no-display': !compareProducts().count}"></span>
+
+        </div>
+        <!-- ko if: compareProducts().count -->
+        <div class="block-content no-display" aria-labelledby="block-compare-heading" data-bind="css: {'no-display': !compareProducts().count}">
+            <ol id="compare-items" class="product-items product-items-names" data-bind="foreach: compareProducts().items">
+                    <li class="product-item">
+                        <input type="hidden" class="compare-item-id" data-bind="value: id"/>
+                        <span>
+                            <a data-bind="attr: {href: product_url}, html: name" class="product-item-link"></a>
+                        </span>
+                        <a href="#"
+                           data-bind="attr: {'data-post': remove_url}"
+                           title="<?= $block->escapeHtmlAttr(__('Remove This Item')) ?>"
+                           class="action btn-remove">
+                            <span><?= $block->escapeHtml(__('Remove This Item')) ?></span>
+                        </a>
+                    </li>
+            </ol>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <a data-bind="attr: {'href': compareProducts().listUrl}" target="_blank" class="action compare button"><span><?= $block->escapeHtml(__('Compare')) ?></span></a>
+                </div>
+                <div class="secondary">
+                    <a id="compare-clear-all" href="#" class="compare action clear" data-post="<?=$block->escapeHtml(
+                        $this->helper(Magento\Catalog\Helper\Product\Compare::class)->getPostDataClearList()
+                    ) ?>">
+                        <span><?= $block->escapeHtml(__('Clear All')) ?></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- /ko -->
+        <!-- ko ifnot: compareProducts().count -->
+        <div class="empty"><?= $block->escapeHtml(__('You have no items to compare.')) ?></div>
+        <!-- /ko -->
+    </div>
+</div>
+<script type="text/x-magento-init">
+{"[data-role=compare-products-sidebar]": {"Magento_Ui/js/core/app": <?= /* @noEscape */ $block->getJsLayout() ?>}}
+</script>
+
+<script type="text/javascript">
+    require([
+        'jquery'
+    ], function($) {
+        $(document).ready(function(){
+            $('.mio-compare').on('click', '#minBlock', function(){
+                var $this = $(this);
+                $this.parent().toggleClass('compareBlockShow');
+                $this.children().toggleClass('icon-up-open icon-down-open');
+            });
+        });
+    });
+        
+</script>
+

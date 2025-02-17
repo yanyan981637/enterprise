@@ -1,0 +1,26 @@
+{
+  "name": "mitac/homepage",
+  "description": "Mitac HomePage",
+  "require": {
+    "php": "^7.3.0",
+    "mitac/community": ">=1.10.0"
+  },
+  "license": [
+    "MIT"
+  ],
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Sam"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Mitac\\Community\\": ""
+    }
+  }
+}

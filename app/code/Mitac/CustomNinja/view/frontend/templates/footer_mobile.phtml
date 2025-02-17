@@ -1,0 +1,52 @@
+<?php
+    $html = $block->getMenuHtml();
+    $html = str_replace('data-mage-init=\'{"ninjamenus"', 'data-mage-init=\'{"ninjamenustop"', $block->getMenuHtml());
+?>
+<?php 
+    if($html) 
+    {
+        ?>
+        <nav class="navigation mobileFooter" data-action="navigation">
+            <?= $html ?>
+        </nav>
+        <?php 
+    }
+?>
+
+<div class="footer-box">
+    <div id="footer-condition">
+        <?php 
+            echo $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('footer-buttom')->toHtml();
+        ?>
+    </div>
+</div>
+<div id="scrollToTop">
+	<div id="scrollToTop-inner">
+		<div id="scrollToTop-overlay" class="accentBgHover">
+			<i class="icon-up-open"></i>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	require([
+		'jquery'
+		], function ($) {
+			$(document).ready(function(){
+				var windowScroll_t;
+				$(window).scroll(function(){
+					clearTimeout(windowScroll_t);
+					windowScroll_t = setTimeout(function(){
+						if(jQuery(this).scrollTop() > 50){
+							$('#scrollToTop').fadeIn();
+						}else{
+							$('#scrollToTop').fadeOut();
+						}
+					}, 100);
+				});
+				$('#scrollToTop').off("click").on("click",function(){
+					$('html, body').animate({scrollTop: 0}, 600);
+				});
+			});
+
+		});
+	</script>

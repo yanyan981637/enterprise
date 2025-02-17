@@ -1,0 +1,25 @@
+{
+  "name": "mitac/systemapi",
+  "description": "System function for mitac project",
+  "require": {
+    "php": ">=7.3"
+  },
+  "license": [
+    "mitac"
+  ],
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "mitac"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Mitac\\SystemAPI\\": ""
+    }
+  }
+}

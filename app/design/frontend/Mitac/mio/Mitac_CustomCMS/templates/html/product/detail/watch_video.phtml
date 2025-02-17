@@ -1,0 +1,64 @@
+<?php
+$product_video = $block->getProductVideo();
+?>
+<?php if(count($product_video) > 0): ?>
+
+    <div id="watch_video">
+
+        <div class="box-collateral-title title">
+            <h2 class="h1"><?= __("Watch Video")?></h2>
+        </div>
+            <ul class="video_tab">
+                <?php foreach($product_video as $key=>$video): ?>
+                    <li class="<?php if ($key === 0) {echo "active"; } ?>"><?= $video['product_video_tabname'] ?></li>
+                <?php endforeach; ?>
+            </ul>
+            <div class="video_content_list container">
+                 <?php foreach($product_video as $key=>$video): ?>
+                    <div class="video_content <?php if ($key === 0) {echo "active"; }?>">
+                        <div class="video-txt tc">
+                                <h3 class="title"><?= $video['product_video_title']; ?></h3>
+                                <?php if(!empty($video['product_video_title'])): ?>
+                                <p><?= $video['product_video_desc']; ?></p>
+                                <?php endif; ?>
+                        </div>
+
+                        <div class="video-film">
+                            <div class="embed-responsive embed-responsive-16by9">
+                                <?php if($video['product_video_type'] == "Youtube"): ?>
+                                    <iframe src="<?= $video['product_video_url']; ?>" frameborder="0"></iframe>
+                                <?php elseif ($video['product_video_type'] == "Youku"): ?>      
+                                    <iframe src="https://player.youku.com/embed/<?= $video['product_video_url']; ?>" frameborder="0"></iframe>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+    </div>
+
+<?php endif; ?>
+
+<script>
+
+require([
+			'jquery',
+			'tabs'
+			], function($) {
+				$(".video_tab li").each(function(index, el){
+                    $(el).on('click', function(){
+                        $(el).siblings('li').removeClass('active')
+                        $(el).addClass('active')
+                        $('.video_content_list .video_content').removeClass('active')
+                        $('.video_content_list .video_content').eq(index).addClass('active')
+                        // $('.video_content_list .video_content').each(function(i, that){
+                        //     $(that).removeClass('active')
+                        //     if (index === i) {
+                        //         $(that).addClass('active')
+                        //     }
+                        // })
+                    })
+                })
+			});
+
+</script>

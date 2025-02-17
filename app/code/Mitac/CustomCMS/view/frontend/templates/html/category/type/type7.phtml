@@ -1,0 +1,612 @@
+<!-- Type7:MAP_WITH_FILTER -->
+<?php
+use Magento\Framework\App\Action\Action;
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$CoreSession = $objectManager->get('\Magento\Framework\Session\SessionManager');
+$redirect = $objectManager->get('\Magento\Framework\App\Response\Http');
+
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$storeCode = $storeManager->getStore()->getCode();
+
+$currdate = date("Y-m-d");
+//  获取当前url 
+if (!empty($_SERVER['REQUEST_URI'])) {
+    $REQUEST_URI = ltrim(str_replace($storeCode, "", $_SERVER['REQUEST_URI']), '/');
+} else {
+    $REQUEST_URI = '';
+}
+// 重写 url
+$RedirectUrl = $block->getBaseUrl() . $REQUEST_URI;
+$isCartEnabled = $this->helper('Mitac\SystemAPI\Helper\Config')->getIsCartEnabled();
+// 如果url 中 clc为true， 则清除此session 中的 product id
+if (!empty($_GET['clc'])) {
+    $CoreSession->unsSearchProduct();
+
+    $RedirectUrl = rtrim(str_replace("?clc=true", "", $RedirectUrl), '/');
+    header('Location:' . $RedirectUrl);
+    die();
+}
+
+
+//  获取存在session 的 product id
+$frontend_product_select = $CoreSession->getSearchProduct();
+
+// 如果session 中有 product id ,  就设置 $_POST['id'] 为session 中的 product id
+// 如果session 中没有 product id， 就判断 $_POST['id']是否有值， 有值
+if (!empty($frontend_product_select)) {
+    $_POST['id'] = $frontend_product_select;
+} else if (!empty($_POST['id'])) {
+    $CoreSession->setSearchProduct($_POST['id']);
+}
+?>
+<style>
+    #maincontent .columns .column.main {
+        padding-top: 0px;
+    }
+
+    #productSearch {
+        text-align: center;
+        z-index: 1000;
+    }
+
+    #minicart-content-wrapper {
+        display: none;
+    }
+
+    .minicart-wrapper.active #minicart-content-wrapper {
+        display: block;
+    }
+
+    .products-grid li.item {
+        float: none;
+    }
+</style>
+
+<?php
+if (!isset($_POST['id'])):
+
+    $customRelatedProduct = $block->getProductCustomRelatedDetail(6);
+    $mediaUrl = $block->getMediaUrl();
+    ?>
+
+    <div id="productSearch" class="module-search well">
+        <div id="product-search-map">
+            <div class="input-box">
+                <input class="input-text" data-mage-init='{"searchAccessories": {
+                    "appendSelector":"#accessoriesProducts"
+                }}' type="text" autocomplete="off" value=""
+                    placeholder="<?= $block->escapeHtmlAttr(__('Search...')); ?>">
+
+                <button title="Search" class="button search-button">
+                    <span class="ico-search"></span>
+                </button>
+            </div>
+            <div data-block="dropdown" class="minicart-wrapper" style="float:none">
+                <button type="button" class="tooltipBtn" data-trigger="trigger">
+                    <span class="icon-help-circled"></span>
+                </button>
+            </div>
+        </div>
+        <div class="block block-minicart" data-mage-init='{"dropdownDialog": {
+            "triggerEvent" : "hover",
+            "appendTo": "[data-block=dropdown]",
+            "triggerTarget":"[data-trigger=trigger]",
+            "closeOnMouseLeave": true,
+            "closeOnEscape": true,
+            "triggerClass": "active",
+            "parentClass": "active",
+            "buttons": [] }}'>
+            <div id="minicart-content-wrapper">
+                <?= $block->escapeHtmlAttr(__('Please select your device first, so we can filter the correct maps for you.')); ?><br />
+                <img src='<?= $block->getMediaUrl() . 'mio/images/maps.jpg' ?>' alt='model name' width='100%' />
+            </div>
+        </div>
+    </div>
+    <label class="d-block text-center searchTitle"><?= $block->escapeHtmlAttr(__('Please Select Your Product')); ?></label>
+    <form id="productAccessory" method="post">
+        <input id="pid" type="hidden" name="id" value="" />
+        <input type="hidden" name="form_key" value="<?php echo $block->getFormKey() ?>" />
+        <div class="products wrapper grid products-grid">
+            <ol id="accessoriesProducts" class="products list items product-items text-center">
+                <?php
+                foreach ($customRelatedProduct as $product) {
+                    ?>
+                    <li class="item product product-item">
+                        <div class="product-image">
+                            <a href="#" onclick="javascript:sendProduct(<?= $product['id'] ?>)">
+                                <?php if (empty($product['img']) || $product['img'] == 'no_selection' || !file_exists('../pub/media/catalog/product' . $product['img'])) {
+                                    ?>
+                                    <!-- Mio_logo_180X120,Mio_logo_500X500,Mio_logo_600X600 -->
+                                    <img src="<?= $mediaUrl . 'mio/images/default/Mio_logo_500X500.jpg' ?>"></a>
+                                <?php
+                                } else {
+                                    ?>
+                                <img src="<?= $mediaUrl . 'catalog/product' . $product['img'] ?>">
+                                <?php
+                                }
+                                ?>
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <h2 class="product-name"><?= $product['name'] ?></h2>
+                            <div class="actions">
+                                <a class="button" onclick="javascript:sendProduct(<?= $product['id'] ?>)">
+                                    <?= $block->escapeHtml(__('Select')) ?>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                    <?php
+                }
+                ?>
+            </ol>
+        </div>
+    </form>
+    <script type="text/javascript">
+        require([
+            'jquery'
+        ], function ($) {
+            $(document).ready(function () {
+                var wrap = $("#productSearch");
+                $(window).scroll(function () {
+                    if (jQuery(this).scrollTop() > 300) {
+                        wrap.addClass("fix-search").fadeIn('slow');
+                    } else if (wrap.hasClass("fix-search")) {
+                        wrap.removeClass("fix-search");
+                    }
+                });
+            });
+        });
+    </script>
+    <?php
+else:
+    ?>
+    <style>
+        #maincontent .columns .column.main {
+            padding-top: 0px;
+        }
+
+        #productSearch {
+            text-align: center;
+            z-index: 1000;
+        }
+
+        #minicart-content-wrapper {
+            display: none;
+        }
+
+        .minicart-wrapper.active #minicart-content-wrapper {
+            display: block;
+        }
+
+        #mapProductList {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        #mapProductList li {
+            display: none;
+            text-align: left;
+        }
+
+        #mapProductList li a {
+            border: 1px solid #ddd;
+            margin-top: -1px;
+            /* Prevent double borders */
+            background-color: #f6f6f6;
+            padding: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            color: black;
+            display: block
+        }
+
+        #mapProductList li a:hover:not(.header),
+        #mapProductList li.selected a {
+            background-color: #eee;
+        }
+    </style>
+
+
+    <?php
+    $devicesPost = trim($_POST['id']); // 得到 产品 ID
+
+    $productInfo = $block->getProductbyId($devicesPost);
+    $device = $block->getAssociatedMapsById($devicesPost);
+
+    //For Correct Salable Qty
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $stockState = $objectManager->get('\Magento\InventorySalesApi\Api\GetProductSalableQtyInterface');
+
+    $_helper = $this->helper(Magento\Catalog\Helper\Output::class);
+    $mediaUrl = $block->getMediaUrl();
+
+
+    if (!empty($devicesPost)):
+        if ($device['count'] <= 0):      //  如果map是空的
+            ?>
+            <div class="category-head row">
+                <div class="product-image col-12 col-md-4 col-lg-3">
+                    <?php
+                    if (empty($productInfo->getSmallImage()) || $productInfo->getSmallImage() == 'no_selection' || !file_exists('../pub/media/catalog/product' . $productInfo->getSmallImage())) {
+                        ?>
+                        <!-- Mio_logo_180X120,Mio_logo_500X500,Mio_logo_600X600 -->
+                        <img class="acc_productImg-mxAuto" src="<?= $mediaUrl . 'mio/images/default/Mio_logo_500X500.jpg' ?>">
+                        <?php
+                    } else {
+                        ?>
+                        <img class="acc_productImg-mxAuto" src="<?= $mediaUrl . 'catalog/product' . $productInfo->getSmallImage(); ?>">
+                        <?php
+                    }
+                    ?>
+                </div>
+                <div class="product-info col-12 col-md-8 col-lg-9 acc_product-info">
+                    <label><?= $productInfo->getName(); ?></label>
+                    <span class="accContent"><?= $productInfo->getDescription(); ?></span>
+                    <p class="accItems"><?= "0 " . $block->escapeHtml(__('Items Shown Below')); ?></p>
+                    <p><a href="<?php echo $RedirectUrl; ?>?clc=true" onclick="cleanProduct();"
+                            class="button btn secondary"><?= $block->escapeHtml(__('Change')); ?></a></p>
+                </div>
+            </div>
+            <?php
+        else:
+            $viewMode = 'grid';
+            $imageDisplayArea = 'category_page_grid';
+            $showDescription = true;
+            $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
+            $pos = $block->getPositioned();
+            ?>
+            <div class="category-head row map_category-spacing ">
+                <div class="product-image col-12 col-md-5 col-lg-3">
+                    <?php
+                    if (empty($device['product']->getSmallImage()) || $device['product']->getSmallImage() == 'no_selection' || !file_exists('../pub/media/catalog/product' . $device['product']->getSmallImage())) {
+                        ?>
+                        <!-- Mio_logo_180X120,Mio_logo_500X500,Mio_logo_600X600 -->
+                        <img class="map_productImg-mxAuto" src="<?= $mediaUrl . 'mio/images/default/Mio_logo_500X500.jpg' ?>">
+                        <?php
+                    } else {
+                        ?>
+                        <img class="map_productImg-mxAuto"
+                            src="<?= $block->getMediaUrl() . 'catalog/product' . $device['product']->getSmallImage(); ?>" />
+                        <?php
+                    }
+                    ?>
+                </div>
+                <div class="product-info col-12 col-md-7 col-lg-9 map_product-info">
+                    <label><?= $device['product']->getName(); ?></label>
+                    <span class="mapContent"><?= $device['product']->getDescription(); ?></span>
+                    <p class="mapItems">
+                        <span class="color-main">
+                            <?= $device['count']; ?>
+                        </span>
+                        <?= __("Items Shown Below"); ?>
+                    </p>
+                    <p><a href="<?= explode('?', $RedirectUrl)[0]; ?>?clc=true" onclick="cleanProduct();"
+                            class="button btn secondary"><?= $block->escapeHtml(__('Change')); ?></a></p>
+                    <?php if ($device['product']->getLifetimeUpdates()): ?>
+                        <div>
+                            <p class="update-note">
+                                <img src='<?= $block->getMediaUrl() . 'mio/images/maps/map-update-icon.png' ?>' />
+                                <?= __('Your device comes with free maps updates, please connect your device to Navdesk to see if there is a free map update available.'); ?>
+                            </p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- tag 开始 -->
+            <?php
+            if (!empty($_GET['current_tag'])) {
+                // 如果 url 中 current_tag， 指向它，如果没有指向当前category
+                $current_tag = $_GET['current_tag'];
+            } else {
+                $current_tag = $block->getCurrentCategory()->getId();
+            }
+            ?>
+            <div class="product-maps product-collateral">
+                <ul class="col-xl-12 toggle-tabs">
+                    <?php
+                    foreach ($device['map'] as $key => $value) {
+                        ?>
+                        <li class="<?= $key == $current_tag ? 'active' : '' ?>">
+                            <a href="
+                                <?php
+                                $url = $block->getBaseUrl() . explode('?', $REQUEST_URI)[0];
+                                if ($key == $current_tag) {
+                                    echo 'javascript:void(0)';
+                                } else {
+                                    echo $url . '?current_tag=' . $key;
+                                }
+                                ?>
+                                ">
+                                <?= __($value['name']) ?>
+                            </a>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                </ul>
+            </div>
+            <hr class="contentHr">
+            <style>
+                .product-maps .toggle-tabs li.active a {
+                    color: #f05a1e
+                }
+            </style>
+            <!-- 当前filter -->
+
+            <?php
+            $filterOptions = $block->getFilterList($devicesPost, $storeCode);
+            $current_filter_list = $block->getCurrentFilter($storeCode);
+            ?>
+
+
+
+            <!-- filter option  -->
+            <div class="mapFilter page-layout-2columns-left">
+                <div class="columns">
+                    <?php if (count($filterOptions) > 0): ?>
+                        <div class="sidebar sidebar-main">
+                            <div class="title">
+                                <strong id="mapFilterTitle" data-role="title">
+                                    <span class="glyphicon glyphicon-filter" style="vertical-align: top;"></span>
+                                    <?= $block->escapeHtml(__('Shopping Options')); ?>
+                                </strong>
+                            </div>
+                            <div id="sidebarRemove"></div>
+                            <div class="content" id="filter-options">
+                                <?php foreach ($filterOptions as $label => $item): ?>
+                                    <div class="filter-item active">
+
+                                        <div class="filter-options-title">
+                                            <?= $item['label'] ?>
+                                        </div>
+
+                                        <ol class="filter_options_items">
+                                            <?php
+                                            foreach ($item['value'] as $value_id => $value):
+                                                ?>
+                                                <li <?php if ($block->isChecked($storeCode, $label, $value_id)) {
+                                                    echo 'class="checked"';
+                                                } ?>>
+                                                    <div><?php $block->renderUrl($storeCode, $label, $value_id); ?></div>
+                                                    <a href="<?= $block->renderUrl($storeCode, $label, $value_id); ?>"
+                                                        onclick="cleanProduct();">
+                                                        <input type="checkbox" id="<?= $value ?>" <?php if ($block->isChecked($storeCode, $label, $value_id)) {
+                                                              echo 'checked';
+                                                          } ?>>
+                                                        <label for="<?= $value ?>"><?= $value ?></label>
+                                                    </a>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ol>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- map -->
+                    <div class="column main">
+                        <?php if (count($current_filter_list) > 0): ?>
+                            <div class="mapFilterNav">
+                                <div class="sub-title">
+                                    <strong><?= __('Now Shopping by') ?></strong>
+                                </div>
+                                <div class="d-flex">
+                                    <a class="block-actions filter-actions"
+                                        href="<?= $block->getBaseUrl() . explode('?', $REQUEST_URI)[0] . '?current_tag=' . $current_tag; ?>"><?= __('Clear All') ?></a>
+                                    <ol>
+                                        <?php
+                                        $list_current_attr = array();
+                                        foreach ($current_filter_list as $key => $value) {
+                                            $list_current_attr[$key] = array();
+                                            foreach (explode(',', $value) as $id) {
+                                                if (isset($filterOptions[$key]['value'][$id])) {
+                                                    $list_current_attr[$key][$id] = $filterOptions[$key]['value'][$id];
+                                                }
+                                            }
+                                            asort($list_current_attr[$key]);
+                                        }
+                                        ?>
+                                        <?php foreach ($list_current_attr as $key => $value): ?>
+                                            <li>
+                                                <?php ?>
+                                                <div class="filter-label"><?= $filterOptions[$key]['label'] ?></div>
+                                                <?php foreach ($value as $id): ?>
+                                                    <span class="filter-value">
+                                                        <?= $id ?>
+                                                    </span>
+
+                                                <?php endforeach; ?>
+                                                <a href="<?= $block->RemoveFilter($storeCode, $key) ?>" class="action remove">
+                                                </a>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ol>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (count($device['map'][$current_tag]['data']) == 0): ?>
+
+                            <!-- 当前分类为0 -->
+                            <div
+                                class="products wrapper map-my text-center <?= /* @noEscape */ $viewMode ?> products-<?= /* @noEscape */ $viewMode ?>">
+                                <?php
+                                switch ($device['map'][$current_tag]['tag']) {
+                                    case 'tag18': //Map Update
+                                        echo __('There are no buyable map updates for Australia and New Zealand for your device, if you wish to purchase international maps please see below.');
+                                        break;
+                                    case 'tag73': //Subscriptions
+                                        echo __('All Subscriptions available for your device are included in your free Australian and New Zealand Mapping.');
+                                        break;
+                                    default:
+                                        echo __('There are no products available for this device.');
+                                        break;
+                                }
+                                ?>
+                            </div>
+
+                            <!-- 当前分类有数量 -->
+                        <?php else: ?>
+                            <?php $CurrentShowProduct = $block->getCurrentShowProduct($storeCode, $device['map'][$current_tag]['data']) ?>
+                            <div
+                                class="products wrapper mapWrapper <?= /* @noEscape */ $viewMode ?> products-<?= /* @noEscape */ $viewMode ?>">
+                                <ol class="products-grid slick-content">
+                                    <?php /** @var $_product \Magento\Catalog\Model\Product */ ?>
+                                    <?php foreach ($CurrentShowProduct as $_product):
+                                        $saleQty = $stockState->execute($_product->getSku(), 1);
+                                        ?>
+                                        <li class="item product product-item map">
+                                            <div class="product-item-info" data-container="product-<?= /* @noEscape */ $viewMode ?>">
+                                                <?php
+                                                $productImage = $block->getImage($_product, $imageDisplayArea);
+                                                if ($pos != null) {
+                                                    $position = ' style="left:' . $productImage->getWidth() . 'px;'
+                                                        . 'top:' . $productImage->getHeight() . 'px;"';
+                                                }
+                                                ?>
+                                                <?php // Product Image ?>
+                                                <a href="<?= $block->escapeUrl($_product->getProductUrl()) ?>"
+                                                    class="product photo product-item-photo" tabindex="-1">
+                                                    <?= $productImage->toHtml() ?>
+                                                </a>
+                                                <div class="product details product-item-details">
+                                                    <?php
+                                                    $_productNameStripped = $block->stripTags($_product->getName(), null, true);
+                                                    ?>
+                                                    <strong class="product name product-item-name">
+                                                        <a class="product-item-link"
+                                                            href="<?= $block->escapeUrl($_product->getProductUrl()) ?>">
+                                                            <?= /* @noEscape */ $_helper->productAttribute($_product, $_product->getName(), 'name') ?>
+                                                        </a>
+                                                    </strong>
+                                                    <!-- 
+                                                    <?= $block->getReviewsSummaryHtml($_product, $templateType) ?>
+                                                    <?php if ($_product->isAvailable()): ?>
+                                                        <?= $block->getProductDetailsHtml($_product) ?>
+                                                    <?php endif; ?>
+                                                -->
+
+                                                    <div class="price-wrapper">
+                                                        <?= /* @noEscape */ $block->getProductPrice($_product) ?>
+
+                                                    </div>
+                                                    <div class="actions">
+                                                        <div class="product actions" <?= strpos($pos, $viewMode . '-actions') ? $block->escapeHtmlAttr($position) : '' ?>>
+                                                            <div class="actions-primary" <?= strpos($pos, $viewMode . '-primary') ? $block->escapeHtmlAttr($position) : '' ?>>
+                                                                <?php if ($isCartEnabled && $_product->getAddToCart()): ?>
+                                                                    <?php if ($_product->isAvailable() && $saleQty > 0): ?>
+                                                                        <?php $postParams = $block->getAddToCartPostParams($_product); ?>
+                                                                        <form data-role="tocart-form"
+                                                                            data-product-sku="<?= $block->escapeHtmlAttr($_product->getSku()) ?>"
+                                                                            action="<?= $block->escapeUrl($postParams['action']) ?>" method="post">
+                                                                            <input type="hidden" name="product"
+                                                                                value="<?= /* @noEscape */ $postParams['data']['product'] ?>">
+                                                                            <input type="hidden"
+                                                                                name="<?= /* @noEscape */ Action::PARAM_NAME_URL_ENCODED ?>"
+                                                                                value="<?= /* @noEscape */ $postParams['data'][Action::PARAM_NAME_URL_ENCODED] ?>">
+                                                                            <?= $block->getBlockHtml('formkey') ?>
+                                                                            <button type="submit"
+                                                                                title="<?= $block->escapeHtmlAttr(__('Add to Cart')) ?>"
+                                                                                class="action button">
+                                                                                <span><?= $block->escapeHtml(__('Add to Cart')) ?></span>
+                                                                            </button>
+                                                                        </form>
+                                                                    <?php else: ?>
+                                                                        <div class="stock unavailable btn">
+                                                                            <span><?= $block->escapeHtml(__('Out of stock')) ?></span>
+                                                                        </div>
+                                                                    <?php endif; ?>
+                                                                <?php endif; ?>
+                                                            </div>
+
+                                                            <a class="button btn secondary"
+                                                                href="<?= $block->escapeUrl($_product->getProductUrl()) ?>"
+                                                                title="<?= /* @noEscape */ $_productNameStripped ?>">
+                                                                <?= $block->escapeHtml(__('Learn More')) ?>
+
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ol>
+                            </div>
+
+                        <?php endif; ?>
+
+
+
+                    </div>
+                </div>
+            </div>
+            <?php
+        endif;
+    endif;
+endif
+?>
+
+<script type="text/javascript">
+    window.history.replaceState(null, null, window.location.href);
+
+    function sendProduct(pid) {
+        require([
+            'jquery'
+        ], function ($) {
+            $('body').trigger('processStart');
+            $('#pid').val(pid);
+            $('#productAccessory').submit();
+        });
+    }
+
+    function cleanProduct() {
+        require([
+            'jquery'
+        ], function ($) {
+            $('body').trigger('processStart');
+        });
+    }
+
+    function addFilter() {
+        require([
+            'jquery'
+        ], function ($) {
+            $('body').trigger('processStart');
+        });
+    }
+
+    require([
+        'jquery'
+    ], function ($) {
+        $('#filter-options .filter-item .filter-options-title').on('click', function () {
+            if ($(this).parent('.filter-item').hasClass('active')) {
+                $(this).parent('.filter-item').removeClass('active')
+                $(this).siblings('.filter_options_items').slideUp()
+            } else {
+                $(this).parent('.filter-item').addClass('active')
+                $(this).siblings('.filter_options_items').slideDown()
+            }
+
+        })
+        $('#mapFilterTitle').on('click', function () {
+            $('.mapFilter .title, .mapFilter .content, .mapFilter #sidebarRemove, #maincontent').addClass('show');
+        })
+        $('#sidebarRemove').on('click', function () {
+            $('.mapFilter .title, .mapFilter .content, .mapFilter #sidebarRemove').removeClass('show');
+        })
+        $('.mapFilterNav .sub-title').on('click', function () {
+            $('.mapFilterNav .d-flex, .mapFilterNav .sub-title').toggleClass('active');
+        })
+        $('.filter_options_items  li a input').on('change', function () {
+            window.location.href = $(this).parent('a').attr('href')
+        })
+    });
+</script>

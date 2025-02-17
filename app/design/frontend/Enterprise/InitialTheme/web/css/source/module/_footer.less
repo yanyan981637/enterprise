@@ -1,0 +1,115 @@
+
+
+//
+//  Desktop
+//  _____________________________________________
+
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m) {
+    .footer.content{
+        .navigation {
+           .ninjamenus.ninjamenus-desktop {
+                margin: 0;
+                a{
+                    color: #fff;
+                }
+            } 
+        }
+        .footerIcon.footerIconFirst{
+            margin-left: auto !important;
+        }
+        .magezon-builder{
+            display: flex;
+            .nav-item{
+                margin-right: 40px !important;
+                a {
+                    color: #fff;
+                    line-height: 32px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: default;
+                    padding: 0;
+                    margin: 0;
+                }
+                a:hover {
+                    color: #fff;
+                    background-color: transparent;
+                }
+                .footerSubmenu{
+                    .mgz-element-inner{
+                        .nav-item{
+                            a {
+                                line-height: 19px;
+                                font-size: 14px;
+                                font-weight: 300 !important;
+                                cursor: pointer;
+                                padding: 0;
+                                margin-top: 10px;
+                            }
+                        }
+                        .nav-item:hover{
+                            a{
+                                span.title{
+                                    text-decoration: underline !important;
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+            .nav-item:hover{
+                a{
+                    background-color: transparent !important;
+    
+                }
+            }
+            .mgz-row-gap-margin > .mgz-element-inner{
+                margin: 0;
+            }
+        }  
+    }
+}
+
+
+//
+//  Mobile
+//  _____________________________________________
+
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
+    .page-footer{
+        margin: 0;
+        .footer.content{
+            padding: 20px 0 0 0;
+            background-color: #58585a;
+            .copyright{
+                justify-content: center;
+            }
+            .footer.links{
+                display: none;
+            }
+            .magezon-builder{
+                display: flex;
+                justify-content: center;
+                .mgz-element.nav-item{
+                    display: none;
+                    a {
+                        color: #fff;
+                    }
+                    a:hover {
+                        color: #fff;
+                        background-color: transparent;
+                    }
+                    // 只留最後兩個element
+                    &:nth-last-child(-n + 2) {
+                        display: inline-block;
+                    }
+                }
+                .level0 {
+                    color: #fff;
+                    border: none;
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+}

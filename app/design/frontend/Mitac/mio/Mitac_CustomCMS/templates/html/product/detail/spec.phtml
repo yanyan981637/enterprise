@@ -1,0 +1,97 @@
+<?php 
+    $specsName = array();
+    $specsName = ['Integrated safety-cams', 'Radar', 'Display', 'Video', 'Hardware', 'Software'];
+
+    $product = $block->getProduct();
+    $productAttributes=$product->getAttributes();
+
+    $attributesgroups=$block->getAttributeGroups($product->getAttributeSetId());
+
+    $specsAttr = $block->getGroupsAttribute($product, $productAttributes, $specsName);
+?>
+
+<?php if(count($specsAttr) > 0): ?>
+<div class="product-specs-table-group">
+    <div class=""><!--container-->
+        <div class="box-collateral-title title">
+            <h2 class="h1"><?= __("Specifications") ?></h2>
+        </div>
+     <div class="spec-group">
+        <?php foreach ($specsAttr as $items => $attrList): ?>
+                    <div class="data-table product-specs-table">
+                    <table>
+                        <caption><?= __($items) ?></caption>
+                            <tbody>
+                                <?php foreach ($attrList as $attribute): ?>
+                                    
+                                    <tr>
+                                        <th class="label"><?= $attribute['label']; ?></th>
+                                        <td class="data"><?= $attribute['value']; ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                    </table>
+                    </div>
+            <?php endforeach; ?>
+            <div class="morefilters-action show-more specs tc wow bounce" data-wow-duration="1500ms" style="padding-top: 30px;">
+                <a href="javascript:void(0)" id="see_more_btn" class="spes_btn button button_s"><span><?= __('See More') ?></span> <span class="icon-down-open"></span> </a> 
+            </div>
+     </div>
+
+            <div class="morefilters-action show-less specs tc">
+                <a href="javascript:void(0)" id="see_less_btn" class="spes_btn button secondary button_s"><span><?= __("Less") ?></span> <span class="icon-up-open"></span> </a> 
+            </div>
+    </div>
+</div>
+<script>
+		require([
+			'jquery'
+			], function($) {
+                var height = $('.spec-group').height() + 20;
+                if (height > 480) {
+                    $('.spec-group').addClass('more-spec').css('height', '480px')
+                    $('.show-more').show()
+                }
+                $('.show-more').click(function(){
+                    $('.spec-group').removeClass('more-spec').css('height', height + 'px')
+                    $('.show-more').hide()
+                    $('.show-less').show()
+                })
+                $('.show-less').click(function(){
+                    $('.spec-group').addClass('more-spec').css('height', '480px')
+                    $('.show-less').hide()
+                    $('.show-more').show()
+                })
+			});
+</script>
+<style>
+	#see_more_btn.on {
+	    display: none;
+       
+	}
+    .spec-group{
+        transition: all 1s;
+        -moz-transition: all 1s;
+        -webkit-transition: all 1s;
+        -o-transition: all 1s;
+    }
+    .more-spec{
+        height: 480px;
+        overflow:hidden;
+        position: relative;
+    }
+    .show-more, .show-less{
+        display:none;
+        
+    }
+    .show-more {
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        background-image: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1), rgba(255,255,255,1));
+        background-image:  -moz-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1), rgba(255,255,255,1));
+        background-image:  -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1), rgba(255,255,255,1));
+        background-image: -o-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1), rgba(255,255,255,1))
+    }
+</style>
+<?php endif; ?>

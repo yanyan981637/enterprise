@@ -1,0 +1,15 @@
+{
+    "mitac_customer_device": {
+        "column": {
+            "id": true,
+            "customer_id": true,
+            "device_id": true,
+            "serialnumber": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

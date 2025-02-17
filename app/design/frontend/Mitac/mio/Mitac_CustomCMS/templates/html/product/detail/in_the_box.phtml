@@ -1,0 +1,84 @@
+<?php
+$product = $block->getProduct();
+$in_the_box = $block->getInTheBox();
+$image_base_Url  = $block->getMediaUrl();
+?>
+<?php if (count($in_the_box) > 0): ?>
+<div class="in-the-box-wrapper ">
+    <div class="box-collateral-title title">
+        <h2 class="h1"><?= __("In The Box")?></h2>
+        <p class="a-center"><?= __('( Appearance and availability of accessories is subject to actual box contents )') ?></p>
+    </div>
+    <div class="in-the-box-products">
+        <div class="row">
+            <div class="contents">
+                <ul class="slick-slider products-grid ">
+                    <li class="item product product-item">
+                        <img src="<?= $image_base_Url."catalog/product".$product->getData('image') ?>" alt="">
+                        <p class="tc"><?= $product->getName() ?></p>
+                    </li>
+                    <?php foreach($in_the_box as $item): ?>
+                            <li class="item product product-item map">
+                                <img src="<?= $image_base_Url."catalog/product".$item['img'] ?>" alt="">
+                                <p><?= $item['title'] ?></p>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    require([
+                'jquery',
+                'mio_slick'
+                ], function($) {
+
+                    $(document).ready(function(){
+
+                        var windowsize = $(window).width();
+                        var showItsm = (windowsize > 767)?4:1;
+
+                        // $('.slick-slider_pc').slick({
+                        //     dots: true,
+                        //     infinite: false,
+                        //     speed: 300,
+                        //     slidesToShow: 3,
+                        //     adaptiveHeight: true,
+                        //     slidesToScroll: 1,
+                        // });
+                        $('.slick-slider').slick({
+                            dots: true,
+                            infinite: false,
+                            speed: 300,
+                            slidesToShow: showItsm,
+                            adaptiveHeight: true,
+                            slidesToScroll: 1,
+                        });
+
+                    });
+
+                });
+            </script>
+</script>
+
+<style>
+    .contents{
+        width: 100%;
+    }
+    /* .in-the-box-wrapper_pc {
+        display: none;
+    }
+    .in-the-box-wrapper_mobile {
+        display: block;
+    }
+    @media only screen and (min-width: 768px) {
+        .in-the-box-wrapper_pc {
+            display: block;
+        }
+        .in-the-box-wrapper_mobile {
+            display: none;
+        }
+    } */
+</style>
+<?php endif; ?>
