@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="mitac_theme_color" resource="default" engine="innodb" comment="Website Main Color Manage">
+        <column xsi:type="int" name="color_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Color ID"/>
+        <column xsi:type="smallint" name="enabled" padding="6" unsigned="true" nullable="false" default="1" comment="Color Enabled"/>
+        <column xsi:type="varchar" name="name" length="255" nullable="false" comment="Name" />
+        <column xsi:type="varchar" name="store_ids" length="255" nullable="false" comment="Store Ids"/>
+        <column xsi:type="varchar" name="category_page" length="255" nullable="true" comment="Category URL"/>
+        <column xsi:type="varchar" name="product_page" length="255" nullable="true" comment="Product Page URL"/>
+        <column xsi:type="varchar" name="cms_page" length="255" nullable="true" comment="CMS Page URL"/>
+        <column xsi:type="varchar" name="blog_category_page" length="255" nullable="true" comment="Blog Category URL"/>
+        <column xsi:type="varchar" name="blog_page" length="255" nullable="true" comment="Blog Page URL"/>
+        <column xsi:type="varchar" name="custom_url" length="255" nullable="true" comment="Custom URL"/>
+        <column xsi:type="varchar" name="color_attr_name" length="255" nullable="false" comment="Color Attribute Name"/>
+        <column xsi:type="varchar" name="color" length="32" nullable="false" comment="Color Code"/>
+        <column xsi:type="varchar" name="favicon_url" length="255" nullable="true" comment="Favicon URL"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Update Time"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="color_id"/>
+        </constraint>
+
+        <index referenceId="MITAC_THEME_COLOR_ENABLED" indexType="btree">
+            <column name="enabled"/>
+        </index>
+    </table>
+</schema>

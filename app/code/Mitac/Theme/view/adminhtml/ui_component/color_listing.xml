@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">color_listing.color_listing_data_source</item>
+            <item name="deps" xsi:type="string">color_listing.color_listing_data_source</item>
+        </item>
+        <item name="spinner" xsi:type="string">color_listing_columns</item>
+        <item name="buttons" xsi:type="array">
+            <item name="add" xsi:type="array">
+                <item name="name" xsi:type="string">add</item>
+                <item name="label" xsi:type="string" translate="true">Add Theme Color</item>
+                <item name="class" xsi:type="string">primary</item>
+                <item name="url" xsi:type="url" path="*/*/new"/>
+            </item>
+        </item>
+        <item name="acl" xsi:type="string">Magezon_NinjaMenus::menu</item>
+    </argument>
+    <dataSource name="color_listing_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">Mitac\Theme\Ui\DataProvider\Color\DataProvider</argument>
+            <argument name="name" xsi:type="string">color_listing_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">color_id</argument>
+            <argument name="requestFieldName" xsi:type="string">color_id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
+                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="indexField" xsi:type="string">color_id</item>
+                    </item>
+                </item>
+            </argument>
+        </argument>
+    </dataSource>
+    <columns name="color_listing_columns">
+        <column name="color_id">
+            <settings>
+                <label translate="true">ID</label>
+            </settings>
+        </column>
+        <column name="enabled" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <addField>false</addField>
+                <options class="Mitac\Theme\Ui\Options\Status"/>
+                <dataType>select</dataType>
+                <label translate="true">Enabled</label>
+            </settings>
+        </column>
+        <column name="name">
+            <settings>
+                <label translate="true">Name</label>
+            </settings>
+        </column>
+        <column name="color_attr_name">
+            <settings>
+                <label translate="true">Color Attr Name</label>
+            </settings>
+        </column>
+        <column name="color" class="Mitac\Theme\Ui\Columns\Color">
+            <argument xsi:type="array" name="data">
+                <item xsi:type="array" name="config">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Color</item>
+                </item>
+            </argument>
+        </column>
+        <column name="favicon_url" class="Mitac\Theme\Ui\Columns\Image">
+            <argument xsi:type="array" name="data">
+                <item xsi:type="array" name="config">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Favicon Img</item>
+                </item>
+            </argument>
+        </column>
+        <column name="store_ids" class="Mitac\Theme\Ui\Columns\Store">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Store View</item>
+                    <item name="sortOrder" xsi:type="number">30</item>
+                </item>
+            </argument>
+        </column>
+        <column name="category_page" class="Mitac\Theme\Ui\Columns\Category">
+            <argument xsi:type="array" name="data">
+                <item xsi:type="array" name="config">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Category Page</item>
+                </item>
+            </argument>
+        </column>
+        <column name="product_page" class="Mitac\Theme\Ui\Columns\Product">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+                <label translate="true">Product Page</label>
+            </settings>
+
+        </column>
+        <column name="cms_page" class="Mitac\Theme\Ui\Columns\CmsPage">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+                <label translate="true">CMS Page</label>
+            </settings>
+        </column>
+        <column name="blog_category_page" class="Mitac\Theme\Ui\Columns\BlogCategory">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+                <label translate="true">Blog Category Page</label>
+            </settings>
+        </column>
+        <column name="blog_page" class="Mitac\Theme\Ui\Columns\BlogPost">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+                <label translate="true">Blog Post Page</label>
+            </settings>
+        </column>
+        <column name="custom_url">
+            <settings>
+                <label translate="true">Custom Url</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Mitac\Theme\Ui\Component\Listing\Columns\ColorListing">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="indexField" xsi:type="string">menu_id</item>
+                    <item name="sortOrder" xsi:type="number">100</item>
+                </item>
+            </argument>
+        </actionsColumn>
+    </columns>
+</listing>
