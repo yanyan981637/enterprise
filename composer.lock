@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "33122697952023f1683cae7c2d56c8f8",
+    "content-hash": "5a79f3ac43b4b203e1963dbde8f25760",
     "packages": [
         {
             "name": "2tvenom/cborencode",
@@ -2404,6 +2404,95 @@
                 "source": "https://github.com/hyva-themes/magento2-graphql-view-model/tree/1.0.5"
             },
             "time": "2023-03-13T17:01:18+00:00"
+        },
+        {
+            "name": "hyva-themes/magento2-magezon-builder",
+            "version": "1.0.2",
+            "dist": {
+                "type": "zip",
+                "url": "https://hyva-themes.repo.packagist.com/mio-com-5j3bjytbdrtt/dists/hyva-themes/magento2-magezon-builder/1.0.2.0/ab69da9e8a08ab94de9dff4b589824f2b1fedaa1.zip",
+                "reference": "ab69da9e8a08ab94de9dff4b589824f2b1fedaa1",
+                "mirrors": [
+                    {
+                        "url": "https://hyva-themes.repo.packagist.com/mio-com-5j3bjytbdrtt/dists/%package%/%version%/r%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "hyva-themes/magento2-compat-module-fallback": "*",
+                "magento/framework": "*"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "src/registration.php"
+                ],
+                "psr-4": {
+                    "Hyva\\MagezonBuilder\\": "src/"
+                }
+            },
+            "notification-url": "https://hyva-themes.repo.packagist.com/mio-com-5j3bjytbdrtt/downloads/",
+            "license": [
+                "see LICENSE.md"
+            ],
+            "authors": [
+                {
+                    "name": "Hyvä Themes B.V.",
+                    "email": "info@hyva.io"
+                }
+            ],
+            "description": "Hyvä Compatibility module for Magezon_Builder",
+            "support": {
+                "source": "https://gitlab.hyva.io/hyva-themes/hyva-compat/magento2-magezon-builder/-/tree/1.0.2",
+                "issues": "https://gitlab.hyva.io/hyva-themes/hyva-compat/magento2-magezon-builder/-/issues"
+            },
+            "time": "2024-06-18T07:24:22+00:00"
+        },
+        {
+            "name": "hyva-themes/magento2-magezon-ninja-menus",
+            "version": "1.0.4",
+            "dist": {
+                "type": "zip",
+                "url": "https://hyva-themes.repo.packagist.com/mio-com-5j3bjytbdrtt/dists/hyva-themes/magento2-magezon-ninja-menus/1.0.4.0/07abbd1f0dc97c5fdfe6abf23f4a10bfa4455d93.zip",
+                "reference": "07abbd1f0dc97c5fdfe6abf23f4a10bfa4455d93",
+                "mirrors": [
+                    {
+                        "url": "https://hyva-themes.repo.packagist.com/mio-com-5j3bjytbdrtt/dists/%package%/%version%/r%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "hyva-themes/magento2-compat-module-fallback": "*",
+                "hyva-themes/magento2-magezon-builder": "*",
+                "magento/framework": "*"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "src/registration.php"
+                ],
+                "psr-4": {
+                    "Hyva\\MagezonNinjaMenus\\": "src/"
+                }
+            },
+            "notification-url": "https://hyva-themes.repo.packagist.com/mio-com-5j3bjytbdrtt/downloads/",
+            "license": [
+                "see LICENSE.md"
+            ],
+            "authors": [
+                {
+                    "name": "Hyvä Themes B.V.",
+                    "email": "info@hyva.io"
+                }
+            ],
+            "description": "Hyvä Compatibility module for Magezon_NinjaMenus",
+            "support": {
+                "source": "https://gitlab.hyva.io/hyva-themes/hyva-compat/magento2-magezon-ninja-menus/-/tree/1.0.4",
+                "issues": "https://gitlab.hyva.io/hyva-themes/hyva-compat/magento2-magezon-ninja-menus/-/issues"
+            },
+            "time": "2024-10-11T03:00:57+00:00"
         },
         {
             "name": "hyva-themes/magento2-mollie-theme-bundle",
