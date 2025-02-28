@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-    InitialTheme: {
+    b2b: {
         area: 'frontend',
-        name: 'Enterprise/InitialTheme',
+        name: 'Mitac/b2b',
         locale: 'en_US',
         files: [
             'css/styles-m',

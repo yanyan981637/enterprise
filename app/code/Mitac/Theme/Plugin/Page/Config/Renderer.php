@@ -109,7 +109,7 @@ class Renderer {
   {
       $this->logger->info('setTheme: ' . $color->getColorId());
       $this->page_config->setElementAttribute("html", "theme-color", $color->getColorAttrName());
-      $this->page_config->setElementAttribute('body','style',"--theme-color: ". $color->getColor());
+      $this->page_config->setElementAttribute('body','style',"--main-color: ". $color->getColor());
 
       if ($this->fileInfo->isExist($color->getFaviconUrl())){
           $this->page_config->addRemotePageAsset(

@@ -1,23 +1,57 @@
 @import "../lib/_variables.less";
 @import "../lib/_responsive.less";
-// 共用  編譯到 style.css 
+@import "header/nav.less";
+.page-header {
+    --bg-color: #ffffff;
+    --logo-color: var(--main-color);
+    --menu-level1-color: #000000;
+    --menu-level1-color-bg: transparent;
+    --menu-level1-color-hover: #ffffff;
+    --menu-level1-color-bg-hover: var(--main-color);
+    --menu-level2-color: #000000;
+    --menu-level2-color-bg: transparent;
+    --menu-level2-color-hover: #ffffff;
+    --menu-level2-color-bg-hover: var(--main-color);
+    --menu-level3-color: var(--main-color);
+    --menu-level3-color-hover: var(--main-color);
+    --menu-level4-color: #666666;
+    --menu-level4-color-hover: var(--main-color);
+    --nav-toggle--color: var(--main-color);
+}
+.not-first-screen .page-header {
+    --bg-color: var(--main-color);
+    --logo-color: #ffffff;
+    --menu-level1-color: #ffffff;
+    --menu-level1-color-bg: transparent;
+    --menu-level1-color-hover: var(--main-color);
+    --menu-level1-color-bg-hover: #ffffff;
+    --nav-toggle--color: #ffffff;
+}
+
+// 共用  編譯到 style.css
 & when (@media-common = true){
   .page-header {
     box-shadow: 0 3px 6px rgba(0, 0, 0, .175);
-    background-color: #fff;
-    position: fixed;
+    background-color: var(--bg-color);
+    z-index: 201;
+    transition: all .2s ease;
+    position: sticky;
     left: 0;
     right: 0;
     top: 0;
-    z-index: 201;
+
+    .not-first-screen & {
+        animation: header-reveal .5s ease-in;
+    }
 
     .header.content {
-
+      height: 50px;
       display: flex;
-
+      align-items: center;
+      justify-content: space-between;
       .logo {
         mask: var(--mask-image);
-        background: var(--header-main-color);
+        background: var(--logo-color);
         mask-repeat: no-repeat;
         mask-size: cover;
         height: 32px;
@@ -28,106 +62,100 @@
           height: 100%;
         }
       }
-  
+
       .nav-toggle {
         .lib-icon-font(
             @icon-menu,
             @_icon-font-size: 28px,
-            @_icon-font-color: var(--header-main-color),
+            @_icon-font-color: var(--nav-toggle--color),
             @_icon-font-color-hover: @header-icons-color-hover
           );
           .lib-icon-text-hide();
           cursor: pointer;
           display: block;
           font-size: 0;
+          &:hover::before{
+              color: var(--nav-toggle--color);
+          }
       }
     }
 
   }
 }
-
 
 //
-//  Mobile 編譯到 style_m.css 
+//  Mobile < 1279
 //  _____________________________________________
-
-.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
-  .page-header {
-      
+@media only screen and (max-width: (@screen__l - 1)) {
     .header.content {
-      height: 60px;
-      justify-content: space-between;
-      align-items: center;
 
-      .logo {
-        height: 32px;
-      }
+        .header-items {
+            position: fixed;
+            top: 0;
+            width: 320px;
+            bottom: 0;
+            //left: 0;
+            right: -340px;
+            transition: all .5s ease;
+            overflow-x: hidden;
+            background-color: #fff;
+            z-index: 999;
+            padding: 5px 0;
+            box-shadow: 0 0 3px rgba(0,0,0,.3);
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            .navigation {
+                flex: 0 0 100%;
+                order: 2;
+            }
 
-      .header-items {
-        position: fixed;
-        top: 0;
-        width: 280px;
-        bottom: 0;
-        right: 0;
-        transition: transform .5s ease;
-        overflow-x: hidden;
-        background-color: #fff;
-        z-index: 999;
-        transform: translate(100%);
-        padding: 5px 0;
-        transition: transform .5s ease;
-        box-shadow: 0 0 3px rgba(0,0,0,.3);
+            .block-search {
+                flex: 0 0 100%;
+                order: 1;
+            }
 
-        display: flex;
-        flex-wrap: wrap;
-        align-content: flex-start;
+            .nav-open & {
+                right:0;
+            }
 
-        .navigation {
-          flex: 0 0 100%;
-          order: 2;
         }
-
-        .block-search {
-          flex: 0 0 100%;
-          order: 1;
-        }
-
-        .nav-open & {
-          transform: translate(0);
-        } 
-
-      }
 
     }
 
-  }
-  .page-wrapper {
-    padding-top: 52px !important;
-  }
-
-  .nav-open {
-    .nav-toggle {
-      &:after {
-          background: rgba(255,255,255, @overlay__opacity);
-          content: '';
-          display: block;
-          height: 100%;
-          position: fixed;
-          right: 0;
-          top: 0;
-          width: 100%;
-          z-index: 1;
-      }
+    .nav-open {
+        body{
+            height: 100vh;
+            overflow: hidden;
+        }
+        .nav-toggle {
+            &:after {
+                background: rgba(255,255,255, @overlay__opacity);
+                content: '';
+                display: block;
+                height: 100%;
+                position: fixed;
+                right: 0;
+                top: 0;
+                width: 100%;
+                z-index: 1;
+            }
+        }
     }
-  }
 }
 
-
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m){
+    .page-header {
+        .header.content {
+            height: 60px;
+        }
+    }
+}
 //
 //  Desktop
 //  _____________________________________________
 
-.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m) {
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__l) {
   .page-header {
 
     .header.content{
@@ -153,14 +181,19 @@
     }
 
   }
-  .page-wrapper {
-    // padding-top: 80px;
-    padding-top: 72px;
-  }
 
-} 
+}
 
 // [ ] : 隱藏影響的元素
 // #maincontent{
 //   display: none;
 // }
+
+@keyframes header-reveal {
+    from {
+        transform: translateY(-100%);
+    }
+    to{
+        transform: translateY(0);
+    }
+}

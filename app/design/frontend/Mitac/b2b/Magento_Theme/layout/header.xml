@@ -1,0 +1,24 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="header.panel.wrapper" remove="true" />
+        <referenceBlock name="minicart" remove="true" />
+        <referenceBlock name="compare-link-wrapper" remove="true" />
+        <referenceBlock name="navigation.sections" remove="true" />
+        <referenceBlock name="topSearch" remove="true" />
+
+        <container name="header-items" htmlClass="header-items" htmlTag="div">
+            <block class="Mitac\Theme\Block\Header\Nav" name="catalog.topnav" template="Magento_Theme::html/header/topmenu.phtml" before="-">
+                <arguments>
+                    <argument name="identifier" translate="true" xsi:type="string">top-menu</argument>
+                </arguments>
+            </block>
+            <block class="Magento\Framework\View\Element\Template" name="top.search" as="topSearch" template="Magento_Search::form.mini.phtml">
+                <arguments>
+                    <argument name="configProvider" xsi:type="object">Magento\Search\ViewModel\ConfigProvider</argument>
+                    <argument name="additionalSearchFormData" xsi:type="object">Magento\Search\ViewModel\AdditionalSearchFormData</argument>
+                </arguments>
+            </block>
+        </container>
+        <move element="header-items" destination="header-wrapper"/>
+    </body>
+</page>
