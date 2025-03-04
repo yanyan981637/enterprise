@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <referenceBlock remove="true" name="hero" />
+    <referenceBlock remove="true" name="content-1" />
+    <referenceBlock remove="true" name="slider-1" />
+    <referenceBlock remove="true" name="slider-2" />
+</page>

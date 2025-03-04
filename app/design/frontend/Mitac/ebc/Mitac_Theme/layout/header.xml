@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+
+    <referenceBlock name="header-content" template="Mitac_Theme::html/header.phtml" />
+    <referenceBlock name="skip_to_content" remove="true" />
+    <referenceBlock name="cart-drawer" remove="true" />
+    <!--
+        ebc 不需要登陸， 故在header 移除相關block
+        後面若要補， 參考 vendor/hyva-themes/magento2-default-theme/Magento_Customer/layout/default.xml
+    -->
+    <referenceBlock name="header.customer" remove="true" />
+    <referenceBlock name="authentication-popup" remove="true" />
+
+    <referenceBlock name="topmenu_generic">
+        <referenceBlock name="topmenu_mobile" remove="true"/>
+        <referenceBlock name="topmenu_desktop" remove="true"/>
+        <block class="Hyva\MagezonNinjaMenus\Block\TopMenu" as="ninja.menu" name="ninja-menu" template="Hyva_MagezonNinjaMenus::topmenu.phtml">
+            <arguments>
+                <argument name="identifier" translate="true" xsi:type="string">top-menu</argument>
+            </arguments>
+        </block>
+    </referenceBlock>
+
+</page>

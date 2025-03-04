@@ -21,7 +21,11 @@ module.exports = hyvaModules.mergeTailwindConfig({
         '2xl': '1536px' // => @media (min-width: 1536px) { ... }
       },
       fontFamily: {
-        sans: ["Segoe UI", "Helvetica Neue", "Arial", "sans-serif"]
+        sans: ['Roboto', '微軟正黑體', "Microsoft JhengHei", 'sans-serif', '-apple-system', 'system-ui', 'BlinkMacSystemFont', "Segoe UI"]
+      },
+      fontSize:{
+        base: ['18px', { lineHeight: '1.5',}],
+        h1: ['3rem', { lineHeight: '1.5' }],
       },
       colors: {
         primary: {
@@ -41,7 +45,8 @@ module.exports = hyvaModules.mergeTailwindConfig({
         },
         green: colors.emerald,
         yellow: colors.amber,
-        purple: colors.violet
+        purple: colors.violet,
+        main: 'red'
       },
       textColor: {
         orange: colors.orange,
@@ -50,7 +55,7 @@ module.exports = hyvaModules.mergeTailwindConfig({
         },
         primary: {
           lighter: colors.gray['700'],
-          "DEFAULT": colors.gray['800'],
+          "DEFAULT": 'var(--main-color, #00519c)',
           darker: colors.gray['900']
         },
         secondary: {
@@ -60,6 +65,9 @@ module.exports = hyvaModules.mergeTailwindConfig({
         }
       },
       backgroundColor: {
+        header:{
+          "DEFAULT": "rgb(49, 49, 57)",
+        },
         primary: {
           lighter: colors.blue['600'],
           "DEFAULT": colors.blue['700'],
@@ -122,6 +130,8 @@ module.exports = hyvaModules.mergeTailwindConfig({
     '../../../../../../../vendor/hyva-themes/magento2-default-theme/*/layout/*.xml',
     '../../../../../../../vendor/hyva-themes/magento2-default-theme/*/page_layout/override/base/*.xml',
     '../../../../../../../vendor/hyva-themes/magento2-hyva-widgets/**/*.phtml',
+    '../../../../../../../vendor/hyva-themes/magento2-magezon-builder/**/*.phtml',
+    '../../../../../../../vendor/hyva-themes/magento2-magezon-ninja-menus/**/*.phtml',
     // app/code phtml files (if need tailwind classes from app/code modules)
     //'../../../../../../../app/code/**/*.phtml',
   ]

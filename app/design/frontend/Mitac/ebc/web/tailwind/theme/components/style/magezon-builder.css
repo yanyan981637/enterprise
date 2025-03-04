@@ -1,0 +1,35 @@
+.magezon-builder {
+    h1, h2, h3, h4, h5, h6 {
+        font-size: revert;
+        font-weight: revert;
+    }
+    .mgz-pricing-table {
+        .mgz-pricing-table-heading {
+            @apply text-2xl;
+        }
+        .mgz-btn {
+            @apply text-sm;
+        }
+    }
+    table * {
+        border-width: 1px;
+        border-color: unset;
+    }
+    a {
+        color: #007bdb;
+    }
+    .mgz-review-content-more {
+        @apply text-sm;
+        &:hover {
+            @apply underline;
+        }
+    }
+    .mgz-element-text {
+        ul {
+            list-style: revert;
+        }
+        ol {
+            list-style: revert;
+        }
+    }
+}

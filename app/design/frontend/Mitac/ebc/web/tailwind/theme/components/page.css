@@ -1,3 +1,5 @@
+
+
 .table-row-items > div.table-row-item {
     @apply bg-container-darker;
 
@@ -5,3 +7,15 @@
         @apply bg-container-lighter;
     }
 }
+@layer base {
+    h1 {
+        @apply text-h1;
+    }
+}
+
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+    }
+}
+

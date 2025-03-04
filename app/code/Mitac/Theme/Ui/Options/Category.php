@@ -22,6 +22,8 @@ class Category implements OptionSourceInterface
         $this->_categoryCollectionFactory = $categoryCollectionFactory;
         $this->_categoryRepository = $categoryRepository;
     }
+
+    // TODO: 未enable 的category會獲取失敗？
     private function getChildCategory($categoryId)
     {
         try {
@@ -57,38 +59,11 @@ class Category implements OptionSourceInterface
         if($category->hasChildren()){
             $children = explode(',', $category->getChildren());
             foreach ($children as $child){
-                $this->loadOption($this->_categoryRepository->get($child));
-            }
-        }
-    }
-    private function getOption(CategoryInterface $category){
-        $option = [
-            'label' => $category->getName() . $category->getChildren() . 's: '. $category->getLevel(),
-            'value' => $category->getId(),
-            'level' => $category->getLevel(),
-            'category_ids' => $category->getChildren(),
-        ];
-
-        if($category->hasChildren()){
-            $option['children'][] = [
-                'label' => $category->getName() . $category->getChildren() . 's: '. $category->getLevel(),
-                'value' => $category->getId(),
-                'level' => $category->getLevel(),
-                'category_ids' => $category->getChildren(),
-            ];
-            $children = explode(',', $category->getChildren());
-            foreach ($children as $child){
-                if(!isset($option['children'])){
-                    $option['children'] = [];
+                $childCategory = $this->getChildCategory((int)$child);
+                if($childCategory){
+                    $this->loadOption($childCategory);
                 }
-                $option['children'][] = [
-                    'label' => $category->getName() . $category->getChildren() . 's: '. $category->getLevel(),
-                    'value' => $category->getId(),
-                    'level' => $category->getLevel(),
-                    'category_ids' => $category->getChildren(),
-                ];
             }
         }
-        return $option;
     }
 }

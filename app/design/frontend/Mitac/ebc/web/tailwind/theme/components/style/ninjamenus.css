@@ -1,0 +1,20 @@
+.navigation .ninjamenus.ninjamenus-desktop.ninjamenus-vertical .nav-item.level0.active > a {
+    background-color: unset;
+    color: rgb(29, 78, 216);
+}
+.navigation .ninjamenus.ninjamenus-desktop.ninjamenus-horizontal .nav-item.level0.active > a {
+    background-color: unset;
+    color: rgb(29, 78, 216);
+}
+. .ninjamenus .nav-item > a:hover {
+    background: unset;
+}
+
+/*.navigation .ninjamenus.ninjamenus-desktop.ninjamenus-horizontal .nav-item.level0:hover > a {*/
+/*    background-color: unset;*/
+/*    color: unset;*/
+/*}*/
+
+.navigation .ninjamenus .level0 > a > span.title {
+    font-weight: 500;
+}

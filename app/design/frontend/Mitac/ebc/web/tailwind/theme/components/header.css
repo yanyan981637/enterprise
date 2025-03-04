@@ -1,1 +1,9 @@
-/* .page-header {} */
+ .page-header {
+    .navigation{
+        .nav-item.level0{
+            & > a {
+                @apply text-white leading-normal text-base tracking-normal hover:text-main;
+            }
+        }
+    }
+ }
