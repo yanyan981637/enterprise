@@ -4,4 +4,6 @@
     <!-- base on vendor/hyva-themes/magento2-default-theme/Magento_Theme/layout/default.xml -->
     <update handle="header" />
     <referenceBlock name="skip_to_content.target" remove="true" />
+
+    <referenceBlock name="footer-static-links" remove="true" />
 </page>

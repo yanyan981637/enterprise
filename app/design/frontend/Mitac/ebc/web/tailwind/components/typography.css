@@ -7,9 +7,40 @@
 }
 
 html {
-    @apply antialiased;
+    @apply antialiased text-[16px] xl:text-[18px];
 }
 
 body {
-    @apply text-black leading-normal text-base tracking-normal;
+    @apply text-[#313137] leading-normal  tracking-normal font-normal
+}
+
+h1 {
+    @apply text-h1 font-medium tracking-normal text-main;
+}
+
+h2 {
+    @apply text-h2 font-medium tracking-normal text-main;
+}
+
+h3 {
+    @apply text-h3 font-medium tracking-normal text-[#313137];
+}
+
+h4 {
+    @apply text-h4 font-bold tracking-normal text-main;
+}
+
+h5 {
+    @apply text-h5 font-bold tracking-normal text-[#313137];
+}
+
+h6 {
+    @apply text-h6 font-medium tracking-normal text-[#313137];
+}
+
+
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+    }
 }

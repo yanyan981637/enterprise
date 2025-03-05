@@ -7,15 +7,4 @@
         @apply bg-container-lighter;
     }
 }
-@layer base {
-    h1 {
-        @apply text-h1;
-    }
-}
-
-@layer utilities {
-    .content-auto {
-        content-visibility: auto;
-    }
-}
 

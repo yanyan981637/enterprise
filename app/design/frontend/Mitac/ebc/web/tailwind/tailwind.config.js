@@ -24,8 +24,12 @@ module.exports = hyvaModules.mergeTailwindConfig({
         sans: ['Roboto', '微軟正黑體', "Microsoft JhengHei", 'sans-serif', '-apple-system', 'system-ui', 'BlinkMacSystemFont', "Segoe UI"]
       },
       fontSize:{
-        base: ['18px', { lineHeight: '1.5',}],
-        h1: ['3rem', { lineHeight: '1.5' }],
+        h1: ['3rem', { lineHeight: '1.3' }],
+        h2: ['2.5rem', { lineHeight: '1.2' }],
+        h3: ['2rem', { lineHeight: '1.2' }],
+        h4: ['1.5rem', { lineHeight: '1.2' }],
+        h5: ['1.3rem', { lineHeight: '1.4' }],
+        h6: ['1rem', { lineHeight: '1.5' }],
       },
       colors: {
         primary: {
@@ -46,7 +50,7 @@ module.exports = hyvaModules.mergeTailwindConfig({
         green: colors.emerald,
         yellow: colors.amber,
         purple: colors.violet,
-        main: 'red'
+        main: 'var(--main-color, #00519c)',
       },
       textColor: {
         orange: colors.orange,

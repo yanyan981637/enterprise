@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
-        <!-- remove Magezon 相關css(hyva 使用tailwind生成，暫時移除)  -->
-<!--        <remove src="Magezon_Core::css/styles.css"/>-->
-<!--        <remove src="Magezon_Core::css/owlcarousel/owl.carousel.min.css"/>-->
-<!--        <remove src="Magezon_Core::css/animate.css"/>-->
-<!--        <remove src="Magezon_Core::css/fontawesome5.css"/>-->
-<!--        <remove src="Magezon_Core::css/mgz_font.css"/>-->
-<!--        <remove src="Magezon_Core::css/mgz_bootstrap.css"/>-->
-<!--        <remove src="Magezon_Builder::css/openiconic.min.css"/>-->
-<!--        <remove src="Magezon_Builder::css/styles.css"/>-->
-<!--        <remove src="Magezon_Builder::css/common.css"/>-->
-<!--        <remove src="Magezon_NinjaMenus::css/styles.css"/>-->
+        <!-- remove Magezon 相關css(hyva 使用tailwind生成，extensions.css)  -->
+        <remove src="Magezon_Core::css/styles.css"/>
+        <remove src="Magezon_Core::css/owlcarousel/owl.carousel.min.css"/>
+        <remove src="Magezon_Core::css/animate.css"/>
+        <remove src="Magezon_Core::css/fontawesome5.css"/>
+        <remove src="Magezon_Core::css/mgz_font.css"/>
+        <remove src="Magezon_Core::css/mgz_bootstrap.css"/>
+        <remove src="Magezon_Builder::css/openiconic.min.css"/>
+        <remove src="Magezon_Builder::css/styles.css"/>
+        <remove src="Magezon_Builder::css/common.css"/>
+        <remove src="Magezon_NinjaMenus::css/styles.css"/>
         <css src="https://fonts.googleapis.com/css2?family=Roboto" src_type="url" />
+        <css rel="stylesheet" type="text/css" src="css/extensions.css" />
     </head>
     <referenceBlock name="magezon.builder.head" remove="true" />
     <referenceBlock name="magezon.builder.footer" remove="true" />

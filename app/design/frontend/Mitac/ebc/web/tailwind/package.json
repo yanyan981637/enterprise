@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "NODE_ENV=production npx tailwindcss --postcss -i tailwind-source.css -o ../css/styles.css --minify",
+    "build:extensioncss": "NODE_ENV=production npx tailwindcss --postcss -i extensions.css -o ../css/extensions.css --minify",
     "watch": "NODE_ENV=development npx tailwindcss --postcss -i tailwind-source.css -o ../css/styles.css  --watch --verbose",
     "build-dev": "echo DEVELOPMENT builds are NOT SUPPORTED by tailwind v3, please use the 'watch' or 'build-prod' commands instead. && exit 1",
     "build-prod": "npm run build && npm run output-success",
