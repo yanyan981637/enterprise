@@ -1,12 +1,97 @@
 <?php
 declare(strict_types=1);
 
-use Magento\Framework\View\Element\Template;
+use Mitac\Theme\Block\Zoho\Subscribe;
 use Magento\Framework\Escaper;
 
-/** @var Template $block */
+/** @var Subscribe $block */
 /** @var Escaper $escaper */
+
+/**
+ * hyva.formValidation
+ * vendor/hyva-themes/magento2-theme-module/src/view/frontend/templates/page/js/advanced-form-validation.phtml
+ */
 ?>
-<div class="subscribe-form">
-    <p class="text-white"><i class="faz "></i>SUBSCRIBE NOW to get the latest news.</p>
+<div class="zoho-subscribe">
+    <p class="desc"><i class="fas mgz-fa-envelope-open"></i><?= $escaper->escapeHtml(__('SUBSCRIBE NOW to get the latest news.')) ?></p>
+    <form
+        id="subscribe-form"
+        class="zoho-subscribe-form"
+        method="post"
+        action="<?= $block->getSubmitUrl() ?>"
+        x-data="Object.assign(hyva.formValidation($el), initSubscribeForm())"
+        @submit.prevent="submitForm"
+    >
+        <?= /* @noEscape */ $block->getBlockHtml('formkey'); ?>
+        <input
+            class="border-transparent zoho-subscribe-form__input"
+            type="email"
+            name="email"
+            required
+            :disabled="isSubmitting"
+            @input.debounce="onChange"
+            placeholder="<?= $escaper->escapeHtml(__('Enter your Email')) ?>"
+        />
+        <select class="border-transparent zoho-subscribe-form__select" name="type" :disabled="isSubmitting">
+            <?php foreach ($block->getTypeOptions() as $option): ?>
+                <option value="<?= $option['value'] ?>"><?= $option['label'] ?></option>
+            <?php endforeach; ?>
+        </select>
+        <button
+            class="border-transparent rounded-none zoho-subscribe-form__submit"
+            :disabled="isSubmitting"
+            type="submit"
+            x-text="!isSubmitting ? '<?= $escaper->escapeHtml(__('Submit')) ?>' : '<?= $escaper->escapeHtml(__('Submitting')) ?>'"
+        >
+        </button>
+    </form>
+
 </div>
+
+<script>
+    function initSubscribeForm() {
+
+        const submitUrl = "<?= $block->getSubmitUrl() ?>";
+
+        return {
+            isSubmitting: false,
+            submitForm: function (e) {
+                this.validate()
+                    .then(() => {
+                        this.isSubmitting = true;
+                        const formData = new FormData(e.target);
+
+                        fetch(submitUrl, {
+                            method: 'POST',
+                            body: formData,
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            this.isSubmitting = false;
+                            typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
+                                [{
+                                    type: "success",
+                                    text: 'Subscription updated successfully'
+                                }], 5000
+                            );
+                        })
+                        .catch(err => {
+                            this.isSubmitting = false;
+                            console.error(err);
+                            typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
+                                [{
+                                    type: "error",
+                                    text: 'Subscription updated fail'
+                                }], 5000
+                            );
+                        });
+                    })
+                    .catch((invalid) => {
+                        if (invalid.length > 0) {
+                            invalid[0].focus();
+                        }
+                    });
+            }
+        }
+    }
+</script>

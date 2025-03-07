@@ -9,7 +9,14 @@
                         <resource id="Mitac_Theme::color_delete" title="Delete Color" sortOrder="20" />
                     </resource>
                 </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Mitac_Theme::config_zoho_subscribe" title="Zoho Subscribe" translate="title" sortOrder="10" />
+                        </resource>
+                    </resource>
+                </resource>
             </resource>
         </resources>
     </acl>
-</config> 
+</config>

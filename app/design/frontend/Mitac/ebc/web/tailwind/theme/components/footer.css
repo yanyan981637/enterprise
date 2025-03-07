@@ -1,1 +1,111 @@
-/* .page-footer {} */
+ .page-footer {
+     @apply text-base text-gray-100;
+     .footer-top {
+         @apply py-10 border-b border-b-gray-400;
+         .container {
+             @apply gap-4 flex justify-center;
+             nav {
+                 @apply hidden lg:flex gap-4 lg:flex-nowrap lg:justify-between lg:w-3/5;
+
+                 .link-items{
+                     @apply hidden md:block md:w-1/3;
+
+                     h5{
+                         @apply text-gray-300 border-b border-b-gray-200 pb-2 mb-3;
+                     }
+                     ul li {
+                         @apply text-gray-300;
+                     }
+                 }
+             }
+             .company-info {
+                 @apply lg:w-2/5;
+                 .logo{
+                     @apply mb-4;
+                     img {
+                         @apply max-w-full h-auto;
+                     }
+                 }
+                 .address {
+                     @apply text-gray-300 text-[14px] leading-tight mb-2;
+                 }
+                 .social{
+                     @apply mb-3 flex gap-2;
+                     li a {
+                         @apply block text-lg text-center leading-8 w-8 rounded-2xl  hover:text-white has-[.mgz-fa-youtube]:hover:bg-[#C4302B] has-[.mgz-fa-linkedin-in]:hover:bg-[#0E76A8];
+                     }
+                 }
+             }
+         }
+     }
+     .footer-bottom {
+         .container{
+             @apply py-2 flex flex-wrap  justify-center lg:flex-nowrap items-center lg:justify-between;
+
+             .menu {
+                 @apply flex flex-wrap;
+                 li {
+                     @apply mr-4;
+                     a{
+                         @apply after:content-['|'] after:ml-4 text-[14px] leading-tight text-gray-300 hover:text-secondary;
+                     }
+                     &:last-child a{
+                         @apply after:content-[] mr-0;
+                     }
+                 }
+             }
+             .copyright {
+                 @apply mt-2 lg:mt-0;
+                 small{
+                     @apply text-[14px] leading-tight text-gray-300;
+                 }
+             }
+         }
+     }
+ }
+
+.zoho-subscribe {
+    @apply w-[100%];
+    .desc{
+        @apply text-gray-300 mb-2;
+        .fas{
+            @apply mr-1;
+        }
+    }
+    .zoho-subscribe-form {
+
+        @apply flex flex-nowrap items-center relative border-[2px] border-transparent rounded-lg has-[input:focus,select:focus,button:hover]:border-main;
+
+        .zoho-subscribe-form__input{
+            @apply appearance-none border-[0] rounded-l-md border-r-[1px] border-r-gray-400 disabled:cursor-not-allowed text-gray-700;
+        }
+
+        .field:has(.zoho-subscribe-form__input),
+        .zoho-subscribe-form__input {
+            @apply flex-[1_1_auto] w-[40px];
+        }
+
+        .field > .zoho-subscribe-form__input {
+            @apply w-[100%];
+        }
+
+        .zoho-subscribe-form__select{
+            @apply appearance-none border-none rounded-none focus:border-transparent disabled:cursor-not-allowed text-gray-700;
+            box-shadow: none;
+        }
+
+        .zoho-subscribe-form__submit {
+            @apply appearance-none border-none rounded-r-md bg-secondary text-center text-base py-2 flex-[0_0_5.5rem] text-white hover:bg-primary disabled:cursor-not-allowed;
+        }
+
+    }
+    .field.field-reserved {
+        margin: 0;
+        .messages{
+            position: absolute;
+            left: 0;
+            top: 100%;
+        }
+    }
+}
+

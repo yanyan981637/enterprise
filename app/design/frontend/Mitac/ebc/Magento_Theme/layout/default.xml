@@ -3,7 +3,16 @@
     <update handle="head" />
     <!-- base on vendor/hyva-themes/magento2-default-theme/Magento_Theme/layout/default.xml -->
     <update handle="header" />
+
+    <update handle="hyva_form_validation"/>
+
+
     <referenceBlock name="skip_to_content.target" remove="true" />
 
     <referenceBlock name="footer-static-links" remove="true" />
+
+
+    <referenceBlock name="form.subscribe" remove="true" />
+    <block name="footer.subscribe" class="Mitac\Theme\Block\Zoho\Subscribe" ifconfig="subscribe/general/enable" />
+    <move element="footer.subscribe" destination="footer-content" after="-" />
 </page>

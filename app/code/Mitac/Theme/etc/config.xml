@@ -6,5 +6,10 @@
                 <enable>1</enable>
             </color>
         </web>
+        <subscribe>
+            <general>
+                <enable>0</enable>
+            </general>
+        </subscribe>
     </default>
 </config>

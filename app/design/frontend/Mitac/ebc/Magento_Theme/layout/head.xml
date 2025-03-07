@@ -14,7 +14,9 @@
         <remove src="Magezon_NinjaMenus::css/styles.css"/>
         <css src="https://fonts.googleapis.com/css2?family=Roboto" src_type="url" />
         <css rel="stylesheet" type="text/css" src="css/extensions.css" />
+        <script type="module" src="https://unpkg.com/alpinejs-form-validation@latest/dist/validation.min.js"  src_type="url"/>
     </head>
     <referenceBlock name="magezon.builder.head" remove="true" />
     <referenceBlock name="magezon.builder.footer" remove="true" />
+
 </page>

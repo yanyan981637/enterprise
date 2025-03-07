@@ -11,7 +11,7 @@ html {
 }
 
 body {
-    @apply text-[#313137] leading-normal  tracking-normal font-normal
+    @apply text-[#313137] leading-normal  tracking-normal font-normal w-[100%] min-w-[320px] overflow-x-hidden;
 }
 
 h1 {
@@ -38,7 +38,15 @@ h6 {
     @apply text-h6 font-medium tracking-normal text-[#313137];
 }
 
-
+a {
+    @apply hover:text-secondary
+}
+* {
+    @apply transition;
+}
+li, p {
+    @apply text-base;
+}
 @layer utilities {
     .content-auto {
         content-visibility: auto;

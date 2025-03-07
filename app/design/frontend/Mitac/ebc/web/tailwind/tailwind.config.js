@@ -32,16 +32,8 @@ module.exports = hyvaModules.mergeTailwindConfig({
         h6: ['1rem', { lineHeight: '1.5' }],
       },
       colors: {
-        primary: {
-          lighter: colors.blue['300'],
-          "DEFAULT": colors.blue['800'],
-          darker: colors.blue['900']
-        },
-        secondary: {
-          lighter: colors.blue['100'],
-          "DEFAULT": colors.blue['200'],
-          darker: colors.blue['300']
-        },
+        primary: "var(--main-color, #00519c)",
+        secondary: "var(--secondary-color, #44b1f6)",
         background: {
           lighter: colors.blue['100'],
           "DEFAULT": colors.blue['200'],
@@ -57,31 +49,16 @@ module.exports = hyvaModules.mergeTailwindConfig({
         red: { ...colors.red,
           "DEFAULT": colors.red['500']
         },
-        primary: {
-          lighter: colors.gray['700'],
-          "DEFAULT": 'var(--main-color, #00519c)',
-          darker: colors.gray['900']
-        },
-        secondary: {
-          lighter: colors.gray['400'],
-          "DEFAULT": colors.gray['600'],
-          darker: colors.gray['800']
-        }
+        primary: 'var(--main-color, #00519c)',
+        secondary: "var(--secondary-color, #44b1f6)"
       },
       backgroundColor: {
         header:{
           "DEFAULT": "rgb(49, 49, 57)",
         },
-        primary: {
-          lighter: colors.blue['600'],
-          "DEFAULT": colors.blue['700'],
-          darker: colors.blue['800']
-        },
-        secondary: {
-          lighter: colors.blue['100'],
-          "DEFAULT": colors.blue['200'],
-          darker: colors.blue['300']
-        },
+        primary: "var(--main-color, #00519c)",
+        secondary: "var(--secondary-color, #44b1f6)",
+        black:"rgb(49, 49, 57)",
         container: {
           lighter: colors.white,
           "DEFAULT": colors.neutral['50'],
