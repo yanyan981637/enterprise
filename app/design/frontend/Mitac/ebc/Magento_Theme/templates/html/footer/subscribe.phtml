@@ -68,10 +68,11 @@ use Magento\Framework\Escaper;
                         .then(res => res.json())
                         .then(res => {
                             this.isSubmitting = false;
+
                             typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
                                 [{
-                                    type: "success",
-                                    text: 'Subscription updated successfully'
+                                    type: res.code === 200 ? "success" : 'error',
+                                    text: res.msg
                                 }], 5000
                             );
                         })
@@ -81,7 +82,7 @@ use Magento\Framework\Escaper;
                             typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
                                 [{
                                     type: "error",
-                                    text: 'Subscription updated fail'
+                                    text: err.message
                                 }], 5000
                             );
                         });

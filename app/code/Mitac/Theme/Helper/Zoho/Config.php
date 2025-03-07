@@ -3,7 +3,6 @@
 namespace Mitac\Theme\Helper\Zoho;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Tests\NamingConvention\true\string;
 
 class Config
 {
@@ -43,6 +42,11 @@ class Config
     }
     public function getlistkey(){
         return $this->getStoreConfig('subscribe/general/listkey');
+    }
+
+    public function getRefreshToken()
+    {
+        return $this->getStoreConfig('subscribe/general/refresh_token');
     }
 
     private function getStoreConfig(string $path)
