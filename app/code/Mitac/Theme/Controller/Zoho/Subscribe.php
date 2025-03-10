@@ -63,8 +63,6 @@ class Subscribe extends Action
         }
 
         try {
-            // 檢查是否啟動
-            $this->zohoRequest->checkEnable();
 
             $returnData = $this->zohoRequest->request($type, $email);
 

@@ -67,12 +67,16 @@ class RewritePost extends Post
             'title' => __('Content Type'),
             'values' => [
                 [
-                    'value' => 'content',
-                    'label' => __('Content')
+                    'value' => 'normal_news',
+                    'label' => __('Normal News'),
                 ],
                 [
-                    'value' => 'external_link',
-                    'label' => __('External Link')
+                    'value' => 'event',
+                    'label' => __('Event')
+                ],
+                [
+                    'value' => 'mitac_in_news',
+                    'label' => __('Mitac In News')
                 ]
             ]
         ]);
@@ -93,6 +97,24 @@ class RewritePost extends Post
             'name'  => 'post_external_link',
             'label' => __('External Link'),
             'title' => __('External Link'),
+        ]);
+
+        $contentFiledset->addField('event_start_date', 'date', [
+            'name'  => 'event_start_date',
+            'label' => __('Event Start Date'),
+            'title' => __('Event Start Date'),
+            'date_format' => 'yyyy-MM-dd',
+            'timezone' => false,
+            'time_format' => false,
+        ]);
+
+        $contentFiledset->addField('event_end_date', 'date', [
+            'name'  => 'event_end_date',
+            'label' => __('Event End Date'),
+            'title' => __('Event End Date'),
+            'date_format' => 'yyyy-MM-dd',
+            'timezone' => false,
+            'time_format' => false,
         ]);
 
         $contentFiledset->addField(
@@ -198,6 +220,14 @@ class RewritePost extends Post
             'value' => 0
         ]);
 
+        $fieldset->addField('can_show_in_home', 'select', [
+            'name'   => 'can_show_in_home',
+            'label'  => __('Show in Homepage'),
+            'title'  => __('Show in Homepage'),
+            'values' => $this->booleanOptions->toOptionArray(),
+            'value' => 1
+        ]);
+
         $this->_eventManager->dispatch('after_adminhtml_blog_post_info_tab', ['fieldset' => $fieldset]);
 
         // design
@@ -213,6 +243,7 @@ class RewritePost extends Post
             'label'  => __('Layout'),
             'title'  => __('Layout'),
             'values' => $this->_layoutOptions->toOptionArray(),
+            'value' => '1column'
         ]);
 
         if (!$post->getId()) {

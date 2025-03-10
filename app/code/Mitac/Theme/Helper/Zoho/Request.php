@@ -23,20 +23,13 @@ class Request
         $this->logger = new Logger('zoho_subscribe.log');
     }
 
-    /**
-     * @throws Exception
-     */
-    public function checkEnable(){
-        $isEnable = $this->config->getEnable();
-        if(!$isEnable){
-            throw new Exception(__('Sorry! This feature is not currently enabled.'));
-        }
-    }
-
     public function request($type, $email)
     {
         $this->logger->info('-----------start--------------');
+        $this->logger->info('type: '.$type);
+        $this->logger->info('email: '.$email);
         try {
+            $this->checkEnable();
             $access_token = $this->getAccessToken();
             $result = null;
             switch ($type) {
@@ -76,6 +69,20 @@ class Request
         }
     }
 
+    /**
+     * 檢查 後台是否啟用
+     * @throws Exception
+     */
+    private function checkEnable(){
+        $isEnable = $this->config->getEnable();
+        if(!$isEnable){
+            throw new Exception(__('Sorry! This feature is not currently enabled.'));
+        }
+    }
+
+    /**
+     * 得到 zoho access token
+     * */
     private function getAccessToken()
     {
 
@@ -96,7 +103,7 @@ class Request
             ));
             $response = curl_exec($ci);
             $result = json_decode($response, true);
-
+            $this->logger->info(print_r($response, true));
             if (!isset($result['access_token'])) {
                 throw new Exception("Access token could not be generated");
             }
@@ -106,6 +113,9 @@ class Request
         }
     }
 
+    /**
+     * 訂閱請求
+     * */
     private function subscribeRequest($access_token, $email){
 
         try {
@@ -135,6 +145,9 @@ class Request
         }
     }
 
+    /**
+     * 退訂請求
+     * */
     private function unsubscribeRequest($access_token, $email){
         try {
 
