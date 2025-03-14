@@ -12,9 +12,12 @@
         <remove src="Magezon_Builder::css/styles.css"/>
         <remove src="Magezon_Builder::css/common.css"/>
         <remove src="Magezon_NinjaMenus::css/styles.css"/>
+        <!-- remove Mageplaza 相關css -->
+        <remove src="Mageplaza_Blog::css/mpBlogIcon.css" />
+        <!-- 添加字體 -->
         <css src="https://fonts.googleapis.com/css2?family=Roboto" src_type="url" />
+        <!-- 將第三方css 使用tailwind 打包到一起 -->
         <css rel="stylesheet" type="text/css" src="css/extensions.css" />
-        <script type="module" src="https://unpkg.com/alpinejs-form-validation@latest/dist/validation.min.js"  src_type="url"/>
     </head>
     <referenceBlock name="magezon.builder.head" remove="true" />
     <referenceBlock name="magezon.builder.footer" remove="true" />

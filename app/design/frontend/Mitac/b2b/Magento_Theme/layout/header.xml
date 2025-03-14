@@ -7,7 +7,7 @@
         <referenceBlock name="topSearch" remove="true" />
 
         <container name="header-items" htmlClass="header-items" htmlTag="div">
-            <block class="Mitac\Theme\Block\Header\Nav" name="catalog.topnav" template="Magento_Theme::html/header/topmenu.phtml" before="-">
+            <block class="Magezon\NinjaMenus\Block\TopMenu" name="catalog.topnav" template="Magezon_NinjaMenus::topmenu.phtml" before="-">
                 <arguments>
                     <argument name="identifier" translate="true" xsi:type="string">top-menu</argument>
                 </arguments>

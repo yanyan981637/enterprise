@@ -25,7 +25,7 @@ module.exports = hyvaModules.mergeTailwindConfig({
       },
       fontSize:{
         h1: ['3rem', { lineHeight: '1.3' }],
-        h2: ['2.5rem', { lineHeight: '1.2' }],
+        h2: ['2.2rem', { lineHeight: '1.2' }],
         h3: ['2rem', { lineHeight: '1.2' }],
         h4: ['1.5rem', { lineHeight: '1.2' }],
         h5: ['1.3rem', { lineHeight: '1.4' }],
@@ -43,6 +43,7 @@ module.exports = hyvaModules.mergeTailwindConfig({
         yellow: colors.amber,
         purple: colors.violet,
         main: 'var(--main-color, #00519c)',
+        black: 'rgb(49, 49, 57)'
       },
       textColor: {
         orange: colors.orange,
@@ -59,23 +60,11 @@ module.exports = hyvaModules.mergeTailwindConfig({
         primary: "var(--main-color, #00519c)",
         secondary: "var(--secondary-color, #44b1f6)",
         black:"rgb(49, 49, 57)",
-        container: {
-          lighter: colors.white,
-          "DEFAULT": colors.neutral['50'],
-          darker: colors.neutral['100']
-        }
+        container: "#ffffff",
       },
       borderColor: {
-        primary: {
-          lighter: colors.blue['600'],
-          "DEFAULT": colors.blue['700'],
-          darker: colors.blue['800']
-        },
-        secondary: {
-          lighter: colors.blue['100'],
-          "DEFAULT": colors.blue['200'],
-          darker: colors.blue['300']
-        },
+        primary: 'var(--main-color, #00519c)',
+        secondary: "var(--secondary-color, #44b1f6)",
         container: {
           lighter: colors.neutral['100'],
           "DEFAULT": '#e7e7e7',

@@ -9,6 +9,17 @@
     @apply border border-gray-300 rounded-md shadow-sm min-h-a11y;
 
     &:focus {
-        @apply border-primary-lighter ring ring-primary ring-opacity-50;
+        @apply border-primary ring ring-primary ring-opacity-50;
     }
+}
+input,
+select,
+textarea {
+    @apply px-4 py-1 text-base font-normal text-black bg-transparent border-black rounded-lg;
+    &:focus {
+        @apply outline-none border-secondary;
+    }
+}
+select {
+    @apply pr-8;
 }

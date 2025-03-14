@@ -1,0 +1,49 @@
+<?php
+use Magento\Framework\Escaper;
+use Mageplaza\Blog\Block\Post\View;
+
+/** @var Escaper $escaper */
+/** @var View $block */
+$helper       = $block->getBlogHelper();
+$_post        = $block->getPost();
+$postInfohelper = $this->helper(\Mitac\SecondaryDevelopmentExtensions\Helper\Blog\PostInfo::class);
+$categoryHtml = $postInfohelper->getCategoryByPost($_post);
+$latestNews = $postInfohelper->getLatestNews($_post->getId());
+?>
+<div class="mp-blog-view">
+    <div class="mpcss post-view" id="mpblog-list-container">
+        <?php if($categoryHtml): ?>
+            <div class="post-categories-tags text-secondary">
+                <?=  $categoryHtml ?>
+            </div>
+        <?php endif; ?>
+        <h1> <?= $_post->getName() ?> </h1>
+        <div class="publish_date">
+            <?= $postInfohelper->getPostDate($_post) ?>
+        </div>
+        <div class="post-post_content mt-8 mb-8 pb-4 border-b">
+            <?= /** @noEscape */
+            $block->getPageFilter($_post->getPostContent() ?: '') ?>
+        </div>
+    </div>
+    <div class="related-products">
+        <p> <strong><?= $escaper->escapeHtml(__("Related Product")) ?>:</strong> </p>
+    </div>
+    <div class="latest-posts">
+        <p><strong><?= $escaper->escapeHtml(__("Latest News & Events")) ?>: </strong></p>
+        <ul class="list-disc pl-6">
+            <?php foreach ($latestNews as $news): ?>
+                <?php
+                    $url = $postInfohelper->getPostUrl($news);
+                ?>
+                <li> <a class="text-gray-600" href="<?= $escaper->escapeUrl($url['link']) ?>" target="<?= $url['target'] ?>"><?= $escaper->escapeHtml($news->getName()) ?></a></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <div class="back-previous mt-8">
+        <a href="<?= $escaper->escapeUrl($postInfohelper->getPreviousPage()) ?>" class="leading-10">
+            <span class="bg-black inline-block w-10 h-10 text-center mr-2 text-white">&lt;</span>
+            <?= $escaper->escapeHtml(__("Back to News & Events")) ?>
+        </a>
+    </div>
+</div>

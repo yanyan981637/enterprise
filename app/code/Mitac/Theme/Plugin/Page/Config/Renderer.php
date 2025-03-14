@@ -47,6 +47,8 @@ class Renderer {
 
   public function aroundPrepareFavicon(\Magento\Framework\View\Page\Config\Renderer $subject, callable $callback){
 
+      $this->logger->info($this->request->getControllerName());
+
       $url = $this->request->getUri();
 
       if (str_contains($url, '/admin')) {

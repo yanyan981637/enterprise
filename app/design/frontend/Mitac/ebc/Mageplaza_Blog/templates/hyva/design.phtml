@@ -1,0 +1,29 @@
+<?php
+/**
+ * 移除一些 css
+ */
+use Mageplaza\Blog\Block\Design;
+use Magento\Framework\Escaper;
+
+/** @var Design $block */
+/** @var Escaper $escaper */
+
+?>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var body = document.body;
+        window.addEventListener('load', function () {
+            if (body.classList.contains('page-layout-1column')) {
+                var columns = document.querySelector('.columns');
+                var sidebarMain = columns.querySelector('.sidebar.sidebar-main');
+                if (sidebarMain) {
+                    columns.removeChild(sidebarMain);
+                }
+            }
+            var currentTheme = "<?php echo /** @noEscape */ $block->getCurrentTheme() ?>";
+            if (currentTheme === "Etheme/yourstore") {
+                body.classList.add('mpblog-etheme-yourstore');
+            }
+        });
+    });
+</script>

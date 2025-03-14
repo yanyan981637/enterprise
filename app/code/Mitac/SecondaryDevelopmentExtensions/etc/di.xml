@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- 重寫 Mageplaza Blog Category Controller -->
+    <preference for="Mageplaza\Blog\Controller\Category\View" type="Mitac\SecondaryDevelopmentExtensions\Controller\Blog\Category\View" />
+    <!-- 重寫 blog Root category view controller -->
+    <preference for="Mageplaza\Blog\Controller\Post\Index" type="Mitac\SecondaryDevelopmentExtensions\Controller\Blog\Post\Index" />
+
+
+</config>

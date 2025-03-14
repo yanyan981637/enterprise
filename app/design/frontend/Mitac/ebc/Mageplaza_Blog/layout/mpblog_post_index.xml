@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <referenceContainer name="content">
+        <referenceBlock name="page.main.title" remove="true" />
+        <block class="Mitac\SecondaryDevelopmentExtensions\Block\Blog\Post\FilterByCategory" before="-" name="mpblog.post.filter.by.category" as="mpblog_filter_by_category" template="Mageplaza_Blog::blog/filter_by_category.phtml" />
+        <referenceBlock name="mpblog.copy.right" remove="true" />
+        <referenceBlock name="mpblog.post.list" class="Mitac\SecondaryDevelopmentExtensions\Block\Blog\ListPost" template="Mageplaza_Blog::post/list.phtml" />
+    </referenceContainer>
+</page>

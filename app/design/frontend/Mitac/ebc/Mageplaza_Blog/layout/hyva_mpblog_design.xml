@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <!-- remove Mageplaza 相關css -->
+        <remove src="Mageplaza_Core::css/grid-mageplaza.css" />
+        <remove src="Mageplaza_Core::css/font-awesome.min.css" />
+        <remove src="Mageplaza_Blog::css/hyvaBlog.css" />
+        <remove src="Mageplaza_Blog::js/splide.min.js" />
+        <remove src="Mageplaza_Blog::css/splide.min.css" />
+    </head>
+    <body>
+        <referenceContainer name="div.sidebar.main" remove="true" />
+    </body>
+</page>

@@ -9,11 +9,11 @@
 }
 
 .page-main {
-    @apply my-8;
+    @apply my-4;
 }
 
 .columns {
-    @apply grid grid-cols-1 gap-x-8 gap-y-4 container;
+    @apply container grid grid-cols-1 gap-x-8 gap-y-4;
     grid-template-rows: auto minmax(0, 1fr);
 
     .main {
@@ -29,7 +29,7 @@
     }
 
     .page-main-full-width & {
-        @apply max-w-none px-0;
+        @apply px-0 max-w-none;
     }
 }
 

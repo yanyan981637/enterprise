@@ -1,0 +1,70 @@
+<?php
+use Mitac\SecondaryDevelopmentExtensions\Block\Blog\ListPost;
+use Mageplaza\Blog\Model\Post;
+use Magento\Framework\Escaper;
+
+$postInfohelper = $this->helper(\Mitac\SecondaryDevelopmentExtensions\Helper\Blog\PostInfo::class);
+/** @var ListPost $block */
+/** @var Escaper $escaper */
+
+?>
+
+<div class="post-list-content mt-8" id="mpblog-list-container">
+    <?php $postCollection = $block->getPostCollection(); ?>
+    <?php if ($postCollection && $postCollection->getSize()) : ?>
+        <div class="mt-4"><?= $block->getPagerHtml() ?></div>
+        <div class="post-list-body mt-4 <?= $block->isGridView() ? /* @noEscape */ 'grid' : '' ?>">
+            <?php /** @var Post $post */
+            foreach ($postCollection as $post) : ?>
+                <?php
+                    $url = $postInfohelper->getPostUrl($post);
+                    $categoryHtml = $postInfohelper->getCategoryByPost($post);
+                ?>
+                <div class="post-item-wraper">
+                    <?php if ($post->getImage()) : ?>
+                        <div class="post-image">
+                            <a href="<?= $escaper->escapeUrl($url['link']) ?>" target="<?= $url['target'] ?>">
+                                <img class="img-responsive"
+                                     src="<?= $escaper->escapeUrl($block->resizeImage($post->getImage(), '400x')) ?>"
+                                     alt="<?= $escaper->escapeHtml($post->getName()); ?>"/>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                    <div class="post-info-wraper">
+                        <?php if($categoryHtml): ?>
+                            <div class="post-categories-tags">
+                                <?=  $categoryHtml = $postInfohelper->getCategoryByPost($post) ?>
+                            </div>
+                        <?php endif; ?>
+                        <h2 class="mp-post-title">
+                            <a class="post-link-title" title="<?= $escaper->escapeHtml($post->getName()); ?>"
+                               href="<?= $escaper->escapeUrl($url['link']) ?>" target="<?= $url['target'] ?>">
+                                <?= $escaper->escapeHtml($post->getName()) ?>
+                            </a>
+                        </h2>
+                        <?php ?>
+                            <div class="publish_date">
+                                <?= $postInfohelper->getPostDate($post) ?>
+                            </div>
+                        <?php ?>
+                        <?php if ($post->getShortDescription()): ?>
+                            <div class="post-short-description">
+                                <p><?= /** @noEscape */ $block->maxShortDescription($post->getShortDescription()) ?></p>
+                            </div>
+                        <?php endif; ?>
+                        <div class="actions">
+                            <a class="mp-read-more" href="<?= $escaper->escapeUrl($url['link']) ?>" target="<?= $url['target'] ?>"
+                               title="<?= $escaper->escapeHtmlAttr(__('Learn More')) ?>">
+                                <?= $escaper->escapeHtml(__('Learn More')) ?> &nbsp;&gt;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="mt-4"><?= $block->getPagerHtml() ?></div>
+    <?php else : ?>
+        <?= $escaper->escapeHtml(__('There are no posts at this moment')) ?>
+    <?php endif; ?>
+    <?= $block->getChildHtml('additional'); ?>
+</div>

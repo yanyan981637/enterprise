@@ -76,8 +76,6 @@ class Subscribe extends Action
             ];
             $result->setData($returnData);
             return $result;
-        }finally{
-
         }
 
     }

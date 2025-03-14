@@ -1,0 +1,64 @@
+<?php
+use Magento\Framework\Escaper;
+use Mitac\SecondaryDevelopmentExtensions\Block\Blog\Post\FilterByCategory;
+/**
+ * @var FilterByCategory $block
+ *
+ * @var Escaper $escaper
+ */
+
+$all_category_filter_options = $block->getCategoryFilterOptions();
+$all_year_filter_options = $block->getYearOptions();
+$current_year = $block->getCurrentYear();
+
+?>
+<div class="blog-filter">
+    <?php if(!empty($all_category_filter_options)): ?>
+        <div
+            class="blog-filter-by-category"
+            x-data="{
+                open: false,
+                toogleOpen(){
+                   this.open = !this.open;
+                }
+            }"
+            :class="{
+                    'open': open
+            }"
+        >
+            <p class="font-bold md:mr-3">
+                <i class="mr-1 text-secondary fas mgz-fa-filter"></i>
+                <span class="max-md:hidden"><?= $escaper->escapeHtml(__("Filter"))  ?>:</span>
+            </p>
+            <p class="mr-3 font-bold md:hidden toggle-categories" @click="toogleOpen">
+                <?= $block->getCurrentCategory() ?>
+                <i class="fas mgz-fa-exchange-alt"></i>
+            </p>
+            <ul class="blog-filter-by-category-options ">
+                <?php foreach($all_category_filter_options as $option) : ?>
+                    <li>
+                        <a
+                            href="<?php echo $option['url']; ?>"
+                            class="<?= $option['active'] ? 'active' : '' ?>"
+                        >
+                            <?= $option['name'] ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+    <div class="blog-filter-by-year">
+        <form x-data x-ref="form" action="<?= $escaper->escapeUrl($block->getCurrentUrl()) ?>" method="get">
+            <label class="font-bold mb-0 text-black">
+                <?= $escaper->escapeHtml(__("Year"))  ?>
+                <select class="ml-3 year" name="year" @change="$refs.form.submit()">
+                    <option value="" <?= $current_year === 'all' ? 'selected' : '' ?> ><?= $escaper->escapeHtml(__("All")) ?></option>
+                    <?php foreach($all_year_filter_options as $year) : ?>
+                        <option value="<?= $year ?>" <?= (int)$current_year === (int)$year ? 'selected' : '' ?> ><?= $year ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+        </form>
+    </div>
+</div>

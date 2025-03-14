@@ -11,6 +11,7 @@
 
     <referenceBlock name="footer-static-links" remove="true" />
 
+    <referenceBlock name="page.main.title" remove="true" />
 
     <referenceBlock name="form.subscribe" remove="true" />
     <block name="footer.subscribe" class="Mitac\Theme\Block\Zoho\Subscribe" ifconfig="subscribe/general/enable" />

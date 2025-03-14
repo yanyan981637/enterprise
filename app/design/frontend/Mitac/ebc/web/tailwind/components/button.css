@@ -1,13 +1,6 @@
 @layer components {
     .btn {
-        @apply flex bg-gray-500 rounded-lg px-4 py-2 text-white text-base font-medium shadow-md items-center;
-
-        @screen md {
-            @apply px-6 text-lg;
-        }
-        @screen xl {
-            @apply text-base;
-        }
+        @apply border-[2px] border-black text-base bg-transparent rounded-lg px-4 py-1  text-black font-normal items-center;
 
         svg {
             @apply inline-flex;
@@ -17,13 +10,15 @@
             vertical-align: middle;
         }
 
-        &:hover {
-            @apply bg-gray-600;
+        &:hover,
+        &.active{
+            @apply bg-secondary border-secondary text-white;
         }
 
         &:focus {
-            @apply outline-none border-transparent ring-4 ring-primary ring-opacity-50;
+            @apply outline-none;
         }
+
     }
 
     .btn-primary {
