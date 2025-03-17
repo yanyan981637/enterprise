@@ -17,8 +17,6 @@ interface ColorInterface
     const CUSTOM_URL = 'custom_url';
     const FAVICON_URL = 'favicon_url';
 
-    public function create();
-
     /**
      * @return int|null
      */

@@ -25,4 +25,12 @@
             <column name="enabled"/>
         </index>
     </table>
+    <table name="zoho_access_token_manage" resource="default" engine="innodb" comment="Zoho Access Token Manage">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="int" name="store_id" padding="10" unsigned="true" nullable="false" comment="Store Id"/>
+        <column xsi:type="varchar" name="access_token" length="255" nullable="false" comment="Access Token" />
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+    </table>
 </schema>

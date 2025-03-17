@@ -3,7 +3,7 @@
 namespace Mitac\Theme\Helper\Zoho;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
-
+use Mitac\Theme\Api\ZohoAccessTokenRepositoryInterface;
 class Config
 {
 
@@ -11,11 +11,18 @@ class Config
      * @var ScopeConfigInterface $scopeConfig
      * */
     protected $scopeConfig;
+
+    /**
+     * @var ZohoAccessTokenRepositoryInterface $zohoAccessTokenRepository
+     */
+    protected $zohoAccessTokenRepository;
     public function __construct(
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        ZohoAccessTokenRepositoryInterface $zohoAccessTokenRepository
     )
     {
         $this->scopeConfig = $scopeConfig;
+        $this->zohoAccessTokenRepository = $zohoAccessTokenRepository;
     }
 
     public function getEnable(){
@@ -47,6 +54,15 @@ class Config
     public function getRefreshToken()
     {
         return $this->getStoreConfig('subscribe/general/refresh_token');
+    }
+
+    public function getAccessToken()
+    {
+        return $this->zohoAccessTokenRepository->getExitAccessToken();
+    }
+    public function setAccessToken($access_token)
+    {
+        $this->zohoAccessTokenRepository->setNewAccessToken($access_token);
     }
 
     private function getStoreConfig(string $path)

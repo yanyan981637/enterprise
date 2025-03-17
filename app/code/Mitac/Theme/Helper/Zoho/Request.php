@@ -23,14 +23,14 @@ class Request
         $this->logger = new Logger('zoho_subscribe.log');
     }
 
-    public function request($type, $email)
+    public function request($type, $email, $regetToken = false)
     {
         $this->logger->info('-----------start--------------');
         $this->logger->info('type: '.$type);
         $this->logger->info('email: '.$email);
         try {
             $this->checkEnable();
-            $access_token = $this->getAccessToken();
+            $access_token = $this->getAccessToken($regetToken);
             $result = null;
             switch ($type) {
                 case 1:
@@ -40,26 +40,24 @@ class Request
                     $result = $this->unsubscribeRequest($access_token, $email);
                 break;
                 default:
-                    throw new Exception(__('fail'));
+                    throw new Exception(__('Subscribed Failed'));
             }
             $this->logger->info('result: ');
             $this->logger->info(print_r($result, true));
-            if(isset($result['status']) && $result['status'] == 'success'){
+            if(isset($result['status']) && $result['status'] === 'success'){
                 return [
                     'status' => 'success',
                     'code' => 200,
-                    'msg' => $result['message'] ?? 'fail'
+                    'msg' => $type == 1 ? __("Subscribed Successful") : __("Unsubscribed Successful"),
                 ];
             }
 
-            if(isset($result['status']) && $result['status'] == 'error'){
-                return [
-                    'status' => 'error',
-                    'code' => 201,
-                    'msg' => $result['message'] ?? "fail"
-                ];
+            // 授權失敗， 重新獲取token， 進行請求
+            if(isset($result['status']) && $result['status'] === 'error' && $result['Code']= 1007){
+                $result = $this->request($type, $email, true);
+                return $result;
             }
-            throw new Exception('fail');
+            throw new Exception('Subscribed Failed');
 
         }catch (Exception $e){
             $this->logger->info($e->getMessage());
@@ -83,10 +81,18 @@ class Request
     /**
      * 得到 zoho access token
      * */
-    private function getAccessToken()
+    private function getAccessToken($regetToken)
     {
+        if(!$regetToken){
+            $accessToken = $this->config->getAccessToken();
+            $this->logger->info('accessToken: '.$accessToken);
+            if($accessToken){
+                return $accessToken;
+            }
+        }
 
         try {
+            $this->logger->info('get access token');
             $ci = curl_init();
             curl_setopt_array($ci, array(
                 CURLOPT_URL => $this->config->getApiAuthPath(),
@@ -107,6 +113,8 @@ class Request
             if (!isset($result['access_token'])) {
                 throw new Exception("Access token could not be generated");
             }
+            $this->logger->info('get access token: ' . $result['access_token']);
+            $this->config->setAccessToken($result['access_token']);
             return $result['access_token'];
         }catch (Exception $e){
             throw new Exception($e->getMessage());

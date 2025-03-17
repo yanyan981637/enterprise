@@ -6,4 +6,7 @@
 
     <preference for="Mitac\Theme\Api\Data\ColorInterface" type="Mitac\Theme\Model\Color" />
     <preference for="Mitac\Theme\Api\ColorRepositoryInterface" type="Mitac\Theme\Model\ColorRepository" />
+
+    <preference for="Mitac\Theme\Api\Data\ZohoAccessTokenInterface" type="Mitac\Theme\Model\ZohoAccessTokenRepository" />
+    <preference for="Mitac\Theme\Api\ZohoAccessTokenRepositoryInterface" type="Mitac\Theme\Model\ZohoAccessTokenRepository" />
 </config>

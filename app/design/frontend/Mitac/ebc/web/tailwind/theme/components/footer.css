@@ -77,7 +77,7 @@
         @apply flex flex-nowrap items-center relative border-[2px] border-transparent rounded-lg has-[input:focus,select:focus,button:hover]:border-main;
 
         .zoho-subscribe-form__input{
-            @apply appearance-none border-[0] rounded-l-md border-r-[1px] border-r-gray-400 disabled:cursor-not-allowed text-gray-700;
+            @apply appearance-none border-[0] rounded-none rounded-l-md border-r-[1px] bg-white border-r-gray-400 disabled:cursor-not-allowed text-gray-700;
         }
 
         .field:has(.zoho-subscribe-form__input),
@@ -90,12 +90,12 @@
         }
 
         .zoho-subscribe-form__select{
-            @apply appearance-none border-none rounded-none focus:border-transparent disabled:cursor-not-allowed text-gray-700;
+            @apply appearance-none border-none rounded-none focus:border-transparent bg-white disabled:cursor-not-allowed text-gray-700;
             box-shadow: none;
         }
 
         .zoho-subscribe-form__submit {
-            @apply appearance-none border-none rounded-r-md bg-secondary text-center text-base py-2 flex-[0_0_5.5rem] text-white hover:bg-primary disabled:cursor-not-allowed;
+            @apply appearance-none border-none rounded-r-md bg-secondary text-center text-base py-1 flex-[0_0_5.5rem] text-white hover:bg-primary disabled:cursor-not-allowed;
         }
 
     }

@@ -10,10 +10,6 @@ class Color extends AbstractModel implements ColorInterface
         $this->_init(\Mitac\Theme\Model\ResourceModel\Color::class);
     }
 
-    public function create(): ColorInterface
-    {
-        return $this;
-    }
 
     public function getColorId()
     {

@@ -1773,7 +1773,19 @@ also replace `custom` with your own mode name.
   --tw-ring-opacity: 0.5;
 }
 
-input,
+[type='text'],
+input:where(:not([type])),
+[type='email'],
+[type='url'],
+[type='password'],
+[type='number'], [type='date'],
+[type='datetime-local'],
+[type='month'],
+[type='search'],
+[type='tel'],
+[type='time'],
+[type='week'],
+[multiple],
 select,
 textarea {
   border-radius: 0.5rem;
@@ -1791,7 +1803,7 @@ textarea {
   color: rgb(49 49 57 / var(--tw-text-opacity));
 }
 
-input:focus, select:focus, textarea:focus {
+[type='text']:focus, input:where(:not([type])):focus, [type='email']:focus, [type='url']:focus, [type='password']:focus, [type='number']:focus, [type='date']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='week']:focus, [multiple]:focus, select:focus, textarea:focus {
   border-color: var(--secondary-color, #44b1f6);
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -6218,12 +6230,15 @@ a.pagebuilder-button-secondary:focus, button.pagebuilder-button-secondary:focus,
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
+  border-radius: 0px;
   border-top-left-radius: 0.375rem;
   border-bottom-left-radius: 0.375rem;
   border-width: 0;
   border-right-width: 1px;
   --tw-border-opacity: 1;
   border-right-color: rgb(156 163 175 / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
   color: rgb(55 65 81 / var(--tw-text-opacity));
 }
@@ -6248,6 +6263,8 @@ a.pagebuilder-button-secondary:focus, button.pagebuilder-button-secondary:focus,
           appearance: none;
   border-radius: 0px;
   border-style: none;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
   color: rgb(55 65 81 / var(--tw-text-opacity));
 }
@@ -6273,8 +6290,8 @@ a.pagebuilder-button-secondary:focus, button.pagebuilder-button-secondary:focus,
   border-bottom-right-radius: 0.375rem;
   border-style: none;
   background-color: var(--secondary-color, #44b1f6);
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
   text-align: center;
   font-size: 1rem;
   line-height: 1.5rem;
@@ -6684,6 +6701,15 @@ fieldset ~ fieldset {
   .blog-filter .blog-filter-by-category .blog-filter-by-category-options li a:focus {
     outline: 2px solid transparent;
     outline-offset: 2px;
+  }
+
+  .blog-filter .blog-filter-by-category .blog-filter-by-category-options li a {
+    display: block;
+  }
+
+  [data-content-type$='block'] .blog-filter .blog-filter-by-category .blog-filter-by-category-options li a p:last-child {
+    margin-bottom: 1rem;
+    margin-top: 0px;
   }
 }
 
